@@ -1,8 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Configure kickstart",
-    "$id": "http://nethserver.org/json-schema/task/input/kickstart/configure",
-    "description": "Configure kickstart",
+    "title": "Configure mail",
+    "$id": "http://nethserver.org/json-schema/task/input/mail/configure",
+    "description": "Configure mail",
     "examples": [],
     "type": "object"
 }

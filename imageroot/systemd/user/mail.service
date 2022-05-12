@@ -1,27 +1,27 @@
 #
-# This systemd unit starts a kickstart instance using Podman.
+# This systemd unit starts a mail instance using Podman.
 # Most parts of this file come from podman-generate-systemd.
 #
 [Unit]
-Description=kickstart server
+Description=mail server
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
 EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 Restart=always
-ExecStartPre=/bin/rm -f %t/kickstart.pid %t/kickstart.ctr-id
+ExecStartPre=/bin/rm -f %t/mail.pid %t/mail.ctr-id
 ExecStart=/usr/bin/podman run \
     --detach \
-    --conmon-pidfile=%t/kickstart.pid \
-    --cidfile=%t/kickstart.ctr-id \
+    --conmon-pidfile=%t/mail.pid \
+    --cidfile=%t/mail.ctr-id \
     --cgroups=no-conmon \
     --replace --name=%N \
     --publish=127.0.0.1:${TCP_PORT}:8080 \
     ${ECHO_SERVER_IMAGE}
-ExecStop=/usr/bin/podman stop --ignore --cidfile %t/kickstart.ctr-id -t 10
-ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/kickstart.ctr-id
-PIDFile=%t/kickstart.pid
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/mail.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/mail.ctr-id
+PIDFile=%t/mail.pid
 Type=forking
 
 [Install]
