@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,6 +20,17 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-# If the control reaches this step, the service can be enabled and started
+# shellcheck shell=dash
 
-systemctl --user enable --now dovecot.service
+set -e
+
+# Ensure mail homes root has proper ownership:
+chown -c vmail:vmail /var/lib/vmail
+
+reload-config
+
+if [ $# -eq 0 ]; then
+    exec dovecot -F
+else
+    exec "${@}"
+fi

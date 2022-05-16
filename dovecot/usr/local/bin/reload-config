@@ -1,0 +1,56 @@
+#!/bin/ash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+# shellcheck shell=dash disable=SC2034
+
+set -e
+
+ldap_schema=${DOVECOT_LDAP_SCHEMA:?}
+
+# Export variables for templates
+set -a
+ldap_host=${DOVECOT_LDAP_HOST:?}
+ldap_port=${DOVECOT_LDAP_PORT:?}
+ldap_base_dn=${DOVECOT_LDAP_BASE:?}
+ldap_bind_dn=${DOVECOT_LDAP_USER}
+ldap_bind_password=${DOVECOT_LDAP_PASS}
+submission_host=${DOVECOT_SUBMISSION_HOST:?}
+submission_port=${DOVECOT_SUBMISSION_PORT:?}
+instance_name=${DOVECOT_INSTANCE_NAME:-dovecot}
+set +a
+
+envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"
+envsubst >/etc/dovecot/passdb.conf.ext <"${TEMPLATES_DIR:?}/${ldap_schema}-ldap.conf.ext"
+ln -sf /etc/dovecot/passdb.conf.ext /etc/dovecot/userdb.conf.ext
+
+if [ -n "${DOVECOT_DEBUG}" ]; then
+    (
+        echo '# DOVECOT_DEBUG is enabled'
+        echo 'auth_debug=yes'
+        echo 'mail_debug=yes'
+    ) >> /etc/dovecot/local.conf
+    doveconf -n
+fi
+
+if [ -f /run/dovecot/master.pid ]; then
+    doveadm reload
+fi

@@ -27,14 +27,10 @@ import os
 from agent.ldapproxy import Ldapproxy
 
 request = json.load(sys.stdin)
-odom = Ldapproxy().get_domain(request['user_domain'])
 
-agent.set_env('DOVECOT_LDAP_HOST', odom['host'])
-agent.set_env('DOVECOT_LDAP_PORT', odom['port'])
-agent.set_env('DOVECOT_LDAP_USER', odom['bind_dn'])
-agent.set_env('DOVECOT_LDAP_PASS', odom['bind_password'])
-agent.set_env('DOVECOT_LDAP_SCHEMA', odom['schema'])
-agent.set_env('DOVECOT_LDAP_BASE', odom['base_dn'])
-agent.set_env('DOVECOT_SUBMISSION_HOST', request.get('submission_host', '127.0.0.1'))
-agent.set_env('DOVECOT_SUBMISSION_PORT', request.get('submission_port', '5587'))
-agent.set_env('DOVECOT_INSTANCE_NAME', os.environ['MODULE_ID'])
+odom = Ldapproxy().get_domain(request['user_domain'])
+if odom is None:
+    # validation error
+    agent.set_status('validation-failed')
+    json.dump([{'field':'user_domain', 'parameter':'user_domain','value': request['user_domain'], 'error':'domain_not_found'}], fp=sys.stdout)
+    sys.exit(2)

@@ -3,6 +3,21 @@
     "title": "Configure mail",
     "$id": "http://nethserver.org/json-schema/task/input/mail/configure",
     "description": "Configure mail",
-    "examples": [],
-    "type": "object"
+    "examples": [
+        {
+            "user_domain": "dom.test"
+        }
+    ],
+    "type": "object",
+    "required": [
+        "user_domain"
+    ],
+    "properties": {
+        "user_domain": {
+            "type": "string",
+            "title": "User domain name",
+            "description": "Must be the name of a configured user domain",
+            "minLength": 1
+        }
+    }
 }

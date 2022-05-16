@@ -20,21 +20,9 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-import json
-import sys
 import agent
 import os
-from agent.ldapproxy import Ldapproxy
 
-request = json.load(sys.stdin)
-odom = Ldapproxy().get_domain(request['user_domain'])
+agent.remove_public_service(os.environ['MODULE_ID'])
 
-agent.set_env('DOVECOT_LDAP_HOST', odom['host'])
-agent.set_env('DOVECOT_LDAP_PORT', odom['port'])
-agent.set_env('DOVECOT_LDAP_USER', odom['bind_dn'])
-agent.set_env('DOVECOT_LDAP_PASS', odom['bind_password'])
-agent.set_env('DOVECOT_LDAP_SCHEMA', odom['schema'])
-agent.set_env('DOVECOT_LDAP_BASE', odom['base_dn'])
-agent.set_env('DOVECOT_SUBMISSION_HOST', request.get('submission_host', '127.0.0.1'))
-agent.set_env('DOVECOT_SUBMISSION_PORT', request.get('submission_port', '5587'))
-agent.set_env('DOVECOT_INSTANCE_NAME', os.environ['MODULE_ID'])
+# Ignore exit code
