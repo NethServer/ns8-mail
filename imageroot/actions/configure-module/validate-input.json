@@ -5,12 +5,14 @@
     "description": "Configure mail",
     "examples": [
         {
-            "user_domain": "dom.test"
+            "user_domain": "dom.test",
+            "hostname": "mail.dom.test"
         }
     ],
     "type": "object",
     "required": [
-        "user_domain"
+        "user_domain",
+        "hostname"
     ],
     "properties": {
         "user_domain": {
@@ -18,6 +20,13 @@
             "title": "User domain name",
             "description": "Must be the name of a configured user domain",
             "minLength": 1
+        },
+        "hostname": {
+            "type": "string",
+            "title": "Mail host name",
+            "description": "Host name used as SMTP/HELO and for the TLS certificate",
+            "minLength": 1,
+            "format": "idn-hostname"
         }
     }
 }

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,7 +20,17 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-exec 1>&2
+import json
+import sys
+import agent
+import os
 
-systemctl --user enable dovecot.service
-systemctl --user reload-or-restart dovecot.service
+event = json.load(sys.stdin)
+
+if str(event['node']) != os.environ['NODE_ID']:
+    print(agent.SD_DEBUG + "Event ignored: source is another node")
+    sys.exit(2)
+
+if event['domain']['main'] != os.environ['MAIL_HOSTNAME']:
+    print(agent.SD_DEBUG + "Event ignored: the certificate does not match our hostname")
+    sys.exit(3)

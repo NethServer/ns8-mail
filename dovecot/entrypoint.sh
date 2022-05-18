@@ -24,12 +24,8 @@
 
 set -e
 
-# Ensure mail homes root has proper ownership:
-chown -c vmail:vmail /var/lib/vmail
-
-reload-config
-
 if [ $# -eq 0 ]; then
+    reload-config
     exec dovecot -F
 else
     exec "${@}"

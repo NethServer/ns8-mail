@@ -7,7 +7,7 @@ a LDAP user domain (both AD and RFC2307 schema are allowed).
 ## TCP ports
 
 
-Standard TCP ports, with STARTTLS support
+Standard TCP ports (STARTTLS could be available)
 
 - IMAP 143
 - POP3 110
@@ -31,13 +31,36 @@ TLS ports
 - `DOVECOT_LDAP_BASE`, eg `dc=directory,dc=nh`
 - `DOVECOT_SUBMISSION_HOST`, eg `127.0.0.1`
 - `DOVECOT_SUBMISSION_PORT`, eg `5587`
-- `DOVECOT_INSTANCE_NAME`, default `dovecot`
+- `DOVECOT_INSTANCE_NAME`, default `dovecot` Used as syslog identifier
+- `DOVECOT_TRUSTED_NETWORKS`, eg `10.5.4.0/24` Connections from those
+  networks do not require TLS
+- `DOVECOT_DEBUG`, if set enable verbose logging
 
 ## Logs
 
-TODO
+The container sends log messages to `syslog`. Increase log verbosity by
+running `DOVECOT_DEBUG=1 reload-config`. Set syslog identifier with
+`DOVECOT_INSTANCE_NAME`.
+
+## Commands
+
+### `import-certificate`
+
+Reads a Tar file from standard input. The archive must have the following
+contents:
+
+- `server.pem`, server TLS certificate 
+- `server.key`, server certificate private key
+
+### `reload-config`
+
+The command expands Dovecot configuration files, according to the values
+of environment variables. If Dovecot is running, it asks also Dovecot to
+reload the new configuration.
 
 ## Storage
 
-The `/var/lib/vmail` directory is volume mounted. Mailboxes are stored in
-Maildir format.
+Volumes are:
+
+- `/var/lib/vmail` Mailboxes storage. They are stored in Maildir format.
+- `/etc/ssl/dovecot` Certificates for TLS.

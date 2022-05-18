@@ -36,6 +36,7 @@ ldap_bind_password=${DOVECOT_LDAP_PASS}
 submission_host=${DOVECOT_SUBMISSION_HOST:?}
 submission_port=${DOVECOT_SUBMISSION_PORT:?}
 instance_name=${DOVECOT_INSTANCE_NAME:-dovecot}
+login_trusted_networks=${DOVECOT_TRUSTED_NETWORKS:-}
 set +a
 
 envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"
