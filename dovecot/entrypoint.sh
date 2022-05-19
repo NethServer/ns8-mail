@@ -25,6 +25,11 @@
 set -e
 
 if [ $# -eq 0 ]; then
+    if [ ! -f /etc/ssl/dovecot/server.key ]; then
+        # resume the apk post-install script to
+        # generate a self-signed certificate
+        dovecot-post-install
+    fi
     reload-config
     exec dovecot -F
 else

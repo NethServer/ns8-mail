@@ -36,7 +36,7 @@ redis-exec HGET "module/${mtraefik}/certificate/${MAIL_HOSTNAME}" key | base64 -
 redis-exec HGET "module/${mtraefik}/certificate/${MAIL_HOSTNAME}" cert | base64 -d > server.pem
 
 if [[ $(head -c 5 server.key) != '-----' || $(head -c 5 server.pem) != '-----' ]]; then
-    echo "[ERROR] certificate for ${MAIL_HOSTNAME} not found" 1>&2
+    echo "Certificate for ${MAIL_HOSTNAME} not found" 1>&2
     exit 2
 fi
 

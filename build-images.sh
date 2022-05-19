@@ -43,10 +43,22 @@ images+=("${repobase}/${reponame}")
 #
 reponame="mail-dovecot"
 container=$(buildah from docker.io/library/alpine:3)
-buildah run "${container}" /bin/sh <<EOF
+buildah run "${container}" /bin/sh <<'EOF'
+set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-submissiond dovecot-pop3d dovecot-lmtpd gettext
+(
+    # Remove the self-signed certificate
+    rm -vf /etc/ssl/dovecot/server.*
+    tmpdir=$(mktemp -d)
+    cd "${tmpdir}"
+    apk fetch --no-cache dovecot
+    tar xfv dovecot-*.apk .post-install
+    # Copy the post-install script to generate a new certificate from entrypoint.sh
+    mv -v .post-install /usr/local/bin/dovecot-post-install
+    rm -rvf "${tmpdir}"
+)
 EOF
 buildah add "${container}" dovecot/ /
 buildah config \
