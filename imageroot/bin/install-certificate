@@ -46,5 +46,6 @@ tar -c -O server.key server.pem | podman run \
     --rm --name dovecot-import-certificate \
     --volume=dovecot-data:/var/lib/vmail:z \
     --volume=dovecot-cert:/etc/ssl/dovecot:z \
+    --volume=dovecot-dict:/var/lib/dovecot/dict:z \
     "${MAIL_DOVECOT_IMAGE}" \
     import-certificate

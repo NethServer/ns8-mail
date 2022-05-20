@@ -35,6 +35,9 @@ TLS ports
 - `DOVECOT_TRUSTED_NETWORKS`, eg `10.5.4.0/24` Connections from those
   networks do not require TLS
 - `DOVECOT_DEBUG`, if set enable verbose logging
+- `DOVECOT_QUOTA_MB`, default `0`. If greater than zero, set default
+  mailbox quota, with value expressed in MB. `0` means quota is completely
+  disabled.
 
 ## Logs
 

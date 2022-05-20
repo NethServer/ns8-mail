@@ -44,5 +44,6 @@ agent.set_env('DOVECOT_SUBMISSION_HOST', request.get('submission_host', '127.0.0
 agent.set_env('DOVECOT_SUBMISSION_PORT', request.get('submission_port', '5587'))
 agent.set_env('DOVECOT_INSTANCE_NAME', os.environ['MODULE_ID'])
 agent.set_env('DOVECOT_TRUSTED_NETWORKS', cluster_network)
+agent.set_env('DOVECOT_QUOTA_MB', request['mailbox_quota_mb'])
 
 agent.dump_env() # Save to environment file before starting the systemd unit

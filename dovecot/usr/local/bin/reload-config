@@ -21,6 +21,7 @@
 #
 
 # shellcheck shell=dash disable=SC2034
+# https://www.shellcheck.net/wiki/SC2034
 
 set -e
 
@@ -38,10 +39,19 @@ submission_port=${DOVECOT_SUBMISSION_PORT:?}
 instance_name=${DOVECOT_INSTANCE_NAME:-dovecot}
 login_trusted_networks=${DOVECOT_TRUSTED_NETWORKS:-}
 protocols=\$protocols
-lmtp_mail_plugins=\$mail_plugins
+mail_plugins=
+quota_rule_storage="${DOVECOT_QUOTA_MB:-0}"
+if [ "${quota_rule_storage}" -gt 0 ]; then
+    condinclude_local_quota='!include uquota.conf'
+    mail_plugins="${mail_plugins} quota"
+else
+    condinclude_local_quota=
+fi
+
 set +a
 
 envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"
+envsubst >/etc/dovecot/uquota.conf <"${TEMPLATES_DIR:?}/uquota.conf"
 envsubst >/etc/dovecot/passdb.conf.ext <"${TEMPLATES_DIR:?}/${ldap_schema}-ldap.conf.ext"
 ln -sf /etc/dovecot/passdb.conf.ext /etc/dovecot/userdb.conf.ext
 

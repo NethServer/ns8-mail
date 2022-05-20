@@ -6,15 +6,23 @@
     "examples": [
         {
             "user_domain": "dom.test",
-            "hostname": "mail.dom.test"
+            "hostname": "mail.dom.test",
+            "mailbox_quota_mb": 2000
         }
     ],
     "type": "object",
     "required": [
         "user_domain",
-        "hostname"
+        "hostname",
+        "mailbox_quota_mb"
     ],
     "properties": {
+        "mailbox_quota_mb": {
+            "type": "integer",
+            "title": "User mailbox quota",
+            "description": "Default user mailbox quota expressed in MB (megabytes). Set to 0 to disable quota completely.",
+            "minimum": 0
+        },
         "user_domain": {
             "type": "string",
             "title": "User domain name",

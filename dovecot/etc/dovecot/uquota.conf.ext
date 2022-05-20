@@ -1,0 +1,17 @@
+#
+# uquota dict -- Store user custom quota
+#
+
+# Usage: create a file like /var/lib/dovecot/dict/uquota/first.user and
+# set the # user personal quota MB number as content (e.g. 1200, for about
+# 1.2 GB quota).
+
+uri = fs:posix:prefix=/var/lib/dovecot/dict/uquota/
+iterate_disable = yes
+
+key custom_quota {
+    key = %n
+}
+userdb_fields {
+    quota_rule = *:storage=%T{dict:custom_quota}M
+}

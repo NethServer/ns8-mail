@@ -59,17 +59,20 @@ apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-submis
     mv -v .post-install /usr/local/bin/dovecot-post-install
     rm -rvf "${tmpdir}"
 )
+mkdir -p /var/lib/dovecot/dict/uquota
 EOF
 buildah add "${container}" dovecot/ /
 buildah config \
     --workingdir=/var/lib/vmail \
     --volume=/var/lib/vmail \
     --volume=/etc/ssl/dovecot \
+    --volume=/var/lib/dovecot/dict \
     --entrypoint='["/entrypoint.sh"]' \
     --cmd='' \
     --env=TEMPLATES_DIR="/usr/local/lib/templates" \
     --env=DOVECOT_SUBMISSION_HOST="127.0.0.1" \
     --env=DOVECOT_SUBMISSION_PORT="5587" \
+    --env=DOVECOT_QUOTA_MB=0 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 
