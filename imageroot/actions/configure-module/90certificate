@@ -25,8 +25,19 @@ import agent.tasks
 import os
 import agent
 
+agent_id = agent.resolve_agent_id('traefik@node')
+mail_hostname = os.environ['MAIL_HOSTNAME']
+
 agent.tasks.run_nowait(
-    agent_id=agent.resolve_agent_id('traefik@node'),
+    agent_id=agent_id, # e.g. module/traefik1
     action='set-certificate',
-    data={"fqdn": os.environ['MAIL_HOSTNAME']},
+    data={
+        "fqdn":mail_hostname,
+        "sync": True,
+    },
+    parent='', # Run as a root task
+    extra={
+        'title': 'set-certificate',
+        'isNotificationHidden': False,
+    },
 )
