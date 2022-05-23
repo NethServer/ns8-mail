@@ -31,6 +31,16 @@ if [ $# -eq 0 ]; then
         dovecot-post-install
     fi
     reload-config
+    if grep -q FIRSTBOOT /etc/ssl/dovecot/dh.pem ; then
+        (
+            # Only the first time Dovecot is starded,
+            # generate in background a new DH prime
+            cd /etc/ssl/dovecot ; umask 077
+            openssl dhparam -out dh.pem.tmp 2048 && mv -v dh.pem.tmp dh.pem
+            # Ignore at this point any Dovecot master error about unknown PID
+            doveadm reload
+        ) &
+    fi
     exec dovecot -F
 else
     exec "${@}"
