@@ -27,7 +27,6 @@ agent.add_public_service(os.environ['MODULE_ID'], [
     "25/tcp", # SMTP
     "110/tcp", # POP3
     "143/tcp", # IMAP
-    "4190/tcp", # Sieve
     "993/tcp", # IMAPs
     "995/tcp", # POP3s
 ])

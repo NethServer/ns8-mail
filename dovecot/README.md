@@ -7,12 +7,11 @@ a LDAP user domain (both AD and RFC2307 schema are allowed).
 ## TCP ports
 
 
-Standard TCP ports (STARTTLS could be available)
+Standard public TCP ports (STARTTLS is available)
 
 - IMAP 143
 - POP3 110
 - SMTP 587
-- SIEVE 4190
 
 TLS ports
 
@@ -23,6 +22,7 @@ TLS ports
 Private ports:
 
 - HTTP 9288, for [Doveadm API](https://doc.dovecot.org/admin_manual/doveadm_http_api/)
+- SIEVE 4190 (also 2000 for Webtop)
 
 ## Environment variables
 
