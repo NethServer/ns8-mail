@@ -40,9 +40,10 @@ images+=("${repobase}/${reponame}")
 
 #
 # Dovecot additional image
+# davidep: avoid dovecot 2.3.19-r2 - userdb lookup crashes
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/library/alpine:3)
+container=$(buildah from docker.io/library/alpine:3.15)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
@@ -73,6 +74,7 @@ buildah config \
     --env=DOVECOT_SUBMISSION_HOST="127.0.0.1" \
     --env=DOVECOT_SUBMISSION_PORT="5587" \
     --env=DOVECOT_QUOTA_MB=0 \
+    --env=DOVECOT_API_PORT=9288 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 
