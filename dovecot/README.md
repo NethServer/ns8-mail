@@ -44,6 +44,9 @@ Private ports:
 - `DOVECOT_API_KEY`, value for [`doveadm_api_key`](https://doc.dovecot.org/settings/core/#core_setting-doveadm_api_key)
 - `DOVECOT_API_PORT`, TCP port number for doveadm HTTP API server. Default
   value is `9288`.
+- `DOVECOT_STATS_PORT`, TCP port number for the [OpenMetrics HTTP
+  server](https://doc.dovecot.org/configuration_manual/stats/openmetrics/).
+  Default value is `9289`.
 
 ## Logs
 
@@ -92,3 +95,11 @@ curl -d '[["dictSet",{"dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
 
 Note that the last `dictSet` argument `0000` is returned in the response
 payload.
+
+## OpenMetrics exporter
+
+[Dovecot
+statistics](https://doc.dovecot.org/configuration_manual/stats/openmetrics/)
+are available with a simple HTTP query. For instance:
+
+    curl -v http://127.0.0.1:9289/metrics

@@ -75,6 +75,7 @@ buildah config \
     --env=DOVECOT_SUBMISSION_PORT="5587" \
     --env=DOVECOT_QUOTA_MB=0 \
     --env=DOVECOT_API_PORT=9288 \
+    --env=DOVECOT_STATS_PORT=9289 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 
