@@ -1,27 +1,12 @@
 # ns8-mail
 
-This is a template module for [NethServer 8](https://github.com/NethServer/ns8-core).
-To start a new module from it:
-
-1. Click on [Use this template](https://github.com/NethServer/ns8-mail/generate).
-   Name your repo with `ns8-` prefix (e.g. `ns8-mymodule`). 
-   Do not end your module name with a number, like ~~`ns8-baaad2`~~!
-
-1. An automated initialization workflow starts: wait for its completion.
-   You can follow the run inside the "Actions" tab, the workflow is named "Initial commit"
-
-1. You can now clone the repository
-
-1. Edit this `README.md` file, by replacing this section with your module
-   description
-
-1. Commit and push your local changes
+NS8 Mail module with SMTP, IMAP, Spam/Virus filter
 
 ## Install
 
 Instantiate the module with:
 
-    add-module ghcr.io/nethserver/mail:latest 1
+    add-module ghcr.io/nethserver/mail:latest
 
 The output of the command will return the instance name.
 Output example:
@@ -30,25 +15,17 @@ Output example:
 
 ## Configure
 
-Let's assume that the mail instance is named `mail1`.
+The following command configures a mail server "mail.example.com". Users
+from the domain "ad.example.com" can log in and they are offered a mailbox
+quota of 200 MB:
 
-Launch `configure-module`, by setting the following parameters:
-- `<MODULE_PARAM1_NAME>`: <MODULE_PARAM1_DESCRIPTION>
-- `<MODULE_PARAM2_NAME>`: <MODULE_PARAM2_DESCRIPTION>
-- ...
+    api-cli run module/mail1/configure-module --data '{"hostname":"mail.example.com","user_domain":"ad.example.com","mailbox_quota_mb":200}'
 
-Example:
+## Services
 
-    api-cli run module/mail1/configure-module --data '{}'
-
-The above command will:
-- start and configure the mail instance
-- (describe configuration process)
-- ...
-
-Send a test HTTP request to the mail backend service:
-
-    curl http://127.0.0.1/mail/
+1. Dovecot -- See dovecot/README.md
+2. Postfix -- N/A
+3. Rspamd -- N/A
 
 ## Uninstall
 
@@ -59,7 +36,6 @@ To uninstall the instance:
 ## Testing
 
 Test the module using the `test-module.sh` script:
-
 
     ./test-module.sh <NODE_ADDR> ghcr.io/nethserver/mail:latest
 
