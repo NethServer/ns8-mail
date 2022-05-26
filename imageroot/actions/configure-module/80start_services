@@ -24,3 +24,11 @@ exec 1>&2
 
 systemctl --user enable dovecot.service
 systemctl --user reload-or-restart dovecot.service
+
+if [[ -n "${POSTFIX_TRANSPORT_MAP}" ]]; then
+    systemctl --user enable postfix.service
+    systemctl --user reload-or-restart postfix.service
+else
+    # MX service is not required. Disable it.
+    systemctl --user disable --now postfix.service
+fi

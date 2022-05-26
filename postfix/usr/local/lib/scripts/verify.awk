@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/awk
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,10 +20,20 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-if systemctl --user -q is-active dovecot; then
-    install-certificate dovecot && podman exec dovecot dovecot reload
-fi
+# Parse a template_map inline table values and replace values
+# with the given "value". E.g. with "-v value=myvalue" and 
+# if input is:
+#      key1=lmtp:10.5.4.1:24 key2=smtp:192.168.12.13:25
+# Output:
+#      key1=myvalue key2=myvalue
 
-if systemctl --user -q is-active postfix; then
-    install-certificate postfix && podman exec postfix postfix reload
-fi
+{
+    for(f=1; f<length(); f++) {
+        pos = index($f, "=")
+        if(pos == 0) {
+            continue
+        }
+        printf("%s=%s ", substr($f, 0, pos - 1), value)
+    }
+    printf("\n")
+}

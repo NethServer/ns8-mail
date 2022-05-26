@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,10 +20,13 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-if systemctl --user -q is-active dovecot; then
-    install-certificate dovecot && podman exec dovecot dovecot reload
-fi
+# shellcheck shell=dash
 
-if systemctl --user -q is-active postfix; then
-    install-certificate postfix && podman exec postfix postfix reload
+set -e
+
+if [ $# -eq 0 ]; then
+    reload-config
+    exec /usr/sbin/postfix start-fg
+else
+    exec "${@}"
 fi
