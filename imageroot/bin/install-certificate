@@ -1,0 +1,51 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+set -e
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf ${tmpdir}' EXIT
+cd "${tmpdir}"
+umask 077
+
+# Override redis-exec "privileged=True"
+export REDIS_USER=default
+
+mtraefik=$(redis-exec GET "node/${NODE_ID}/default_instance/traefik")
+
+redis-exec HGET "module/${mtraefik}/certificate/${MAIL_HOSTNAME}" key | base64 -d > server.key
+redis-exec HGET "module/${mtraefik}/certificate/${MAIL_HOSTNAME}" cert | base64 -d > server.pem
+
+if [[ $(head -c 5 server.key) != '-----' || $(head -c 5 server.pem) != '-----' ]]; then
+    echo "Certificate for ${MAIL_HOSTNAME} not found" 1>&2
+    exit 2
+fi
+
+tar -c -O server.key server.pem | podman run \
+    --interactive \
+    --env=DOVECOT_* \
+    --rm --name dovecot-import-certificate \
+    --volume=dovecot-data:/var/lib/vmail:z \
+    --volume=dovecot-cert:/etc/ssl/dovecot:z \
+    --volume=dovecot-dict:/var/lib/dovecot/dict:z \
+    "${MAIL_DOVECOT_IMAGE}" \
+    import-certificate

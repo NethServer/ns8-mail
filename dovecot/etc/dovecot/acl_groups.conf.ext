@@ -1,0 +1,16 @@
+#
+# XXX this is just a PoC: How to retrieve the acl_groups userdb field
+# from an external database, as alternative to a post-login script.
+# See also: https://doc.dovecot.org/configuration_manual/authentication/dict/#complete-example-for-authenticating-via-a-unix-socket
+# See also: https://doc.dovecot.org/configuration_manual/authentication/lua_based_authentication
+#
+
+uri = file:/etc/dovecot/groups.db
+iterate_disable = yes
+key groups {
+    key = userdb/%n
+    default_value = users
+}
+userdb_fields {
+    acl_groups = %{dict:groups}
+}

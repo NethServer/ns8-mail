@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,7 +20,28 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-exec 1>&2
+# shellcheck shell=dash
 
-systemctl --user enable dovecot.service
-systemctl --user reload-or-restart dovecot.service
+set -e
+
+if [ $# -eq 0 ]; then
+    if [ ! -f /etc/ssl/dovecot/server.key ]; then
+        # resume the apk post-install script to
+        # generate a self-signed certificate
+        dovecot-post-install
+    fi
+    reload-config
+    if grep -q FIRSTBOOT /etc/ssl/dovecot/dh.pem ; then
+        (
+            # Only the first time Dovecot is starded,
+            # generate in background a new DH prime
+            cd /etc/ssl/dovecot ; umask 077
+            openssl dhparam -out dh.pem.tmp 2048 && mv -v dh.pem.tmp dh.pem
+            # Ignore at this point any Dovecot master error about unknown PID
+            doveadm reload
+        ) &
+    fi
+    exec dovecot -F
+else
+    exec "${@}"
+fi

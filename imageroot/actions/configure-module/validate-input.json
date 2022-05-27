@@ -3,6 +3,38 @@
     "title": "Configure mail",
     "$id": "http://nethserver.org/json-schema/task/input/mail/configure",
     "description": "Configure mail",
-    "examples": [],
-    "type": "object"
+    "examples": [
+        {
+            "user_domain": "dom.test",
+            "hostname": "mail.dom.test",
+            "mailbox_quota_mb": 2000
+        }
+    ],
+    "type": "object",
+    "required": [
+        "user_domain",
+        "hostname",
+        "mailbox_quota_mb"
+    ],
+    "properties": {
+        "mailbox_quota_mb": {
+            "type": "integer",
+            "title": "User mailbox quota",
+            "description": "Default user mailbox quota expressed in MB (megabytes). Set to 0 to disable quota completely.",
+            "minimum": 0
+        },
+        "user_domain": {
+            "type": "string",
+            "title": "User domain name",
+            "description": "Must be the name of a configured user domain",
+            "minLength": 1
+        },
+        "hostname": {
+            "type": "string",
+            "title": "Mail host name",
+            "description": "Host name used as SMTP/HELO and for the TLS certificate",
+            "minLength": 1,
+            "format": "idn-hostname"
+        }
+    }
 }

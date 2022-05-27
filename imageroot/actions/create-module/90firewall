@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,7 +20,15 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-exec 1>&2
+import agent
+import os
 
-systemctl --user enable dovecot.service
-systemctl --user reload-or-restart dovecot.service
+agent.add_public_service(os.environ['MODULE_ID'], [
+    "25/tcp", # SMTP
+    "110/tcp", # POP3
+    "143/tcp", # IMAP
+    "993/tcp", # IMAPs
+    "995/tcp", # POP3s
+])
+
+# Ignore exit code

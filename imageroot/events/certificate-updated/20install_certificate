@@ -20,7 +20,8 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-exec 1>&2
+set -e
 
-systemctl --user enable dovecot.service
-systemctl --user reload-or-restart dovecot.service
+install-certificate
+
+podman exec dovecot doveadm reload

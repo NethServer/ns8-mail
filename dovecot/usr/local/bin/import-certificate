@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,7 +20,13 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-exec 1>&2
+# shellcheck shell=dash
 
-systemctl --user enable dovecot.service
-systemctl --user reload-or-restart dovecot.service
+set -e
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf ${tmpdir}' EXIT
+cd "${tmpdir}"
+tar x -o -f -
+install -o root -g root -m 444 "${tmpdir}"/server.pem /etc/ssl/dovecot/server.pem
+install -o root -g root -m 400 "${tmpdir}"/server.key /etc/ssl/dovecot/server.key

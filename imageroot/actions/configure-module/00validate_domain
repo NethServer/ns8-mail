@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,7 +20,17 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-exec 1>&2
+import json
+import sys
+import agent
+import os
+from agent.ldapproxy import Ldapproxy
 
-systemctl --user enable dovecot.service
-systemctl --user reload-or-restart dovecot.service
+request = json.load(sys.stdin)
+
+odom = Ldapproxy().get_domain(request['user_domain'])
+if odom is None:
+    # validation error
+    agent.set_status('validation-failed')
+    json.dump([{'field':'user_domain', 'parameter':'user_domain','value': request['user_domain'], 'error':'domain_not_found'}], fp=sys.stdout)
+    sys.exit(2)

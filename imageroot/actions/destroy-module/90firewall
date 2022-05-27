@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,7 +20,9 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-exec 1>&2
+import agent
+import os
 
-systemctl --user enable dovecot.service
-systemctl --user reload-or-restart dovecot.service
+agent.remove_public_service(os.environ['MODULE_ID'])
+
+# Ignore exit code

@@ -1,0 +1,30 @@
+#
+# RFC2307 configuration for passdb
+#
+
+blocking=yes
+
+# Space separated list of LDAP hosts to use. host:port is allowed too.
+hosts = ${ldap_host}:${ldap_port}
+
+# LDAP bind credentials
+dn = ${ldap_bind_dn}
+dnpass = ${ldap_bind_password}
+
+# Use authentication binding for verifying password's validity.
+auth_bind = yes
+
+# LDAP is required only for password checking
+base = ${ldap_base_dn}
+
+# Filter for password lookups (passdb lookup)
+pass_filter = (&(uid=%L{username})(objectClass=inetOrgPerson))
+
+# Attributes returned for prefetch DB
+pass_attrs = =user=%L{ldap:uid}
+
+# Attributes to get the list of all users
+iterate_attrs = =user=%L{ldap:uid}
+iterate_filter = (&(objectClass=inetOrgPerson))
+user_attrs = =user=%L{ldap:uid}
+user_filter = (&(objectClass=inetOrgPerson)(uid=%L{username}))
