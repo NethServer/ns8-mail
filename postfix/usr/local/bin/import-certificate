@@ -28,8 +28,12 @@ dest=/etc/ssl/postfix
 tmpdir=$(mktemp -d)
 trap 'rm -rf ${tmpdir}' EXIT
 cd "${tmpdir}"
-! diff -q server.pem "${dest}"/server.pem >/dev/null # abort if no diff is found
-
 tar x -o -f -
+
+if diff -q server.pem "${dest}"/server.pem ; then
+    # files are equal: abort
+    exit 2
+fi
+
 install -o root -g root -m 444 "${tmpdir}"/server.pem "${dest}"/server.pem
 install -o root -g root -m 400 "${tmpdir}"/server.key "${dest}"/server.key

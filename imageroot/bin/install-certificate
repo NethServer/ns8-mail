@@ -50,6 +50,7 @@ fi
 tar -c -O server.key server.pem | podman run \
     --interactive \
     --replace --rm --name "${service}-import-certificate" \
+    --image-volume=tmpfs \
     --volume="${service}-cert:/etc/ssl/${service}:z" \
     "${service_image}" \
     import-certificate
