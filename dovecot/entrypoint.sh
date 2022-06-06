@@ -33,7 +33,7 @@ if [ $# -eq 0 ]; then
     reload-config
     if grep -q FIRSTBOOT /etc/ssl/dovecot/dh.pem ; then
         (
-            # Only the first time Dovecot is starded,
+            # Only the first time Dovecot is started,
             # generate in background a new DH prime
             cd /etc/ssl/dovecot ; umask 077
             openssl dhparam -out dh.pem.tmp 2048 && mv -v dh.pem.tmp dh.pem

@@ -77,6 +77,9 @@ Volumes are:
 - `/var/lib/vmail` Mailboxes storage. They are stored in Maildir format.
 - `/etc/ssl/dovecot` Certificates for TLS.
 - `/var/lib/dovecot/dict` Dictionary DB storage.
+- `/var/lib/mda` Shared directory for the LMTP Message Delivery Agent
+  (MDA) Unix-domain socket. This volume can be shared with a local Postfix
+  container for message delivery.
 
 ## Custom user quota
 

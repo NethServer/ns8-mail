@@ -24,6 +24,7 @@ ExecStart=/usr/bin/podman run \
     --volume=dovecot-data:/var/lib/vmail:z \
     --volume=dovecot-cert:/etc/ssl/dovecot:z \
     --volume=dovecot-dict:/var/lib/dovecot/dict:z \
+    --volume=dovecot-lmtp:/var/lib/mda:z \
     ${MAIL_DOVECOT_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/dovecot.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/dovecot.ctr-id

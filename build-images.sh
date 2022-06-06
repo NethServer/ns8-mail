@@ -59,6 +59,7 @@ apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-submis
     rm -rvf "${tmpdir}"
 )
 mkdir -p /var/lib/dovecot/dict/uquota
+mkdir -p /var/lib/mda
 EOF
 buildah add "${container}" dovecot/ /
 buildah config \
@@ -66,6 +67,7 @@ buildah config \
     --volume=/var/lib/vmail \
     --volume=/etc/ssl/dovecot \
     --volume=/var/lib/dovecot/dict \
+    --volume=/var/lib/mda \
     --entrypoint='["/entrypoint.sh"]' \
     --cmd='' \
     --env=TEMPLATES_DIR="/usr/local/lib/templates" \
