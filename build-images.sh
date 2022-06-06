@@ -90,8 +90,8 @@ apk add --no-cache postfix gettext
 (
     mkdir -p /etc/ssl/postfix
     cd /etc/ssl/postfix
-    touch server.pem server.key
-    chmod 600 server.key
+    touch server.pem server.key fullchain.pem
+    chmod 600 server.key fullchain.pem
 )
 (
     cd /var/lib/postfix

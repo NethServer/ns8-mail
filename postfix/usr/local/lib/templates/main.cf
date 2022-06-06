@@ -76,4 +76,19 @@ smtpd_recipient_restrictions =
   permit_mynetworks,
   check_recipient_access lmdb:${S}data_directory/internal_access,
 
+#
+# TLS configuration
+#
+
+# Client
+smtp_tls_loglevel = 1
+smtp_tls_security_level = may
+
+# Server
+smtpd_tls_loglevel = 1
+smtpd_tls_security_level = may
+smtpd_tls_chain_files = /etc/ssl/postfix/fullchain.pem
+smtpd_tls_dh1024_param_file = /etc/ssl/postfix/dh.pem
+smtpd_tls_received_header = yes
+
 ### end of main.cf ###

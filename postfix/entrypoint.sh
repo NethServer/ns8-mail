@@ -25,6 +25,15 @@
 set -e
 
 if [ $# -eq 0 ]; then
+    if [ ! -f /etc/ssl/postfix/fullchain.pem ]; then
+        (
+            cd /etc/postfix
+            postfix tls new-server-cert nethserver.test
+            umask 077
+            cat key-*.pem cert-*.pem > /etc/ssl/postfix/fullchain.pem
+            rm -f key-*.pem cert-*.pem
+        )
+    fi
     reload-config
     exec /usr/sbin/postfix start-fg
 else

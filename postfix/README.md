@@ -39,7 +39,33 @@ Private TCP ports
 
 - `/var/lib/postfix`. Data tables storage.
 - `/var/spool/postfix`. Postfix persistent mail queue data.
-- `/etc/ssl/postfix`. Certificate for TLS encryption.
+- `/etc/ssl/postfix`. Certificate and Diffie-Hellman group for TLS encryption.
+
+## Commands
+
+- `reload-config` expands the service configuration from
+  .
+- `import-certificate` reads from standard input a Tar archive with key,
+  certificate and DH group. It then installs them under the
+  `/etc/ssl/postfix` volume.
+
+## Commands
+
+### `import-certificate`
+
+Reads a Tar file from standard input. The following archive contents are
+relevant:
+
+- `server.pem`, server TLS certificate
+- `server.key`, server certificate private key
+- `dh.pem`, Diffie-Hellman group
+
+### `reload-config`
+
+The command expands Postfix configuration files, according to the values
+of environment variables and template files stored under
+`/usr/local/lib/templates`. If Postfix is running, it sends a reload
+signal.
 
 ## Data tables
 
