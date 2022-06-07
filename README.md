@@ -29,9 +29,16 @@ As an example, the following command configures a mail server
 
 ## Services
 
-1. Dovecot -- See dovecot/README.md
-2. Postfix -- See postfix/README.md
+1. Dovecot -- `dovecot.service`. See also dovecot/README.md
+2. Postfix -- `postfix.service`. See also postfix/README.md
 3. Rspamd -- N/A
+4. Diffie-Hellman group generator `dhgen.service`. Starts at module boot,
+   then every 15 days. See also `dhgen.timer`.
+
+## Commands
+
+- `install-certificate` installs the TLS certificate and DH group in the
+  given service container.
 
 ## Uninstall
 

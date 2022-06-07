@@ -58,11 +58,12 @@ running `DOVECOT_DEBUG=1 reload-config`. Set syslog identifier with
 
 ### `import-certificate`
 
-Reads a Tar file from standard input. The archive must have the following
-contents:
+Reads a Tar file from standard input. The following archive contents are
+relevant:
 
-- `server.pem`, server TLS certificate 
+- `server.pem`, server TLS certificate
 - `server.key`, server certificate private key
+- `dh.pem`, Diffie-Hellman group
 
 ### `reload-config`
 
@@ -75,7 +76,7 @@ reload the new configuration.
 Volumes are:
 
 - `/var/lib/vmail` Mailboxes storage. They are stored in Maildir format.
-- `/etc/ssl/dovecot` Certificates for TLS.
+- `/etc/ssl/dovecot` Certificate and Diffie-Hellman group for TLS.
 - `/var/lib/dovecot/dict` Dictionary DB storage.
 - `/var/lib/mda` Shared directory for the LMTP Message Delivery Agent
   (MDA) Unix-domain socket. This volume can be shared with a local Postfix

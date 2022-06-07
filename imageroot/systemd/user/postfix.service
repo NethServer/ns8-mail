@@ -1,7 +1,3 @@
-#
-# This systemd unit starts a mail instance using Podman.
-# Most parts of this file come from podman-generate-systemd.
-#
 [Unit]
 Description=Postfix SMTP MX server
 

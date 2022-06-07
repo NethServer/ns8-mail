@@ -30,10 +30,14 @@ trap 'rm -rf ${tmpdir}' EXIT
 cd "${tmpdir}"
 tar x -o -f -
 
+if [ -f dh.pem ]; then
+    install -o root -g root -m 644 dh.pem "${dest}"/dh.pem
+fi
+
 if diff -q server.pem "${dest}"/server.pem ; then
     # files are equal: abort
     exit 2
 fi
 
-install -o root -g root -m 444 "${tmpdir}"/server.pem "${dest}"/server.pem
-install -o root -g root -m 400 "${tmpdir}"/server.key "${dest}"/server.key
+install -o root -g root -m 444 server.pem "${dest}"/server.pem
+install -o root -g root -m 400 server.key "${dest}"/server.key
