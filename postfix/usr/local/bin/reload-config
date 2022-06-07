@@ -36,6 +36,7 @@ if [ "$(( POSTFIX_DEBUG & 2 ))" -eq 1 ] ; then
 fi
 S='$' # to escape $ in template
 tmpl_mynetworks="127.0.0.1/32 ${POSTFIX_TRUSTED_NETWORK}"
+tmpl_myhostname="${POSTFIX_HOSTNAME:-$(hostname -f)}"
 tmpl_debug_peer_list="${POSTFIX_DEBUG_PEERS:-\$mynetworks}"
 tmpl_syslog_name=${POSTFIX_SYSLOG_NAME:-postfix}
 tmpl_transport_maps="${POSTFIX_TRANSPORT_MAP:?}"

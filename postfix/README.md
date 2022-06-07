@@ -33,7 +33,7 @@ Private TCP ports
 - `POSTFIX_TRUSTED_NETWORK`. Added to Postfix [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks)
 - `POSTFIX_MSA_PORT`. Additional SMTP service port for message submission
   from the trusted network. Default `5587`.
-
+- `POSTFIX_HOSTNAME`. Value for Postfix [myhostname](https://www.postfix.org/postconf.5.html#myhostname)
 
 ## Volumes
 

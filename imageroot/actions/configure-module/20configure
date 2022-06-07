@@ -41,7 +41,8 @@ if not 'DOVECOT_API_KEY' in os.environ:
     dovecot_api_key = ''.join([secrets.choice(alphabet) for i in range(32)])
     agent.set_env('DOVECOT_API_KEY', dovecot_api_key)
 
-agent.set_env('MAIL_HOSTNAME', request.get('hostname', socket.gethostname().lower()))
+hostname = request.get('hostname', socket.gethostname().lower())
+agent.set_env('MAIL_HOSTNAME', hostname)
 agent.set_env('DOVECOT_LDAP_HOST', odom['host'])
 agent.set_env('DOVECOT_LDAP_PORT', odom['port'])
 agent.set_env('DOVECOT_LDAP_USER', odom['bind_dn'])
@@ -56,6 +57,7 @@ agent.set_env('DOVECOT_QUOTA_MB', request['mailbox_quota_mb'])
 
 agent.set_env('POSTFIX_SYSLOG_NAME', os.environ['MODULE_ID'])
 agent.set_env('POSTFIX_TRUSTED_NETWORK', cluster_network)
+agent.set_env('POSTFIX_HOSTNAME', hostname)
 
 if not 'POSTFIX_TRANSPORT_MAP' in os.environ:
     # Just as a kickstart default, the module is configured for the first
