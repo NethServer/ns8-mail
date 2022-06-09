@@ -20,6 +20,7 @@ robot -v NODE_ADDR:${LEADER_NODE} \
     -v IMAGE_URL:${IMAGE_URL} \
     -v SSH_KEYFILE:/home/pwuser/ns8-key \
     --name mail \
+    --suite install --suite uninstall \
     --skiponfailure unstable \
     --console dotted \
     -d ~/outputs /home/pwuser/ns8-module/tests/

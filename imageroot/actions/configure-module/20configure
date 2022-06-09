@@ -41,7 +41,7 @@ if not 'DOVECOT_API_KEY' in os.environ:
     dovecot_api_key = ''.join([secrets.choice(alphabet) for i in range(32)])
     agent.set_env('DOVECOT_API_KEY', dovecot_api_key)
 
-hostname = request.get('hostname', socket.gethostname().lower())
+hostname = request['hostname']
 agent.set_env('MAIL_HOSTNAME', hostname)
 agent.set_env('DOVECOT_LDAP_HOST', odom['host'])
 agent.set_env('DOVECOT_LDAP_PORT', odom['port'])
