@@ -24,3 +24,6 @@ exec 1>&2
 
 systemctl --user enable dovecot.service
 systemctl --user reload-or-restart dovecot.service
+
+systemctl --user enable postfix.service
+systemctl --user reload-or-restart postfix.service

@@ -25,13 +25,17 @@
 set -e
 
 if [ $# -eq 0 ]; then
-    if [ ! -f /etc/ssl/dovecot/server.key ]; then
-        # resume the apk post-install script to
-        # generate a self-signed certificate
-        dovecot-post-install
+    if [ ! -f /etc/ssl/postfix/fullchain.pem ]; then
+        (
+            cd /etc/postfix
+            postfix tls new-server-cert nethserver.test
+            umask 077
+            cat key-*.pem cert-*.pem > /etc/ssl/postfix/fullchain.pem
+            rm -f key-*.pem cert-*.pem
+        )
     fi
     reload-config
-    exec dovecot -F
+    exec /usr/sbin/postfix start-fg
 else
     exec "${@}"
 fi

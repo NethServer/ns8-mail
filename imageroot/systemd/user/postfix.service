@@ -1,0 +1,33 @@
+[Unit]
+Description=Postfix MTA/MSA server
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+WorkingDirectory=%S/state
+Restart=always
+ExecStartPre=/bin/rm -f %t/postfix.pid %t/postfix.ctr-id
+ExecStartPre=-runagent install-certificate postfix
+ExecStart=/usr/bin/podman run \
+    --detach \
+    --conmon-pidfile=%t/postfix.pid \
+    --cidfile=%t/postfix.ctr-id \
+    --cgroups=no-conmon \
+    --replace --name=%N \
+    --network=host \
+    --env=POSTFIX_* \
+    --volume=postfix-cert:/etc/ssl/postfix:z \
+    --volume=postfix-queue:/var/spool/postfix:z \
+    --volume=postfix-data:/var/lib/postfix:z \
+    --volume=dovecot-lmtp:/var/lib/umail:z \
+    --volume=/dev/log:/dev/log \
+    ${MAIL_POSTFIX_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/postfix.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/postfix.ctr-id
+ExecReload=runagent /usr/bin/podman exec --env=POSTFIX_* %N reload-config
+PIDFile=%t/postfix.pid
+Type=forking
+SyslogIdentifier=%u
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,110 @@
+### begin of main.cf ###
+
+#
+# Alpine defaults (postconf -n)
+#
+
+command_directory = /usr/sbin
+daemon_directory = /usr/libexec/postfix
+data_directory = /var/lib/postfix
+debug_peer_level = 2
+debugger_command = PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin ddd $daemon_directory/$process_name $process_id & sleep 5
+html_directory = no
+mail_owner = postfix
+mailq_path = /usr/bin/mailq
+manpage_directory = /usr/share/man
+meta_directory = /etc/postfix
+newaliases_path = /usr/bin/newaliases
+queue_directory = /var/spool/postfix
+readme_directory = /usr/share/doc/postfix/readme
+sample_directory = /etc/postfix
+sendmail_path = /usr/sbin/sendmail
+setgid_group = postdrop
+shlib_directory = /usr/lib/postfix
+unknown_local_recipient_reject_code = 550
+
+#
+# Debug config flags
+#
+debug_delivery = ${tmpl_debug_delivery}
+debug_rewrite = ${tmpl_debug_rewrite}
+
+#
+# Local overrides
+#
+compatibility_level = 3.6
+inet_protocols = all
+myhostname = ${tmpl_myhostname}
+syslog_name = ${tmpl_syslog_name}
+alias_maps =
+alias_database =
+mynetworks = ${tmpl_mynetworks}
+debug_peer_list = ${S}{debug_delivery?{${tmpl_debug_peer_list}}:{}}
+
+#
+# Address/transport routing maps
+#
+virtual_alias_maps =
+  lmdb:${S}data_directory/valiases
+  lmdb:${S}data_directory/vdoms
+virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
+relay_domains = ${tmpl_relay_domains}
+transport_maps = ${tmpl_transport_maps}
+
+#
+# Address verification (memory DB)
+#
+unverified_recipient_reject_code = 550
+unverified_recipient_reject_reason = ${S}{debug_rewrite?{}:{lookup failed}}
+address_verify_map =
+address_verify_positive_expire_time = 24h
+address_verify_positive_refresh_time = 8h
+address_verify_negative_cache = yes
+address_verify_negative_expire_time = 2h
+address_verify_negative_refresh_time = 15m
+address_verify_cache_cleanup_interval = 4h
+
+#
+# Restrictions
+#
+smtpd_sender_restrictions =
+  reject_non_fqdn_sender,
+
+smtpd_relay_restrictions =
+  permit_mynetworks,
+  permit_sasl_authenticated,
+  reject_unauth_destination,
+
+smtpd_recipient_restrictions =
+  reject_non_fqdn_recipient,
+  reject_unknown_recipient_domain,
+  check_recipient_access inline:{ ${tmpl_verify_rcpt_table} },
+  check_recipient_access pipemap:{ lmdb:${S}data_directory/vdoms, static:reject_unverified_recipient },
+  permit_mynetworks,
+  permit_sasl_authenticated,
+  check_recipient_access lmdb:${S}data_directory/internal_access,
+
+#
+# TLS configuration
+#
+
+# Client
+smtp_tls_loglevel = 1
+smtp_tls_security_level = may
+
+# Server
+smtpd_tls_loglevel = 1
+smtpd_tls_security_level = may
+smtpd_tls_chain_files = /etc/ssl/postfix/fullchain.pem
+smtpd_tls_dh1024_param_file = /etc/ssl/postfix/dh.pem
+smtpd_tls_received_header = yes
+
+#
+# SASL authentication
+#
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = /var/lib/umail/auth
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = $myhostname
+
+### end of main.cf ###

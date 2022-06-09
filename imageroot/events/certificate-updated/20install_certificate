@@ -20,8 +20,10 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-set -e
+if systemctl --user -q is-active dovecot; then
+    install-certificate dovecot && podman exec dovecot dovecot reload
+fi
 
-install-certificate
-
-podman exec dovecot doveadm reload
+if systemctl --user -q is-active postfix; then
+    install-certificate postfix && podman exec postfix postfix reload
+fi

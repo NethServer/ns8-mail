@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/usr/bin/awk
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,18 +20,20 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-# shellcheck shell=dash
+# Parse a template_map inline table values and replace values
+# with the given "value". E.g. with "-v value=myvalue" and 
+# if input is:
+#      key1=lmtp:10.5.4.1:24 key2=smtp:192.168.12.13:25
+# Output:
+#      key1=myvalue key2=myvalue
 
-set -e
-
-if [ $# -eq 0 ]; then
-    if [ ! -f /etc/ssl/dovecot/server.key ]; then
-        # resume the apk post-install script to
-        # generate a self-signed certificate
-        dovecot-post-install
-    fi
-    reload-config
-    exec dovecot -F
-else
-    exec "${@}"
-fi
+{
+    for(f=1; f<length(); f++) {
+        pos = index($f, "=")
+        if(pos == 0) {
+            continue
+        }
+        printf("%s=%s ", substr($f, 0, pos - 1), value)
+    }
+    printf("\n")
+}

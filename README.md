@@ -15,17 +15,30 @@ Output example:
 
 ## Configure
 
-The following command configures a mail server "mail.example.com". Users
-from the domain "ad.example.com" can log in and they are offered a mailbox
-quota of 200 MB:
+As an example, the following command configures a mail server
+"mail.example.com".
 
     api-cli run module/mail1/configure-module --data '{"hostname":"mail.example.com","user_domain":"ad.example.com","mailbox_quota_mb":200}'
 
+- Users from the domain "ad.example.com" can authenticate with SMTP
+  submission, IMAP and POP services. They are offered a mailbox quota of
+  200 MB:
+
+- The domain "ad.example.com" is accepted as final destination with the
+  default configuration for the SMTP MX server, listening on port 25.
+
 ## Services
 
-1. Dovecot -- See dovecot/README.md
-2. Postfix -- N/A
+1. Dovecot -- `dovecot.service`. See also dovecot/README.md
+2. Postfix -- `postfix.service`. See also postfix/README.md
 3. Rspamd -- N/A
+4. Diffie-Hellman group generator `dhgen.service`. Starts at module boot,
+   then every 15 days. See also `dhgen.timer`.
+
+## Commands
+
+- `install-certificate` installs the TLS certificate and DH group in the
+  given service container.
 
 ## Uninstall
 

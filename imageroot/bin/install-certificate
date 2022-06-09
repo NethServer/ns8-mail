@@ -22,8 +22,25 @@
 
 set -e
 
+if [[ -z "${MAIL_HOSTNAME}" ]]; then
+    exit 3 # Module is not fully configured, abort execution.
+fi
+
+declare -A images
+
+images=([postfix]="${MAIL_POSTFIX_IMAGE}" [dovecot]="${MAIL_DOVECOT_IMAGE}")
+
+service="${1:?}"
+service_image="${images[$service]:?Unknown service $service}"
+
 tmpdir=$(mktemp -d)
 trap 'rm -rf ${tmpdir}' EXIT
+
+if [[ -f dh.pem ]]; then
+    with_dh_group=1
+    cp -p dh.pem "${tmpdir}"/dh.pem
+fi
+
 cd "${tmpdir}"
 umask 077
 
@@ -40,12 +57,12 @@ if [[ $(head -c 5 server.key) != '-----' || $(head -c 5 server.pem) != '-----' ]
     exit 2
 fi
 
-tar -c -O server.key server.pem | podman run \
+tar -c -O server.key server.pem ${with_dh_group:+dh.pem} | podman run \
     --interactive \
-    --env=DOVECOT_* \
-    --rm --name dovecot-import-certificate \
-    --volume=dovecot-data:/var/lib/vmail:z \
-    --volume=dovecot-cert:/etc/ssl/dovecot:z \
-    --volume=dovecot-dict:/var/lib/dovecot/dict:z \
-    "${MAIL_DOVECOT_IMAGE}" \
+    --replace --rm --name "${service}-import-certificate" \
+    --image-volume=tmpfs \
+    --volume="${service}-cert:/etc/ssl/${service}:z" \
+    "${service_image}" \
     import-certificate
+
+# Important! preserve import-certificate exit code

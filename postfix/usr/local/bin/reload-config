@@ -1,0 +1,59 @@
+#!/bin/ash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+# shellcheck shell=dash disable=SC2034
+# https://www.shellcheck.net/wiki/SC2034
+
+set -e
+
+# Export variables for templates
+set -a
+if [ "$(( POSTFIX_DEBUG & 1 ))" -eq 1 ] ; then
+    tmpl_debug_rewrite="-v"
+fi
+
+if [ "$(( POSTFIX_DEBUG & 2 ))" -eq 1 ] ; then
+    tmpl_debug_delivery="-v"
+fi
+S='$' # to escape $ in template
+tmpl_mynetworks="127.0.0.1/32 ${POSTFIX_TRUSTED_NETWORK}"
+tmpl_myhostname="${POSTFIX_HOSTNAME:-$(hostname -f)}"
+tmpl_debug_peer_list="${POSTFIX_DEBUG_PEERS:-\$mynetworks}"
+tmpl_syslog_name=${POSTFIX_SYSLOG_NAME:-postfix}
+tmpl_transport_maps="${POSTFIX_TRANSPORT_MAP:?}"
+tmpl_virtual_mailbox_domains=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v keysel==lmtp: -f "${SCRIPTS_DIR}"/keysel.awk)
+tmpl_relay_domains=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v keysel==smtp: -f "${SCRIPTS_DIR}"/keysel.awk)
+tmpl_verify_rcpt_table=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v value=reject_unverified_recipient -f "${SCRIPTS_DIR}"/verify.awk)
+set +a
+
+envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
+envsubst >/etc/postfix/master.cf <"${TEMPLATES_DIR:?}/master.cf"
+
+
+
+if [ -n "${POSTFIX_DEBUG}" ] ; then
+    postconf -n
+fi
+
+if postfix status 2>/dev/null ; then
+    postfix reload
+fi

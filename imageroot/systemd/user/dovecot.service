@@ -1,9 +1,5 @@
-#
-# This systemd unit starts a mail instance using Podman.
-# Most parts of this file come from podman-generate-systemd.
-#
 [Unit]
-Description=Dovecot IMAP, POP3, Sieve and Submission server
+Description=Dovecot IMAP, POP3, Sieve server
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -11,7 +7,7 @@ EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/dovecot.pid %t/dovecot.ctr-id
-ExecStartPre=-runagent install-certificate
+ExecStartPre=-runagent install-certificate dovecot
 ExecStart=/usr/bin/podman run \
     --detach \
     --conmon-pidfile=%t/dovecot.pid \
@@ -24,6 +20,7 @@ ExecStart=/usr/bin/podman run \
     --volume=dovecot-data:/var/lib/vmail:z \
     --volume=dovecot-cert:/etc/ssl/dovecot:z \
     --volume=dovecot-dict:/var/lib/dovecot/dict:z \
+    --volume=dovecot-lmtp:/var/lib/umail:z \
     ${MAIL_DOVECOT_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/dovecot.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/dovecot.ctr-id
