@@ -1,14 +1,15 @@
 #!/bin/sh
 
-mto=${1:?}
-mfrom=${2:-"$(id -nu)@$(hostname -f)"}
-server=${3:-127.0.0.1}
+credentials=${1:?}
+mto=${2:?}
+mfrom=${3:-"$(id -nu)@$(hostname -f)"}
 random=$RANDOM
 
-curl -s -v --upload-file - --crlf \
+curl -k -s -v --upload-file - --crlf \
+    --user "${credentials}" \
     --mail-from "${mfrom}" \
     --mail-rcpt "${mto}" \
-    smtp://${server} <<EOF
+    smtps://127.0.0.2 <<EOF
 From: <${mfrom}>
 To: <${mto}>
 Subject: Test ${random}

@@ -38,8 +38,6 @@ myhostname = ${tmpl_myhostname}
 syslog_name = ${tmpl_syslog_name}
 alias_maps =
 alias_database =
-smtpd_relay_restrictions = permit_mynetworks,reject_unauth_destination
-smtpd_sender_restrictions = reject_non_fqdn_sender
 mynetworks = ${tmpl_mynetworks}
 debug_peer_list = ${S}{debug_delivery?{${tmpl_debug_peer_list}}:{}}
 
@@ -67,14 +65,23 @@ address_verify_negative_refresh_time = 15m
 address_verify_cache_cleanup_interval = 4h
 
 #
-# Internal addresses
+# Restrictions
 #
+smtpd_sender_restrictions =
+  reject_non_fqdn_sender,
+
+smtpd_relay_restrictions =
+  permit_mynetworks,
+  permit_sasl_authenticated,
+  reject_unauth_destination,
+
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
   reject_unknown_recipient_domain,
   check_recipient_access inline:{ ${tmpl_verify_rcpt_table} },
   check_recipient_access pipemap:{ lmdb:${S}data_directory/vdoms, static:reject_unverified_recipient },
   permit_mynetworks,
+  permit_sasl_authenticated,
   check_recipient_access lmdb:${S}data_directory/internal_access,
 
 #
@@ -91,5 +98,13 @@ smtpd_tls_security_level = may
 smtpd_tls_chain_files = /etc/ssl/postfix/fullchain.pem
 smtpd_tls_dh1024_param_file = /etc/ssl/postfix/dh.pem
 smtpd_tls_received_header = yes
+
+#
+# SASL authentication
+#
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = /var/lib/umail/auth
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = $myhostname
 
 ### end of main.cf ###

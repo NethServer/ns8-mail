@@ -1,5 +1,5 @@
 [Unit]
-Description=Postfix SMTP MX server
+Description=Postfix MTA/MSA server
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -19,7 +19,7 @@ ExecStart=/usr/bin/podman run \
     --volume=postfix-cert:/etc/ssl/postfix:z \
     --volume=postfix-queue:/var/spool/postfix:z \
     --volume=postfix-data:/var/lib/postfix:z \
-    --volume=dovecot-lmtp:/var/lib/mda:z \
+    --volume=dovecot-lmtp:/var/lib/umail:z \
     --volume=/dev/log:/dev/log \
     ${MAIL_POSTFIX_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/postfix.ctr-id -t 10

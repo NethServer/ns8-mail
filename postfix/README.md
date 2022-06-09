@@ -1,6 +1,6 @@
 # mail-postfix
 
-This container provides a Postfix-based MTA service
+This container provides a Postfix-based MTA/MSA service
 
 Provided Postfix configuration includes:
 - virtual mailbox domain class
@@ -15,10 +15,8 @@ subject to Postfix address verification.
 Standard public TCP ports
 
 - MTA - Message Transfer Agent (SMTP) 25
-
-Private TCP ports
-
-- MSA - Message Submission Agent (SMTP) 5587
+- MSA - Message Submission Agent (SMTP) 587
+- MSA - Message Submission Agent (SMTPS -- SMTP with TLS wrap) 465
 
 ## Environment variables
 
@@ -31,8 +29,6 @@ Private TCP ports
   [transport_maps](http://www.postfix.org/postconf.5.html#transport_maps)
   value. E.g. `inline:{ mydomain.test=smtp:[10.5.4.1]:25 }`. The table keys correspond to the set of domains subject to recipient address verification.
 - `POSTFIX_TRUSTED_NETWORK`. Added to Postfix [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks)
-- `POSTFIX_MSA_PORT`. Additional SMTP service port for message submission
-  from the trusted network. Default `5587`.
 - `POSTFIX_HOSTNAME`. Value for Postfix [myhostname](https://www.postfix.org/postconf.5.html#myhostname)
 
 ## Volumes

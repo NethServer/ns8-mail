@@ -29,6 +29,8 @@ agent.add_public_service(os.environ['MODULE_ID'], [
     "143/tcp", # IMAP
     "993/tcp", # IMAPs
     "995/tcp", # POP3s
+    "587/tcp", # Submission
+    "465/tcp", # Submissions
 ])
 
 # Ignore exit code

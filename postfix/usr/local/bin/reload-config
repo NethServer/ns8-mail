@@ -42,7 +42,6 @@ tmpl_syslog_name=${POSTFIX_SYSLOG_NAME:-postfix}
 tmpl_transport_maps="${POSTFIX_TRANSPORT_MAP:?}"
 tmpl_virtual_mailbox_domains=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v keysel==lmtp: -f "${SCRIPTS_DIR}"/keysel.awk)
 tmpl_relay_domains=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v keysel==smtp: -f "${SCRIPTS_DIR}"/keysel.awk)
-tmpl_msa_port=$(printf "%-9s" "${POSTFIX_MSA_PORT:-5587}")
 tmpl_verify_rcpt_table=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v value=reject_unverified_recipient -f "${SCRIPTS_DIR}"/verify.awk)
 set +a
 

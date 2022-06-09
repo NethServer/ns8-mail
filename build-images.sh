@@ -44,7 +44,7 @@ buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-submissiond dovecot-pop3d dovecot-lmtpd gettext
+apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd gettext
 (
     # Remove the self-signed certificate
     rm -vf /etc/ssl/dovecot/server.*
@@ -57,7 +57,7 @@ apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-submis
     rm -rvf "${tmpdir}"
 )
 mkdir -p /var/lib/dovecot/dict/uquota
-mkdir -p /var/lib/mda
+mkdir -p /var/lib/umail
 EOF
 buildah add "${container}" dovecot/ /
 buildah config \
@@ -65,7 +65,7 @@ buildah config \
     --volume=/var/lib/vmail \
     --volume=/etc/ssl/dovecot \
     --volume=/var/lib/dovecot/dict \
-    --volume=/var/lib/mda \
+    --volume=/var/lib/umail \
     --entrypoint='["/entrypoint.sh"]' \
     --cmd='' \
     --env=TEMPLATES_DIR="/usr/local/lib/templates" \
