@@ -1,0 +1,15 @@
+#
+# internal_access -- access map
+# Sqlite backend configuration
+#
+
+dbpath = /srv/pcdb.sqlite
+query = SELECT internal
+  FROM addresses
+  WHERE alocal = '%u'
+  AND domain IN ('%d', '*')
+  AND internal = 1
+  AND '%d' IN (SELECT domain FROM domains)
+  LIMIT 1
+
+result_format = REJECT access denied

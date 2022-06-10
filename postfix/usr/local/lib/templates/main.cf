@@ -44,12 +44,14 @@ debug_peer_list = ${S}{debug_delivery?{${tmpl_debug_peer_list}}:{}}
 #
 # Address/transport routing maps
 #
+virtual_alias_domains = ${tmpl_virtual_alias_domains}
 virtual_alias_maps =
-  lmdb:${S}data_directory/valiases
-  lmdb:${S}data_directory/vdoms
+  sqlite:${S}meta_directory/aliases.cf,
+  sqlite:${S}meta_directory/wildcards.cf,
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 relay_domains = ${tmpl_relay_domains}
 transport_maps = ${tmpl_transport_maps}
+myorigin = ${tmpl_myorigin}
 
 #
 # Address verification (memory DB)
@@ -78,11 +80,11 @@ smtpd_relay_restrictions =
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
   reject_unknown_recipient_domain,
-  check_recipient_access inline:{ ${tmpl_verify_rcpt_table} },
-  check_recipient_access pipemap:{ lmdb:${S}data_directory/vdoms, static:reject_unverified_recipient },
+  ${tmpl_check_recipient_access},
   permit_mynetworks,
   permit_sasl_authenticated,
-  check_recipient_access lmdb:${S}data_directory/internal_access,
+  check_recipient_access sqlite:${S}meta_directory/internal_access.cf,
+  ${tmpl_check_internal_myorigin},
 
 #
 # TLS configuration

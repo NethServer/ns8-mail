@@ -86,25 +86,17 @@ reponame="mail-postfix"
 container=$(buildah from docker.io/library/alpine:3.15)
 buildah run "${container}" /bin/sh <<EOF
 set -e
-apk add --no-cache postfix gettext
+apk add --no-cache postfix gettext sqlite postfix-sqlite
 (
     mkdir -p /etc/ssl/postfix
     cd /etc/ssl/postfix
     touch server.pem server.key fullchain.pem
     chmod 600 server.key fullchain.pem
 )
-(
-    cd /var/lib/postfix
-    touch valiases vdoms internal_access
-    chown postfix:postfix valiases vdoms internal_access
-    postmap lmdb:valiases lmdb:vdoms lmdb:internal_access
-    rm -f valiases vdoms internal_access
-)
 EOF
 buildah add "${container}" postfix/ /
 buildah config \
     --workingdir=/etc/postfix \
-    --volume=/var/lib/postfix \
     --volume=/etc/ssl/postfix \
     --volume=/var/spool/postfix \
     --env=TEMPLATES_DIR="/usr/local/lib/templates" \

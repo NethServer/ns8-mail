@@ -7,6 +7,7 @@ EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/postfix.pid %t/postfix.ctr-id
+ExecStartPre=/bin/mkdir -vp pcdb
 ExecStartPre=-runagent install-certificate postfix
 ExecStart=/usr/bin/podman run \
     --detach \
@@ -16,9 +17,9 @@ ExecStart=/usr/bin/podman run \
     --replace --name=%N \
     --network=host \
     --env=POSTFIX_* \
+    --volume=./pcdb:/srv:z \
     --volume=postfix-cert:/etc/ssl/postfix:z \
     --volume=postfix-queue:/var/spool/postfix:z \
-    --volume=postfix-data:/var/lib/postfix:z \
     --volume=dovecot-lmtp:/var/lib/umail:z \
     --volume=/dev/log:/dev/log \
     ${MAIL_POSTFIX_IMAGE}

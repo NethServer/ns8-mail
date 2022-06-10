@@ -6,9 +6,9 @@ Provided Postfix configuration includes:
 - virtual mailbox domain class
 - relay domain class
 
-Destinations are defined by the `POSTFIX_TRANSPORT_MAP` environment
-variable. Mail recipients belonging to those destination domains are
-subject to Postfix address verification.
+Destinations are defined by the `domains` pcdb database table. Mail
+recipients belonging to those destination domains are subject to Postfix
+address verification.
 
 ## TCP ports
 
@@ -24,12 +24,13 @@ Standard public TCP ports
   specific components. (1) address rewriting, (2) delivery
 - `POSTFIX_DEBUG_PEERS`. CIDR network or IP addresses that produce detailed smtp/lmtp log. Add value 2 (delivery) to POSTFIX_DEBUG to enable the detailed log. Default is Postfix `mynetworks`.
 - `POSTFIX_SYSLOG_NAME`. Value for [syslog_name](http://www.postfix.org/postconf.5.html#syslog_name), default `postfix`.
-- `POSTFIX_TRANSPORT_MAP`. Message nexthop routing table, used to set
-  Postfix
-  [transport_maps](http://www.postfix.org/postconf.5.html#transport_maps)
-  value. E.g. `inline:{ mydomain.test=smtp:[10.5.4.1]:25 }`. The table keys correspond to the set of domains subject to recipient address verification.
 - `POSTFIX_TRUSTED_NETWORK`. Added to Postfix [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks)
-- `POSTFIX_HOSTNAME`. Value for Postfix [myhostname](https://www.postfix.org/postconf.5.html#myhostname)
+- `POSTFIX_HOSTNAME`. Value for Postfix
+  [myhostname](https://www.postfix.org/postconf.5.html#myhostname).
+- `POSTFIX_ORIGIN`. User domain name set as mailbox domain, also appended
+  to unqualified user names by the trivial-rewrite process. See Postfix
+  [virtual_mailbox_domains](https://www.postfix.org/postconf.5.html#virtual_mailbox_domains)
+  and [myorigin](https://www.postfix.org/postconf.5.html#myorigin).
 
 ## Volumes
 
@@ -69,6 +70,13 @@ signal.
 
 ## Data tables
 
-- `vdoms` List of additional mail domains and domain aliases map
-- `valiases` Address aliases
-- `internal_access` List of addresses and patterns forbidden to public SMTP clients
+Configuration is stored in the Sqlite database `/srv/pcdb.sqlite`.
+
+The database is initialized by the `pcdb-init.sql` script. Refer to
+its contents for the exact SQL schema. This is a summary of the available tables.
+
+- `domains` List of mail domains handled by Postfix. Changes require a
+  `reload-config` run.
+- `destmap` Address aliases
+- `addresses` Additional attribute values for known mail addresses, like
+  description, and the "internal" flag
