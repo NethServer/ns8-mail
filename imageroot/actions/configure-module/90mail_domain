@@ -39,6 +39,8 @@ with sdb:
     }
     cur = sdb.cursor()
     if cur.execute("SELECT COUNT(*) FROM domains").fetchone()[0] == 0:
+        # If the postmaster wildcard destination is at its default, update its destination
+        cur.execute("UPDATE destmap SET dest=? WHERE alocal='postmaster' AND domain='*' AND dest='postmaster'", ('vmail+postmaster',))
         print(agent.SD_DEBUG + f"Creating initial domain {vals['domain']}", file=sys.stderr)
         cur.execute("INSERT INTO domains (domain,catchall) VALUES (:domain,:catchall)", vals)
         needs_reload = True

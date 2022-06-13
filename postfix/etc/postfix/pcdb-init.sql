@@ -59,3 +59,16 @@ CREATE TABLE addresses (
     adesc TEXT DEFAULT ""
     -- free text description of the address
 );
+
+INSERT INTO addresses (alocal, domain, adesc, internal) VALUES (
+    'postmaster',
+    '*',
+    'RFC-mandatory postmaster alias',
+    0
+);
+
+INSERT INTO destmap (alocal, domain, dest) VALUES (
+    'postmaster',
+    '*',
+    'postmaster'
+);
