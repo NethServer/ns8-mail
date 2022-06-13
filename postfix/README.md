@@ -36,6 +36,10 @@ Standard public TCP ports
 - `/var/lib/postfix`. Data tables storage.
 - `/var/spool/postfix`. Postfix persistent mail queue data.
 - `/etc/ssl/postfix`. Certificate and Diffie-Hellman group for TLS encryption.
+- `/var/lib/umail` Shared directory to communicate with a local Dovecot
+  process through Unix-domain sockets. Mount the Dovecot container path
+  where `lmtp` and `auth` sockets reside. It is possible to not mount this
+  volume path to disable all Dovecot integrations.
 
 ## Commands
 

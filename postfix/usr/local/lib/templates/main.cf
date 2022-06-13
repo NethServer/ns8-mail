@@ -99,12 +99,4 @@ smtpd_tls_chain_files = /etc/ssl/postfix/fullchain.pem
 smtpd_tls_dh1024_param_file = /etc/ssl/postfix/dh.pem
 smtpd_tls_received_header = yes
 
-#
-# SASL authentication
-#
-smtpd_sasl_type = dovecot
-smtpd_sasl_path = /var/lib/umail/auth
-smtpd_sasl_security_options = noanonymous
-smtpd_sasl_local_domain = $myhostname
-
 ### end of main.cf ###

@@ -34,6 +34,10 @@ fi
 if [ "$(( POSTFIX_DEBUG & 2 ))" -eq 1 ] ; then
     tmpl_debug_delivery="-v"
 fi
+
+if [ ! -d /var/lib/umail ] ; then
+    tmpl_sasl_commentout='#'
+fi
 S='$' # to escape $ in template
 tmpl_mynetworks="127.0.0.1/32 ${POSTFIX_TRUSTED_NETWORK}"
 tmpl_myhostname="${POSTFIX_HOSTNAME:-$(hostname -f)}"
@@ -48,7 +52,9 @@ set +a
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
 envsubst >/etc/postfix/master.cf <"${TEMPLATES_DIR:?}/master.cf"
 
-
+if [ -z "${tmpl_sasl_commentout}" ] ; then
+    cat /etc/postfix/dovecot-sasl.cf >> /etc/postfix/main.cf
+fi
 
 if [ -n "${POSTFIX_DEBUG}" ] ; then
     postconf -n
