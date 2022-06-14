@@ -51,6 +51,7 @@ virtual_alias_maps =
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 relay_domains = ${tmpl_relay_domains}
 transport_maps = ${tmpl_transport_maps}
+recipient_delimiter = +
 myorigin = ${tmpl_myorigin}
 
 #

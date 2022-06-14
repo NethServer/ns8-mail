@@ -58,6 +58,8 @@ apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d 
 )
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
+echo 'vmail::::Builtin vmail user:::' > /etc/dovecot/users
+sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
 EOF
 buildah add "${container}" dovecot/ /
 buildah config \
