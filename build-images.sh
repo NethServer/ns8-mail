@@ -76,6 +76,7 @@ buildah config \
     --env=DOVECOT_QUOTA_MB=0 \
     --env=DOVECOT_API_PORT=9288 \
     --env=DOVECOT_STATS_PORT=9289 \
+    --env=DOVECOT_MASTER_USERS= \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")

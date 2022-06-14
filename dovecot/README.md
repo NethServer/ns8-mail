@@ -45,6 +45,8 @@ Private TCP ports:
 - `DOVECOT_STATS_PORT`, TCP port number for the [OpenMetrics HTTP
   server](https://doc.dovecot.org/configuration_manual/stats/openmetrics/).
   Default value is `9289`.
+- `DOVECOT_MASTER_USERS`, Comma-separated list of user names that are
+  granted impersonate privilege. Default empty.
 
 ## Logs
 
