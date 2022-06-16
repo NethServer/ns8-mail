@@ -1012,10 +1012,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@nethserver/ns8-ui-lib@^0.0.97":
-  version "0.0.97"
-  resolved "https://registry.yarnpkg.com/@nethserver/ns8-ui-lib/-/ns8-ui-lib-0.0.97.tgz#a88cc5e2e4f2b9d111dfac808b57a8c2f5fda797"
-  integrity sha512-l4yCg1y0riKU3gfhfSgdq2+aZhRARUlVwLgWX8kQpp8Lqw+E9/b8VbqPS02VNFQbsAman6z5QAI4p29ZToaK3Q==
+"@nethserver/ns8-ui-lib@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@nethserver/ns8-ui-lib/-/ns8-ui-lib-0.1.3.tgz#b34a7e4f5876d37fb3e176fd2ed376ee3cd90b01"
+  integrity sha512-LInvNitVfZLjMBODoIHkcsfm8Q6X9C1JpEra72fMjT/oeQ7W0O/OmMogs+AnBAttuF/kd1fj1UE/mtpN8VOFDw==
   dependencies:
     "@rollup/plugin-json" "^4.1.0"
     core-js "^3.15.2"
@@ -8720,6 +8720,11 @@ vue-date-fns@^2.0.1:
   integrity sha512-j2G97bVOKO0mVfFEnzCu5dQU0dgD8jLAAVU0dGRDqxZzzNXqep7d3WEGuuJ6mNOP5PM7GE+UqpKYfkL/LNmDKQ==
   dependencies:
     date-fns "^2.0.0"
+
+vue-debounce@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/vue-debounce/-/vue-debounce-4.0.0.tgz#3f584dabc08a841a0182ab68d19f77f70a416fcc"
+  integrity sha512-+BrcKfLpyDpUJ58ZrAvI35irRCgYHFpnF3NJZwwaz8/kkKmEq6TWPXBIhLh2HQAsUZNwo52K/vQyiEFsJ/1RYA==
 
 vue-eslint-parser@^7.0.0:
   version "7.8.0"

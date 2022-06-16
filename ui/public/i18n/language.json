@@ -18,7 +18,8 @@
     "mount": "Mount",
     "no_services": "No services",
     "no_images": "No images",
-    "no_volumes": "No volumes"
+    "no_volumes": "No volumes",
+    "user_domain": "User domain"
   },
   "settings": {
     "title": "Settings",
@@ -30,7 +31,8 @@
     "title": "About"
   },
   "task": {
-    "cannot_create_task": "Cannot create task {action}"
+    "cannot_create_task": "Cannot create task {action}",
+    "task_aborted": "{action} aborted"
   },
   "action": {
     "get-status": "Get status",
@@ -40,7 +42,16 @@
     "get-name": "Get name",
     "list-backup-repositories": "List backup repositories",
     "list-backups": "List backups",
-    "list-installed-modules": "List installed modules"
+    "list-installed-modules": "List installed modules",
+    "get-defaults": "Get defaults",
+    "list-domains": "List domains",
+    "list-addresses": "List addresses",
+    "add-address": "Create address",
+    "alter-address": "Edit address",
+    "add-domain": "Create domain",
+    "alter-domain": "Edit domain",
+    "remove-address": "Delete address",
+    "list-destinations": "List destinations"
   },
   "error": {
     "error": "Error",
@@ -53,5 +64,84 @@
     "404": "Resource not found",
     "cannot_retrieve_module_info": "Cannot retrieve module info",
     "cannot_retrieve_installed_modules": "Cannot retrieve installed modules"
+  },
+  "welcome": {
+    "title": "Welcome to Mail",
+    "welcome_message": "Enter the following information to start using Mail",
+    "create_domain": "Create domain",
+    "mail_hostname": "Mail server hostname",
+    "primary_mail_domain": "Primary mail domain",
+    "user_domain": "User domain",
+    "select_domain_description": "Select a user domain for the mail server. An email address will be created for every user in this domain",
+    "no_domain_configured": "No user domain configured",
+    "no_domain_configured_description": "Please configure a user domain first",
+    "go_to_domains_and_users": "Go to Domains and users"
+  },
+  "domains": {
+    "title": "Domains",
+    "no_domain": "No domain",
+    "create_domain": "Create domain",
+    "edit_domain_domain": "Edit domain {domain}",
+    "name": "Name",
+    "description": "Description",
+    "add_user_addresses_from_user_domain": "Add user addresses from user domain <strong>{userDomain}</strong>",
+    "add_user_addresses_from_user_domain_tooltip": "Create an email address for every user in the user domain",
+    "edit_domain": "Edit domain",
+    "accept_unknown_recipients": "Accept unknown recipients",
+    "copy_inbound_messages": "Copy inbound messages",
+    "send_to": "Send to",
+    "deliver_to": "Deliver to",
+    "create_domain_domain": "Create domain {domain}",
+    "delete_domain": "Delete domain",
+    "delete_domain_confirm": "Delete domain <strong>{name}</strong>?",
+    "delete_domain_explanation": "All associated email addresses will be deleted as well. However, all email messages received and sent by this domain will be preserved.",
+    "domain_pattern": "Invalid pattern",
+    "required_if_accept_unknown_recipients": "Required if \"Accept unknown recipients\" is enabled",
+    "required_if_copy_inbound_messages": "Required if \"Copy inbound messages\" is enabled",
+    "bccaddr_format": "Invalid email format",
+    "delete_domain_domain": "Delete domain {domain}",
+    "accept_unknown_recipients_tooltip": "All email messages sent to unknown recipients will be accepted and delivered to the specified destination. This option cannot be enabled if <strong>Add addresses from user domain</strong> is enabled",
+    "add_group_addresses_from_user_domain": "Add group addresses from user domain <strong>{userDomain}</strong>",
+    "add_group_addresses_from_user_domain_tooltip": "Create an email address for every group in the user domain"
+  },
+  "addresses": {
+    "title": "Addresses",
+    "addresses_filtered": "Addresses filtered",
+    "addresses_filtered_description": "Showing only addresses for <strong>{domain}</strong>",
+    "show_all": "Show all",
+    "create_address": "Create address",
+    "search_address": "Search address",
+    "no_address": "No address",
+    "no_address_description": "There is no address configured",
+    "delete_address_address": "Delete address {address}",
+    "all_domains": "All domains",
+    "address": "Address",
+    "type": "Type",
+    "destinations": "Destinations",
+    "visibility": "Visibility",
+    "edit_address": "Edit address",
+    "create_address_address": "Create address {address}",
+    "edit_address_address": "Edit address {address}",
+    "internal_address": "Internal address",
+    "internal": "Internal",
+    "public": "Public",
+    "choose_domain": "Choose domain",
+    "destinations_placeholder": "Choose destinations or input external email addresses",
+    "external_destination": "External email address",
+    "description": "Address description",
+    "destinations_required": "Choose or input at least one destination",
+    "set_as_internal": "Set as internal",
+    "set_as_public": "Set as public",
+    "user_destination": "User",
+    "group_destination": "Group",
+    "public_destination": "Public mailbox",
+    "apo_destination": "Missing object",
+    "wildcard_label": "Wildcard",
+    "destinations_enum": "One or more destinations are invalid",
+    "address_address_is_going_to_be_deleted": "{address} is going to be deleted...",
+    "type_wildcard": "Wildcard",
+    "type_domain": "Alias",
+    "type_adduser": "User",
+    "type_addgroup": "Group"
   }
 }

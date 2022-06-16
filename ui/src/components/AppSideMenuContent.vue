@@ -18,6 +18,20 @@
         <span>{{ $t("status.title") }}</span>
       </cv-side-nav-link>
       <cv-side-nav-link
+        @click="goToAppPage(instanceName, 'domains')"
+        :class="{ 'current-page': isLinkActive('domains') }"
+      >
+        <template v-slot:nav-icon><Wikis20 /></template>
+        <span>{{ $t("domains.title") }}</span>
+      </cv-side-nav-link>
+      <cv-side-nav-link
+        @click="goToAppPage(instanceName, 'addresses')"
+        :class="{ 'current-page': isLinkActive('addresses') }"
+      >
+        <template v-slot:nav-icon><At20 /></template>
+        <span>{{ $t("addresses.title") }}</span>
+      </cv-side-nav-link>
+      <cv-side-nav-link
         @click="goToAppPage(instanceName, 'settings')"
         :class="{ 'current-page': isLinkActive('settings') }"
       >
@@ -39,6 +53,8 @@
 import Settings20 from "@carbon/icons-vue/es/settings/20";
 import Information20 from "@carbon/icons-vue/es/information/20";
 import Activity20 from "@carbon/icons-vue/es/activity/20";
+import Wikis20 from "@carbon/icons-vue/es/wikis/20";
+import At20 from "@carbon/icons-vue/es/at/20";
 import { mapState } from "vuex";
 import { QueryParamService, UtilService } from "@nethserver/ns8-ui-lib";
 
@@ -48,6 +64,8 @@ export default {
     Settings20,
     Information20,
     Activity20,
+    Wikis20,
+    At20,
   },
   mixins: [QueryParamService, UtilService],
   data() {
