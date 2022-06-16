@@ -51,6 +51,7 @@ else
     condinclude_local_quota=
 fi
 
+master_users=${DOVECOT_MASTER_USERS}
 set +a
 
 envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"

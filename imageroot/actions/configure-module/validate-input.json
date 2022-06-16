@@ -1,12 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Configure mail",
-    "$id": "http://nethserver.org/json-schema/task/input/mail/configure",
-    "description": "Configure mail",
+    "title": "configure-module input",
+    "$id": "http://schema.nethserver.org/mail/configure-module.json",
+    "description": "Basic configuration of the Mail module",
     "examples": [
         {
-            "user_domain": "dom.test",
+            "user_domain": "ad.dom.test",
             "hostname": "mail.dom.test",
+            "mail_domain": "dom.test",
             "mailbox_quota_mb": 2000
         }
     ],
@@ -27,6 +28,13 @@
             "title": "User domain name",
             "description": "Must be the name of a configured user domain",
             "minLength": 1
+        },
+        "mail_domain": {
+            "type": "string",
+            "title": "Initial mail domain",
+            "description": "Create the first mail domain with default values. Ignored if the module was already configured.",
+            "minLength": 1,
+            "format": "idn-hostname"
         },
         "hostname": {
             "type": "string",

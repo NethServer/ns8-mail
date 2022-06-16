@@ -58,6 +58,8 @@ apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d 
 )
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
+echo 'vmail::::Builtin vmail user:::' > /etc/dovecot/users
+sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
 EOF
 buildah add "${container}" dovecot/ /
 buildah config \
@@ -74,6 +76,7 @@ buildah config \
     --env=DOVECOT_QUOTA_MB=0 \
     --env=DOVECOT_API_PORT=9288 \
     --env=DOVECOT_STATS_PORT=9289 \
+    --env=DOVECOT_MASTER_USERS= \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
@@ -86,25 +89,17 @@ reponame="mail-postfix"
 container=$(buildah from docker.io/library/alpine:3.15)
 buildah run "${container}" /bin/sh <<EOF
 set -e
-apk add --no-cache postfix gettext
+apk add --no-cache postfix gettext sqlite postfix-sqlite
 (
     mkdir -p /etc/ssl/postfix
     cd /etc/ssl/postfix
     touch server.pem server.key fullchain.pem
     chmod 600 server.key fullchain.pem
 )
-(
-    cd /var/lib/postfix
-    touch valiases vdoms internal_access
-    chown postfix:postfix valiases vdoms internal_access
-    postmap lmdb:valiases lmdb:vdoms lmdb:internal_access
-    rm -f valiases vdoms internal_access
-)
 EOF
 buildah add "${container}" postfix/ /
 buildah config \
     --workingdir=/etc/postfix \
-    --volume=/var/lib/postfix \
     --volume=/etc/ssl/postfix \
     --volume=/var/spool/postfix \
     --env=TEMPLATES_DIR="/usr/local/lib/templates" \

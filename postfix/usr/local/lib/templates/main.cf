@@ -44,12 +44,16 @@ debug_peer_list = ${S}{debug_delivery?{${tmpl_debug_peer_list}}:{}}
 #
 # Address/transport routing maps
 #
+virtual_alias_domains = ${tmpl_virtual_alias_domains}
 virtual_alias_maps =
-  lmdb:${S}data_directory/valiases
-  lmdb:${S}data_directory/vdoms
+  sqlite:${S}meta_directory/aliases.cf,
+  sqlite:${S}meta_directory/wildcards.cf,
+  ${tmpl_domain_map},
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 relay_domains = ${tmpl_relay_domains}
 transport_maps = ${tmpl_transport_maps}
+recipient_delimiter = +
+myorigin = ${tmpl_myorigin}
 
 #
 # Address verification (memory DB)
@@ -78,11 +82,11 @@ smtpd_relay_restrictions =
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
   reject_unknown_recipient_domain,
-  check_recipient_access inline:{ ${tmpl_verify_rcpt_table} },
-  check_recipient_access pipemap:{ lmdb:${S}data_directory/vdoms, static:reject_unverified_recipient },
+  ${tmpl_check_recipient_access},
   permit_mynetworks,
   permit_sasl_authenticated,
-  check_recipient_access lmdb:${S}data_directory/internal_access,
+  check_recipient_access sqlite:${S}meta_directory/internal_access.cf,
+  ${tmpl_check_internal_myorigin},
 
 #
 # TLS configuration
@@ -98,13 +102,5 @@ smtpd_tls_security_level = may
 smtpd_tls_chain_files = /etc/ssl/postfix/fullchain.pem
 smtpd_tls_dh1024_param_file = /etc/ssl/postfix/dh.pem
 smtpd_tls_received_header = yes
-
-#
-# SASL authentication
-#
-smtpd_sasl_type = dovecot
-smtpd_sasl_path = /var/lib/umail/auth
-smtpd_sasl_security_options = noanonymous
-smtpd_sasl_local_domain = $myhostname
 
 ### end of main.cf ###

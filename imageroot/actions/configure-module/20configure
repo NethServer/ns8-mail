@@ -58,10 +58,6 @@ if 'mailbox_quota_mb' in request:
 agent.set_env('POSTFIX_SYSLOG_NAME', os.environ['MODULE_ID'])
 agent.set_env('POSTFIX_TRUSTED_NETWORK', cluster_network)
 agent.set_env('POSTFIX_HOSTNAME', hostname)
-
-if not 'POSTFIX_TRANSPORT_MAP' in os.environ:
-    # Just as a kickstart default, the module is configured for the first
-    # time to accept mail for local delivery to the specified user domain.
-    agent.set_env('POSTFIX_TRANSPORT_MAP', f"inline:{{ {request['user_domain']}=lmtp:unix:/var/lib/umail/lmtp }}")
+agent.set_env('POSTFIX_ORIGIN', request['user_domain'])
 
 agent.dump_env() # Save to environment file before starting the systemd unit

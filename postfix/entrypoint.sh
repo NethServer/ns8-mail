@@ -25,6 +25,12 @@
 set -e
 
 if [ $# -eq 0 ]; then
+    if [ ! -f /srv/pcdb.sqlite ]; then
+        (
+            cd /srv
+            sqlite3 pcdb.sqlite '.read /etc/postfix/pcdb-init.sql'
+        )
+    fi
     if [ ! -f /etc/ssl/postfix/fullchain.pem ]; then
         (
             cd /etc/postfix

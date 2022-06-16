@@ -25,6 +25,10 @@
 
 set -e
 
+pcdbquery() {
+    sqlite3 -readonly -list /srv/pcdb.sqlite "${@}"
+}
+
 # Export variables for templates
 set -a
 if [ "$(( POSTFIX_DEBUG & 1 ))" -eq 1 ] ; then
@@ -34,21 +38,41 @@ fi
 if [ "$(( POSTFIX_DEBUG & 2 ))" -eq 1 ] ; then
     tmpl_debug_delivery="-v"
 fi
+
+if [ ! -d /var/lib/umail ] ; then
+    tmpl_sasl_commentout='#'
+fi
+
 S='$' # to escape $ in template
+
+if [ -n "${POSTFIX_ORIGIN}" ]; then
+    tmpl_transport_maps="inline:{ ${POSTFIX_ORIGIN}=lmtp:unix:/var/lib/umail/lmtp }"
+    tmpl_virtual_mailbox_domains=${POSTFIX_ORIGIN}
+    tmpl_myorigin=${POSTFIX_ORIGIN}
+
+else
+    tmpl_transport_maps=
+    tmpl_virtual_mailbox_domains=
+    tmpl_myorigin='$myhostname'
+fi
+
 tmpl_mynetworks="127.0.0.1/32 ${POSTFIX_TRUSTED_NETWORK}"
 tmpl_myhostname="${POSTFIX_HOSTNAME:-$(hostname -f)}"
 tmpl_debug_peer_list="${POSTFIX_DEBUG_PEERS:-\$mynetworks}"
 tmpl_syslog_name=${POSTFIX_SYSLOG_NAME:-postfix}
-tmpl_transport_maps="${POSTFIX_TRANSPORT_MAP:?}"
-tmpl_virtual_mailbox_domains=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v keysel==lmtp: -f "${SCRIPTS_DIR}"/keysel.awk)
-tmpl_relay_domains=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v keysel==smtp: -f "${SCRIPTS_DIR}"/keysel.awk)
-tmpl_verify_rcpt_table=$(echo "${POSTFIX_TRANSPORT_MAP}" | awk -v value=reject_unverified_recipient -f "${SCRIPTS_DIR}"/verify.awk)
+tmpl_relay_domains=$(pcdbquery "SELECT group_concat(domain || '=' || transport) FROM domains WHERE transport LIKE '_mtp:%'")
+tmpl_virtual_alias_domains=$(pcdbquery "SELECT group_concat(domain) FROM domains WHERE transport IS NULL")
+tmpl_check_recipient_access=$(pcdbquery "SELECT 'check_recipient_access inline:{ ' || group_concat(domain || '=reject_unverified_recipient', ' ') || ' }' FROM (SELECT domain FROM domains UNION SELECT '${POSTFIX_ORIGIN}' WHERE '${POSTFIX_ORIGIN}' != '')")
+tmpl_check_internal_myorigin=$(pcdbquery "SELECT 'check_recipient_access inline:{ ${POSTFIX_ORIGIN}={REJECT access denied} }' WHERE '${POSTFIX_ORIGIN}' NOT IN (SELECT domain FROM domains)")
+tmpl_domain_map=$(pcdbquery "SELECT 'inline:{ ' || group_concat('@' || domain || '=@${tmpl_myorigin}' ) || ' }' FROM domains WHERE catchall = '@MYORIGIN' AND domain != '${tmpl_myorigin}'")
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
 envsubst >/etc/postfix/master.cf <"${TEMPLATES_DIR:?}/master.cf"
 
-
+if [ -z "${tmpl_sasl_commentout}" ] ; then
+    cat /etc/postfix/dovecot-sasl.cf >> /etc/postfix/main.cf
+fi
 
 if [ -n "${POSTFIX_DEBUG}" ] ; then
     postconf -n
