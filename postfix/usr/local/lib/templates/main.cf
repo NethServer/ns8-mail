@@ -78,15 +78,13 @@ smtpd_relay_restrictions =
   permit_mynetworks,
   permit_sasl_authenticated,
   reject_unauth_destination,
+  ${tmpl_reject_internal_myorigin},
+  check_recipient_access sqlite:${S}meta_directory/internal_access.cf,
 
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
   reject_unknown_recipient_domain,
-  ${tmpl_check_recipient_access},
-  permit_mynetworks,
-  permit_sasl_authenticated,
-  check_recipient_access sqlite:${S}meta_directory/internal_access.cf,
-  ${tmpl_check_internal_myorigin},
+  ${tmpl_verify_recipient_address},
 
 #
 # TLS configuration
