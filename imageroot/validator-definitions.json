@@ -1,0 +1,159 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://schema.nethserver.org/mail.json",
+    "title": "Extra schema definitions",
+    "description": "Schema defined somwhere else",
+    "$defs": {
+        "user-domain": {
+            "title": "User domain",
+            "description": "Users (and also user groups) can be uniquely identified inside a domain. An application is ususally bound to just one user domain at a time, but mulitple domains can be configured in the same cluster.",
+            "type": "object",
+            "required": [
+                "name",
+                "location",
+                "protocol",
+                "providers"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "location": {
+                    "type": "string",
+                    "title": "Domain hosting location",
+                    "description": "Type of domain hosting. Set to `internal` if the domain is hosted by the cluster, `external` if the domain is provided by a remote service",
+                    "enum": [
+                        "internal",
+                        "external"
+                    ]
+                },
+                "protocol": {
+                    "type": "string",
+                    "title": "Provider protocol",
+                    "description": "Protocol used to communicate with the domain providers.",
+                    "enum": [
+                        "ldap"
+                    ]
+                },
+                "providers": {
+                    "title": "Account providers",
+                    "description": "Backend system and replicas providing the services of the user domain",
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/ldap-provider"
+                            }
+                        ]
+                    },
+                    "minItems": 1
+                }
+            },
+            "anyOf": [
+                {
+                    "not": {
+                        "type": "object",
+                        "title": "Protocol property is ldap",
+                        "properties": {
+                            "protocol": {
+                                "type": "string",
+                                "const": "ldap"
+                            }
+                        }
+                    }
+                },
+                {
+                    "$ref": "#/$defs/additional-properties-of-ldap"
+                }
+            ]
+        },
+        "ldap-provider": {
+            "type": "object",
+            "title": "LDAP account provider",
+            "description": "An LDAP account provider is a database of users and groups that can also be used as an authentication backend. A user domain is composed by at least one LDAP account provider. Multiple replicas can be instantiated on different cluster nodes.",
+            "required": [
+                "id",
+                "ui_name",
+                "node",
+                "host",
+                "port"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "ui_name": {
+                    "type": "string"
+                },
+                "node": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ],
+                    "minimum": 1
+                },
+                "host": {
+                    "title": "Host name or IP address",
+                    "description": "Can be `null` if the provider is not configured properly",
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "minLength": 1
+                },
+                "port": {
+                    "title": "TCP port number",
+                    "description": "Can be `null` if the provider is not configured properly",
+                    "type": [
+                        "integer",
+                        "null"
+                    ],
+                    "minimum": 1
+                }
+            }
+        },
+        "additional-properties-of-ldap": {
+            "type": "object",
+            "title": "LDAP domain properties",
+            "description": "Additional required properties of LDAP-based domains",
+            "properties": {
+                "schema": {
+                    "type": "string",
+                    "title": "LDAP database schema",
+                    "enum": [
+                        "ad",
+                        "rfc2307"
+                    ]
+                },
+                "base_dn": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "bind_dn": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "bind_password": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "tls": {
+                    "type": "boolean"
+                },
+                "tls_verify": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "schema",
+                "base_dn",
+                "bind_dn",
+                "bind_password",
+                "tls",
+                "tls_verify"
+            ]
+        }
+    }
+}

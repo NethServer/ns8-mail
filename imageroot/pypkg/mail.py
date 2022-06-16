@@ -23,10 +23,9 @@ import cluster.userdomains
 
 def get_user_domains():
     rdb = agent.redis_connect()
-
-    internal_domains = cluster.userdomains.get_internal_domains(rdb) 
-    external_domains = cluster.userdomains.get_external_domains(rdb)
-
-    domains = sorted(external_domains | internal_domains)
-
-    return list(domains)
+    domains = cluster.userdomains.list_domains(rdb).values()
+    ldap_domains = [element for element in domains if element['protocol'] == 'ldap']
+    return sorted(
+        ldap_domains,
+        key=lambda rec: rec['name'],
+    )

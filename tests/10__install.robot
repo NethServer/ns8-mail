@@ -16,8 +16,10 @@ Mail module installation
 
 Get defaults
     ${hostname} =    Execute Command    hostname -f
-    ${response} =    Run task     module/${MID}/get-defaults    {}
+    ${mail_domain} =  Execute Command    hostname -d
+    ${response} =    Run task     module/${MID}/get-defaults    {}    decode_json=${FALSE}
 
-    Should Contain    ${response['user_domains']}    ${user_domain_ad}
-    Should Contain    ${response['user_domains']}    ${user_domain_ldap}
-    Should Be Equal   ${response['hostname']}        ${hostname}
+    Should Contain    ${response}    "name": "${user_domain_ad}"
+    Should Contain    ${response}    "name": "${user_domain_ldap}"
+    Should Contain    ${response}    "hostname": "${hostname}"
+    Should Contain    ${response}    "mail_domain": "${mail_domain}"

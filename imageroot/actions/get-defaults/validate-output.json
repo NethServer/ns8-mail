@@ -6,6 +6,7 @@
     "examples": [
         {
             "hostname": "cs1.nethserver.test",
+            "mail_domain": "nethserver.test",
             "user_domains": [
                 "ldap.test",
                 "ad.nethserver.test"
@@ -20,14 +21,17 @@
             "minLength": 1,
             "format": "idn-hostname"
         },
+        "mail_domain": {
+            "type": "string",
+            "title": "Initial mail domain",
+            "minLength": 1,
+            "format": "idn-hostname"
+        },
         "user_domains": {
             "type": "array",
-            "title": "User domains",
+            "minItems": 0,
             "items": {
-                "type": "string",
-                "title": "User domain name",
-                "description": "Must be the name of a configured user domain",
-                "minLength": 1
+                "$ref": "http://schema.nethserver.org/mail.json#/$defs/user-domain"
             }
         }
     }

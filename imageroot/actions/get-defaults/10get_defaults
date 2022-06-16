@@ -25,7 +25,15 @@ import sys
 import mail
 import socket
 
+hostname = socket.getfqdn().lower()
+
+try:
+    mail_domain = hostname[hostname.index(".") + 1:]
+except ValueError:
+    mail_domain = ""
+
 json.dump({
-    'hostname': socket.gethostname().lower(),
+    'hostname': hostname,
+    "mail_domain": mail_domain,
     "user_domains": mail.get_user_domains(),
 }, fp=sys.stdout)
