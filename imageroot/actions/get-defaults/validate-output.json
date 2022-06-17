@@ -7,10 +7,7 @@
         {
             "hostname": "cs1.nethserver.test",
             "mail_domain": "nethserver.test",
-            "user_domains": [
-                "ldap.test",
-                "ad.nethserver.test"
-            ]
+            "user_domains": []
         }
     ],
     "type": "object",
@@ -19,20 +16,24 @@
             "type": "string",
             "title": "Mail host name",
             "minLength": 1,
-            "format": "idn-hostname"
+            "format": "hostname"
         },
         "mail_domain": {
             "type": "string",
             "title": "Initial mail domain",
-            "minLength": 1,
-            "format": "idn-hostname"
+            "oneOf": [
+                {
+                    "format": "hostname",
+                    "pattern": "\\."
+                },
+                {
+                    "maxLength": 0
+                }
+            ]
         },
         "user_domains": {
             "type": "array",
-            "minItems": 0,
-            "items": {
-                "$ref": "http://schema.nethserver.org/mail.json#/$defs/user-domain"
-            }
+            "minItems": 0
         }
     }
 }
