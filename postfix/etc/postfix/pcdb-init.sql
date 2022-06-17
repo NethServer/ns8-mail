@@ -20,11 +20,15 @@ CREATE TABLE domains (
     -- rewrite rules must resolve to an address that is either in a
     -- mailbox domain or a domain reachable with the default DNS-based
     -- transport rules.
+    addusers INT DEFAULT 0,
+    -- if set to 1, the domain accepts additional user addresses like
+    -- user@domain. The address is rewritten to user@$myorigin. See
+    -- POSTFIX_ORIGIN in the README. This setting is incompatible with the
+    -- "catchall" one and has higher priority over it.
     catchall TEXT DEFAULT NULL,
-    -- fallback rewrite rule for addresses that do not match
-    -- any record in the "destmap" table. It can be a virtual mailbox name,
-    -- or the special string "@MYORIGIN". The latter rewrites user@domain to
-    -- user@$myorigin. See POSTFIX_ORIGIN in the README.
+    -- fallback rewrite rule for addresses that do not match any record in
+    -- the "destmap" table. It can be a virtual mailbox name. This setting
+    -- has lower priority over the "addusers" one.
     bccaddr TEXT DEFAULT NULL,
     -- email address where any message directed to the domain is
     -- sent in BCC.
