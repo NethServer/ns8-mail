@@ -61,10 +61,10 @@ tmpl_myhostname="${POSTFIX_HOSTNAME:-$(hostname -f)}"
 tmpl_debug_peer_list="${POSTFIX_DEBUG_PEERS:-\$mynetworks}"
 tmpl_syslog_name=${POSTFIX_SYSLOG_NAME:-postfix}
 tmpl_relay_domains=$(pcdbquery "SELECT group_concat(domain || '=' || transport) FROM domains WHERE transport LIKE '_mtp:%'")
-tmpl_virtual_alias_domains=$(pcdbquery "SELECT group_concat(domain) FROM domains WHERE transport IS NULL")
-tmpl_verify_recipient_address=$(pcdbquery "SELECT 'check_recipient_access inline:{ ' || group_concat(domain || '=reject_unverified_recipient', ' ') || ' }' FROM (SELECT domain FROM domains UNION SELECT '${POSTFIX_ORIGIN}' WHERE '${POSTFIX_ORIGIN}' != '')")
-tmpl_reject_internal_myorigin=$(pcdbquery "SELECT 'check_recipient_access inline:{{ ${POSTFIX_ORIGIN} = REJECT access denied }}' WHERE '${POSTFIX_ORIGIN}' NOT IN (SELECT domain FROM domains)")
-tmpl_domain_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || CASE WHEN addusers = 1 THEN '=@${POSTFIX_ORIGIN}' ELSE ('=' || catchall) END || '}', ', ') || '}' FROM domains WHERE (addusers = 1 OR length(catchall) > 0) AND domain != '${tmpl_myorigin}'")
+tmpl_virtual_alias_domains=$(pcdbquery "SELECT group_concat(domain) FROM domains WHERE transport IS NULL AND domain != '*'")
+tmpl_verify_recipient_address=$(pcdbquery "SELECT 'check_recipient_access inline:{ ' || group_concat(domain || '=reject_unverified_recipient', ' ') || ' }' FROM (SELECT domain FROM domains WHERE domain != '*' UNION SELECT '${POSTFIX_ORIGIN}' WHERE '${POSTFIX_ORIGIN}' != '')")
+tmpl_reject_internal_myorigin=$(pcdbquery "SELECT 'check_recipient_access inline:{{ ${POSTFIX_ORIGIN} = REJECT access denied }}' WHERE '${POSTFIX_ORIGIN}' NOT IN (SELECT domain FROM domains WHERE domain != '*')")
+tmpl_domain_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || CASE WHEN addusers = 1 THEN '=@${POSTFIX_ORIGIN}' ELSE ('=' || catchall) END || '}', ', ') || '}' FROM domains WHERE (addusers = 1 OR length(catchall) > 0) AND domain NOT IN ('${tmpl_myorigin}', '*')")
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"

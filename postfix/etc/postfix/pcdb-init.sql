@@ -4,6 +4,8 @@
 --
 -----------------------------------------------------------------------
 
+PRAGMA foreign_keys = ON;
+
 -- domains -- domain attributes and transport definition
 --
 -- Domains defined in this table are treated according to "transport"
@@ -48,7 +50,8 @@ CREATE TABLE destmap (
     -- domain part of the address (e.g. "example.com" in "john@example.com")
     dest TEXT NOT NULL,
     -- destination (an external address or virtual mailbox name)
-    UNIQUE (alocal, domain, dest)
+    UNIQUE (alocal, domain, dest),
+    FOREIGN KEY(domain) REFERENCES domains(domain)
 );
 
 -- addresses -- address attributes
@@ -60,9 +63,13 @@ CREATE TABLE addresses (
     internal INT DEFAULT 0,
     -- if set to 1, external MTA and unauthenticated MUA cannot send
     -- messages to the address
-    adesc TEXT DEFAULT ""
+    adesc TEXT DEFAULT "",
     -- free text description of the address
+    PRIMARY KEY (alocal, domain),
+    FOREIGN KEY(domain) REFERENCES domains(domain)
 );
+
+INSERT INTO domains (domain, ddesc) VALUES ('*', 'Builtin wildcard domain');
 
 INSERT INTO addresses (alocal, domain, adesc, internal) VALUES (
     'postmaster',
