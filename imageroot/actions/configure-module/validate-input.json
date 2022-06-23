@@ -34,7 +34,8 @@
             "title": "Initial mail domain",
             "description": "Create the first mail domain with default values. Ignored if the module was already configured.",
             "minLength": 1,
-            "format": "idn-hostname"
+            "format": "idn-hostname",
+            "pattern": "\\."
         },
         "hostname": {
             "type": "string",

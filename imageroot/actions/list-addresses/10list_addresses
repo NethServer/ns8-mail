@@ -23,18 +23,31 @@
 import json
 import sys
 import mail
-import socket
-import agent
+from sqlite3 import OperationalError
 
-hostname = socket.getfqdn().lower()
+adduser_domains = []
+addgroup_domains = []
+laddresses = []
 
 try:
-    mail_domain = hostname[hostname.index(".") + 1:]
-except ValueError:
-    mail_domain = ""
+    sdb = mail.pcdb_connect(readonly=True)
+
+    for row in sdb.execute("""SELECT domain FROM domains WHERE addusers=1"""):
+        adduser_domains.append(row['domain'])
+
+    for row in sdb.execute("""SELECT domain FROM domains WHERE addgroups=1"""):
+        addgroup_domains.append(row['domain'])
+
+    laddresses = list(mail.get_addresses().values())
+
+except OperationalError:
+    pass
+
+except KeyError:
+    pass
 
 json.dump({
-    'hostname': hostname,
-    "mail_domain": mail_domain,
-    "user_domains": mail.get_user_domains(agent.redis_connect()),
-}, fp=sys.stdout)
+    "adduser_domains": adduser_domains,
+    "addgroup_domains": addgroup_domains,
+    "addresses": laddresses,
+}, fp=sys.stdout, cls=mail.DestEncoder)

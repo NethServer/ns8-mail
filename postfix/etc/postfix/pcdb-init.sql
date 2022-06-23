@@ -27,6 +27,11 @@ CREATE TABLE domains (
     -- user@domain. The address is rewritten to user@$myorigin. See
     -- POSTFIX_ORIGIN in the README. This setting is incompatible with the
     -- "catchall" one and has higher priority over it.
+    addgroups INT DEFAULT 0,
+    -- if set to 1, the domain accepts additional group addresses like
+    -- group@domain. The group members list is retrieved from LDAP and
+    -- the address is rewritten to user1, user2, user3, etc. See
+    -- POSTFIX_ORIGIN in the README.
     catchall TEXT DEFAULT NULL,
     -- fallback rewrite rule for addresses that do not match any record in
     -- the "destmap" table. It can be a virtual mailbox name. This setting
@@ -67,6 +72,26 @@ CREATE TABLE addresses (
     -- free text description of the address
     PRIMARY KEY (alocal, domain),
     FOREIGN KEY(domain) REFERENCES domains(domain)
+);
+
+-- userattrs -- user attributes
+CREATE TABLE userattrs (
+    user TEXT NOT NULL,
+    -- the LDAP user identifier, (e.g. "first.user")
+    internal INT DEFAULT 0,
+    -- if set to 1, external MTA and unauthenticated MUA cannot send
+    -- messages to the address
+    PRIMARY KEY(user)
+);
+
+-- groupattrs -- group attributes
+CREATE TABLE groupattrs (
+    "group" TEXT NOT NULL,
+    -- the LDAP group identifier, (e.g. "sales")
+    internal INT DEFAULT 0,
+    -- if set to 1, external MTA and unauthenticated MUA cannot send
+    -- messages to the address
+    PRIMARY KEY ("group")
 );
 
 INSERT INTO domains (domain, ddesc) VALUES ('*', 'Builtin wildcard domain');

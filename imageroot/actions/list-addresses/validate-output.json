@@ -1,0 +1,94 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "list-addresses output",
+    "$id": "http://schema.nethserver.org/mail/list-addresses-output.json",
+    "description": "List of addresses accepted by Postfix MTA",
+    "examples": [
+        {
+            "adduser_domains": [
+                "dp.nethserver.net",
+                "company.test",
+                "mydom.test"
+            ],
+            "addresses": [
+                {
+                    "local": "postmaster",
+                    "destinations": [
+                        {
+                            "dtype": "public",
+                            "public": "postmaster"
+                        }
+                    ],
+                    "description": "RFC-mandatory postmaster alias",
+                    "atype": "wildcard",
+                    "delete_forbidden": true
+                },
+                {
+                    "local": "info",
+                    "destinations": [
+                        {
+                            "dtype": "user",
+                            "user": "admin",
+                            "ui_name": "Builtin administrator user"
+                        }
+                    ],
+                    "atype": "domain",
+                    "domain": "mydom.test"
+                },
+                {
+                    "local": "sales",
+                    "destinations": [
+                        {
+                            "dtype": "user",
+                            "user": "first.user",
+                            "ui_name": "First User"
+                        }
+                    ],
+                    "atype": "wildcard"
+                },
+                {
+                    "atype": "adduser",
+                    "local": "admin",
+                    "description": "Builtin administrator user",
+                    "internal": true
+                },
+                {
+                    "atype": "adduser",
+                    "local": "first.user",
+                    "description": "First User"
+                }
+            ]
+        }
+    ],
+    "type": "object",
+    "required": [
+        "adduser_domains",
+        "addgroup_domains",
+        "addresses"
+    ],
+    "properties": {
+        "adduser_domains": {
+            "type": "array",
+            "title": "Domains with addusers flag",
+            "items": {
+                "type": "string",
+                "title": "Domain name"
+            }
+        },
+        "addgroup_domains": {
+            "type": "array",
+            "title": "Domains with addgroups flag",
+            "items": {
+                "type": "string",
+                "title": "Domain name"
+            }
+        },
+        "addresses": {
+            "type": "array",
+            "title": "Address list",
+            "items": {
+                "$ref": "http://schema.nethserver.org/mail.json#/$defs/mail-address"
+            }
+        }
+    }
+}

@@ -23,7 +23,7 @@
             "title": "Initial mail domain",
             "oneOf": [
                 {
-                    "format": "hostname",
+                    "format": "idn-hostname",
                     "pattern": "\\."
                 },
                 {
