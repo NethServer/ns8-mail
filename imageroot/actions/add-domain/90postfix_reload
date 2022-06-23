@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/bin/bash
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
@@ -20,21 +20,7 @@
 # along with NethServer.  If not, see COPYING.
 #
 
-import json
-import sys
-import mail
-import socket
-import agent
+set -e
+exec 1>&2
 
-hostname = socket.getfqdn().lower()
-
-try:
-    mail_domain = hostname[hostname.index(".") + 1:]
-except ValueError:
-    mail_domain = ""
-
-json.dump({
-    'hostname': hostname,
-    "mail_domain": mail_domain,
-    "user_domains": mail.get_user_domains(agent.redis_connect()),
-}, fp=sys.stdout)
+exec systemctl --user reload postfix

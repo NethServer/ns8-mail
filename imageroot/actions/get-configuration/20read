@@ -23,7 +23,19 @@
 import json
 import sys
 import agent
+import os
+import cluster.userdomains
 
-config = {}
+config = {
+    'user_domain': None,
+    'hostname': os.environ.get('POSTFIX_HOSTNAME', None),
+}
+
+try:
+    rdb = agent.redis_connect()
+    udomain = cluster.userdomains.list_domains(rdb)[os.environ['POSTFIX_ORIGIN']]
+    config['user_domain'] = udomain
+except KeyError:
+    pass
 
 json.dump(config, fp=sys.stdout)

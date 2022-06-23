@@ -23,18 +23,11 @@
 import json
 import sys
 import mail
-import socket
-import agent
-
-hostname = socket.getfqdn().lower()
+from sqlite3 import OperationalError
 
 try:
-    mail_domain = hostname[hostname.index(".") + 1:]
-except ValueError:
-    mail_domain = ""
+    domains = mail.get_domains()
+except OperationalError:
+    domains = {}
 
-json.dump({
-    'hostname': hostname,
-    "mail_domain": mail_domain,
-    "user_domains": mail.get_user_domains(agent.redis_connect()),
-}, fp=sys.stdout)
+json.dump(list(domains.values()), fp=sys.stdout, cls=mail.DestEncoder)

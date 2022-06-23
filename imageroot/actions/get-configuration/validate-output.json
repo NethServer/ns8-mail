@@ -4,5 +4,24 @@
     "$id": "http://nethserver.org/json-schema/task/output/mail/get-configuration",
     "description": "Get mail configuration",
     "examples": [],
-    "type": "object"
+    "type": "object",
+    "required": [
+        "user_domain",
+        "hostname"
+    ],
+    "properties": {
+        "user_domain": {
+            "type": ["object", "null"],
+            "title": "User domain object",
+            "description": "The user domain currently serving LDAP users and groups",
+            "minLength": 1
+        },
+        "hostname": {
+            "type": ["string", "null"],
+            "title": "Mail host name",
+            "description": "Host name used as SMTP/HELO and for the TLS certificate",
+            "minLength": 1,
+            "format": "idn-hostname"
+        }
+    }
 }
