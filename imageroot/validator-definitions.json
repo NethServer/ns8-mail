@@ -340,6 +340,20 @@
                             "$ref": "#/$defs/mail-address-base"
                         }
                     ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "atype": {
+                                    "const": "adduser"
+                                }
+                            }
+                        },
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        }
+                    ]
                 }
             ]
         }

@@ -109,12 +109,16 @@ def get_addresses():
         # If at least one domain is marked "addusers", append "adduser" addresses
         ldapclient = _create_ldapclient()
         for euser in ldapclient.list_users():
-            akey = euser["user"] + '@<adduser_domains>'
+            akey = euser["user"] + '@+'
             addresses[akey] = {
                 "atype": "adduser",
                 "local": euser["user"],
                 "description": euser["display_name"],
             }
+        for ruser in sdb.execute("""SELECT user FROM userattrs WHERE internal = 1""").fetchall():
+            akey = ruser['user'] + '@+'
+            if akey in addresses:
+                addresses[akey]["internal"] = True
 
     sdb.close()
     return addresses

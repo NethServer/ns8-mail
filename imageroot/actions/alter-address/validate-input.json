@@ -11,5 +11,9 @@
             "description": "Changed description of info@mydom.test"
         }
     ],
-    "$ref": "http://schema.nethserver.org/mail.json#/$defs/mail-address-change-request"
+    "allOf": [
+        {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/mail-address-change-request"
+        }
+    ]
 }

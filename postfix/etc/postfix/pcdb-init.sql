@@ -69,6 +69,16 @@ CREATE TABLE addresses (
     FOREIGN KEY(domain) REFERENCES domains(domain)
 );
 
+-- userattrs -- user attributes
+CREATE TABLE userattrs (
+    user TEXT NOT NULL,
+    -- the LDAP user identifier, (e.g. "first.user")
+    internal INT DEFAULT 0,
+    -- if set to 1, external MTA and unauthenticated MUA cannot send
+    -- messages to the address
+    PRIMARY KEY(user)
+);
+
 INSERT INTO domains (domain, ddesc) VALUES ('*', 'Builtin wildcard domain');
 
 INSERT INTO addresses (alocal, domain, adesc, internal) VALUES (
