@@ -16,6 +16,12 @@ query = SELECT internal
   WHERE user = '%u'
   AND internal = 1
   AND '%d' IN (SELECT domain FROM domains WHERE addusers = 1)
+  UNION
+  SELECT internal
+  FROM groupattrs
+  WHERE "group" = '%u'
+  AND internal = 1
+  AND '%d' IN (SELECT domain FROM domains WHERE addgroups = 1)
   LIMIT 1
 
 result_format = REJECT access denied

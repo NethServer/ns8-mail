@@ -26,6 +26,7 @@ import mail
 from sqlite3 import OperationalError
 
 adduser_domains = []
+addgroup_domains = []
 laddresses = []
 
 try:
@@ -33,6 +34,9 @@ try:
 
     for row in sdb.execute("""SELECT domain FROM domains WHERE addusers=1"""):
         adduser_domains.append(row['domain'])
+
+    for row in sdb.execute("""SELECT domain FROM domains WHERE addgroups=1"""):
+        addgroup_domains.append(row['domain'])
 
     laddresses = list(mail.get_addresses().values())
 
@@ -42,4 +46,8 @@ except OperationalError:
 except KeyError:
     pass
 
-json.dump({"adduser_domains": adduser_domains, "addresses": laddresses}, fp=sys.stdout, cls=mail.DestEncoder)
+json.dump({
+    "adduser_domains": adduser_domains,
+    "addgroup_domains": addgroup_domains,
+    "addresses": laddresses,
+}, fp=sys.stdout, cls=mail.DestEncoder)

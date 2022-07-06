@@ -56,7 +56,7 @@ def get_domains():
     """Return the configured domains"""
     sdb = pcdb_connect(readonly=True)
     domains = {}
-    for row in sdb.execute("""SELECT domain, addusers, catchall, bccaddr, ddesc FROM domains"""):
+    for row in sdb.execute("""SELECT domain, addusers, addgroups, catchall, bccaddr, ddesc FROM domains"""):
         if row['domain'] == '*':
             continue # Ignore the wildcard domain
 
@@ -68,6 +68,7 @@ def get_domains():
         domains[row["domain"]] = {
             "domain": row["domain"],
             "addusers": row["addusers"] == 1,
+            "addgroups": row["addgroups"] == 1,
             "catchall": catchall,
             "bccaddr": row["bccaddr"],
             "description": row["ddesc"],
@@ -117,6 +118,20 @@ def get_addresses():
             }
         for ruser in sdb.execute("""SELECT user FROM userattrs WHERE internal = 1""").fetchall():
             akey = ruser['user'] + '@+'
+            if akey in addresses:
+                addresses[akey]["internal"] = True
+
+    if sdb.execute("""SELECT COUNT(*) FROM domains WHERE addgroups = 1""").fetchone()[0] > 0:
+        ldapclient = _create_ldapclient()
+        for egroup in ldapclient.list_groups():
+            akey = egroup["group"] + '@#'
+            addresses[akey] = {
+                "atype": "addgroup",
+                "local": egroup["group"],
+                "description": egroup["description"],
+            }
+        for rgroup in sdb.execute("""SELECT "group" FROM groupattrs WHERE internal = 1""").fetchall():
+            akey = rgroup['group'] + '@#'
             if akey in addresses:
                 addresses[akey]["internal"] = True
 

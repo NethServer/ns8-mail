@@ -63,12 +63,21 @@
     "type": "object",
     "required": [
         "adduser_domains",
+        "addgroup_domains",
         "addresses"
     ],
     "properties": {
         "adduser_domains": {
             "type": "array",
             "title": "Domains with addusers flag",
+            "items": {
+                "type": "string",
+                "title": "Domain name"
+            }
+        },
+        "addgroup_domains": {
+            "type": "array",
+            "title": "Domains with addgroups flag",
             "items": {
                 "type": "string",
                 "title": "Domain name"

@@ -88,6 +88,7 @@
                 {
                     "domain": "dp.nethserver.net",
                     "addusers": true,
+                    "addgroups": false,
                     "catchall": null,
                     "bccaddr": null,
                     "description": ""
@@ -95,6 +96,7 @@
                 {
                     "domain": "company.test",
                     "addusers": true,
+                    "addgroups": false,
                     "catchall": null,
                     "bccaddr": null,
                     "description": "Company domain with addusers flag set"
@@ -102,6 +104,7 @@
                 {
                     "domain": "mydom.test",
                     "addusers": true,
+                    "addgroups": false,
                     "catchall": {
                         "dtype": "user",
                         "user": "first.user",
@@ -127,6 +130,11 @@
                 "addusers": {
                     "title": "Addusers flag",
                     "description": "Accept user mailbox names as valid mail addresses",
+                    "type": "boolean"
+                },
+                "addgroups": {
+                    "title": "Addgroups flag",
+                    "description": "Accept LDAP group names as valid mail addresses",
                     "type": "boolean"
                 },
                 "catchall": {
@@ -261,6 +269,21 @@
                             }
                         }
                     ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        },
+                        {
+                            "title": "Address bound to \"addgroup\" domains",
+                            "properties": {
+                                "atype": {
+                                    "const": "addgroup"
+                                }
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -347,6 +370,20 @@
                             "properties": {
                                 "atype": {
                                     "const": "adduser"
+                                }
+                            }
+                        },
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "atype": {
+                                    "const": "addgroup"
                                 }
                             }
                         },

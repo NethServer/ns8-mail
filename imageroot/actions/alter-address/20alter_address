@@ -55,6 +55,30 @@ def alter_userattrs():
     finally:
         sdb.close()
 
+def alter_groupattrs():
+    sdb = mail.pcdb_connect()
+    try:
+        cur = sdb.cursor()
+
+        mail.destination_to_mailbox({"dtype":"group","name":local}) # Just throw exception if group can't be found
+
+        if 'internal' in request:
+            internal = 1 if request['internal'] else 0
+            cur.execute("""UPDATE groupattrs SET internal = ? WHERE "group" = ?""", (internal, local,))
+            if cur.rowcount == 0:
+                cur.execute("""INSERT INTO groupattrs ("group", internal) VALUES (?, ?)""", (local, internal,))
+
+    except mail.MailDestinationNotFound:
+        sdb.rollback()
+        agent.set_status('validation-failed')
+        json.dump([{'field':'local', 'parameter':'local','value': local, 'error':'group_not_found'}], fp=sys.stdout)
+        sys.exit(3)
+
+    else:
+        sdb.commit()
+
+    finally:
+        sdb.close()
 
 def alter_address():
     sdb = mail.pcdb_connect()
@@ -109,5 +133,7 @@ elif request['atype'] == "wildcard":
     alter_address()
 elif request['atype'] == "adduser":
     alter_userattrs()
+elif request['atype'] == "addgroup":
+    alter_groupattrs()
 else:
     raise Exception(f"Unexpected atype {request['atype']} value")
