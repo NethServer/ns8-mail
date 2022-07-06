@@ -48,6 +48,8 @@ virtual_alias_domains = ${tmpl_virtual_alias_domains}
 virtual_alias_maps =
   sqlite:${S}meta_directory/aliases.cf,
   sqlite:${S}meta_directory/wildcards.cf,
+  ${tmpl_laddgroups_table},
+  ${tmpl_ldest_table},
   ${tmpl_domain_map},
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 relay_domains = ${tmpl_relay_domains}
