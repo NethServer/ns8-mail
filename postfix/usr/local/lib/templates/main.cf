@@ -50,6 +50,7 @@ virtual_alias_maps =
   sqlite:${S}meta_directory/wildcards.cf,
   ${tmpl_laddgroups_table},
   ${tmpl_ldest_table},
+  sqlite:${S}meta_directory/userforwards.cf,
   ${tmpl_domain_map},
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 relay_domains = ${tmpl_relay_domains}
