@@ -69,6 +69,18 @@ tmpl_reject_internal_myorigin=$(pcdbquery "SELECT 'check_recipient_access inline
 tmpl_domain_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || CASE WHEN addusers = 1 THEN '=@${POSTFIX_ORIGIN}' ELSE ('=' || catchall) END || '}', ', ') || '}' FROM domains WHERE (addusers = 1 OR length(catchall) > 0) AND domain NOT IN ('${tmpl_myorigin}', '*')")
 
 tmpl_addgroup_domains=$(pcdbquery "SELECT group_concat(domain, ', ') FROM domains WHERE addgroups = 1")
+if [ -z "${tmpl_addgroup_domains}" ] || [ -z "${POSTFIX_LDAP_HOST}" ]; then
+    # Turn off addgroups virtual alias lookups
+    tmpl_laddgroups_table=''
+else
+    tmpl_laddgroups_table='ldap:$meta_directory/laddgroups.cf'
+fi
+if [ -z "${POSTFIX_LDAP_HOST}" ]; then
+    # Turn off group expansion in virtual alias lookups
+    tmpl_ldest_table=''
+else
+    tmpl_ldest_table='ldap:$meta_directory/ldest.cf'
+fi
 tmpl_ldap_bind_dn="${POSTFIX_LDAP_USER}"
 tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
 tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
