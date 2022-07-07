@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+import json
+import sys
+import mail
+import agent
+import os
+from sqlite3 import IntegrityError
+
+request = json.load(sys.stdin)
+
+gquota = os.getenv("DOVECOT_QUOTA_MB", "")
+
+class CustomQuotaOverlapError(Exception):
+    pass
+
+sdb = mail.pcdb_connect()
+try:
+    cur = sdb.cursor()
+
+    mail.destination_to_mailbox({"dtype":"user","name": request['user']}) # Just throw exception if user can't be found
+
+    if 'quota' in request:
+        if 'custom' in request['quota'] and request['quota']['custom'] is False:
+            # Unset the custom quota limit
+            try:
+                mail.doveadm_query("dictUnset", {
+                    "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
+                    "key":"shared/" + request['user'],
+                })
+            except mail.DoveadmError as dex:
+                if dex.code == 75:
+                    pass
+        else:
+            # Set the custom quota limit value in the Dovecot dict DB
+            limit = str(request['quota']['limit'])
+            if limit == gquota:
+                raise CustomQuotaOverlapError()
+
+            mail.doveadm_query("dictSet", {
+                "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
+                "key":"shared/" + request['user'],
+                "value": limit,
+            })
+
+    if 'spam_retention' in request:
+        if 'custom' in request['spam_retention'] and request['spam_retention']['custom'] is False:
+            # Unset the custom spam retention
+            try:
+                mail.doveadm_query("dictUnset", {
+                    "dictUri": "file:/var/lib/dovecot/dict/uspamret.db",
+                    "key":"shared/spam_retention/" + request['user'],
+                })
+            except mail.DoveadmError as dex:
+                if dex.code == 75:
+                    pass
+        else:
+            # Set the custom spam retention value in the Dovecot dict DB
+            spamret = str(request['spam_retention']['value'])
+            mail.doveadm_query("dictSet", {
+                "dictUri": "file:/var/lib/dovecot/dict/uspamret.db",
+                "key":"shared/spam_retention/" + request['user'],
+                "value": spamret,
+            })
+
+    if 'forward' in request:
+        cur.execute("""DELETE FROM userforwards WHERE user = ?""", (request['user'],))
+        tuples = set()
+
+        for odest in request['forward'].get('destinations', []):
+            tuples.add((request['user'], mail.destination_to_mailbox(odest),))
+
+        if request['forward'].get('keepcopy', False) == True and len(tuples) > 0:
+            tuples.add((request['user'], request['user'],))
+
+        cur.executemany("""INSERT INTO userforwards (user, dest) VALUES (?, ?)""", tuples)
+
+except mail.MailDestinationNotFound:
+    sdb.rollback()
+    agent.set_status('validation-failed')
+    json.dump([{'field':'user', 'parameter':'user','value': request['user'], 'error':'user_not_found'}], fp=sys.stdout)
+    sys.exit(2)
+
+except CustomQuotaOverlapError:
+    sdb.rollback()
+    agent.set_status('validation-failed')
+    json.dump([{'field':'limit', 'parameter':'limit','value': request['quota']['limit'], 'error':'invalid_custom_quota_sameas_default_value'}], fp=sys.stdout)
+    sys.exit(3)
+
+else:
+    sdb.commit()
+
+finally:
+    sdb.close()

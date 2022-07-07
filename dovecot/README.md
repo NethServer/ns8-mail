@@ -47,6 +47,8 @@ Private TCP ports:
 - `DOVECOT_METRICS_PORT`, TCP port number for OpenMetrics. Default value is `9289`.
 - `DOVECOT_MASTER_USERS`, Comma-separated list of user names that are
   granted impersonate privilege. Default empty.
+- `DOVECOT_SPAM_RETENTION`, default empty, which means the feature is disabled and spam is never expunged automatically
+- `DOVECOT_SPAM_FOLDER`, default `Junk`
 
 ## Logs
 
@@ -90,6 +92,7 @@ quota send an HTTP API POST request. For instance, this is a `curl`
 command that sets `first.user` quota to `123` MB.
 
 ```shell
+. ~/.config/state/dovecot.env
 DOVEADM_TOKEN=$(echo -n "${DOVECOT_API_KEY}" | base64)
 curl -d '[["dictSet",{"dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/","key":"shared/first.user","value":"123"},"0000"]]' \
   -H "Content-Type: application/json" \
@@ -100,6 +103,25 @@ curl -d '[["dictSet",{"dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
 
 Note that the last `dictSet` argument `0000` is returned in the response
 payload.
+
+## Custom user spam retention
+
+Custom user spam retention is stored in a Dovecot Dict, `uspamret`. To
+change user's spam retention preference send an HTTP API POST request. For
+instance, this is a `curl` command that sets `first.user` spam retention
+to `21` days.
+
+```shell
+. ~/.config/state/dovecot.env
+DOVEADM_TOKEN=$(echo -n "${DOVECOT_API_KEY}" | base64)
+curl -d '[["dictSet",{"dictUri":"file:/var/lib/dovecot/dict/uspamret.db","key":"shared/spam_retention/first.user","value":"21"},"id000"]]' \
+  -H "Authorization: X-Dovecot-API ${DOVEADM_TOKEN}" \
+  -X POST \
+  http://127.0.0.1:9288/doveadm/v1
+```
+
+See also the [Dovecot `dictSet` API
+documentation](https://doc.dovecot.org/admin_manual/doveadm_http_api/#doveadm-dict-set).
 
 ## OpenMetrics exporter
 

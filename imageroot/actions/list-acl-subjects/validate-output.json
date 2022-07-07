@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "list-acl-subjects output",
+    "$id": "http://schema.nethserver.org/mail/list-acl-subjects-output.json",
+    "description": "List of ACL subjects: those who can be granted public mailbox access rights.",
+    "type": "array",
+    "examples": [
+        {
+            "dtype": "user",
+            "name": "first.user",
+            "ui_name": "First User"
+        },
+        {
+            "dtype": "group",
+            "name": "g1",
+            "ui_name": "Group One"
+        }
+    ],
+    "items": {
+        "$ref": "http://schema.nethserver.org/mail.json#/$defs/acl-subject"
+    }
+}

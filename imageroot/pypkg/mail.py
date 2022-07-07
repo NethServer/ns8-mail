@@ -18,6 +18,8 @@
 # along with NethServer.  If not, see COPYING.
 #
 
+import requests
+import base64
 import os
 import agent
 import json
@@ -75,6 +77,15 @@ def get_domains():
         }
     sdb.close()
     return domains
+
+def get_public_mailboxes():
+    mailboxes =  []
+    for ombx in doveadm_query("mailboxList", {"user": "vmail"}):
+        if ombx['mailbox'] == 'INBOX':
+            continue
+        mbxn = ombx['mailbox'].removeprefix("Public/")
+        mailboxes.append(mbxn)
+    return mailboxes
 
 def get_addresses():
     """Return a dictionary of mail addresses handled by the mail server"""
@@ -172,7 +183,7 @@ def destination_to_mailbox(odest):
     else:
         raise Exception("Invalid destination object dtype attribute: " + odest['dtype'])
 
-def mailbox_to_destination(mbx, cherrypick=False):
+def mailbox_to_destination(mbx):
     """Create a destination object from the mbx string"""
     if '@' in mbx:
         return {"dtype":"external", "name": mbx}
@@ -254,3 +265,27 @@ class LdapDestination:
 
     def __str__(self):
         return self.mbx
+
+class DoveadmError(Exception):
+    def __init__(self, eobj=None):
+        self.eobj = eobj
+        self.code = -1
+        if eobj and eobj[0][0] == 'error':
+            self.code = int(eobj[0][1].get('exitCode', -1))
+
+def doveadm_query(method, parameters):
+    req = [[method, parameters, method]]
+    dport = os.getenv('DOVECOT_API_PORT', '9288')
+    atok = base64.b64encode(bytes(os.environ['DOVECOT_API_KEY'], 'ascii')).decode()
+    oresp = requests.post(f"http://127.0.0.1:{dport}/doveadm/v1", json=req, headers={"Authorization": "X-Dovecot-API " + atok}).json()
+    if oresp[0][0] != 'doveadmResponse':
+        raise DoveadmError(oresp)
+
+    return oresp[0][1]
+
+def get_rights_map():
+    rights_map = {}
+    rights_map['ro'] = {"lookup", "read", "write-seen"}
+    rights_map['rw'] = rights_map['ro'] | {"insert", "create", "write", "write-deleted"}
+    rights_map['full'] = rights_map['rw'] | {"expunge", "admin", "post"}
+    return rights_map

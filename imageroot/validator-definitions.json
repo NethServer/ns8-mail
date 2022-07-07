@@ -398,6 +398,244 @@
                     ]
                 }
             ]
+        },
+        "spam-retention": {
+            "type": "object",
+            "title": "Spam retention",
+            "description": "Describes how long messages are retained in the spam folder",
+            "required": [
+                "value"
+            ],
+            "properties": {
+                "value": {
+                    "type": "integer",
+                    "title": "Value of retention",
+                    "description": "Number of days",
+                    "minimum": 0
+                },
+                "custom": {
+                    "type": "boolean",
+                    "title": "Custom limit",
+                    "description": "If true, the quota limit for the mailbox differs from the default limit"
+                }
+            }
+        },
+        "quota-status": {
+            "type": "object",
+            "title": "Quota status",
+            "description": "Quota usage and limit settings",
+            "required": [
+                "limit"
+            ],
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "title": "Limit",
+                    "minimum": 0,
+                    "description": "Quota limit (MiB)"
+                },
+                "value": {
+                    "type": "integer",
+                    "title": "Value",
+                    "description": "Quota usage value (MiB)",
+                    "minimum": 0
+                },
+                "percent": {
+                    "type": "integer",
+                    "title": "Percent",
+                    "description": "Quota usage percentage",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "custom": {
+                    "type": "boolean",
+                    "title": "Custom limit",
+                    "description": "If true, the quota limit for the mailbox differs from the default limit"
+                }
+            }
+        },
+        "forward": {
+            "type": "object",
+            "title": "Forward settings",
+            "description": "Describe where messages delivered to the mailbox are eventually forwarded and preserved",
+            "required": [
+                "destinations"
+            ],
+            "properties": {
+                "destinations": {
+                    "type": "array",
+                    "title": "Forward destinations",
+                    "items": {
+                        "$ref": "#/$defs/mail-destination"
+                    }
+                },
+                "keepcopy": {
+                    "type": "boolean",
+                    "title": "Keep message copy",
+                    "description": "Keep a local copy of the message"
+                }
+            }
+        },
+        "public-mailbox": {
+            "title": "Public mailbox",
+            "description": "Configuration of a public mailbox",
+            "type": "object",
+            "required": [
+                "mailbox",
+                "acls"
+            ],
+            "properties": {
+                "acls": {
+                    "title": "ACL set",
+                    "minLength": 1,
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/acl-descriptor"
+                    }
+                },
+                "mailbox": {
+                    "title": "Mailbox",
+                    "description": "Mailbox name, unique identifier",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "acl-descriptor": {
+            "title": "ACL descriptor",
+            "description": "Describe who can do what, for instance in the context of a public mailbox",
+            "type": "object",
+            "example": [
+                {
+                    "stype": "user",
+                    "subject": {
+                        "dtype": "user",
+                        "name": "first.user",
+                        "ui_name": "First User"
+                    },
+                    "rights": {
+                        "rtype": "ro",
+                        "values": [
+                            "lookup",
+                            "read",
+                            "write-seen"
+                        ]
+                    }
+                }
+            ],
+            "required": [
+                "rights",
+                "stype",
+                "subject"
+            ],
+            "properties": {
+                "subject": {
+                    "$ref": "#/$defs/acl-subject"
+                },
+                "stype": {
+                    "title": "Subject type",
+                    "enum": [
+                        "user",
+                        "group"
+                    ]
+                },
+                "rights": {
+                    "$ref": "#/$defs/acl-rights"
+                }
+            }
+        },
+        "acl-rights": {
+            "title": "ACL permissions descriptor",
+            "description": "Describes what can be done with/on a public mailbox",
+            "type": "object",
+            "examples": [
+                {
+                    "rtype": "ro",
+                    "values": [
+                        "lookup",
+                        "read",
+                        "write-seen"
+                    ]
+                }
+            ],
+            "required": [
+                "rtype"
+            ],
+            "properties": {
+                "rtype": {
+                    "title": "Right type",
+                    "description": "High-level permission descriptor. It aggregates a set of fine-grained permissions",
+                    "enum": [
+                        "ro",
+                        "rw",
+                        "full",
+                        "custom"
+                    ]
+                },
+                "values": {
+                    "title": "Right values",
+                    "description": "Fine-grained IMAP ACL right set. See RFC 4314, https://doc.dovecot.org/configuration_manual/acl/#acl-file-format",
+                    "type": "array",
+                    "items": {
+                        "title": "IMAP ACL right",
+                        "type": "string",
+                        "enum": [
+                            "lookup",
+                            "read",
+                            "write",
+                            "write-seen",
+                            "write-deleted",
+                            "insert",
+                            "post",
+                            "expunge",
+                            "create",
+                            "delete",
+                            "admin"
+                        ]
+                    }
+                }
+            }
+        },
+        "acl-subject": {
+            "examples": [
+                {
+                    "dtype": "user",
+                    "name": "first.user",
+                    "ui_name": "First User"
+                },
+                {
+                    "dtype": "group",
+                    "name": "sales",
+                    "ui_name": "Sales Department"
+                }
+            ],
+            "title": "ACL subject descriptor",
+            "description": "Describes who can access a public mailbox",
+            "type": "object",
+            "required": [
+                "dtype",
+                "name"
+            ],
+            "properties": {
+                "dtype": {
+                    "title": "Subject descriptor type",
+                    "enum": [
+                        "user",
+                        "group",
+                        "apo"
+                    ]
+                },
+                "name": {
+                    "title": "Subject name",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "ui_name": {
+                    "title": "Subject name for UI",
+                    "description": "String representation of the ACL subject",
+                    "type": "string"
+                }
+            }
         }
     }
 }
