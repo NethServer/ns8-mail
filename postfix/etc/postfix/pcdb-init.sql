@@ -84,6 +84,17 @@ CREATE TABLE userattrs (
     PRIMARY KEY(user)
 );
 
+-- userforwards -- user forward addresses map. Among other records for a
+-- given user, a record with user == dest means a copy of each message is
+-- also stored on the local server
+CREATE TABLE userforwards (
+    user TEXT NOT NULL,
+    -- the LDAP user identifier, (e.g. "first.user")
+    dest TEXT NOT NULL,
+    -- destination (an external address or virtual mailbox name)
+    UNIQUE (user, dest)
+);
+
 -- groupattrs -- group attributes
 CREATE TABLE groupattrs (
     "group" TEXT NOT NULL,
