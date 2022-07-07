@@ -18,6 +18,8 @@
 # along with NethServer.  If not, see COPYING.
 #
 
+import requests
+import base64
 import os
 import agent
 import json
@@ -254,3 +256,19 @@ class LdapDestination:
 
     def __str__(self):
         return self.mbx
+
+class DoveadmError(Exception):
+    pass
+
+def doveadm_query(method, parameters):
+    req = [[method, parameters, method]]
+    dport = os.getenv('DOVECOT_API_PORT', '9288')
+    atok = base64.b64encode(bytes(os.environ['DOVECOT_API_KEY'], 'ascii')).decode()
+    oresp = requests.post(f"http://127.0.0.1:{dport}/doveadm/v1", json=req, headers={"Authorization": "X-Dovecot-API " + atok}).json()
+    if oresp[0][0] == 'error':
+        raise DoveadmError()
+
+    if oresp[0][0] != 'doveadmResponse':
+        raise DoveadmError()
+
+    return oresp[0][1]
