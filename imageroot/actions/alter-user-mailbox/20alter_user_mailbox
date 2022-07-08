@@ -59,10 +59,10 @@ try:
         cur.execute("""DELETE FROM userforwards WHERE user = ?""", (request['user'],))
         tuples = set()
 
-        for odest in request['forwards']:
+        for odest in request['forward'].get('destinations', []):
             tuples.add((request['user'], mail.destination_to_mailbox(odest),))
 
-        if 'keepcopy' in request['forward'] and request['keepcopy'] == True and len(tuples) > 0:
+        if request['forward'].get('keepcopy', False) == True and len(tuples) > 0:
             tuples.add((request['user'], request['user'],))
 
         cur.executemany("""INSERT INTO userforwards (user, dest) VALUES (?, ?)""", tuples)

@@ -393,6 +393,54 @@
                     ]
                 }
             ]
+        },
+        "quota-status": {
+            "type": "object",
+            "title": "Quota status",
+            "description": "Quota usage and limit settings",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "title": "Limit",
+                    "minimum": 0,
+                    "description": "Quota limit (MiB)"
+                },
+                "value": {
+                    "type": "integer",
+                    "title": "Value",
+                    "description": "Quota usage value (MiB)",
+                    "minimum": 0
+                },
+                "percent": {
+                    "type": "integer",
+                    "title": "Percent",
+                    "description": "Quota usage percentage",
+                    "minimum": 0,
+                    "maximum": 100
+                }
+            }
+        },
+        "forward": {
+            "type": "object",
+            "title": "Forward settings",
+            "description": "Describe where messages delivered to the mailbox are eventually forwarded and preserved",
+            "required": [
+                "destinations"
+            ],
+            "properties": {
+                "destinations": {
+                    "type": "array",
+                    "title": "Forward destinations",
+                    "items": {
+                        "$ref": "#/$defs/mail-destination"
+                    }
+                },
+                "keepcopy": {
+                    "type": "boolean",
+                    "title": "Keep message copy",
+                    "description": "Keep a local copy of the message"
+                }
+            }
         }
     }
 }

@@ -8,7 +8,7 @@
             {
                 "user": "administrator",
                 "quota": {
-                    "limit": null,
+                    "limit": 1024,
                     "value": 0,
                     "percent": 0,
                     "custom": true
@@ -22,13 +22,15 @@
                     "percent": 0,
                     "custom": true
                 },
-                "forwards": [
-                    {
-                        "dtype": "external",
-                        "name": "john@example.com"
-                    }
-                ],
-                "keepcopy": true
+                "forward": {
+                    "destinations": [
+                        {
+                            "dtype": "external",
+                            "name": "john@example.com"
+                        }
+                    ],
+                    "keepcopy": true
+                }
             },
             {
                 "user": "second.user",
@@ -40,5 +42,24 @@
             }
         ]
     ],
-    "type": "array"
+    "type": "array",
+    "items": {
+        "type": "object",
+        "required": [
+            "user"
+        ],
+        "properties": {
+            "user": {
+                "type": "string",
+                "title": "User name",
+                "description": "LDAP user identifier"
+            },
+            "quota": {
+                "$ref": "http://schema.nethserver.org/mail.json#/$defs/quota-status"
+            },
+            "forward": {
+                "$ref": "http://schema.nethserver.org/mail.json#/$defs/forward"
+            }
+        }
+    }
 }
