@@ -441,6 +441,46 @@
                     "description": "Keep a local copy of the message"
                 }
             }
+        },
+        "acl-subject": {
+            "examples": [
+                {
+                    "dtype": "user",
+                    "name": "first.user",
+                    "ui_name": "First User"
+                },
+                {
+                    "dtype": "group",
+                    "name": "sales",
+                    "ui_name": "Sales Department"
+                }
+            ],
+            "title": "ACL subject descriptor",
+            "description": "Describes who can access a public mailbox",
+            "type": "object",
+            "required": [
+                "dtype",
+                "name"
+            ],
+            "properties": {
+                "dtype": {
+                    "title": "Subject descriptor type",
+                    "enum": [
+                        "user",
+                        "group"
+                    ]
+                },
+                "name": {
+                    "title": "Subject name",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "ui_name": {
+                    "title": "Subject name for UI",
+                    "description": "String representation of the ACL subject",
+                    "type": "string"
+                }
+            }
         }
     }
 }

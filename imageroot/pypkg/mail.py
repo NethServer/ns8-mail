@@ -174,7 +174,7 @@ def destination_to_mailbox(odest):
     else:
         raise Exception("Invalid destination object dtype attribute: " + odest['dtype'])
 
-def mailbox_to_destination(mbx, cherrypick=False):
+def mailbox_to_destination(mbx):
     """Create a destination object from the mbx string"""
     if '@' in mbx:
         return {"dtype":"external", "name": mbx}
@@ -258,7 +258,9 @@ class LdapDestination:
         return self.mbx
 
 class DoveadmError(Exception):
-    pass
+    def __init__(self, message=None, code=None):
+        self.code = code
+        self.message = message
 
 def doveadm_query(method, parameters):
     req = [[method, parameters, method]]
@@ -266,9 +268,16 @@ def doveadm_query(method, parameters):
     atok = base64.b64encode(bytes(os.environ['DOVECOT_API_KEY'], 'ascii')).decode()
     oresp = requests.post(f"http://127.0.0.1:{dport}/doveadm/v1", json=req, headers={"Authorization": "X-Dovecot-API " + atok}).json()
     if oresp[0][0] == 'error':
-        raise DoveadmError()
+        raise DoveadmError(oresp[0][1]['type'], int(oresp[0][1].get('exitCode')))
 
     if oresp[0][0] != 'doveadmResponse':
         raise DoveadmError()
 
     return oresp[0][1]
+
+def get_rights_map():
+    rights_map = {}
+    rights_map['ro'] = {"lookup", "read", "write-seen"}
+    rights_map['rw'] = rights_map['ro'] | {"insert", "create", "write", "write-deleted"}
+    rights_map['full'] = rights_map['rw'] | {"expunge", "admin", "post"}
+    return rights_map
