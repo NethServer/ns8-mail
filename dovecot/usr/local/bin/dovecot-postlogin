@@ -1,0 +1,63 @@
+#!/bin/ash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+# shellcheck shell=dash disable=SC3057
+
+set -e
+
+# Import LDAP connection settings
+. /etc/dovecot/ldapconf.sh
+
+ldap_search () {
+    filter="$1"
+    attr="$2"
+    ldapsearch -LLL -x -D "${DOVECOT_LDAP_USER}" -w "${DOVECOT_LDAP_PASS}" \
+        -H "ldap://${DOVECOT_LDAP_HOST}:${DOVECOT_LDAP_PORT}" \
+        -b "${DOVECOT_LDAP_BASE}" \
+        -s sub "${filter}" "${attr}" | {
+            # Transform multi-value LDIF attribute output to a comma separated list
+            plen=$((${#attr} + 2))
+            while read -r line; do
+                if [ "${line:0:${plen}}" = "${attr}: " ]; then
+                    result="${result},${line:${plen}}"
+                fi
+            done
+            echo "${result:1}"
+        }
+}
+
+if [ -z "${ACL_GROUPS}" ]; then
+    if [ "${DOVECOT_LDAP_SCHEMA}" = rfc2307 ]; then
+        filter="(&(objectClass=posixGroup)(memberUid=${USER}))"
+        attr="cn"
+    elif [ "${DOVECOT_LDAP_SCHEMA}" = ad ]; then
+        userdn=$(ldap_search "(&(objectClass=user)(sAMAccountName=${USER}))" dn)
+        filter="(&(objectClass=group)(member=${userdn}))"
+        attr="sAMAccountName"
+    fi
+
+    USERDB_KEYS="${USERDB_KEYS} ACL_GROUPS"
+    ACL_GROUPS=$(ldap_search "${filter}" ${attr})
+    export USERDB_KEYS ACL_GROUPS
+fi
+
+exec "${@}"
