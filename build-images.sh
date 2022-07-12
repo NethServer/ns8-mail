@@ -44,7 +44,8 @@ buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd gettext
+chmod -c 700 /var/lib/vmail
+apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext
 (
     # Remove the self-signed certificate
     rm -vf /etc/ssl/dovecot/server.*

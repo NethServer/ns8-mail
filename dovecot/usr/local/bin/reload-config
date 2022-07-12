@@ -29,6 +29,7 @@ ldap_schema=${DOVECOT_LDAP_SCHEMA:?}
 
 # Export variables for templates
 set -a
+S=\$
 ldap_host=${DOVECOT_LDAP_HOST:?}
 ldap_port=${DOVECOT_LDAP_PORT:?}
 ldap_base_dn=${DOVECOT_LDAP_BASE:?}
@@ -41,12 +42,11 @@ login_trusted_networks=${DOVECOT_TRUSTED_NETWORKS:-}
 doveadm_api_key=${DOVECOT_API_KEY:?}
 doveadm_api_port=${DOVECOT_API_PORT:?}
 stats_http_port=${DOVECOT_METRICS_PORT:?}
-protocols=\$protocols
-mail_plugins=
+tmpl_mail_plugins="acl listescape"
 quota_rule_storage="${DOVECOT_QUOTA_MB:-0}"
 if [ "${quota_rule_storage}" -gt 0 ]; then
     condinclude_local_quota='!include uquota.conf'
-    mail_plugins="${mail_plugins} quota"
+    tmpl_mail_plugins="${tmpl_mail_plugins} quota"
 else
     condinclude_local_quota=
 fi
@@ -54,6 +54,7 @@ fi
 master_users=${DOVECOT_MASTER_USERS}
 set +a
 
+envsubst >/etc/dovecot/ldapconf.sh <"${TEMPLATES_DIR:?}/ldapconf.sh"
 envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"
 envsubst >/etc/dovecot/uquota.conf <"${TEMPLATES_DIR:?}/uquota.conf"
 envsubst >/etc/dovecot/passdb.conf.ext <"${TEMPLATES_DIR:?}/${ldap_schema}-ldap.conf.ext"
