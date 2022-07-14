@@ -35,11 +35,14 @@ odom = Ldapproxy().get_domain(request['user_domain'])
 with agent.redis_connect() as rdb:
     cluster_network = rdb.get('cluster/network') or ""
 
-if not 'DOVECOT_API_KEY' in os.environ:
+if not os.path.exists('dovecot.env'):
     # Generate a persistent random token for Dovecot admin HTTP API
     alphabet = string.ascii_letters + string.digits + '-_+@:,/'
     dovecot_api_key = ''.join([secrets.choice(alphabet) for i in range(32)])
-    agent.set_env('DOVECOT_API_KEY', dovecot_api_key)
+    oldmask = os.umask(0o77)
+    with open('dovecot.env', 'w') as fenv:
+        print("DOVECOT_API_KEY=" + dovecot_api_key, file=fenv)
+    os.umask(oldmask)
 
 hostname = request['hostname']
 agent.set_env('MAIL_HOSTNAME', hostname)
