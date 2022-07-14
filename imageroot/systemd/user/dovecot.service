@@ -16,6 +16,7 @@ ExecStart=/usr/bin/podman run \
     --replace --name=%N \
     --network=host \
     --env=DOVECOT_* \
+    --env-file=dovecot.env \
     --volume=/dev/log:/dev/log \
     --volume=dovecot-data:/var/lib/vmail:z \
     --volume=dovecot-cert:/etc/ssl/dovecot:z \

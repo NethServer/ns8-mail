@@ -276,7 +276,8 @@ class DoveadmError(Exception):
 def doveadm_query(method, parameters):
     req = [[method, parameters, method]]
     dport = os.getenv('DOVECOT_API_PORT', '9288')
-    atok = base64.b64encode(bytes(os.environ['DOVECOT_API_KEY'], 'ascii')).decode()
+    api_key = agent.read_envfile('dovecot.env')['DOVECOT_API_KEY']
+    atok = base64.b64encode(bytes(api_key, 'ascii')).decode()
     oresp = requests.post(f"http://127.0.0.1:{dport}/doveadm/v1", json=req, headers={"Authorization": "X-Dovecot-API " + atok}).json()
     if oresp[0][0] != 'doveadmResponse':
         raise DoveadmError(oresp)
