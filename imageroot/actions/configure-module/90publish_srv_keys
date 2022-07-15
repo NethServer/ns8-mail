@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+import json
+import sys
+import agent
+import os
+
+request = json.load(sys.stdin)
+node_id = int(os.environ['NODE_ID'])
+agent_id = os.environ['AGENT_ID']
+module_uuid = os.environ['MODULE_UUID']
+
+with agent.redis_connect() as rdb:
+    node_address = rdb.hget(f'node/{node_id}/vpn', 'ip_address')
+
+# Create srv records in Redis for service discovery
+with agent.redis_connect(privileged=True) as prdb:
+    trx = prdb.pipeline()
+
+    kimap = agent_id + "/srv/tcp/imap"
+    trx.delete(kimap).hset(kimap, mapping={
+        "port": "143",
+        "host": node_address,
+        "node": str(node_id),
+        "user_domain": request['user_domain'],
+        "module_uuid": module_uuid,
+    })
+
+    ksubmission = agent_id + "/srv/tcp/submission"
+    trx.delete(ksubmission).hset(ksubmission, mapping={
+        "port": "587",
+        "host": node_address,
+        "node": str(node_id),
+        "user_domain": request['user_domain'],
+        "module_uuid": module_uuid,
+    })
+
+    # Publish change event
+    trx.publish(agent_id + "/event/mail-settings-changed", json.dumps({
+        "module_id": os.environ['MODULE_ID'],
+        "node_id": node_id,
+        "module_uuid": module_uuid,
+    }))
+
+    trx.execute()
