@@ -258,9 +258,11 @@ class LdapDestination:
         return self.mbx
 
 class DoveadmError(Exception):
-    def __init__(self, message=None, code=None):
-        self.code = code
-        self.message = message
+    def __init__(self, eobj=None):
+        self.eobj = eobj
+        self.code = -1
+        if eobj and eobj[0][0] == 'error':
+            self.code = int(eobj[0][1].get('exitCode', -1))
 
 def doveadm_query(method, parameters):
     req = [[method, parameters, method]]
@@ -268,11 +270,8 @@ def doveadm_query(method, parameters):
     api_key = agent.read_envfile('dovecot.env')['DOVECOT_API_KEY']
     atok = base64.b64encode(bytes(api_key, 'ascii')).decode()
     oresp = requests.post(f"http://127.0.0.1:{dport}/doveadm/v1", json=req, headers={"Authorization": "X-Dovecot-API " + atok}).json()
-    if oresp[0][0] == 'error':
-        raise DoveadmError(oresp[0][1]['type'], int(oresp[0][1].get('exitCode')))
-
     if oresp[0][0] != 'doveadmResponse':
-        raise DoveadmError()
+        raise DoveadmError(oresp)
 
     return oresp[0][1]
 

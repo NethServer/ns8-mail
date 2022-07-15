@@ -4,7 +4,22 @@
     "$id": "http://schema.nethserver.org/mail/remove-public-mailbox-input.json",
     "description": "Remove a public mailbox",
     "examples": [
-        []
+        [
+            {
+                "mailbox": "mbxname"
+            }
+        ]
     ],
-    "type": "object"
+    "type": "object",
+    "required": [
+        "mailbox"
+    ],
+    "properties": {
+        "mailbox": {
+            "title": "Mailbox",
+            "description": "Mailbox name, unique identifier",
+            "type": "string",
+            "minLength": 1
+        }
+    }
 }
