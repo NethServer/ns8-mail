@@ -54,6 +54,8 @@ fi
 master_users=${DOVECOT_MASTER_USERS}
 set +a
 
+echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::" > /etc/dovecot/users
+
 envsubst >/etc/dovecot/ldapconf.sh <"${TEMPLATES_DIR:?}/ldapconf.sh"
 envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"
 envsubst >/etc/dovecot/uquota.conf <"${TEMPLATES_DIR:?}/uquota.conf"

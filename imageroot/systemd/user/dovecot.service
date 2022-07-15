@@ -25,7 +25,7 @@ ExecStart=/usr/bin/podman run \
     ${MAIL_DOVECOT_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/dovecot.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/dovecot.ctr-id
-ExecReload=runagent /usr/bin/podman exec --env=DOVECOT_* %N reload-config
+ExecReload=runagent /usr/bin/podman exec --env=DOVECOT_* --env-file=dovecot.env %N reload-config
 PIDFile=%t/dovecot.pid
 Type=forking
 SyslogIdentifier=%u
