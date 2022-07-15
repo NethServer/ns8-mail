@@ -37,11 +37,13 @@ with agent.redis_connect() as rdb:
 
 if not os.path.exists('dovecot.env'):
     # Generate a persistent random token for Dovecot admin HTTP API
-    alphabet = string.ascii_letters + string.digits + '-_+@:,/'
+    alphabet = string.ascii_letters + string.digits + '%@-+_^,./'
     dovecot_api_key = ''.join([secrets.choice(alphabet) for i in range(32)])
+    dovecot_vmail_pass = ''.join([secrets.choice(alphabet) for i in range(32)])
     oldmask = os.umask(0o77)
     with open('dovecot.env', 'w') as fenv:
         print("DOVECOT_API_KEY=" + dovecot_api_key, file=fenv)
+        print("DOVECOT_VMAIL_PASS=" + dovecot_vmail_pass, file=fenv)
     os.umask(oldmask)
 
 hostname = request['hostname']

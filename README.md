@@ -27,6 +27,15 @@ As an example, the following command configures a mail server
 - The domain "example.com" is accepted as final destination with the
   default configuration for the SMTP MX server, listening on port 25.
 
+## User impersonation
+
+The username `vmail` is reserved and granted the *impersonate* privilege.
+If the user database backend has a homonym `vmail` user, it is ignored.
+
+Another module can obtain `vmail` credentials by invoking the action
+`reveal-master-credentials`, provided it has been granted the `mailadm`
+role.
+
 ## Services
 
 1. Dovecot -- `dovecot.service`. See also dovecot/README.md

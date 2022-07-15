@@ -60,4 +60,8 @@ if [ -z "${ACL_GROUPS}" ]; then
     export USERDB_KEYS ACL_GROUPS
 fi
 
+if [ -n "${MASTER_USER}" ]; then
+    logger -t "${DOVECOT_INSTANCE_NAME}" -p mail.notice "impersonated login MASTER_USER=${MASTER_USER} USER=${USER} AUTH_USER=${AUTH_USER} IP=${IP} LOCAL_IP=${LOCAL_IP}"
+fi
+
 exec "${@}"
