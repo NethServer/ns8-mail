@@ -1,55 +1,56 @@
 <template>
-  <cv-grid fullWidth>
-    <cv-row>
-      <cv-column class="page-title">
-        <h2>{{ $t("settings.title") }}</h2>
-      </cv-column>
-    </cv-row>
-    <cv-row v-if="error.getConfiguration">
-      <cv-column>
-        <NsInlineNotification
-          kind="error"
-          :title="$t('action.get-configuration')"
-          :description="error.getConfiguration"
-          :showCloseButton="false"
-        />
-      </cv-column>
-    </cv-row>
-    <cv-row>
-      <cv-column>
-        <cv-tile light>
-          <cv-form @submit.prevent="configureModule">
-            <!-- TODO remove test field and code configuration fields -->
-            <cv-text-input
-              :label="$t('settings.test_filed')"
-              v-model="testField"
-              :placeholder="$t('settings.test_filed')"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              :invalid-message="error.testField"
-              ref="testField"
-            ></cv-text-input>
-            <cv-row v-if="error.configureModule">
-              <cv-column>
-                <NsInlineNotification
-                  kind="error"
-                  :title="$t('action.configure-module')"
-                  :description="error.configureModule"
-                  :showCloseButton="false"
-                />
-              </cv-column>
-            </cv-row>
-            <NsButton
-              kind="primary"
-              :icon="Save20"
-              :loading="loading.configureModule"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              >{{ $t("settings.save") }}</NsButton
-            >
-          </cv-form>
-        </cv-tile>
-      </cv-column>
-    </cv-row>
-  </cv-grid>
+  <div>
+    <cv-grid fullWidth>
+      <cv-row>
+        <cv-column class="page-title">
+          <h2>{{ $t("settings.title") }}</h2>
+        </cv-column>
+      </cv-row>
+      <cv-row v-if="error.getConfiguration">
+        <cv-column>
+          <NsInlineNotification
+            kind="error"
+            :title="$t('action.get-configuration')"
+            :description="error.getConfiguration"
+            :showCloseButton="false"
+          />
+        </cv-column>
+      </cv-row>
+      <cv-row>
+        <cv-column>
+          <cv-tile light>
+            <!-- <cv-form @submit.prevent="configureModule">
+              <cv-text-input
+                :label="$t('settings.test_filed')"
+                v-model="testField"
+                :placeholder="$t('settings.test_filed')"
+                :disabled="loading.getConfiguration || loading.configureModule"
+                :invalid-message="error.testField"
+                ref="testField"
+              ></cv-text-input>
+              <cv-row v-if="error.configureModule">
+                <cv-column>
+                  <NsInlineNotification
+                    kind="error"
+                    :title="$t('action.configure-module')"
+                    :description="error.configureModule"
+                    :showCloseButton="false"
+                  />
+                </cv-column>
+              </cv-row>
+              <NsButton
+                kind="primary"
+                :icon="Save20"
+                :loading="loading.configureModule"
+                :disabled="loading.getConfiguration || loading.configureModule"
+                >{{ $t("settings.save") }}</NsButton
+              >
+            </cv-form> -->
+          </cv-tile>
+        </cv-column>
+      </cv-row>
+    </cv-grid>
+  </div>
 </template>
 
 <script>
@@ -61,6 +62,8 @@ import {
   TaskService,
   IconService,
 } from "@nethserver/ns8-ui-lib";
+
+//// remove useless code
 
 export default {
   name: "Settings",
@@ -156,7 +159,7 @@ export default {
       console.log("config", config);
 
       // TODO focus first configuration field
-      this.focusElement("testField");
+      // this.focusElement("testField"); ////
     },
     validateConfigureModule() {
       this.clearErrors(this);

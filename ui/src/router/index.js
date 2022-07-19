@@ -13,6 +13,18 @@ const routes = [
     alias: "/status", // important
   },
   {
+    path: "/domains",
+    name: "Domains",
+    component: () =>
+      import(/* webpackChunkName: "domains" */ "../views/Domains.vue"),
+  },
+  {
+    path: "/addresses",
+    name: "Addresses",
+    component: () =>
+      import(/* webpackChunkName: "addresses" */ "../views/Addresses.vue"),
+  },
+  {
     path: "/settings",
     name: "Settings",
     component: Settings,
