@@ -25,6 +25,6 @@ pass_attrs = =user=%L{ldap:sAMAccountName}
 
 # Attributes to get the list of all users
 iterate_attrs = =user=%L{ldap:sAMAccountName}
-iterate_filter = (&(objectClass=user))
+iterate_filter = (&(objectClass=user)(objectClass=person)(sAMAccountType=805306368)(!(isCriticalSystemObject=TRUE))(!(userPrincipalName=${ldap_bind_dn})))
 user_attrs = =user=%L{ldap:sAMAccountName}
 user_filter = (&(objectClass=user)(sAMAccountName=%L{username}))
