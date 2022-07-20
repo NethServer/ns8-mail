@@ -25,6 +25,8 @@ import sys
 import mail
 from sqlite3 import OperationalError
 
+mail.abort_with_json_if_not_configured([])
+
 try:
     domains = mail.get_domains()
 except OperationalError:

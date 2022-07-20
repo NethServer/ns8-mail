@@ -25,6 +25,8 @@ import sys
 import os
 import mail
 
+mail.abort_with_json_if_not_configured([])
+
 rusers = mail.doveadm_query("user", {"userMask":"*"})
 
 gquota = os.getenv("DOVECOT_QUOTA_MB", "")
