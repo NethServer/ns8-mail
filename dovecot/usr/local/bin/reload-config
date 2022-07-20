@@ -59,6 +59,12 @@ set +a
 
 echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::" > /etc/dovecot/users
 
+if [ -n "${DOVECOT_DISABLED_USERS}" ]; then
+    echo "${DOVECOT_DISABLED_USERS}" | tr ',' $'\n' | sed '/^$/ d ; s/$/:::::::/' > /etc/dovecot/disabled-users
+else
+    echo "" > /etc/dovecot/disabled-users
+fi
+
 envsubst >/etc/dovecot/ldapconf.sh <"${TEMPLATES_DIR:?}/ldapconf.sh"
 envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"
 envsubst >/etc/dovecot/uquota.conf <"${TEMPLATES_DIR:?}/uquota.conf"

@@ -29,6 +29,7 @@ from agent.ldapclient import Ldapclient
 from agent.ldapproxy import Ldapproxy
 
 hdest = {}
+disabled_users = mail.get_disabled_users()
 
 try:
     dconf = Ldapproxy().get_domain(os.environ['POSTFIX_ORIGIN'])
@@ -36,6 +37,9 @@ try:
     ldapclient = Ldapclient.factory(**dconf)
 
     for euser in ldapclient.list_users():
+        if euser['user'] in disabled_users:
+            continue # skip disabled user
+
         hdest[euser['user']] = {
             'dtype': 'user',
             'name': euser['user'],

@@ -47,6 +47,8 @@ Private TCP ports:
 - `DOVECOT_METRICS_PORT`, TCP port number for OpenMetrics. Default value is `9289`.
 - `DOVECOT_MASTER_USERS`, Comma-separated list of user names that are
   granted impersonate privilege. Default empty.
+- `DOVECOT_DISABLED_USERS`, comma-separated list of user names that have
+  no access at all to the mail services. Default empty.
 - `DOVECOT_SPAM_RETENTION`, default empty, which means the feature is disabled and spam is never expunged automatically
 - `DOVECOT_SPAM_FOLDER`, default `Junk`
 

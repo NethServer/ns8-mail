@@ -30,6 +30,7 @@ mail.abort_with_json_if_not_configured([])
 rusers = mail.doveadm_query("user", {"userMask":"*"})
 
 gquota = os.getenv("DOVECOT_QUOTA_MB", "")
+disabled_users = mail.get_disabled_users()
 
 try:
     rquotas = mail.doveadm_query("quotaGet", {"allUsers":True})
@@ -39,6 +40,9 @@ except:
 mailboxes = {}
 
 for ouser in rusers['userList']:
+    if ouser in disabled_users:
+        continue # skip disabled user
+
     mailboxes[ouser] = {"user": ouser}
 
 for oquota in rquotas:

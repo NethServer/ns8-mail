@@ -120,8 +120,11 @@ def get_addresses():
 
     if sdb.execute("""SELECT COUNT(*) FROM domains WHERE addusers = 1""").fetchone()[0] > 0:
         # If at least one domain is marked "addusers", append "adduser" addresses
+        disabled_users = get_disabled_users()
         ldapclient = _create_ldapclient()
         for euser in ldapclient.list_users():
+            if euser["user"] in disabled_users:
+                continue # skip disabled user
             akey = euser["user"] + '@+'
             addresses[akey] = {
                 "atype": "adduser",
@@ -296,3 +299,6 @@ def abort_with_json_if_not_configured(data, exit_code=0):
     if not 'MAIL_HOSTNAME' in os.environ:
         json.dump(data, fp=sys.stdout)
         sys.exit(exit_code)
+
+def get_disabled_users():
+    return ["vmail"] + os.getenv("DOVECOT_DISABLED_USERS", "").lower().split(",")
