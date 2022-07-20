@@ -23,6 +23,7 @@ import base64
 import os
 import agent
 import json
+import sys
 import cluster.userdomains
 import sqlite3
 from agent.ldapclient import Ldapclient, LdapclientEntryNotFound
@@ -290,3 +291,8 @@ def get_rights_map():
     rights_map['rw'] = rights_map['ro'] | {"insert", "create", "write", "write-deleted"}
     rights_map['full'] = rights_map['rw'] | {"expunge", "admin", "post"}
     return rights_map
+
+def abort_with_json_if_not_configured(data, exit_code=0):
+    if not 'MAIL_HOSTNAME' in os.environ:
+        json.dump(data, fp=sys.stdout)
+        sys.exit(exit_code)

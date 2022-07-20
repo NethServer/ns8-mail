@@ -25,6 +25,8 @@ import sys
 import mail
 import os
 
+mail.abort_with_json_if_not_configured([])
+
 mailboxes = {}
 
 rights_map = mail.get_rights_map()
