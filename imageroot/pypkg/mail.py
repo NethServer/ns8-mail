@@ -79,6 +79,15 @@ def get_domains():
     sdb.close()
     return domains
 
+def get_public_mailboxes():
+    mailboxes =  []
+    for ombx in doveadm_query("mailboxList", {"user": "vmail"}):
+        if ombx['mailbox'] == 'INBOX':
+            continue
+        mbxn = ombx['mailbox'].removeprefix("Public/")
+        mailboxes.append(mbxn)
+    return mailboxes
+
 def get_addresses():
     """Return a dictionary of mail addresses handled by the mail server"""
     sdb = pcdb_connect(readonly=True)

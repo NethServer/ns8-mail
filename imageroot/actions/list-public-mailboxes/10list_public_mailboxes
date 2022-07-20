@@ -73,10 +73,7 @@ def get_acls(mbxn):
 
     return lacls
 
-for ombx in mail.doveadm_query("mailboxList", {"user": "vmail"}):
-    if ombx['mailbox'] == 'INBOX':
-        continue
-    mbxn = ombx['mailbox'].removeprefix("Public/")
+for mbxn in mail.get_public_mailboxes():
     mailboxes[mbxn] = {
         "mailbox": mbxn,
         "acls": get_acls(mbxn),

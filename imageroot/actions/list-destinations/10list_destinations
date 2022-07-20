@@ -24,6 +24,7 @@ import json
 import sys
 import os
 import agent
+import mail
 from agent.ldapclient import Ldapclient
 from agent.ldapproxy import Ldapproxy
 
@@ -48,8 +49,11 @@ try:
             'ui_name': egroup['description'],
         }
 
-    for mpublic in []: # XXX add public mailboxes
-        pass
+    for mpublic in mail.get_public_mailboxes():
+        hdest[mpublic] = {
+            'dtype': 'public',
+            'name': mpublic,
+        }
 
 except KeyError as kex:
     if not 'POSTFIX_ORIGIN' in str(kex):
@@ -57,4 +61,4 @@ except KeyError as kex:
 
 destinations = list(hdest.values())
 
-json.dump(sorted(destinations, key=lambda el: el['ui_name']), fp=sys.stdout)
+json.dump(sorted(destinations, key=lambda el: el.get('ui_name', el['name']).lower()), fp=sys.stdout)
