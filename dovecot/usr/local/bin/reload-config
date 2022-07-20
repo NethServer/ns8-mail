@@ -43,11 +43,14 @@ doveadm_api_key=${DOVECOT_API_KEY:?}
 doveadm_api_port=${DOVECOT_API_PORT:?}
 stats_http_port=${DOVECOT_METRICS_PORT:?}
 tmpl_mail_plugins="acl listescape"
-quota_rule_storage="${DOVECOT_QUOTA_MB:-0}"
-if [ "${quota_rule_storage}" -gt 0 ]; then
+# Note: value "0" means "unlimited default quota"; value "" (empty string)
+# means "quota plugin disabled".
+if [ -n "${DOVECOT_QUOTA_MB}" ]; then
+    quota_rule_storage="${DOVECOT_QUOTA_MB}"
     condinclude_local_quota='!include uquota.conf'
     tmpl_mail_plugins="${tmpl_mail_plugins} quota"
 else
+    quota_rule_storage="0"
     condinclude_local_quota=
 fi
 

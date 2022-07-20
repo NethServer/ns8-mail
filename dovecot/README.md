@@ -38,9 +38,9 @@ Private TCP ports:
 - `DOVECOT_TRUSTED_NETWORKS`, eg `10.5.4.0/24` Connections from those
   networks do not require TLS
 - `DOVECOT_DEBUG`, if set enable verbose logging
-- `DOVECOT_QUOTA_MB`, default `0`. If greater than zero, set default
-  mailbox quota, with value expressed in MB. `0` means quota is completely
-  disabled.
+- `DOVECOT_QUOTA_MB`, default `0`, which means "unlimited". If greater
+  than zero, set default mailbox quota to that value, with value expressed
+  in MB. The empty string means quota plugin must be disabled.
 - `DOVECOT_API_KEY`, value for [`doveadm_api_key`](https://doc.dovecot.org/settings/core/#core_setting-doveadm_api_key)
 - `DOVECOT_API_PORT`, TCP port number for doveadm HTTP API server. Default
   value is `9288`.
