@@ -398,6 +398,9 @@
             "type": "object",
             "title": "Quota status",
             "description": "Quota usage and limit settings",
+            "required": [
+                "limit"
+            ],
             "properties": {
                 "limit": {
                     "type": "integer",
@@ -417,6 +420,11 @@
                     "description": "Quota usage percentage",
                     "minimum": 0,
                     "maximum": 100
+                },
+                "custom": {
+                    "type": "boolean",
+                    "title": "Custom limit",
+                    "description": "If true, the quota limit for the mailbox differs from the default limit"
                 }
             }
         },
