@@ -30,6 +30,7 @@ mail.abort_with_json_if_not_configured([])
 rusers = mail.doveadm_query("user", {"userMask":"*"})
 
 gquota = os.getenv("DOVECOT_QUOTA_MB", "")
+disabled_users = ["vmail"] + os.getenv("DOVECOT_DISABLED_USERS", "").lower().split(",")
 
 try:
     rquotas = mail.doveadm_query("quotaGet", {"allUsers":True})
@@ -39,6 +40,9 @@ except:
 mailboxes = {}
 
 for ouser in rusers['userList']:
+    if ouser in disabled_users:
+        continue # skip disabled users
+
     mailboxes[ouser] = {"user": ouser}
 
 for oquota in rquotas:
@@ -78,8 +82,5 @@ for kforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user = 
         continue # no forwards, keepcopy is useless
 
     mailboxes[kforward['user']]['forward']['keepcopy'] = True
-
-if 'vmail' in mailboxes:
-    del mailboxes['vmail']
 
 json.dump(list(mailboxes.values()), fp=sys.stdout, cls=mail.DestEncoder)
