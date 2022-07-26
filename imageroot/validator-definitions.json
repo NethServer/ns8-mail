@@ -595,7 +595,8 @@
                     "title": "Subject descriptor type",
                     "enum": [
                         "user",
-                        "group"
+                        "group",
+                        "apo"
                     ]
                 },
                 "name": {
