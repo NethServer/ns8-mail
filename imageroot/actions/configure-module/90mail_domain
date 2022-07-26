@@ -24,13 +24,13 @@ import json
 import sys
 import os
 import agent
-import sqlite3
+import mail
 
 request = json.load(sys.stdin)
 if not 'mail_domain' in request:
     sys.exit(0)
 
-sdb = sqlite3.connect("pcdb/pcdb.sqlite")
+sdb = mail.pcdb_connect()
 needs_reload = False
 with sdb:
     vals = {
@@ -38,7 +38,7 @@ with sdb:
         'addusers': 1,
     }
     cur = sdb.cursor()
-    if cur.execute("SELECT COUNT(*) FROM domains").fetchone()[0] == 0:
+    if cur.execute("SELECT COUNT(*) FROM domains WHERE domain != '*'").fetchone()[0] == 0:
         # If the postmaster wildcard destination is at its default, update its destination
         cur.execute("UPDATE destmap SET dest=? WHERE alocal='postmaster' AND domain='*' AND dest='postmaster'", ('vmail+postmaster',))
         print(agent.SD_DEBUG + f"Creating initial domain {vals['domain']}", file=sys.stderr)

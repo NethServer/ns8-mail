@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "alter-address input",
+    "$id": "http://schema.nethserver.org/mail/alter-address-input.json",
+    "description": "Alter a mail address",
+    "examples": [
+        {
+            "atype": "domain",
+            "local": "info",
+            "domain": "mydom.test",
+            "description": "Changed description of info@mydom.test"
+        }
+    ],
+    "allOf": [
+        {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/mail-address-change-request"
+        }
+    ]
+}

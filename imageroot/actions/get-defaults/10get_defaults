@@ -24,6 +24,7 @@ import json
 import sys
 import mail
 import socket
+import agent
 
 hostname = socket.getfqdn().lower()
 
@@ -35,5 +36,5 @@ except ValueError:
 json.dump({
     'hostname': hostname,
     "mail_domain": mail_domain,
-    "user_domains": mail.get_user_domains(),
+    "user_domains": mail.get_user_domains(agent.redis_connect()),
 }, fp=sys.stdout)

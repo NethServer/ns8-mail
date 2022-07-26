@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "add-domain input",
+    "$id": "http://schema.nethserver.org/mail/add-domain-input.json",
+    "description": "Define how the added mail domain is handled by this module",
+    "examples": [
+        {
+            "domain": "mynewdom.test",
+            "addusers": false,
+            "addgroups": false,
+            "catchall": {
+                "dtype": "user",
+                "name": "administrator"
+            },
+            "bccaddr": "spy@example.com",
+            "description": "Temporary domain with catchall configuration"
+        },
+        {
+            "domain": "great.example.com",
+            "addusers": true,
+            "addgroups": false,
+            "catchall": null,
+            "bccaddr": null,
+            "description": "Company main domain with all users"
+        }
+    ],
+    "allOf": [
+        {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/mail-domain"
+        }
+    ]
+}

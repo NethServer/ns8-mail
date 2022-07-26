@@ -27,6 +27,15 @@ As an example, the following command configures a mail server
 - The domain "example.com" is accepted as final destination with the
   default configuration for the SMTP MX server, listening on port 25.
 
+## User impersonation
+
+The username `vmail` is reserved and granted the *impersonate* privilege.
+If the user database backend has a homonym `vmail` user, it is ignored.
+
+Another module can obtain `vmail` credentials by invoking the action
+`reveal-master-credentials`, provided it has been granted the `mailadm`
+role.
+
 ## Services
 
 1. Dovecot -- `dovecot.service`. See also dovecot/README.md
@@ -34,6 +43,34 @@ As an example, the following command configures a mail server
 3. Rspamd -- N/A
 4. Diffie-Hellman group generator `dhgen.service`. Starts at module boot,
    then every 15 days. See also `dhgen.timer`.
+
+## Service discovery
+
+Another module can discover IMAP and SUBMISSION endpoints by looking up
+the following Redis key pattern:
+
+- `KEYS module/mail[1-9]*/srv/tcp/imap`
+- `KEYS module/mail[1-9]*/srv/tcp/submission`
+
+Returned key type is HASH, with the the following items:
+
+| key    | value example   | description |
+| ------ | --------------- | ----------- |
+| `host` | 10.5.4.1        |             |
+| `port` | 143             | for IMAP    |
+| `node` | 1               | the node identifier where the service is located |
+| `user_domain` | nethserver.test | name of user domain (LDAP protocol only)  |
+| `uuid` | 35457a5f-b0c1-421f-86f3-81df090df818 | module instance universal identifier |
+
+When settings change, the `mail-settings-changed` event is published. Payload format is
+
+```json
+{
+  "module_id": "mail1",
+  "module_uuid": "35457a5f-b0c1-421f-86f3-81df090df818",
+  "node_id": 1
+}
+```
 
 ## Commands
 

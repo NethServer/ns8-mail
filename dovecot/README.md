@@ -20,6 +20,8 @@ TLS ports
 Private TCP ports:
 
 - HTTP 9288, for [Doveadm API](https://doc.dovecot.org/admin_manual/doveadm_http_api/)
+- HTTP 9289, for
+  [OpenMetrics](https://doc.dovecot.org/configuration_manual/stats/openmetrics/)
 - SIEVE 4190 (also 2000 for Webtop)
 - Dovecot auth 4367, for SASL authentication of non-local Postfix
   instances or other services
@@ -36,17 +38,17 @@ Private TCP ports:
 - `DOVECOT_TRUSTED_NETWORKS`, eg `10.5.4.0/24` Connections from those
   networks do not require TLS
 - `DOVECOT_DEBUG`, if set enable verbose logging
-- `DOVECOT_QUOTA_MB`, default `0`. If greater than zero, set default
-  mailbox quota, with value expressed in MB. `0` means quota is completely
-  disabled.
+- `DOVECOT_QUOTA_MB`, default `0`, which means "unlimited". If greater
+  than zero, set default mailbox quota to that value, with value expressed
+  in MB. The empty string means quota plugin must be disabled.
 - `DOVECOT_API_KEY`, value for [`doveadm_api_key`](https://doc.dovecot.org/settings/core/#core_setting-doveadm_api_key)
 - `DOVECOT_API_PORT`, TCP port number for doveadm HTTP API server. Default
   value is `9288`.
-- `DOVECOT_STATS_PORT`, TCP port number for the [OpenMetrics HTTP
-  server](https://doc.dovecot.org/configuration_manual/stats/openmetrics/).
-  Default value is `9289`.
+- `DOVECOT_METRICS_PORT`, TCP port number for OpenMetrics. Default value is `9289`.
 - `DOVECOT_MASTER_USERS`, Comma-separated list of user names that are
   granted impersonate privilege. Default empty.
+- `DOVECOT_DISABLED_USERS`, comma-separated list of user names that have
+  no access at all to the mail services. Default empty.
 
 ## Logs
 

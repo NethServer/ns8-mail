@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "alter-domain output",
+    "$id": "http://schema.nethserver.org/mail/alter-domain-output.json",
+    "description": "Returns the new domain state",
+    "examples": [
+        {
+            "domain": "mydom.test",
+            "addusers": true,
+            "catchall": {
+                "dtype": "user",
+                "user": "first.user"
+            },
+            "bccaddr": "administrator@company.test",
+            "description": "Altered"
+        }
+    ],
+    "allOf": [
+        {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/mail-domain"
+        }
+    ]
+}
