@@ -43,10 +43,14 @@ try:
     if 'quota' in request:
         if 'custom' in request['quota'] and request['quota']['custom'] is False:
             # Unset the custom quota limit
-            mail.doveadm_query("dictUnset", {
-                "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
-                "key":"shared/" + request['user'],
-            })
+            try:
+                mail.doveadm_query("dictUnset", {
+                    "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
+                    "key":"shared/" + request['user'],
+                })
+            except mail.DoveadmError as dex:
+                if dex.code == 75:
+                    pass
         else:
             # Set the custom quota limit value in the Dovecot dict DB
             limit = str(request['quota']['limit'])
