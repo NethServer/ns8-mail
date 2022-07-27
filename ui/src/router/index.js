@@ -1,7 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Status from "../views/Status.vue";
-import Settings from "../views/Settings.vue";
 
 Vue.use(VueRouter);
 
@@ -33,7 +32,18 @@ const routes = [
   {
     path: "/settings",
     name: "Settings",
-    component: Settings,
+    component: () =>
+      import(
+        /* webpackChunkName: "settings" */ "../views/settings/Settings.vue"
+      ),
+  },
+  {
+    path: "/settingsMailboxes",
+    name: "SettingsMailboxes",
+    component: () =>
+      import(
+        /* webpackChunkName: "settings-mailboxes" */ "../views/settings/SettingsMailboxes.vue"
+      ),
   },
   {
     path: "/about",

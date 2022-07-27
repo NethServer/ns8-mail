@@ -207,5 +207,8 @@
     "forward_enum": "One or more forward addresses are invalid",
     "member_not_found": "Member <strong>{member}</strong> not found. If you edit the mailbox it will be removed",
     "multiple_members_not_found": "Members not found: <strong>{members}</strong>. If you edit the mailbox they will be removed"
+  },
+  "settings_mailboxes": {
+    "title": "Mailboxes"
   }
 }

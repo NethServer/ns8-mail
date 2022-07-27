@@ -33,7 +33,6 @@
           <cv-tile light>
             <NsTabs
               :container="false"
-              @tab-selected="actionSelected"
               :aria-label="core.$t('common.tab_navigation')"
             >
               <cv-tab id="tab-1" :label="$t('mailboxes.user_mailboxes')">
@@ -98,11 +97,8 @@ export default {
     next();
   },
   methods: {
-    actionSelected(ev) {
-      //// remove?
-    },
     goToMailboxesSettings() {
-      console.log("goToMailboxesSettings"); ////
+      this.goToAppPage(this.instanceName, "settingsMailboxes");
     },
   },
 };
