@@ -125,6 +125,9 @@
       :typeToConfirm="
         core.$t('common.type_to_confirm', { name: currentDomain.domain })
       "
+      :isErrorShown="!!error.removeDomain"
+      :errorTitle="$t('action.remove-domain')"
+      :errorDescription="error.removeDomain"
       @hide="hideDeleteDomainModal"
       @confirmDelete="removeDomain"
     >

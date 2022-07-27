@@ -184,7 +184,6 @@
                 v-if="copyInboundMessages.enabled"
                 v-model.trim="copyInboundMessages.bccaddr"
                 :label="$t('domains.send_to')"
-                placeholder="alice@example.org"
                 :invalid-message="error.bccaddr"
                 :disabled="loading.addDomain || loading.alterDomain"
                 ref="bccaddr"
@@ -301,6 +300,8 @@ export default {
               this.isAccordionOpen = true;
             });
           }
+
+          this.focusElement("description");
         }
       } else {
         // closing modal
@@ -703,7 +704,7 @@ export default {
           name: d.name,
           value: `${d.name}_${d.dtype}`,
           label: d.ui_name || d.name,
-          type: this.$t(`addresses.${d.dtype}_destination`),
+          type: this.$t(`common.${d.dtype}_destination`),
         };
       });
 

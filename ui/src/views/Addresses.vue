@@ -184,53 +184,89 @@
                           </span>
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          <span
-                            v-for="dest in row.destinations"
-                            :key="dest.name"
-                            class="destination"
+                          <div
+                            v-if="row.destinations && row.destinations.length"
                           >
-                            <cv-interactive-tooltip
-                              alignment="center"
-                              direction="right"
-                              class="tooltip-with-text-trigger info"
+                            <span
+                              v-for="dest in row.destinations"
+                              :key="dest.name"
+                              class="destination"
                             >
-                              <template slot="trigger">
-                                <span class="icon">
-                                  <NsSvg
-                                    v-if="dest.dtype == 'user'"
-                                    :svg="User16"
-                                  />
-                                  <NsSvg
-                                    v-else-if="dest.dtype == 'group'"
-                                    :svg="Events16"
-                                  />
-                                  <NsSvg
-                                    v-else-if="dest.dtype == 'apo'"
-                                    :svg="Unknown16"
-                                  />
-                                  <NsSvg
-                                    v-else-if="dest.dtype == 'public'"
-                                    :svg="Box16"
-                                  />
-                                  <NsSvg
-                                    v-else-if="dest.dtype == 'external'"
-                                    :svg="Email16"
-                                  />
-                                </span>
-                                <span v-if="dest.ui_name">{{
-                                  dest.ui_name
-                                }}</span>
-                                <span v-else>{{ dest.name }}</span>
-                              </template>
-                              <template slot="content">
-                                <div>
-                                  {{
-                                    $t(`addresses.${dest.dtype}_destination`)
-                                  }}
-                                </div>
-                              </template>
-                            </cv-interactive-tooltip>
-                          </span>
+                              <cv-interactive-tooltip
+                                alignment="center"
+                                direction="right"
+                                class="tooltip-with-text-trigger info"
+                              >
+                                <template slot="trigger">
+                                  <span class="icon">
+                                    <NsSvg
+                                      v-if="dest.dtype == 'user'"
+                                      :svg="User16"
+                                    />
+                                    <NsSvg
+                                      v-else-if="dest.dtype == 'group'"
+                                      :svg="Events16"
+                                    />
+                                    <NsSvg
+                                      v-else-if="dest.dtype == 'apo'"
+                                      :svg="Unknown16"
+                                    />
+                                    <NsSvg
+                                      v-else-if="dest.dtype == 'public'"
+                                      :svg="Box16"
+                                    />
+                                    <NsSvg
+                                      v-else-if="dest.dtype == 'external'"
+                                      :svg="Email16"
+                                    />
+                                  </span>
+                                  <span v-if="dest.ui_name">{{
+                                    dest.ui_name
+                                  }}</span>
+                                  <span v-else>{{ dest.name }}</span>
+                                </template>
+                                <template slot="content">
+                                  <div>
+                                    {{ $t(`common.${dest.dtype}_destination`) }}
+                                  </div>
+                                </template>
+                              </cv-interactive-tooltip>
+                            </span>
+                          </div>
+                          <div v-else>
+                            <!-- adduser or addgroup address -->
+                            <span class="destination">
+                              <cv-interactive-tooltip
+                                alignment="center"
+                                direction="right"
+                                class="tooltip-with-text-trigger info"
+                              >
+                                <template slot="trigger">
+                                  <span class="icon">
+                                    <NsSvg
+                                      v-if="row.atype === 'adduser'"
+                                      :svg="User16"
+                                    />
+                                    <NsSvg
+                                      v-else-if="row.atype === 'addgroup'"
+                                      :svg="Events16"
+                                    />
+                                  </span>
+                                  <span>{{
+                                    row.description || row.local
+                                  }}</span>
+                                </template>
+                                <template slot="content">
+                                  <div v-if="row.atype === 'adduser'">
+                                    {{ $t(`common.user_destination`) }}
+                                  </div>
+                                  <div v-else-if="row.atype === 'addgroup'">
+                                    {{ $t(`common.group_destination`) }}
+                                  </div>
+                                </template>
+                              </cv-interactive-tooltip>
+                            </span>
+                          </div>
                         </cv-data-table-cell>
                         <cv-data-table-cell>
                           <span class="visibility">
@@ -379,7 +415,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["instanceName", "core", "appName", "isAppConfigured"]),
+    ...mapState(["instanceName", "core", "appName"]),
     i18nTableColumns() {
       return this.tableColumns.map((column) => {
         return this.$t("addresses." + column);
@@ -516,29 +552,11 @@ export default {
           ? this.$t("addresses.internal")
           : this.$t("addresses.public");
 
-        let destinations = address.destinations;
-
-        if (address.atype === "adduser") {
-          destinations = [
-            {
-              dtype: "user",
-              ui_name: address.description,
-            },
-          ];
-        } else if (address.atype === "addgroup") {
-          destinations = [
-            {
-              dtype: "group",
-              ui_name: address.description,
-            },
-          ];
-        }
-
         return {
           domain: address.domain,
           address: `${address.local}@${domain}`,
           local: address.local,
-          destinations: destinations,
+          destinations: address.destinations,
           internal: !!address.internal,
           visibility: visibility,
           atype: address.atype,
@@ -608,7 +626,7 @@ export default {
     removeAddressCompleted() {
       this.loading.removeAddress = false;
 
-      // reload routes
+      // reload addresses
       this.listAddresses();
     },
     async listDomains() {

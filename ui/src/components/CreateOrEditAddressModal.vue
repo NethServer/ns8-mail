@@ -83,7 +83,7 @@
           :clearSelectionAriaLabel="core.$t('common.clear_selection')"
           :clearFilterLabel="core.$t('common.clear_filter')"
           :selectedLabel="core.$t('common.selected_l')"
-          :userInputLabel="$t('addresses.external_destination')"
+          :userInputLabel="$t('common.external_destination')"
           :maxDisplayOptions="100"
           acceptUserInput
           showItemType
@@ -493,7 +493,7 @@ export default {
           name: d.name,
           value: `${d.name}_${d.dtype}`,
           label: d.ui_name || d.name,
-          type: this.$t(`addresses.${d.dtype}_destination`),
+          type: this.$t(`common.${d.dtype}_destination`),
         };
       });
 
@@ -515,7 +515,7 @@ export default {
               name: d.name,
               value: d.name,
               label: d.name,
-              type: this.$t(`addresses.external_destination`),
+              type: this.$t(`common.external_destination`),
             });
           }
         }
