@@ -89,7 +89,8 @@
     "select_domain_description": "Select a user domain for the mail server. An email address will be created for every user in this domain",
     "no_domain_configured": "No user domain configured",
     "no_domain_configured_description": "Please configure a user domain first",
-    "go_to_domains_and_users": "Go to Domains and users"
+    "go_to_domains_and_users": "Go to Domains and users",
+    "mail_domain_pattern": "Invalid domain"
   },
   "domains": {
     "title": "Domains",
@@ -109,7 +110,7 @@
     "delete_domain": "Delete domain",
     "delete_domain_confirm": "Delete domain <strong>{name}</strong>?",
     "delete_domain_explanation": "All associated email addresses will be deleted as well. However, all email messages received and sent by this domain will be preserved.",
-    "domain_pattern": "Invalid pattern",
+    "domain_pattern": "Invalid domain",
     "required_if_accept_unknown_recipients": "Required if \"Accept unknown recipients\" is enabled",
     "required_if_copy_inbound_messages": "Required if \"Copy inbound messages\" is enabled",
     "bccaddr_format": "Invalid email format",

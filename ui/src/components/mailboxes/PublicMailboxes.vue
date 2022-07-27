@@ -256,8 +256,6 @@ export default {
       this.loading.listPublicMailboxes = false;
     },
     listPublicMailboxesCompleted(taskContext, taskResult) {
-      console.log("listPublicMailboxesCompleted", taskResult.output); ////
-
       this.mailboxes = taskResult.output;
       this.loading.listPublicMailboxes = false;
     },

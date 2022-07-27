@@ -287,7 +287,7 @@ export default {
       );
 
       // register to task validation
-      this.$root.$once(
+      this.core.$root.$once(
         `${taskAction}-validation-failed-${eventId}`,
         this.configureModuleValidationFailed
       );
@@ -338,6 +338,10 @@ export default {
           "welcome." + validationError.error,
           "error." + validationError.error
         );
+
+        if (param === "mail_domain") {
+          this.step = "mailHostname";
+        }
 
         if (!focusAlreadySet) {
           this.focusElement(param);
