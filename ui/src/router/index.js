@@ -1,3 +1,7 @@
+//
+// Copyright (C) 2022 Nethesis S.r.l.
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Status from "../views/Status.vue";

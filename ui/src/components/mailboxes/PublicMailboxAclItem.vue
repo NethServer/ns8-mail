@@ -1,3 +1,7 @@
+<!--
+  Copyright (C) 2022 Nethesis S.r.l.
+  SPDX-License-Identifier: GPL-3.0-or-later
+-->
 <template>
   <cv-tile light class="public-mailbox-acl-item">
     <div class="mg-right-md">{{ acl.subject.ui_name || acl.subject.name }}</div>
