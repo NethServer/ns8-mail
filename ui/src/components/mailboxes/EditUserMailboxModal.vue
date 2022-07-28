@@ -232,7 +232,8 @@ export default {
           this.customQuota.enabled = !!this.mailbox.quota.custom;
           this.customQuota.unlimited = !this.mailbox.quota.limit;
 
-          if (this.mailbox.quota.limit && this.mailbox.quota.limit < 1024) {
+          // show quota in MiB if it's not a multiple of 1 GiB
+          if (this.mailbox.quota.limit % 1024 !== 0) {
             this.customQuota.byteUnit = "mib";
             this.customQuota.limit = this.mailbox.quota.limit.toString();
           } else {

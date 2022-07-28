@@ -84,29 +84,33 @@
                     >
                       <cv-interactive-tooltip
                         alignment="center"
-                        direction="right"
+                        direction="top"
                         class="tooltip-with-text-trigger info"
                       >
                         <template slot="trigger">
-                          <span class="icon">
-                            <NsSvg v-if="dest.dtype == 'user'" :svg="User16" />
-                            <NsSvg
-                              v-else-if="dest.dtype == 'group'"
-                              :svg="Events16"
-                            />
-                            <NsSvg
-                              v-else-if="dest.dtype == 'public'"
-                              :svg="Box16"
-                            />
-                            <NsSvg
-                              v-else-if="dest.dtype == 'external'"
-                              :svg="Email16"
-                            />
-                            <!-- apo or unknown type -->
-                            <NsSvg v-else :svg="Unknown16" />
-                          </span>
-                          <span v-if="dest.ui_name">{{ dest.ui_name }}</span>
-                          <span v-else>{{ dest.name }}</span>
+                          <div class="icon-and-text-inline mg-right-md">
+                            <span class="icon">
+                              <NsSvg
+                                v-if="dest.dtype == 'user'"
+                                :svg="User16"
+                              />
+                              <NsSvg
+                                v-else-if="dest.dtype == 'group'"
+                                :svg="Events16"
+                              />
+                              <NsSvg
+                                v-else-if="dest.dtype == 'public'"
+                                :svg="Box16"
+                              />
+                              <NsSvg
+                                v-else-if="dest.dtype == 'external'"
+                                :svg="Email16"
+                              />
+                              <!-- apo or unknown type -->
+                              <NsSvg v-else :svg="Unknown16" />
+                            </span>
+                            <span>{{ dest.ui_name || dest.name }}</span>
+                          </div>
                         </template>
                         <template slot="content">
                           <div>
@@ -265,18 +269,5 @@ export default {
   font-size: 90%;
   display: flex;
   justify-content: space-between;
-}
-
-.destination {
-  display: inline-block;
-  margin-right: $spacing-05;
-  margin-top: $spacing-02;
-  margin-bottom: $spacing-02;
-
-  .icon {
-    position: relative;
-    top: 3px;
-    margin-right: $spacing-02;
-  }
 }
 </style>

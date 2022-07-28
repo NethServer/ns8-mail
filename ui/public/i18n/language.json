@@ -196,7 +196,7 @@
     "rtype_full": "Full control",
     "create_public_mailbox_mailbox": "Create public mailbox {mailbox}",
     "col_mailbox": "Mailbox",
-    "col_acls": "ACL",
+    "col_acls": "Members",
     "invalid_custom_quota_sameas_default_value": "Custom quota must be different from the default quota",
     "edit_public_mailbox_mailbox": "Edit public mailbox {mailbox}",
     "at_least_one_member": "At least one member is required",

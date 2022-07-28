@@ -168,4 +168,13 @@ export default {
 
 <style lang="scss">
 @import "styles/carbon-utils";
+
+.icon-and-text-inline {
+  display: inline-flex;
+  align-items: center;
+
+  .icon {
+    margin-right: $spacing-02;
+  }
+}
 </style>

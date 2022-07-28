@@ -64,16 +64,34 @@
                     :key="index"
                     alignment="center"
                     direction="top"
-                    class="acl-tooltip"
+                    class="tooltip-with-text-trigger info"
                   >
                     <template slot="trigger">
-                      <NsTag
-                        :label="acl.subject.ui_name || acl.subject.name"
-                        :kind="getAclColor(acl.rights.rtype)"
-                        :icon="getAclIcon(acl.subject)"
-                        class="acl-tag"
-                      >
-                      </NsTag>
+                      <div class="icon-and-text-inline mg-right-md">
+                        <span class="icon">
+                          <NsSvg
+                            v-if="acl.subject.dtype == 'user'"
+                            :svg="User16"
+                          />
+                          <NsSvg
+                            v-else-if="acl.subject.dtype == 'group'"
+                            :svg="Events16"
+                          />
+                          <NsSvg
+                            v-else-if="acl.subject.dtype == 'public'"
+                            :svg="Box16"
+                          />
+                          <NsSvg
+                            v-else-if="acl.subject.dtype == 'external'"
+                            :svg="Email16"
+                          />
+                          <!-- apo or unknown type -->
+                          <NsSvg v-else :svg="Unknown16" />
+                        </span>
+                        <span>{{
+                          acl.subject.ui_name || acl.subject.name
+                        }}</span>
+                      </div>
                     </template>
                     <template slot="content">
                       <div>
@@ -271,33 +289,6 @@ export default {
     hideCreateOrEditPublicMailboxModal() {
       this.isShownCreateOrEditPublicMailboxModal = false;
     },
-    getAclColor(rtype) {
-      switch (rtype) {
-        case "ro":
-          return "green";
-        case "rw":
-          return "blue";
-        case "full":
-          return "red";
-        default:
-          return "gray";
-      }
-    },
-    getAclIcon(subject) {
-      switch (subject.dtype) {
-        case "user":
-          return this.User16;
-        case "group":
-          return this.Events16;
-        case "public":
-          return this.Box16;
-        case "external":
-          return this.Email16;
-        default:
-          // apo or unknown type
-          return this.Unknown16;
-      }
-    },
     showDeleteMailboxModal(mailbox) {
       this.currentMailbox = mailbox;
       this.isShownDeleteMailboxModal = true;
@@ -364,14 +355,6 @@ export default {
 
 <style scoped lang="scss">
 @import "../../styles/carbon-utils";
-
-.acl-tooltip {
-  margin-left: 0;
-
-  .acl-tag {
-    cursor: pointer;
-  }
-}
 
 .rights-values {
   font-size: 13px;

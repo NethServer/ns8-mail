@@ -133,7 +133,7 @@
                           <cv-interactive-tooltip
                             v-if="row.description"
                             alignment="center"
-                            direction="right"
+                            direction="top"
                             class="tooltip-icon info"
                           >
                             <template slot="trigger">
@@ -161,7 +161,7 @@
                           </div>
                         </template>
                         <cv-data-table-cell>
-                          <span class="atype">
+                          <span class="atype icon-and-text-inline">
                             <span class="icon">
                               <NsSvg
                                 v-if="row.atype == 'wildcard'"
@@ -194,36 +194,37 @@
                             >
                               <cv-interactive-tooltip
                                 alignment="center"
-                                direction="right"
+                                direction="top"
                                 class="tooltip-with-text-trigger info"
                               >
                                 <template slot="trigger">
-                                  <span class="icon">
-                                    <NsSvg
-                                      v-if="dest.dtype == 'user'"
-                                      :svg="User16"
-                                    />
-                                    <NsSvg
-                                      v-else-if="dest.dtype == 'group'"
-                                      :svg="Events16"
-                                    />
-                                    <NsSvg
-                                      v-else-if="dest.dtype == 'apo'"
-                                      :svg="Unknown16"
-                                    />
-                                    <NsSvg
-                                      v-else-if="dest.dtype == 'public'"
-                                      :svg="Box16"
-                                    />
-                                    <NsSvg
-                                      v-else-if="dest.dtype == 'external'"
-                                      :svg="Email16"
-                                    />
+                                  <span
+                                    class="icon-and-text-inline mg-right-md"
+                                  >
+                                    <span class="icon">
+                                      <NsSvg
+                                        v-if="dest.dtype == 'user'"
+                                        :svg="User16"
+                                      />
+                                      <NsSvg
+                                        v-else-if="dest.dtype == 'group'"
+                                        :svg="Events16"
+                                      />
+                                      <NsSvg
+                                        v-else-if="dest.dtype == 'apo'"
+                                        :svg="Unknown16"
+                                      />
+                                      <NsSvg
+                                        v-else-if="dest.dtype == 'public'"
+                                        :svg="Box16"
+                                      />
+                                      <NsSvg
+                                        v-else-if="dest.dtype == 'external'"
+                                        :svg="Email16"
+                                      />
+                                    </span>
+                                    <span>{{ dest.ui_name || dest.name }}</span>
                                   </span>
-                                  <span v-if="dest.ui_name">{{
-                                    dest.ui_name
-                                  }}</span>
-                                  <span v-else>{{ dest.name }}</span>
                                 </template>
                                 <template slot="content">
                                   <div>
@@ -238,23 +239,25 @@
                             <span class="destination">
                               <cv-interactive-tooltip
                                 alignment="center"
-                                direction="right"
+                                direction="top"
                                 class="tooltip-with-text-trigger info"
                               >
                                 <template slot="trigger">
-                                  <span class="icon">
-                                    <NsSvg
-                                      v-if="row.atype === 'adduser'"
-                                      :svg="User16"
-                                    />
-                                    <NsSvg
-                                      v-else-if="row.atype === 'addgroup'"
-                                      :svg="Events16"
-                                    />
+                                  <span class="icon-and-text-inline">
+                                    <span class="icon">
+                                      <NsSvg
+                                        v-if="row.atype === 'adduser'"
+                                        :svg="User16"
+                                      />
+                                      <NsSvg
+                                        v-else-if="row.atype === 'addgroup'"
+                                        :svg="Events16"
+                                      />
+                                    </span>
+                                    <span>{{
+                                      row.description || row.local
+                                    }}</span>
                                   </span>
-                                  <span>{{
-                                    row.description || row.local
-                                  }}</span>
                                 </template>
                                 <template slot="content">
                                   <div v-if="row.atype === 'adduser'">
@@ -269,13 +272,11 @@
                           </div>
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          <span class="visibility">
-                            <NsSvg
-                              v-if="row.internal"
-                              :svg="Locked16"
-                              class="icon"
-                            />
-                            <NsSvg v-else :svg="Wikis16" class="icon" />
+                          <span class="icon-and-text-inline">
+                            <span class="icon">
+                              <NsSvg v-if="row.internal" :svg="Locked16" />
+                              <NsSvg v-else :svg="Wikis16" />
+                            </span>
                             <span>{{ row.visibility }}</span>
                           </span>
                         </cv-data-table-cell>
@@ -908,33 +909,6 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
-
-.destination {
-  display: inline-block;
-  margin-right: $spacing-05;
-  margin-top: $spacing-02;
-  margin-bottom: $spacing-02;
-
-  .icon {
-    position: relative;
-    top: 3px;
-    margin-right: $spacing-02;
-  }
-}
-
-.visibility {
-  display: inline-block;
-}
-
-.atype {
-  display: inline-block;
-}
-
-.icon {
-  position: relative;
-  top: 3px;
-  margin-right: $spacing-02;
-}
 
 .tooltip-icon {
   margin-left: $spacing-02;

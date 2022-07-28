@@ -25,7 +25,6 @@
 </template>
 
 <script>
-// import to from "await-to-js"; ////
 import {
   QueryParamService,
   UtilService,
