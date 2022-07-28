@@ -21,16 +21,6 @@
         <h3>{{ $t("settings_mailboxes.title") }}</h3>
       </cv-column>
     </cv-row>
-    <!-- <cv-row v-if="error.getClusterStatus"> ////
-      <cv-column>
-        <NsInlineNotification
-          kind="error"
-          :title="$t('action.get-cluster-status')"
-          :description="error.getClusterStatus"
-          :showCloseButton="false"
-        />
-      </cv-column>
-    </cv-row> -->
   </cv-grid>
 </template>
 
@@ -80,9 +70,7 @@ export default {
     clearInterval(this.urlCheckInterval);
     next();
   },
-  created() {
-    // this.getClusterStatus(); ////
-  },
+  created() {},
   methods: {
     goToSettings() {
       this.goToAppPage(this.instanceName, "settings");

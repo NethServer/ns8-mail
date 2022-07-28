@@ -207,7 +207,11 @@
     "forward_number_one_of": "One or more forward addresses are invalid",
     "forward_enum": "One or more forward addresses are invalid",
     "member_not_found": "Member <strong>{member}</strong> not found. If you edit the mailbox it will be removed",
-    "multiple_members_not_found": "Members not found: <strong>{members}</strong>. If you edit the mailbox they will be removed"
+    "multiple_members_not_found": "Members not found: <strong>{members}</strong>. If you edit the mailbox they will be removed",
+    "custom_spam_retention": "Custom spam retention",
+    "spam_retention": "Spam retention",
+    "forever": "Forever",
+    "days": "Days"
   },
   "settings_mailboxes": {
     "title": "Mailboxes"

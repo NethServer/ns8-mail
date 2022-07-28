@@ -78,7 +78,6 @@ export default {
     return {
       q: {
         page: "mailboxes",
-        selectedTab: "",
       },
       urlCheckInterval: null,
     };

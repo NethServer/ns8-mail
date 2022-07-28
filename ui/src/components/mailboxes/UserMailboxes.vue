@@ -147,6 +147,7 @@
     <EditUserMailboxModal
       :isShown="isShownEditUserMailboxModal"
       :mailbox="currentMailbox"
+      :defaultSpamRetention="defaultSpamRetention"
       @hide="hideEditUserMailboxModal"
       @mailboxAltered="listUserMailboxes"
     />
@@ -175,6 +176,7 @@ export default {
       tableColumns: ["user", "quota", "forward"],
       mailboxes: [],
       isShownEditUserMailboxModal: false,
+      defaultSpamRetention: 0,
       loading: {
         listUserMailboxes: false,
         alterUserMailbox: false,
@@ -240,7 +242,9 @@ export default {
       this.loading.listUserMailboxes = false;
     },
     listUserMailboxesCompleted(taskContext, taskResult) {
-      this.mailboxes = taskResult.output;
+      this.defaultSpamRetention =
+        taskResult.output.default_spam_retention.value;
+      this.mailboxes = taskResult.output.user_mailboxes;
       this.loading.listUserMailboxes = false;
     },
     showEditUserMailboxModal(mailbox) {

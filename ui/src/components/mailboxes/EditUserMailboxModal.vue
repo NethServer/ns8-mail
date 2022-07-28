@@ -106,6 +106,41 @@
             @byteUnit="customQuota.byteUnit = $event"
           />
         </div>
+        <!-- custom spam retention -->
+        <NsToggle
+          value="checkCustomSpamRetention"
+          :form-item="true"
+          v-model="customSpamRetention.enabled"
+          :disabled="loading.alterUserMailbox"
+          class="toggle-without-label"
+        >
+          <template slot="text-left">
+            {{ $t("mailboxes.custom_spam_retention") }}
+          </template>
+          <template slot="text-right"
+            >{{ $t("mailboxes.custom_spam_retention") }}
+          </template>
+        </NsToggle>
+        <div v-show="customSpamRetention.enabled" class="toggle-dependent">
+          <NsSlider
+            v-model="customSpamRetention.value"
+            :label="$t('mailboxes.spam_retention')"
+            min="1"
+            max="180"
+            step="1"
+            stepMultiplier="10"
+            minLabel=""
+            maxLabel=""
+            showUnlimited
+            :unlimitedLabel="$t('mailboxes.forever')"
+            :isUnlimited="customSpamRetention.unlimited"
+            :invalidMessage="error.value"
+            :disabled="loading.alterUserMailbox"
+            :unitLabel="$t('mailboxes.days')"
+            light
+            @unlimited="customSpamRetention.unlimited = $event"
+          />
+        </div>
         <NsInlineNotification
           v-if="error.alterUserMailbox"
           kind="error"
@@ -135,6 +170,10 @@ export default {
     mailbox: {
       type: [Object, null],
     },
+    defaultSpamRetention: {
+      type: Number,
+      default: 15,
+    },
   },
   data() {
     return {
@@ -151,6 +190,11 @@ export default {
         unlimited: true,
         byteUnit: "gib",
       },
+      customSpamRetention: {
+        enabled: false,
+        value: "0",
+        unlimited: true,
+      },
       loading: {
         alterUserMailbox: false,
         listDestinations: false,
@@ -160,6 +204,7 @@ export default {
         listDestinations: "",
         forward: "",
         limit: "",
+        value: "",
       },
     };
   },
@@ -201,6 +246,21 @@ export default {
           this.customQuota.limit = "0";
           this.customQuota.unlimited = true;
           this.customQuota.byteUnit = "gib";
+        }
+
+        // set spam retention
+
+        if (this.mailbox.spam_retention) {
+          this.customSpamRetention.enabled =
+            !!this.mailbox.spam_retention.custom;
+          this.customSpamRetention.unlimited =
+            !this.mailbox.spam_retention.value;
+          this.customSpamRetention.value =
+            this.mailbox.spam_retention.value.toString();
+        } else {
+          this.customSpamRetention.enabled = false;
+          this.customSpamRetention.value = this.defaultSpamRetention.toString();
+          this.customSpamRetention.unlimited = true;
         }
       }
     },
@@ -319,9 +379,29 @@ export default {
         };
       }
 
+      let spamRetention = null;
+
+      if (this.customSpamRetention.enabled) {
+        let value = 0;
+
+        if (!this.customSpamRetention.unlimited) {
+          value = parseInt(this.customSpamRetention.value);
+        }
+
+        spamRetention = {
+          custom: true,
+          value: value,
+        };
+      } else {
+        spamRetention = {
+          custom: false,
+        };
+      }
+
       const alterUserMailboxData = {
         user: this.mailbox.user,
         quota,
+        spam_retention: spamRetention,
       };
 
       if (forward) {
@@ -478,6 +558,7 @@ export default {
       this.forward.enabled = false;
       this.forward.selectedDestinations = [];
       this.customQuota.enabled = false;
+      this.customSpamRetention.enabled = false;
     },
   },
 };
