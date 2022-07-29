@@ -14,7 +14,7 @@ fi
 
 print_user_spam_retention() {
     {
-        doveadm dict get file:/var/lib/dovecot/uspamret.db "shared/spam_retention/$1" 2>/dev/null \
+        doveadm dict get file:/var/lib/dovecot/dict/uspamret.db "shared/spam_retention/$1" 2>/dev/null \
         || echo "${DOVECOT_SPAM_RETENTION}"
     } | xargs
 }

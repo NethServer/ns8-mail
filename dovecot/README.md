@@ -49,8 +49,8 @@ Private TCP ports:
   granted impersonate privilege. Default empty.
 - `DOVECOT_DISABLED_USERS`, comma-separated list of user names that have
   no access at all to the mail services. Default empty.
-- `DOVECOT_SPAM_RETENTION`, default empty, which means the feature is disabled and spam is never expunged automatically
-- `DOVECOT_SPAM_FOLDER`, default `Junk`
+- `DOVECOT_SPAM_RETENTION`, default empty, which means the feature is disabled and spam is never expunged automatically. See also the `spam-expunge` command.
+- `DOVECOT_SPAM_FOLDER`, default `Junk`. Mailbox folder name where spam messages are moved. See also the `spam-expunge` command.
 
 ## Logs
 
@@ -74,6 +74,17 @@ relevant:
 The command expands Dovecot configuration files, according to the values
 of environment variables. If Dovecot is running, it asks also Dovecot to
 reload the new configuration.
+
+### `spam-expunge`
+
+Iterate over every user mailboxe and expunge old messages from the user's
+"Junk" folder (the exact folder name is defined by `DOVECOT_SPAM_FOLDER`).
+
+Message retention is expressed in days by the `DOVECOT_SPAM_RETENTION`
+environment variable. Each user can override it. User's retention
+preference is stored in the _dict_ database file
+`/var/lib/dovecot/dict/uspamret.db`. See the dedicated section below to
+modify it.
 
 ## Storage
 
