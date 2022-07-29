@@ -86,3 +86,6 @@ its contents for the exact SQL schema. This is a summary of the available tables
 - `destmap` Address aliases
 - `addresses` Additional attribute values for known mail addresses, like
   description, and the "internal" flag
+- `userattrs` Store the "internal" flag for LDAP users
+- `groupattrs` Store the "internal" flag for LDAP groups
+- `userforwards` Forward address map for LDAP users
