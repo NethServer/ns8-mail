@@ -2,22 +2,7 @@
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
-# http://www.nethesis.it - nethserver@nethesis.it
-#
-# This script is part of NethServer.
-#
-# NethServer is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License,
-# or any later version.
-#
-# NethServer is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with NethServer.  If not, see COPYING.
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 import json
@@ -35,11 +20,16 @@ odom = Ldapproxy().get_domain(request['user_domain'])
 with agent.redis_connect() as rdb:
     cluster_network = rdb.get('cluster/network') or ""
 
-if not 'DOVECOT_API_KEY' in os.environ:
+if not os.path.exists('dovecot.env'):
     # Generate a persistent random token for Dovecot admin HTTP API
-    alphabet = string.ascii_letters + string.digits + '-_+@:,/'
+    alphabet = string.ascii_letters + string.digits + '%@-+_^,./'
     dovecot_api_key = ''.join([secrets.choice(alphabet) for i in range(32)])
-    agent.set_env('DOVECOT_API_KEY', dovecot_api_key)
+    dovecot_vmail_pass = ''.join([secrets.choice(alphabet) for i in range(32)])
+    oldmask = os.umask(0o77)
+    with open('dovecot.env', 'w') as fenv:
+        print("DOVECOT_API_KEY=" + dovecot_api_key, file=fenv)
+        print("DOVECOT_VMAIL_PASS=" + dovecot_vmail_pass, file=fenv)
+    os.umask(oldmask)
 
 hostname = request['hostname']
 agent.set_env('MAIL_HOSTNAME', hostname)
@@ -51,10 +41,15 @@ agent.set_env('DOVECOT_LDAP_SCHEMA', odom['schema'])
 agent.set_env('DOVECOT_LDAP_BASE', odom['base_dn'])
 agent.set_env('DOVECOT_INSTANCE_NAME', os.environ['MODULE_ID'])
 agent.set_env('DOVECOT_TRUSTED_NETWORKS', cluster_network)
+agent.set_env('DOVECOT_QUOTA_MB', request.get('mailbox_quota_mb', "0"))
+agent.set_env('DOVECOT_SPAM_RETENTION', "15") # Enable the feature with 15 days retention
 
-if 'mailbox_quota_mb' in request:
-    agent.set_env('DOVECOT_QUOTA_MB', request['mailbox_quota_mb'])
-
+agent.set_env('POSTFIX_LDAP_HOST', odom['host'])
+agent.set_env('POSTFIX_LDAP_PORT', odom['port'])
+agent.set_env('POSTFIX_LDAP_USER', odom['bind_dn'])
+agent.set_env('POSTFIX_LDAP_PASS', odom['bind_password'])
+agent.set_env('POSTFIX_LDAP_SCHEMA', odom['schema'])
+agent.set_env('POSTFIX_LDAP_BASE', odom['base_dn'])
 agent.set_env('POSTFIX_SYSLOG_NAME', os.environ['MODULE_ID'])
 agent.set_env('POSTFIX_TRUSTED_NETWORK', cluster_network)
 agent.set_env('POSTFIX_HOSTNAME', hostname)

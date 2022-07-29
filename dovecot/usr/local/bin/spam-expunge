@@ -1,0 +1,37 @@
+#!/bin/ash
+# shellcheck shell=dash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+set -e
+
+if [ -z "${DOVECOT_SPAM_RETENTION}" ]; then
+    exit 0
+fi
+
+print_user_spam_retention() {
+    {
+        doveadm dict get file:/var/lib/dovecot/dict/uspamret.db "shared/spam_retention/$1" 2>/dev/null \
+        || echo "${DOVECOT_SPAM_RETENTION}"
+    } | xargs
+}
+
+for muser in $(doveadm user \*); do
+    if ! doveadm user "${muser}" >/dev/null 2>&1; then
+        continue # skip disabled users
+    fi
+    spam_retention=$(print_user_spam_retention "${muser}")
+
+    if [ "${spam_retention}" -lt 1 ]; then
+        continue # skip non-positive values
+    fi
+
+    doveadm expunge -u "${muser}" \
+        SENTBEFORE "${spam_retention}d" \
+        MAILBOX "${DOVECOT_SPAM_FOLDER:-INBOX}" \
+        HEADER X-Spam-Flag YES 2>/dev/null \
+        || :
+done

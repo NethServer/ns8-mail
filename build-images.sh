@@ -44,7 +44,8 @@ buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd gettext
+chmod -c 700 /var/lib/vmail
+apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext
 (
     # Remove the self-signed certificate
     rm -vf /etc/ssl/dovecot/server.*
@@ -58,7 +59,6 @@ apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d 
 )
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
-echo 'vmail::::Builtin vmail user:::' > /etc/dovecot/users
 sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
 EOF
 buildah add "${container}" dovecot/ /
@@ -75,8 +75,11 @@ buildah config \
     --env=DOVECOT_SUBMISSION_PORT="5587" \
     --env=DOVECOT_QUOTA_MB=0 \
     --env=DOVECOT_API_PORT=9288 \
-    --env=DOVECOT_STATS_PORT=9289 \
+    --env=DOVECOT_METRICS_PORT=9289 \
     --env=DOVECOT_MASTER_USERS= \
+    --env=DOVECOT_DISABLED_USERS= \
+    --env=DOVECOT_SPAM_RETENTION= \
+    --env=DOVECOT_SPAM_FOLDER=Junk \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
@@ -89,7 +92,7 @@ reponame="mail-postfix"
 container=$(buildah from docker.io/library/alpine:3.15)
 buildah run "${container}" /bin/sh <<EOF
 set -e
-apk add --no-cache postfix gettext sqlite postfix-sqlite
+apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap
 (
     mkdir -p /etc/ssl/postfix
     cd /etc/ssl/postfix

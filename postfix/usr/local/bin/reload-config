@@ -2,28 +2,15 @@
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
-# http://www.nethesis.it - nethserver@nethesis.it
-#
-# This script is part of NethServer.
-#
-# NethServer is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License,
-# or any later version.
-#
-# NethServer is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with NethServer.  If not, see COPYING.
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 # shellcheck shell=dash disable=SC2034
 # https://www.shellcheck.net/wiki/SC2034
 
 set -e
+
+ldap_schema=${POSTFIX_LDAP_SCHEMA:?}
 
 pcdbquery() {
     sqlite3 -readonly -list /srv/pcdb.sqlite "${@}"
@@ -61,14 +48,38 @@ tmpl_myhostname="${POSTFIX_HOSTNAME:-$(hostname -f)}"
 tmpl_debug_peer_list="${POSTFIX_DEBUG_PEERS:-\$mynetworks}"
 tmpl_syslog_name=${POSTFIX_SYSLOG_NAME:-postfix}
 tmpl_relay_domains=$(pcdbquery "SELECT group_concat(domain || '=' || transport) FROM domains WHERE transport LIKE '_mtp:%'")
-tmpl_virtual_alias_domains=$(pcdbquery "SELECT group_concat(domain) FROM domains WHERE transport IS NULL")
-tmpl_verify_recipient_address=$(pcdbquery "SELECT 'check_recipient_access inline:{ ' || group_concat(domain || '=reject_unverified_recipient', ' ') || ' }' FROM (SELECT domain FROM domains UNION SELECT '${POSTFIX_ORIGIN}' WHERE '${POSTFIX_ORIGIN}' != '')")
-tmpl_reject_internal_myorigin=$(pcdbquery "SELECT 'check_recipient_access inline:{{ ${POSTFIX_ORIGIN} = REJECT access denied }}' WHERE '${POSTFIX_ORIGIN}' NOT IN (SELECT domain FROM domains)")
-tmpl_domain_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || CASE WHEN addusers = 1 THEN '=@${POSTFIX_ORIGIN}' ELSE ('=' || catchall) END || '}', ', ') || '}' FROM domains WHERE (addusers = 1 OR length(catchall) > 0) AND domain != '${tmpl_myorigin}'")
+tmpl_virtual_alias_domains=$(pcdbquery "SELECT group_concat(domain) FROM domains WHERE transport IS NULL AND domain != '*'")
+tmpl_verify_recipient_address=$(pcdbquery "SELECT 'check_recipient_access inline:{ ' || group_concat(domain || '=reject_unverified_recipient', ' ') || ' }' FROM (SELECT domain FROM domains WHERE domain != '*' UNION SELECT '${POSTFIX_ORIGIN}' WHERE '${POSTFIX_ORIGIN}' != '')")
+tmpl_reject_internal_myorigin=$(pcdbquery "SELECT 'check_recipient_access inline:{{ ${POSTFIX_ORIGIN} = REJECT access denied }}' WHERE '${POSTFIX_ORIGIN}' NOT IN (SELECT domain FROM domains WHERE domain != '*')")
+if [ -z "${tmpl_reject_internal_myorigin}" ]; then
+    tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}"
+fi
+tmpl_domain_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || CASE WHEN addusers = 1 THEN '=@${POSTFIX_ORIGIN}' ELSE ('=' || catchall) END || '}', ', ') || '}' FROM domains WHERE (addusers = 1 OR length(catchall) > 0) AND domain NOT IN ('${tmpl_myorigin}', '*')")
+
+tmpl_addgroup_domains=$(pcdbquery "SELECT group_concat(domain, ', ') FROM domains WHERE addgroups = 1")
+if [ -z "${tmpl_addgroup_domains}" ] || [ -z "${POSTFIX_LDAP_HOST}" ]; then
+    # Turn off addgroups virtual alias lookups
+    tmpl_laddgroups_table=''
+else
+    tmpl_laddgroups_table='ldap:$meta_directory/laddgroups.cf'
+fi
+if [ -z "${POSTFIX_LDAP_HOST}" ]; then
+    # Turn off group expansion in virtual alias lookups
+    tmpl_ldest_table=''
+else
+    tmpl_ldest_table='ldap:$meta_directory/ldest.cf'
+fi
+tmpl_ldap_bind_dn="${POSTFIX_LDAP_USER}"
+tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
+tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
+tmpl_ldap_port="${POSTFIX_LDAP_PORT}"
+tmpl_ldap_base="${POSTFIX_LDAP_BASE}"
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
 envsubst >/etc/postfix/master.cf <"${TEMPLATES_DIR:?}/master.cf"
+envsubst >/etc/postfix/laddgroups.cf <"${TEMPLATES_DIR:?}/laddgroups-${ldap_schema}.cf"
+envsubst >/etc/postfix/ldest.cf <"${TEMPLATES_DIR:?}/ldest-${ldap_schema}.cf"
 
 if [ -z "${tmpl_sasl_commentout}" ] ; then
     cat /etc/postfix/dovecot-sasl.cf >> /etc/postfix/main.cf

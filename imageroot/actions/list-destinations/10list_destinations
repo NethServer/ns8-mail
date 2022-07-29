@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import os
+import agent
+import mail
+from agent.ldapclient import Ldapclient
+from agent.ldapproxy import Ldapproxy
+
+hdest = {}
+disabled_users = mail.get_disabled_users()
+
+try:
+    dconf = Ldapproxy().get_domain(os.environ['POSTFIX_ORIGIN'])
+    agent.assert_exp(dconf is not None) # Ensure the user domain exists
+    ldapclient = Ldapclient.factory(**dconf)
+
+    for euser in ldapclient.list_users():
+        if euser['user'] in disabled_users:
+            continue # skip disabled user
+
+        hdest[euser['user']] = {
+            'dtype': 'user',
+            'name': euser['user'],
+            'ui_name': euser['display_name'],
+        }
+
+    for egroup in ldapclient.list_groups():
+        hdest[egroup['group']] = {
+            'dtype': 'group',
+            'name': egroup['group'],
+            'ui_name': egroup['description'],
+        }
+
+    for mpublic in mail.get_public_mailboxes():
+        hdest[mpublic] = {
+            'dtype': 'public',
+            'name': mpublic,
+        }
+
+except KeyError as kex:
+    if not 'POSTFIX_ORIGIN' in str(kex):
+        raise
+
+destinations = list(hdest.values())
+
+json.dump(sorted(destinations, key=lambda el: el.get('ui_name', el['name']).lower()), fp=sys.stdout)

@@ -1,0 +1,13 @@
+#
+# ldest.cf (rfc2307) -- group members expansion straight from LDAP DB
+# Important: this DB matches only group name lookups with no domain suffix
+#
+
+version = 3
+bind_dn = ${tmpl_ldap_bind_dn}
+bind_pw = ${tmpl_ldap_bind_pw}
+server_host = ${tmpl_ldap_host}
+server_port = ${tmpl_ldap_port}
+search_base = ${tmpl_ldap_base}
+query_filter = (&(objectClass=posixGroup)(cn=%s))
+result_attribute = memberUid

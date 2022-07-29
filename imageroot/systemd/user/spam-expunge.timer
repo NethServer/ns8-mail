@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer of spam-expunge procedure
+
+[Timer]
+OnCalendar=daily
+
+[Install]
+WantedBy=timers.target

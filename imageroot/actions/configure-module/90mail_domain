@@ -2,35 +2,20 @@
 
 #
 # Copyright (C) 2022 Nethesis S.r.l.
-# http://www.nethesis.it - nethserver@nethesis.it
-#
-# This script is part of NethServer.
-#
-# NethServer is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License,
-# or any later version.
-#
-# NethServer is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with NethServer.  If not, see COPYING.
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 import json
 import sys
 import os
 import agent
-import sqlite3
+import mail
 
 request = json.load(sys.stdin)
 if not 'mail_domain' in request:
     sys.exit(0)
 
-sdb = sqlite3.connect("pcdb/pcdb.sqlite")
+sdb = mail.pcdb_connect()
 needs_reload = False
 with sdb:
     vals = {
@@ -38,7 +23,7 @@ with sdb:
         'addusers': 1,
     }
     cur = sdb.cursor()
-    if cur.execute("SELECT COUNT(*) FROM domains").fetchone()[0] == 0:
+    if cur.execute("SELECT COUNT(*) FROM domains WHERE domain != '*'").fetchone()[0] == 0:
         # If the postmaster wildcard destination is at its default, update its destination
         cur.execute("UPDATE destmap SET dest=? WHERE alocal='postmaster' AND domain='*' AND dest='postmaster'", ('vmail+postmaster',))
         print(agent.SD_DEBUG + f"Creating initial domain {vals['domain']}", file=sys.stderr)

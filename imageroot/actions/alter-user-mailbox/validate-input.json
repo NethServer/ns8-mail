@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "alter-user-mailbox input",
+    "$id": "http://schema.nethserver.org/mail/alter-user-mailbox-input.json",
+    "description": "Alter the attributes of a user mailbox",
+    "examples": [
+        {
+            "user": "administrator",
+            "quota": {
+                "limit": 1024
+            },
+            "forward": []
+        }
+    ],
+    "type": "object",
+    "required": [
+        "user"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "user": {
+            "type": "string",
+            "title": "User name",
+            "description": "LDAP user identifier"
+        },
+        "quota": {
+            "title": "Quota settings",
+            "oneOf": [
+                {
+                    "$ref": "http://schema.nethserver.org/mail.json#/$defs/quota-status"
+                },
+                {
+                    "title": "Set default quota",
+                    "description": "Disable custom quota",
+                    "const": {
+                        "custom": false
+                    }
+                }
+            ]
+        },
+        "spam_retention": {
+            "title": "Spam retention settings",
+            "oneOf": [
+                {
+                    "$ref": "http://schema.nethserver.org/mail.json#/$defs/spam-retention"
+                },
+                {
+                    "title": "Clear custom spam setting",
+                    "description": "Revert spam retention to the default value",
+                    "const": {
+                        "custom": false
+                    }
+                }
+            ]
+        },
+        "forward": {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/forward"
+        }
+    }
+}

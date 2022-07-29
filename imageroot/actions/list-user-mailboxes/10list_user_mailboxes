@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import os
+import mail
+
+mail.abort_with_json_if_not_configured([])
+
+rusers = mail.doveadm_query("user", {"userMask":"*"})
+
+gquota = os.getenv("DOVECOT_QUOTA_MB", "")
+disabled_users = mail.get_disabled_users()
+
+try:
+    rquotas = mail.doveadm_query("quotaGet", {"allUsers":True})
+except:
+    rquotas = []
+
+mailboxes = {}
+
+for ouser in rusers['userList']:
+    if ouser in disabled_users:
+        continue # skip disabled user
+
+    mailboxes[ouser] = {"user": ouser}
+
+for oquota in rquotas:
+    if not oquota['username'] in mailboxes:
+        continue # unknown username, skip
+
+    if oquota['type'] == 'STORAGE':
+        if oquota['limit'] == '-':
+            qlimit = 0
+        else:
+            qlimit = int(oquota["limit"]) >> 10 # divide by 1024 to convert KBi to MBi
+
+        mailboxes[oquota['username']]['quota'] = {
+            "limit": qlimit,
+            "value": int(oquota["value"]) >> 10,
+            "percent": int(oquota["percent"]),
+        }
+        if str(mailboxes[oquota['username']]['quota']['limit']) != gquota:
+            mailboxes[oquota['username']]['quota']['custom'] = True
+
+sdb = mail.pcdb_connect(readonly=True)
+
+for rforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user != dest""").fetchall():
+    if not rforward['user'] in mailboxes:
+        continue # unknown username, skip
+
+    if not 'forward' in mailboxes[rforward['user']]:
+        mailboxes[rforward['user']]['forward'] = {"destinations":[]}
+
+    mailboxes[rforward['user']]['forward']['destinations'].append(mail.mailbox_to_destination(rforward['dest']))
+
+for kforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user = dest""").fetchall():
+    if not kforward['user'] in mailboxes:
+        continue # unknown username, skip
+
+    if not 'forward' in mailboxes[kforward['user']]:
+        continue # no forwards, keepcopy is useless
+
+    mailboxes[kforward['user']]['forward']['keepcopy'] = True
+
+uspamret_reply = []
+try:
+    gspam_retention = int(os.getenv("DOVECOT_SPAM_RETENTION", ""))
+    uspamret_reply = mail.doveadm_query("dictIter", {
+        "dictUri": "file:/var/lib/dovecot/dict/uspamret.db",
+        "prefix": "shared/spam_retention/",
+    })
+except ValueError:
+    pass # spam retention is disabled
+except mail.DoveadmError as dex:
+    print('dicIter error', dex, file=sys.stderr)
+
+for kventry in uspamret_reply:
+    kuser = kventry['key'].removeprefix('shared/spam_retention/')
+    try:
+        kvalue = int(kventry['value'])
+    except ValueError:
+        # Fall back to default value
+        kvalue = gspam_retention
+
+    if not kuser in mailboxes:
+        continue # unknown username, skip
+
+    mailboxes[kuser]['spam_retention'] = {
+        'custom': True,
+        'value': kvalue,
+    }
+
+json.dump({
+    "default_spam_retention": {
+        "value": gspam_retention,
+    },
+    "user_mailboxes": list(mailboxes.values()),
+}, fp=sys.stdout, cls=mail.DestEncoder)

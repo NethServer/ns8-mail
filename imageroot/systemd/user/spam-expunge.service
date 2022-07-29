@@ -1,0 +1,13 @@
+[Unit]
+Description=spam-expunge procedure
+After=dovecot.service
+Requisite=dovecot.service
+
+[Service]
+Type=oneshot
+ExecStart=podman exec dovecot spam-expunge
+WorkingDirectory=%S/state
+SyslogIdentifier=%u
+
+[Install]
+WantedBy=default.target

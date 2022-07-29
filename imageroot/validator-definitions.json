@@ -1,159 +1,641 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "http://schema.nethserver.org/mail.json",
-    "title": "Extra schema definitions",
-    "description": "Schema defined somwhere else",
+    "title": "Common schema definitions",
+    "description": "Reusable schema definitions",
     "$defs": {
-        "user-domain": {
-            "title": "User domain",
-            "description": "Users (and also user groups) can be uniquely identified inside a domain. An application is ususally bound to just one user domain at a time, but mulitple domains can be configured in the same cluster.",
-            "type": "object",
-            "required": [
-                "name",
-                "location",
-                "protocol",
-                "providers"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "location": {
-                    "type": "string",
-                    "title": "Domain hosting location",
-                    "description": "Type of domain hosting. Set to `internal` if the domain is hosted by the cluster, `external` if the domain is provided by a remote service",
-                    "enum": [
-                        "internal",
-                        "external"
-                    ]
-                },
-                "protocol": {
-                    "type": "string",
-                    "title": "Provider protocol",
-                    "description": "Protocol used to communicate with the domain providers.",
-                    "enum": [
-                        "ldap"
-                    ]
-                },
-                "providers": {
-                    "title": "Account providers",
-                    "description": "Backend system and replicas providing the services of the user domain",
-                    "type": "array",
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/$defs/ldap-provider"
-                            }
-                        ]
-                    },
-                    "minItems": 1
-                }
-            },
-            "anyOf": [
+        "mail-destination": {
+            "title": "Mail destination",
+            "description": "Final mail destination (both internal and external)",
+            "oneOf": [
                 {
-                    "not": {
-                        "type": "object",
-                        "title": "Protocol property is ldap",
-                        "properties": {
-                            "protocol": {
-                                "type": "string",
-                                "const": "ldap"
-                            }
+                    "$ref": "#/$defs/mail-destination-internal"
+                },
+                {
+                    "title": "External mail destination",
+                    "type": "object",
+                    "required": [
+                        "dtype",
+                        "name"
+                    ],
+                    "properties": {
+                        "dtype": {
+                            "title": "External destination type",
+                            "const": "external"
+                        },
+                        "name": {
+                            "title": "External email address",
+                            "type": "string",
+                            "format": "email",
+                            "minLength": 1
                         }
                     }
-                },
-                {
-                    "$ref": "#/$defs/additional-properties-of-ldap"
                 }
             ]
         },
-        "ldap-provider": {
+        "mail-destination-internal": {
+            "examples": [
+                {
+                    "dtype": "public",
+                    "name": "invoices"
+                },
+                {
+                    "dtype": "user",
+                    "name": "first.user",
+                    "ui_name": "First User"
+                },
+                {
+                    "dtype": "group",
+                    "name": "sales",
+                    "ui_name": "Sales Department"
+                },
+                {
+                    "dtype": "apo",
+                    "name": "eg.deleted.user"
+                }
+            ],
+            "title": "Internal mail destination",
+            "description": "Describes where a message ends on the local mail server",
             "type": "object",
-            "title": "LDAP account provider",
-            "description": "An LDAP account provider is a database of users and groups that can also be used as an authentication backend. A user domain is composed by at least one LDAP account provider. Multiple replicas can be instantiated on different cluster nodes.",
             "required": [
-                "id",
-                "ui_name",
-                "node",
-                "host",
-                "port"
+                "dtype",
+                "name"
             ],
             "properties": {
-                "id": {
+                "dtype": {
+                    "title": "Destination type",
+                    "enum": [
+                        "user",
+                        "group",
+                        "public",
+                        "apo"
+                    ]
+                },
+                "name": {
+                    "title": "Object name",
                     "type": "string",
                     "minLength": 1
                 },
                 "ui_name": {
+                    "title": "Object name for UI",
+                    "description": "String representation of the mail destination for display purpose",
                     "type": "string"
+                }
+            }
+        },
+        "mail-domain": {
+            "examples": [
+                {
+                    "domain": "dp.nethserver.net",
+                    "addusers": true,
+                    "addgroups": false,
+                    "catchall": null,
+                    "bccaddr": null,
+                    "description": ""
                 },
-                "node": {
-                    "type": [
-                        "integer",
-                        "null"
-                    ],
-                    "minimum": 1
+                {
+                    "domain": "company.test",
+                    "addusers": true,
+                    "addgroups": false,
+                    "catchall": null,
+                    "bccaddr": null,
+                    "description": "Company domain with addusers flag set"
                 },
-                "host": {
-                    "title": "Host name or IP address",
-                    "description": "Can be `null` if the provider is not configured properly",
+                {
+                    "domain": "mydom.test",
+                    "addusers": true,
+                    "addgroups": false,
+                    "catchall": {
+                        "dtype": "user",
+                        "user": "first.user",
+                        "ui_name": "First User"
+                    },
+                    "bccaddr": "administrator@company.test",
+                    "description": ""
+                }
+            ],
+            "title": "Mail domain",
+            "description": "Describe how mail for the domain is handled",
+            "type": "object",
+            "required": [
+                "domain"
+            ],
+            "properties": {
+                "domain": {
+                    "title": "Mail domain",
+                    "description": "The standard-compliant domain name",
+                    "format": "idn-hostname",
+                    "pattern": "\\."
+                },
+                "addusers": {
+                    "title": "Addusers flag",
+                    "description": "Accept user mailbox names as valid mail addresses",
+                    "type": "boolean"
+                },
+                "addgroups": {
+                    "title": "Addgroups flag",
+                    "description": "Accept LDAP group names as valid mail addresses",
+                    "type": "boolean"
+                },
+                "catchall": {
+                    "title": "Catchall mailbox",
+                    "description": "Deliver messages for unknown recipients into this mailbox. NULL disables this behavior.",
+                    "oneOf": [
+                        {
+                            "type": "null",
+                            "title": "No catchall",
+                            "description": "The catchall feature is disabled"
+                        },
+                        {
+                            "$ref": "#/$defs/mail-destination-internal"
+                        }
+                    ]
+                },
+                "bccaddr": {
+                    "title": "BCC address",
+                    "description": "Send a blind carbon copy of domain inbound messages to this email address. NULL disables this behavior.",
                     "type": [
                         "string",
                         "null"
                     ],
-                    "minLength": 1
+                    "format": "email"
                 },
-                "port": {
-                    "title": "TCP port number",
-                    "description": "Can be `null` if the provider is not configured properly",
-                    "type": [
-                        "integer",
-                        "null"
-                    ],
-                    "minimum": 1
+                "description": {
+                    "title": "Domain description",
+                    "description": "Free textual description of the domain purpose",
+                    "type": "string"
                 }
             }
         },
-        "additional-properties-of-ldap": {
-            "type": "object",
-            "title": "LDAP domain properties",
-            "description": "Additional required properties of LDAP-based domains",
-            "properties": {
-                "schema": {
-                    "type": "string",
-                    "title": "LDAP database schema",
-                    "enum": [
-                        "ad",
-                        "rfc2307"
+        "mail-address": {
+            "title": "Mail address",
+            "description": "An object describing one or more mail addresses known and handled by the mail server",
+            "examples": [
+                {
+                    "local": "postmaster",
+                    "destinations": [
+                        {
+                            "dtype": "public",
+                            "public": "postmaster"
+                        }
+                    ],
+                    "description": "RFC-mandatory postmaster alias",
+                    "atype": "wildcard",
+                    "delete_forbidden": true
+                },
+                {
+                    "local": "info",
+                    "destinations": [
+                        {
+                            "dtype": "user",
+                            "user": "admin",
+                            "ui_name": "Builtin administrator user"
+                        }
+                    ],
+                    "atype": "domain",
+                    "domain": "mydom.test"
+                },
+                {
+                    "local": "sales",
+                    "destinations": [
+                        {
+                            "dtype": "user",
+                            "user": "first.user",
+                            "ui_name": "First User"
+                        }
+                    ],
+                    "atype": "wildcard"
+                },
+                {
+                    "atype": "adduser",
+                    "local": "admin",
+                    "description": "Builtin administrator user"
+                },
+                {
+                    "atype": "adduser",
+                    "local": "first.user",
+                    "description": "First User"
+                }
+            ],
+            "oneOf": [
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        },
+                        {
+                            "title": "Address bound to a domain",
+                            "required": [
+                                "domain",
+                                "destinations"
+                            ],
+                            "properties": {
+                                "atype": {
+                                    "const": "domain"
+                                }
+                            }
+                        }
                     ]
                 },
-                "base_dn": {
-                    "type": "string",
-                    "minLength": 1
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        },
+                        {
+                            "title": "Address bound to any domain",
+                            "required": [
+                                "destinations"
+                            ],
+                            "properties": {
+                                "atype": {
+                                    "const": "wildcard"
+                                }
+                            }
+                        }
+                    ]
                 },
-                "bind_dn": {
-                    "type": "string",
-                    "minLength": 1
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        },
+                        {
+                            "title": "Address bound to \"adduser\" domains",
+                            "properties": {
+                                "atype": {
+                                    "const": "adduser"
+                                }
+                            }
+                        }
+                    ]
                 },
-                "bind_password": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "tls": {
-                    "type": "boolean"
-                },
-                "tls_verify": {
-                    "type": "boolean"
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        },
+                        {
+                            "title": "Address bound to \"addgroup\" domains",
+                            "properties": {
+                                "atype": {
+                                    "const": "addgroup"
+                                }
+                            }
+                        }
+                    ]
                 }
-            },
-            "required": [
-                "schema",
-                "base_dn",
-                "bind_dn",
-                "bind_password",
-                "tls",
-                "tls_verify"
             ]
+        },
+        "mail-address-base": {
+            "title": "Base mail address schema",
+            "description": "Schema included by other more specific schema",
+            "type": "object",
+            "required": [
+                "atype",
+                "local"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "title": "Description"
+                },
+                "domain": {
+                    "type": "string",
+                    "title": "Address domain part",
+                    "format": "idn-hostname",
+                    "pattern": "\\."
+                },
+                "local": {
+                    "type": "string",
+                    "title": "Address local part",
+                    "minLength": 1
+                },
+                "atype": {
+                    "type": "string",
+                    "title": "Address type"
+                },
+                "destinations": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/$defs/mail-destination"
+                    }
+                },
+                "delete_forbidden": {
+                    "const": true,
+                    "title": "Delete forbidden flag",
+                    "description": "Do not attempt to remove the object"
+                },
+                "internal": {
+                    "type": "boolean",
+                    "title": "Internal",
+                    "description": "True, if the address cannot receive mail from external/unknown clients"
+                }
+            }
+        },
+        "mail-address-change-request": {
+            "title": "Mail address change request",
+            "description": "An object describing how to modify an existing mail address object",
+            "oneOf": [
+                {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "atype": {
+                                    "const": "domain"
+                                }
+                            },
+                            "required": [
+                                "domain"
+                            ]
+                        },
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "atype": {
+                                    "const": "wildcard"
+                                }
+                            }
+                        },
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "atype": {
+                                    "const": "adduser"
+                                }
+                            }
+                        },
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "atype": {
+                                    "const": "addgroup"
+                                }
+                            }
+                        },
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        }
+                    ]
+                }
+            ]
+        },
+        "spam-retention": {
+            "type": "object",
+            "title": "Spam retention",
+            "description": "Describes how long messages are retained in the spam folder",
+            "required": [
+                "value"
+            ],
+            "properties": {
+                "value": {
+                    "type": "integer",
+                    "title": "Value of retention",
+                    "description": "Number of days",
+                    "minimum": 0
+                },
+                "custom": {
+                    "type": "boolean",
+                    "title": "Custom limit",
+                    "description": "If true, the quota limit for the mailbox differs from the default limit"
+                }
+            }
+        },
+        "quota-status": {
+            "type": "object",
+            "title": "Quota status",
+            "description": "Quota usage and limit settings",
+            "required": [
+                "limit"
+            ],
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "title": "Limit",
+                    "minimum": 0,
+                    "description": "Quota limit (MiB)"
+                },
+                "value": {
+                    "type": "integer",
+                    "title": "Value",
+                    "description": "Quota usage value (MiB)",
+                    "minimum": 0
+                },
+                "percent": {
+                    "type": "integer",
+                    "title": "Percent",
+                    "description": "Quota usage percentage",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "custom": {
+                    "type": "boolean",
+                    "title": "Custom limit",
+                    "description": "If true, the quota limit for the mailbox differs from the default limit"
+                }
+            }
+        },
+        "forward": {
+            "type": "object",
+            "title": "Forward settings",
+            "description": "Describe where messages delivered to the mailbox are eventually forwarded and preserved",
+            "required": [
+                "destinations"
+            ],
+            "properties": {
+                "destinations": {
+                    "type": "array",
+                    "title": "Forward destinations",
+                    "items": {
+                        "$ref": "#/$defs/mail-destination"
+                    }
+                },
+                "keepcopy": {
+                    "type": "boolean",
+                    "title": "Keep message copy",
+                    "description": "Keep a local copy of the message"
+                }
+            }
+        },
+        "public-mailbox": {
+            "title": "Public mailbox",
+            "description": "Configuration of a public mailbox",
+            "type": "object",
+            "required": [
+                "mailbox",
+                "acls"
+            ],
+            "properties": {
+                "acls": {
+                    "title": "ACL set",
+                    "minLength": 1,
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/acl-descriptor"
+                    }
+                },
+                "mailbox": {
+                    "title": "Mailbox",
+                    "description": "Mailbox name, unique identifier",
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "acl-descriptor": {
+            "title": "ACL descriptor",
+            "description": "Describe who can do what, for instance in the context of a public mailbox",
+            "type": "object",
+            "example": [
+                {
+                    "stype": "user",
+                    "subject": {
+                        "dtype": "user",
+                        "name": "first.user",
+                        "ui_name": "First User"
+                    },
+                    "rights": {
+                        "rtype": "ro",
+                        "values": [
+                            "lookup",
+                            "read",
+                            "write-seen"
+                        ]
+                    }
+                }
+            ],
+            "required": [
+                "rights",
+                "stype",
+                "subject"
+            ],
+            "properties": {
+                "subject": {
+                    "$ref": "#/$defs/acl-subject"
+                },
+                "stype": {
+                    "title": "Subject type",
+                    "enum": [
+                        "user",
+                        "group"
+                    ]
+                },
+                "rights": {
+                    "$ref": "#/$defs/acl-rights"
+                }
+            }
+        },
+        "acl-rights": {
+            "title": "ACL permissions descriptor",
+            "description": "Describes what can be done with/on a public mailbox",
+            "type": "object",
+            "examples": [
+                {
+                    "rtype": "ro",
+                    "values": [
+                        "lookup",
+                        "read",
+                        "write-seen"
+                    ]
+                }
+            ],
+            "required": [
+                "rtype"
+            ],
+            "properties": {
+                "rtype": {
+                    "title": "Right type",
+                    "description": "High-level permission descriptor. It aggregates a set of fine-grained permissions",
+                    "enum": [
+                        "ro",
+                        "rw",
+                        "full",
+                        "custom"
+                    ]
+                },
+                "values": {
+                    "title": "Right values",
+                    "description": "Fine-grained IMAP ACL right set. See RFC 4314, https://doc.dovecot.org/configuration_manual/acl/#acl-file-format",
+                    "type": "array",
+                    "items": {
+                        "title": "IMAP ACL right",
+                        "type": "string",
+                        "enum": [
+                            "lookup",
+                            "read",
+                            "write",
+                            "write-seen",
+                            "write-deleted",
+                            "insert",
+                            "post",
+                            "expunge",
+                            "create",
+                            "delete",
+                            "admin"
+                        ]
+                    }
+                }
+            }
+        },
+        "acl-subject": {
+            "examples": [
+                {
+                    "dtype": "user",
+                    "name": "first.user",
+                    "ui_name": "First User"
+                },
+                {
+                    "dtype": "group",
+                    "name": "sales",
+                    "ui_name": "Sales Department"
+                }
+            ],
+            "title": "ACL subject descriptor",
+            "description": "Describes who can access a public mailbox",
+            "type": "object",
+            "required": [
+                "dtype",
+                "name"
+            ],
+            "properties": {
+                "dtype": {
+                    "title": "Subject descriptor type",
+                    "enum": [
+                        "user",
+                        "group",
+                        "apo"
+                    ]
+                },
+                "name": {
+                    "title": "Subject name",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "ui_name": {
+                    "title": "Subject name for UI",
+                    "description": "String representation of the ACL subject",
+                    "type": "string"
+                }
+            }
         }
     }
 }

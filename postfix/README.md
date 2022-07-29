@@ -31,6 +31,12 @@ Standard public TCP ports
   to unqualified user names by the trivial-rewrite process. See Postfix
   [virtual_mailbox_domains](https://www.postfix.org/postconf.5.html#virtual_mailbox_domains)
   and [myorigin](https://www.postfix.org/postconf.5.html#myorigin).
+- `POSTFIX_LDAP_HOST`, eg `127.0.0.1`
+- `POSTFIX_LDAP_PORT`, eg `389`
+- `POSTFIX_LDAP_USER`, bind DN, eg `uid=ldapservice,dc=directory,dc=nh`
+- `POSTFIX_LDAP_PASS`, bind password
+- `POSTFIX_LDAP_SCHEMA`, eg `rfc2307`
+- `POSTFIX_LDAP_BASE`, eg `dc=directory,dc=nh`
 
 ## Volumes
 
@@ -80,3 +86,6 @@ its contents for the exact SQL schema. This is a summary of the available tables
 - `destmap` Address aliases
 - `addresses` Additional attribute values for known mail addresses, like
   description, and the "internal" flag
+- `userattrs` Store the "internal" flag for LDAP users
+- `groupattrs` Store the "internal" flag for LDAP groups
+- `userforwards` Forward address map for LDAP users

@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+from sqlite3 import OperationalError
+
+adduser_domains = []
+addgroup_domains = []
+laddresses = []
+
+try:
+    sdb = mail.pcdb_connect(readonly=True)
+
+    for row in sdb.execute("""SELECT domain FROM domains WHERE addusers=1"""):
+        adduser_domains.append(row['domain'])
+
+    for row in sdb.execute("""SELECT domain FROM domains WHERE addgroups=1"""):
+        addgroup_domains.append(row['domain'])
+
+    laddresses = list(mail.get_addresses().values())
+
+except OperationalError:
+    pass
+
+except KeyError:
+    pass
+
+json.dump({
+    "adduser_domains": adduser_domains,
+    "addgroup_domains": addgroup_domains,
+    "addresses": laddresses,
+}, fp=sys.stdout, cls=mail.DestEncoder)

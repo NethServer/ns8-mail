@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "list-public-mailboxes output",
+    "$id": "http://schema.nethserver.org/mail/list-public-mailboxes-output.json",
+    "description": "List of public mailboxes: where mail messages for public destinations are finally delivered",
+    "examples": [
+        [
+            {
+                "mailbox": "testx",
+                "acls": [
+                    {
+                        "stype": "group",
+                        "subject": {
+                            "dtype": "group",
+                            "name": "g1",
+                            "ui_name": "Group One"
+                        },
+                        "rights": {
+                            "rtype": "rw",
+                            "values": [
+                                "read",
+                                "create",
+                                "write",
+                                "lookup",
+                                "insert",
+                                "write-deleted",
+                                "write-seen"
+                            ]
+                        }
+                    },
+                    {
+                        "stype": "user",
+                        "subject": {
+                            "dtype": "user",
+                            "name": "third.user",
+                            "ui_name": "Third USer"
+                        },
+                        "rights": {
+                            "rtype": "ro",
+                            "values": [
+                                "lookup",
+                                "write-seen",
+                                "read"
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    ],
+    "type": "array",
+    "items": {
+        "$ref": "http://schema.nethserver.org/mail.json#/$defs/public-mailbox"
+    }
+}
