@@ -10,7 +10,7 @@ IMAP login good credentials
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${err}    QUOTA
     Should Contain    ${err}    STARTTLS
-    Should Contain    ${out}    * LIST (\\HasNoChildren) "." INBOX
+    Should Contain    ${out}    * LIST (\\HasNoChildren) "/" INBOX
 
 IMAP login bad credentials
     ${out}  ${err}  ${rc} =    Execute Command
@@ -31,4 +31,4 @@ IMAPs endpoint login
     ...    timeout 2 curl -k -v -f -u u1:Nethesis,1234 imaps://127.0.0.2
     ...    return_rc=True    return_stderr=True
     Should Be Equal As Integers    ${rc}  0
-    Should Contain    ${out}    * LIST (\\HasNoChildren) "." INBOX
+    Should Contain    ${out}    * LIST (\\HasNoChildren) "/" INBOX
