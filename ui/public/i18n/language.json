@@ -141,9 +141,9 @@
     "internal": "Internal",
     "public": "Public",
     "choose_domain": "Choose domain",
-    "destinations_placeholder": "Choose destinations or input external email addresses",
+    "destinations_placeholder": "Choose destinations or type an external email addresses",
     "description": "Address description",
-    "destinations_required": "Choose or input at least one destination",
+    "destinations_required": "Choose or type at least one destination",
     "set_as_internal": "Set as internal",
     "set_as_public": "Set as public",
     "wildcard_label": "Wildcard",
@@ -175,7 +175,7 @@
     "forward_messages": "Forward messages",
     "edit_mailbox": "Edit mailbox",
     "forward_addresses": "Forward addresses",
-    "destinations_placeholder": "Choose destinations or input external email addresses",
+    "destinations_placeholder": "Choose destinations or type an external email addresses",
     "keep_messages_on_server": "Keep a copy of messages on this server",
     "custom_mailbox_quota": "Custom mailbox quota",
     "quota": "Quota",
@@ -211,7 +211,8 @@
     "custom_spam_retention": "Custom spam retention",
     "spam_retention": "Spam retention",
     "forever": "Forever",
-    "days": "Days"
+    "days": "Days",
+    "unlimited_quota": "Unlimited quota"
   },
   "settings_mailboxes": {
     "title": "Mailboxes"

@@ -190,7 +190,7 @@ export default {
       },
       customQuota: {
         enabled: false,
-        limit: "0",
+        limit: "1",
         unlimited: true,
         byteUnit: "gib",
       },
@@ -248,7 +248,7 @@ export default {
           }
         } else {
           this.customQuota.enabled = false;
-          this.customQuota.limit = "0";
+          this.customQuota.limit = "1";
           this.customQuota.unlimited = true;
           this.customQuota.byteUnit = "gib";
         }

@@ -52,25 +52,31 @@
                 <cv-data-table-cell>{{ row.user }} </cv-data-table-cell>
                 <cv-data-table-cell>
                   <template v-if="row.quota">
-                    <div class="quota-stats">
-                      <div>{{ row.quota.percent }}%</div>
-                      <div>
-                        {{
-                          $t("mailboxes.value_of_total", {
-                            value: $options.filters.mibFormat(row.quota.value),
-                            total: $options.filters.mibFormat(row.quota.limit),
-                          })
-                        }}
+                    <template v-if="row.quota.limit > 0">
+                      <div class="quota-stats">
+                        <div>{{ row.quota.percent }}%</div>
+                        <div>
+                          {{
+                            $t("mailboxes.value_of_total", {
+                              value: $options.filters.mibFormat(
+                                row.quota.value
+                              ),
+                              total: $options.filters.mibFormat(
+                                row.quota.limit
+                              ),
+                            })
+                          }}
+                        </div>
                       </div>
-                    </div>
-                    <NsProgressBar
-                      :value="row.quota.percent"
-                      useStatusColors
-                      :useHealthyColor="false"
-                    />
-                  </template>
-                  <template v-else>
-                    {{ $t("mailboxes.unlimited") }}
+                      <NsProgressBar
+                        :value="row.quota.percent"
+                        useStatusColors
+                        :useHealthyColor="false"
+                      />
+                    </template>
+                    <template v-else>
+                      {{ $t("mailboxes.unlimited_quota") }}
+                    </template>
                   </template>
                 </cv-data-table-cell>
                 <cv-data-table-cell>
