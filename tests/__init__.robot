@@ -1,11 +1,12 @@
 *** Settings ***
 Library           SSHLibrary
 Library           DateTime
-Resource          setup.resource
 
 *** Variables ***
 ${SSH_KEYFILE}    %{HOME}/.ssh/id_ecdsa
 ${NODE_ADDR}      127.0.0.1
+${MID}            mail0
+${IMAGE_URL}      ghcr.io/nethserver/mail:latest
 
 *** Keywords ***
 Connect to the node
@@ -28,11 +29,7 @@ Collect the suite journal
 Suite Setup       Run Keywords
                   ...    Connect to the Node
                   ...    Wait until boot completes
-                  ...    Configure AD user domain
-                  ...    Configure LDAP user domain
                   ...    Save the journal begin timestamp
 
 Suite Teardown    Run Keywords
-                  ...    Remove AD user domain
-                  ...    Remove LDAP user domain
                   ...    Collect the suite journal

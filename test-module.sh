@@ -2,6 +2,7 @@
 
 LEADER_NODE=$1
 IMAGE_URL=$2
+shift 2
 SSH_KEYFILE=${SSH_KEYFILE:-$HOME/.ssh/id_rsa}
 
 ssh_key="$(cat $SSH_KEYFILE)"
@@ -22,7 +23,7 @@ robot -v NODE_ADDR:${LEADER_NODE} \
     --name mail \
     --skiponfailure unstable \
     --console dotted \
-    -d ~/outputs /home/pwuser/ns8-module/tests/
+    -d ~/outputs ${@} /home/pwuser/ns8-module/tests/
 EOF
 
 tests_res=$?
