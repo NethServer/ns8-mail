@@ -66,11 +66,14 @@ When settings change, the `mail-settings-changed` event is published. Payload fo
 
 ```json
 {
+  "reason": "configure-module",
   "module_id": "mail1",
   "module_uuid": "35457a5f-b0c1-421f-86f3-81df090df818",
   "node_id": 1
 }
 ```
+
+The event reason reflects the action name that raises the event.
 
 ## Commands
 

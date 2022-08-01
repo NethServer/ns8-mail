@@ -15,30 +15,15 @@ node_id = int(os.environ['NODE_ID'])
 agent_id = os.environ['AGENT_ID']
 module_uuid = os.environ['MODULE_UUID']
 
-with agent.redis_connect() as rdb:
-    node_address = rdb.hget(f'node/{node_id}/vpn', 'ip_address')
-
-# Create srv records in Redis for service discovery
+# Delete srv records in Redis for service discovery
 with agent.redis_connect(privileged=True) as prdb:
     trx = prdb.pipeline()
 
     kimap = agent_id + "/srv/tcp/imap"
-    trx.delete(kimap).hset(kimap, mapping={
-        "port": "143",
-        "host": node_address,
-        "node": str(node_id),
-        "user_domain": request['user_domain'],
-        "module_uuid": module_uuid,
-    })
+    trx.delete(kimap)
 
     ksubmission = agent_id + "/srv/tcp/submission"
-    trx.delete(ksubmission).hset(ksubmission, mapping={
-        "port": "587",
-        "host": node_address,
-        "node": str(node_id),
-        "user_domain": request['user_domain'],
-        "module_uuid": module_uuid,
-    })
+    trx.delete(ksubmission)
 
     # Publish change event
     trx.publish(agent_id + "/event/mail-settings-changed", json.dumps({
