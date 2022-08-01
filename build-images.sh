@@ -20,7 +20,7 @@ if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-mail
 fi
 
 echo "Build static UI files with node..."
-buildah run nodebuilder-mail sh -c "cd /usr/src/ui && mkdir -p dist && touch dist/index.html" #"cd /usr/src/ui && yarn install && yarn build"
+buildah run nodebuilder-mail sh -c "cd /usr/src/ui && yarn install && yarn build"
 
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot
