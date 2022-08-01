@@ -1,12 +1,13 @@
 *** Settings ***
 Resource    api.resource
 Resource    user_domain.resource
+Resource    keywords.resource
 Library     SSHLibrary
 
 *** Test Cases ***
 Bind to Active Directory user domain
     Run task     module/${MID}/configure-module
-    ...          {"hostname":"mail.domain.test","user_domain":"ad.dom.test","mailbox_quota_mb":100}
+    ...          {"hostname":"mail.domain.test","user_domain":"ad.dom.test","mail_domain":"domain.test"}
 
 TCP ports are open
     [Template]    Retry until TCP port is open
@@ -47,7 +48,7 @@ Active Directory Login checks
 
 Switch to LDAP user domain
     Run task     module/${MID}/configure-module
-    ...          {"hostname":"mail.domain.test","user_domain":"ldap.dom.test","mailbox_quota_mb":100}
+    ...          {"hostname":"mail.domain.test","user_domain":"ldap.dom.test","mail_domain":"domain.test"}
 
 LDAP Login checks
     [Template]    Retry test
@@ -56,23 +57,6 @@ LDAP Login checks
     AD user credentials are bad with LDAP
 
 *** Keywords ***
-Retry test
-    [Arguments]    ${keyword}
-    Wait Until Keyword Succeeds    20 seconds    0.5 seconds    ${keyword}
-
-TCP port is open
-    [Arguments]    ${port}
-    ${out}  ${err}  ${rc} =    Execute Command
-    ...    exec 3<>/dev/tcp/127.0.0.1/${port}
-    ...    return_rc=True    return_stderr=True
-    Should Be Equal As Integers    ${rc}  0
-
-Retry until TCP port is open
-    [Arguments]    ${port}
-    Wait Until Keyword Succeeds    10 seconds    0.2 seconds
-    ...    TCP port is open    ${port}
-    
-
 LDAP user credentials are bad with AD
     [Documentation]    When bad credentials are issued the server replies with
     ...                a few seconds of delay.

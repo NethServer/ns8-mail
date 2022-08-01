@@ -19,8 +19,13 @@ if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-mail
     buildah from --name nodebuilder-mail -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
 fi
 
-echo "Build static UI files with node..."
-buildah run nodebuilder-mail sh -c "cd /usr/src/ui && yarn install && yarn build"
+if [[ -n "${SKIP_UI_BUILD}" ]]; then
+    echo "SKIP_UI_BUILD is defined. Adding just an empty index.html page as UI..."
+    buildah run nodebuilder-mail sh -c "cd /usr/src/ui && mkdir -p dist && touch dist/index.html"
+else
+    echo "Build static UI files with node..."
+    buildah run nodebuilder-mail sh -c "cd /usr/src/ui && yarn install && yarn build"
+fi
 
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot

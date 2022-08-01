@@ -103,5 +103,6 @@ smtpd_tls_security_level = may
 smtpd_tls_chain_files = /etc/ssl/postfix/fullchain.pem
 smtpd_tls_dh1024_param_file = /etc/ssl/postfix/dh.pem
 smtpd_tls_received_header = yes
+smtpd_tls_auth_only = yes
 
 ### end of main.cf ###
