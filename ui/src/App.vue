@@ -1,9 +1,17 @@
+<!--
+  Copyright (C) 2022 Nethesis S.r.l.
+  SPDX-License-Identifier: GPL-3.0-or-later
+-->
 <template>
   <div id="ns8-app">
     <cv-content id="main-content" class="app-content">
       <AppSideMenu />
       <AppMobileSideMenu />
       <router-view />
+      <FirstConfigurationModal
+        :isShown="!isAppConfigured"
+        @configured="getConfiguration"
+      />
     </cv-content>
   </div>
 </template>
@@ -18,13 +26,14 @@ import {
   UtilService,
 } from "@nethserver/ns8-ui-lib";
 import to from "await-to-js";
+import FirstConfigurationModal from "@/components/FirstConfigurationModal";
 
 export default {
   name: "App",
-  components: { AppSideMenu, AppMobileSideMenu },
+  components: { AppSideMenu, AppMobileSideMenu, FirstConfigurationModal },
   mixins: [QueryParamService, TaskService, UtilService],
   computed: {
-    ...mapState(["instanceName", "instanceLabel", "core"]),
+    ...mapState(["instanceName", "instanceLabel", "core", "isAppConfigured"]),
   },
   created() {
     const core = window.parent.core;
@@ -53,12 +62,17 @@ export default {
     if (requestedPage != "status") {
       this.$router.replace(requestedPage);
     }
+
+    // check if mail module has been configured
+    this.getConfiguration();
   },
   methods: {
     ...mapActions([
       "setInstanceNameInStore",
       "setInstanceLabelInStore",
       "setCoreInStore",
+      "setAppConfiguredInStore",
+      "setUserDomainInStore",
     ]),
     async getInstanceLabel() {
       const taskAction = "get-name";
@@ -103,10 +117,68 @@ export default {
     getInstanceLabelCompleted(taskContext, taskResult) {
       this.setInstanceLabelInStore(taskResult.output.name);
     },
+    async getConfiguration() {
+      const taskAction = "get-configuration";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getConfigurationAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getConfigurationCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        this.createErrorNotificationForApp(
+          `error creating task ${taskAction}`,
+          this.$t("task.cannot_create_task", { action: taskAction })
+        );
+        return;
+      }
+    },
+    getConfigurationAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+    },
+    getConfigurationCompleted(taskContext, taskResult) {
+      const config = taskResult.output;
+      this.setUserDomainInStore(config.user_domain);
+
+      if (config.hostname) {
+        this.setAppConfiguredInStore(true);
+      } else {
+        this.setAppConfiguredInStore(false);
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss">
 @import "styles/carbon-utils";
+
+.icon-and-text-inline {
+  display: inline-flex;
+  align-items: center;
+
+  .icon {
+    margin-right: $spacing-02;
+  }
+}
 </style>

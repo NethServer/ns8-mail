@@ -1,7 +1,10 @@
+//
+// Copyright (C) 2022 Nethesis S.r.l.
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Status from "../views/Status.vue";
-import Settings from "../views/Settings.vue";
 
 Vue.use(VueRouter);
 
@@ -13,9 +16,38 @@ const routes = [
     alias: "/status", // important
   },
   {
+    path: "/domains",
+    name: "Domains",
+    component: () =>
+      import(/* webpackChunkName: "domains" */ "../views/Domains.vue"),
+  },
+  {
+    path: "/mailboxes",
+    name: "Mailboxes",
+    component: () =>
+      import(/* webpackChunkName: "mailboxes" */ "../views/Mailboxes.vue"),
+  },
+  {
+    path: "/addresses",
+    name: "Addresses",
+    component: () =>
+      import(/* webpackChunkName: "addresses" */ "../views/Addresses.vue"),
+  },
+  {
     path: "/settings",
     name: "Settings",
-    component: Settings,
+    component: () =>
+      import(
+        /* webpackChunkName: "settings" */ "../views/settings/Settings.vue"
+      ),
+  },
+  {
+    path: "/settingsMailboxes",
+    name: "SettingsMailboxes",
+    component: () =>
+      import(
+        /* webpackChunkName: "settings-mailboxes" */ "../views/settings/SettingsMailboxes.vue"
+      ),
   },
   {
     path: "/about",

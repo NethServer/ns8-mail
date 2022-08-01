@@ -1,3 +1,7 @@
+//
+// Copyright (C) 2022 Nethesis S.r.l.
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 import Vue from "vue";
 import Vuex from "vuex";
 
@@ -5,10 +9,12 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    appName: "mail", // TODO
+    appName: "Mail",
     instanceName: "",
     instanceLabel: "",
     core: null,
+    isAppConfigured: true,
+    userDomain: null,
   },
   mutations: {
     setInstanceName(state, instanceName) {
@@ -20,6 +26,12 @@ export default new Vuex.Store({
     setCore(state, core) {
       state.core = core;
     },
+    setAppConfigured(state, value) {
+      state.isAppConfigured = value;
+    },
+    setUserDomain(state, userDomain) {
+      state.userDomain = userDomain;
+    },
   },
   actions: {
     setInstanceNameInStore(context, instanceName) {
@@ -30,6 +42,12 @@ export default new Vuex.Store({
     },
     setCoreInStore(context, core) {
       context.commit("setCore", core);
+    },
+    setAppConfiguredInStore(context, value) {
+      context.commit("setAppConfigured", value);
+    },
+    setUserDomainInStore(context, userDomain) {
+      context.commit("setUserDomain", userDomain);
     },
   },
   modules: {},

@@ -1,3 +1,7 @@
+//
+// Copyright (C) 2022 Nethesis S.r.l.
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
@@ -26,6 +30,9 @@ Vue.use(VueDateFns);
 
 import LottieAnimation from "lottie-web-vue";
 Vue.use(LottieAnimation);
+
+import vueDebounce from "vue-debounce";
+Vue.use(vueDebounce);
 
 // filters
 import { Filters } from "@nethserver/ns8-ui-lib";
