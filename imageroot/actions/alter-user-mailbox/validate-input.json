@@ -23,11 +23,6 @@
             "title": "User name",
             "description": "LDAP user identifier"
         },
-        "enabled": {
-            "type": "boolean",
-            "title": "Enabled state",
-            "description": "If a user mailbox is disabled it cannot receive messages, and it cannot be selected as address destination"
-        },
         "quota": {
             "title": "Quota settings",
             "oneOf": [
