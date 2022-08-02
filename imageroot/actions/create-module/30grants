@@ -9,6 +9,7 @@ set -e    # exit immediately if an error occurs
 exec 1>&2 # ensure any output is sent to stderr
 
 #
-# Allow other modules to read the Dovecot master password
+# Allow other modules to read the Dovecot master password and read the
+# module configuration
 #
-redis-exec SADD "${AGENT_ID}/roles/mailadm" "reveal-master-credentials"
+redis-exec SADD "${AGENT_ID}/roles/mailadm" "reveal-master-credentials" "get-*" "list-*"
