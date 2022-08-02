@@ -8,7 +8,8 @@
     "group_destination": "Group",
     "public_destination": "Public mailbox",
     "apo_destination": "Missing object",
-    "missing_object": "Missing object"
+    "missing_object": "Missing object",
+    "save_settings": "Save settings"
   },
   "status": {
     "title": "Status",
@@ -65,7 +66,10 @@
     "add-public-mailbox": "Create public mailbox",
     "alter-public-mailbox": "Edit public mailbox",
     "remove-public-mailbox": "Delete public mailbox",
-    "list-acl-subjects": "List ACL subjects"
+    "list-acl-subjects": "List ACL subjects",
+    "set-mailbox-enabled": "Set mailbox enabled",
+    "get-mailbox-settings": "Get mailbox settings",
+    "set-mailbox-settings": "Set mailbox settings"
   },
   "error": {
     "error": "Error",
@@ -212,9 +216,19 @@
     "spam_retention": "Spam retention",
     "forever": "Forever",
     "days": "Days",
-    "unlimited_quota": "Unlimited quota"
+    "unlimited_quota_using_usage": "Unlimited quota, using {usage}",
+    "disable_mailbox": "Disable mailbox",
+    "confirm_disable_mailbox": "Do you really want to disable mailbox <strong>{mailbox}</strong>?",
+    "confirm_disable_mailbox_2": "It will stop receiving messages and you won't be able to select it as address destination"
   },
   "settings_mailboxes": {
-    "title": "Mailboxes"
+    "title": "Mailboxes",
+    "mail_quota": "Mail quota",
+    "unlimited": "Unlimited",
+    "move_spam_to_junk_folder": "Move spam to junk folder",
+    "junk_folder_name": "Junk folder name",
+    "spam_retention": "Spam retention",
+    "forever": "Forever",
+    "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required"
   }
 }

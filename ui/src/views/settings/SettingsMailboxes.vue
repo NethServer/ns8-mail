@@ -25,10 +25,115 @@
         <h3>{{ $t("settings_mailboxes.title") }}</h3>
       </cv-column>
     </cv-row>
+    <cv-row v-if="error.getMailboxSettings">
+      <cv-column>
+        <NsInlineNotification
+          kind="error"
+          :title="$t('action.get-mailbox-settings')"
+          :description="error.getMailboxSettings"
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
+    <cv-row v-else>
+      <cv-column>
+        <cv-tile light>
+          <cv-grid fullWidth class="no-padding">
+            <cv-row>
+              <cv-column>
+                <cv-skeleton-text
+                  v-if="loading.getMailboxSettings"
+                  :paragraph="true"
+                  :line-count="8"
+                  width="80%"
+                ></cv-skeleton-text>
+                <cv-form v-else @submit.prevent="setMailboxSettings">
+                  <NsByteSlider
+                    v-model="quota.limit"
+                    :label="$t('settings_mailboxes.mail_quota')"
+                    min="1"
+                    max="10240"
+                    step="1"
+                    stepMultiplier="1023"
+                    minLabel=""
+                    maxLabel=""
+                    showUnlimited
+                    :unlimitedLabel="$t('settings_mailboxes.unlimited')"
+                    :isUnlimited="quota.unlimited"
+                    :byteUnit="quota.byteUnit"
+                    showHumanReadableLabel
+                    showMibGibToggle
+                    tagKind="high-contrast"
+                    :invalidMessage="error.limit"
+                    :disabled="loading.setMailboxSettings"
+                    @unlimited="quota.unlimited = $event"
+                    @byteUnit="quota.byteUnit = $event"
+                  />
+                  <NsToggle
+                    value="spamFolderValue"
+                    :form-item="true"
+                    v-model="spamFolder.enabled"
+                    :disabled="loading.setMailboxSettings"
+                    :class="[
+                      'toggle-without-label',
+                      'mg-top-sm',
+                      { 'mg-bottom-md': spamFolder.enabled },
+                    ]"
+                  >
+                    <template slot="text-left"
+                      >{{ $t("settings_mailboxes.move_spam_to_junk_folder") }}
+                    </template>
+                    <template slot="text-right"
+                      >{{ $t("settings_mailboxes.move_spam_to_junk_folder") }}
+                    </template>
+                  </NsToggle>
+                  <NsTextInput
+                    v-show="spamFolder.enabled"
+                    v-model.trim="spamFolder.name"
+                    :label="$t('settings_mailboxes.junk_folder_name')"
+                    :invalid-message="$t(error.spam_folder)"
+                    :disabled="loading.setMailboxSettings"
+                    class="toggle-dependent"
+                    ref="folder"
+                  />
+                  <NsSlider
+                    v-model="spamRetention.value"
+                    :label="$t('settings_mailboxes.spam_retention')"
+                    min="1"
+                    max="180"
+                    step="1"
+                    stepMultiplier="10"
+                    minLabel=""
+                    maxLabel=""
+                    showUnlimited
+                    :unlimitedLabel="$t('settings_mailboxes.forever')"
+                    :isUnlimited="spamRetention.unlimited"
+                    :invalidMessage="error.value"
+                    :disabled="loading.setMailboxSettings"
+                    :unitLabel="$t('mailboxes.days')"
+                    @unlimited="spamRetention.unlimited = $event"
+                  />
+                  <NsButton
+                    kind="primary"
+                    :icon="Save20"
+                    :loading="loading.setMailboxSettings"
+                    :disabled="
+                      loading.getMailboxSettings || loading.setMailboxSettings
+                    "
+                    >{{ $t("common.save_settings") }}</NsButton
+                  >
+                </cv-form>
+              </cv-column>
+            </cv-row>
+          </cv-grid>
+        </cv-tile>
+      </cv-column>
+    </cv-row>
   </cv-grid>
 </template>
 
 <script>
+import to from "await-to-js";
 import {
   QueryParamService,
   UtilService,
@@ -56,8 +161,28 @@ export default {
         page: "settingsMailboxes",
       },
       urlCheckInterval: null,
-      loading: {},
-      error: {},
+      quota: {
+        limit: "10",
+        unlimited: true,
+        byteUnit: "gib",
+      },
+      spamRetention: {
+        value: "30",
+        unlimited: true,
+      },
+      spamFolder: {
+        enabled: true,
+        name: "",
+      },
+      loading: {
+        getMailboxSettings: false,
+        setMailboxSettings: false,
+      },
+      error: {
+        limit: "",
+        value: "",
+        spam_folder: "",
+      },
     };
   },
   computed: {
@@ -73,10 +198,219 @@ export default {
     clearInterval(this.urlCheckInterval);
     next();
   },
-  created() {},
+  created() {
+    this.getMailboxSettings();
+  },
   methods: {
     goToSettings() {
       this.goToAppPage(this.instanceName, "settings");
+    },
+    async getMailboxSettings() {
+      this.loading.getMailboxSettings = true;
+      this.error.getMailboxSettings = "";
+      const taskAction = "get-mailbox-settings";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getMailboxSettingsAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getMailboxSettingsCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getMailboxSettings = this.getErrorMessage(err);
+        this.loading.getMailboxSettings = false;
+        return;
+      }
+    },
+    getMailboxSettingsAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getMailboxSettings = this.$t("error.generic_error");
+      this.loading.getMailboxSettings = false;
+    },
+    getMailboxSettingsCompleted(taskContext, taskResult) {
+      this.loading.getMailboxSettings = false;
+      const settings = taskResult.output;
+      this.quota.unlimited = !settings.quota.limit;
+
+      if (settings.quota.limit) {
+        // show quota in MiB if it's not a multiple of 1 GiB
+        if (settings.quota.limit % 1024 !== 0) {
+          this.quota.byteUnit = "mib";
+          this.quota.limit = settings.quota.limit.toString();
+        } else {
+          this.quota.byteUnit = "gib";
+          this.quota.limit = (settings.quota.limit / 1024).toString();
+        }
+      }
+      this.spamRetention.unlimited = !settings.spam_retention.value;
+
+      if (settings.spam_retention.value) {
+        this.spamRetention.value = settings.spam_retention.value.toString();
+      }
+
+      this.spamFolder.enabled = settings.spam_folder.enabled;
+
+      if (settings.spam_folder.enabled) {
+        this.spamFolder.name = settings.spam_folder.name;
+      } else {
+        this.spamFolder.name = "";
+      }
+    },
+    validateSetMailboxSettings() {
+      this.clearErrors();
+      let isValidationOk = true;
+
+      // move spam to junk folder, but no folder name is provided
+
+      if (this.spamFolder.enabled && !this.spamFolder.name) {
+        this.error.spam_folder = this.$t(
+          "settings_mailboxes.move_spam_but_no_folder"
+        );
+
+        if (isValidationOk) {
+          this.focusElement("spam_folder");
+          isValidationOk = false;
+        }
+      }
+      return isValidationOk;
+    },
+    async setMailboxSettings() {
+      if (!this.validateSetMailboxSettings()) {
+        return;
+      }
+
+      this.loading.setMailboxSettings = true;
+      this.error.setMailboxSettings = "";
+      const taskAction = "set-mailbox-settings";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.setMailboxSettingsAborted
+      );
+
+      // register to task validation
+      this.core.$root.$once(
+        `${taskAction}-validation-failed-${eventId}`,
+        this.setMailboxSettingsValidationFailed
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.setMailboxSettingsCompleted
+      );
+
+      // quota
+
+      let quota = {
+        limit: 0,
+      };
+
+      if (!this.quota.unlimited) {
+        if (this.quota.byteUnit === "gib") {
+          quota.limit = parseInt(this.quota.limit) * 1024;
+        } else {
+          // mib
+          quota.limit = parseInt(this.quota.limit);
+        }
+      }
+
+      // spam folder
+
+      let spamFolder = {
+        enabled: this.spamFolder.enabled,
+      };
+
+      if (this.spamFolder.enabled) {
+        spamFolder.name = this.spamFolder.name;
+      }
+
+      // spam retention
+
+      let spamRetention = {
+        value: 0,
+      };
+
+      if (!this.spamRetention.unlimited) {
+        spamRetention.value = parseInt(this.spamRetention.value);
+      }
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: {
+            quota: quota,
+            spam_folder: spamFolder,
+            spam_retention: spamRetention,
+          },
+          extra: {
+            title: this.$t("action." + taskAction),
+            description: this.$t("common.processing"),
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.setMailboxSettings = this.getErrorMessage(err);
+        this.loading.setMailboxSettings = false;
+        return;
+      }
+    },
+    setMailboxSettingsAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.setMailboxSettings = this.$t("error.generic_error");
+      this.loading.setMailboxSettings = false;
+    },
+    setMailboxSettingsValidationFailed(validationErrors) {
+      this.loading.setMailboxSettings = false;
+      let focusAlreadySet = false;
+
+      for (const validationError of validationErrors) {
+        const param = validationError.parameter;
+
+        // set i18n error message
+        this.error[param] = this.getI18nStringWithFallback(
+          "settings_mailboxes." + validationError.error,
+          "error." + validationError.error,
+          this.core
+        );
+
+        if (!focusAlreadySet && param != "(root)") {
+          this.focusElement(param);
+          focusAlreadySet = true;
+        }
+      }
+    },
+    setMailboxSettingsCompleted() {
+      this.loading.setMailboxSettings = false;
+
+      // reload settings
+      this.getMailboxSettings();
     },
   },
 };
@@ -84,4 +418,12 @@ export default {
 
 <style scoped lang="scss">
 @import "../../styles/carbon-utils";
+
+.cv-form .bx--form-item {
+  margin-bottom: $spacing-07;
+}
+
+.toggle-dependent {
+  margin-bottom: $spacing-07;
+}
 </style>
