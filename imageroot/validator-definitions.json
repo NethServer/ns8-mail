@@ -399,6 +399,48 @@
                 }
             ]
         },
+        "spam-folder": {
+            "type": "object",
+            "title": "Spam folder",
+            "description": "Decide if and where to move messages marked as spam",
+            "oneOf": [
+                {
+                    "title": "Spam folder enabled",
+                    "required": [
+                        "enabled",
+                        "name"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "const": true
+                        }
+                    }
+                },
+                {
+                    "title": "Spam folder disabled",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "const": false
+                        }
+                    }
+                }
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "title": "Enable folder"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "Folder name",
+                    "minLength": 1
+                }
+            }
+        },
         "spam-retention": {
             "type": "object",
             "title": "Spam retention",

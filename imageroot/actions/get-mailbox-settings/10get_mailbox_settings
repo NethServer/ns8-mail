@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+import os
+
+try:
+    spam_retention = int(os.getenv("DOVECOT_SPAM_RETENTION"))
+except:
+    spam_retention = 0
+
+ospam_retention = {
+    "value": spam_retention,
+}
+
+try:
+    quota = int(os.getenv("DOVECOT_QUOTA_MB"))
+except:
+    quota = 0
+
+oquota = {
+    "limit": quota,
+}
+
+ospam_folder = {
+    "enabled": False,
+}
+
+if os.getenv("DOVECOT_SPAM_FOLDER"):
+    ospam_folder = {
+        "enabled": True,
+        "name": os.getenv("DOVECOT_SPAM_FOLDER"),
+    }
+
+json.dump({
+    "quota": oquota,
+    "spam_retention": ospam_retention,
+    "spam_folder": ospam_folder,
+}, fp=sys.stdout)

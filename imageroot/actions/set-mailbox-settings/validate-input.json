@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "set-mailbox-settings input",
+    "$id": "http://schema.nethserver.org/mail/set-mailbox-settings.json",
+    "description": "Set mailbox default configuration values",
+    "examples": [
+        {
+            "spam_retention": {
+                "value": 30
+            },
+            "spam_folder": {
+                "enabled": true,
+                "name": "Junk"
+            },
+            "quota": {
+                "limit": 2000
+            }
+        }
+    ],
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "spam_folder": {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/spam-folder"
+        },
+        "spam_retention": {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/spam-retention"
+        },
+        "quota": {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/quota-status"
+        }
+    }
+}
