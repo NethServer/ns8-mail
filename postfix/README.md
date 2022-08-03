@@ -47,6 +47,9 @@ Standard public TCP ports
   process through Unix-domain sockets. Mount the Dovecot container path
   where `lmtp` and `auth` sockets reside. It is possible to not mount this
   volume path to disable all Dovecot integrations.
+- `/etc/postfix/main.cf.d`. Local configuration override volume. Any `.cf`
+  file added to this directory is always appended to the expanded
+  `main.cf` file.
 
 ## Commands
 
