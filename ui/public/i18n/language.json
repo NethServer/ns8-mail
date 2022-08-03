@@ -70,7 +70,9 @@
     "list-acl-subjects": "List ACL subjects",
     "set-mailbox-enabled": "Set mailbox enabled",
     "get-mailbox-settings": "Get mailbox settings",
-    "set-mailbox-settings": "Set mailbox settings"
+    "set-mailbox-settings": "Set mailbox settings",
+    "get-master-users": "Get master users",
+    "set-master-users": "Set master users"
   },
   "error": {
     "error": "Error",
@@ -216,6 +218,8 @@
     "custom_spam_retention": "Custom spam retention",
     "spam_retention": "Spam retention",
     "forever": "Forever",
+    "specify_retention": "Specify retention",
+    "specify_quota": "Specify quota",
     "days": "Days",
     "unlimited_quota_using_usage": "Unlimited quota, using {usage}",
     "disable_mailbox": "Disable mailbox",
@@ -224,12 +228,20 @@
   },
   "settings_mailboxes": {
     "title": "Mailboxes",
-    "mail_quota": "Mail quota",
+    "default_mail_quota": "Default mail quota",
     "unlimited": "Unlimited",
     "move_spam_to_junk_folder": "Move spam to junk folder",
     "junk_folder_name": "Junk folder name",
-    "spam_retention": "Spam retention",
+    "default_spam_retention": "Default spam retention",
     "forever": "Forever",
+    "specify_retention": "Specify retention",
+    "specify_quota": "Specify quota",
     "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required"
+  },
+  "settings_master_users": {
+    "title": "Master users",
+    "page_description": "Master users are privileged users that can impersonate another user while interacting with their mailbox",
+    "master_users": "Master users",
+    "master_users_placeholder": "Choose master users"
   }
 }

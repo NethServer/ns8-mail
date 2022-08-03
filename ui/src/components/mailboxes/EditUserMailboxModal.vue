@@ -89,7 +89,7 @@
         <div v-show="customQuota.enabled" class="toggle-dependent">
           <NsByteSlider
             v-model="customQuota.limit"
-            :label="$t('mailboxes.quota')"
+            label=""
             min="1"
             max="10240"
             step="1"
@@ -98,6 +98,7 @@
             maxLabel=""
             showUnlimited
             :unlimitedLabel="$t('mailboxes.unlimited')"
+            :limitedLabel="$t('mailboxes.specify_quota')"
             :isUnlimited="customQuota.unlimited"
             :byteUnit="customQuota.byteUnit"
             showHumanReadableLabel
@@ -128,7 +129,7 @@
         <div v-show="customSpamRetention.enabled" class="toggle-dependent">
           <NsSlider
             v-model="customSpamRetention.value"
-            :label="$t('mailboxes.spam_retention')"
+            label=""
             min="1"
             max="180"
             step="1"
@@ -137,6 +138,7 @@
             maxLabel=""
             showUnlimited
             :unlimitedLabel="$t('mailboxes.forever')"
+            :limitedLabel="$t('mailboxes.specify_retention')"
             :isUnlimited="customSpamRetention.unlimited"
             :invalidMessage="error.value"
             :disabled="loading.alterUserMailbox"

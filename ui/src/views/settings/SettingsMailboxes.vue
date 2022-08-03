@@ -25,6 +25,16 @@
         <h3>{{ $t("settings_mailboxes.title") }}</h3>
       </cv-column>
     </cv-row>
+    <cv-row v-if="error.setMailboxSettings">
+      <cv-column>
+        <NsInlineNotification
+          kind="error"
+          :title="$t('action.set-mailbox-settings')"
+          :description="error.setMailboxSettings"
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
     <cv-row v-if="error.getMailboxSettings">
       <cv-column>
         <NsInlineNotification
@@ -43,14 +53,15 @@
               <cv-column>
                 <cv-skeleton-text
                   v-if="loading.getMailboxSettings"
-                  :paragraph="true"
-                  :line-count="8"
+                  heading
+                  paragraph
+                  :line-count="7"
                   width="80%"
                 ></cv-skeleton-text>
                 <cv-form v-else @submit.prevent="setMailboxSettings">
                   <NsByteSlider
                     v-model="quota.limit"
-                    :label="$t('settings_mailboxes.mail_quota')"
+                    :label="$t('settings_mailboxes.default_mail_quota')"
                     min="1"
                     max="10240"
                     step="1"
@@ -59,6 +70,7 @@
                     maxLabel=""
                     showUnlimited
                     :unlimitedLabel="$t('settings_mailboxes.unlimited')"
+                    :limitedLabel="$t('settings_mailboxes.specify_quota')"
                     :isUnlimited="quota.unlimited"
                     :byteUnit="quota.byteUnit"
                     showHumanReadableLabel
@@ -68,6 +80,24 @@
                     :disabled="loading.setMailboxSettings"
                     @unlimited="quota.unlimited = $event"
                     @byteUnit="quota.byteUnit = $event"
+                  />
+                  <NsSlider
+                    v-model="spamRetention.value"
+                    :label="$t('settings_mailboxes.default_spam_retention')"
+                    min="1"
+                    max="180"
+                    step="1"
+                    stepMultiplier="10"
+                    minLabel=""
+                    maxLabel=""
+                    showUnlimited
+                    :unlimitedLabel="$t('settings_mailboxes.forever')"
+                    :limitedLabel="$t('settings_mailboxes.specify_retention')"
+                    :isUnlimited="spamRetention.unlimited"
+                    :invalidMessage="error.value"
+                    :disabled="loading.setMailboxSettings"
+                    :unitLabel="$t('mailboxes.days')"
+                    @unlimited="spamRetention.unlimited = $event"
                   />
                   <NsToggle
                     value="spamFolderValue"
@@ -95,23 +125,6 @@
                     :disabled="loading.setMailboxSettings"
                     class="toggle-dependent"
                     ref="folder"
-                  />
-                  <NsSlider
-                    v-model="spamRetention.value"
-                    :label="$t('settings_mailboxes.spam_retention')"
-                    min="1"
-                    max="180"
-                    step="1"
-                    stepMultiplier="10"
-                    minLabel=""
-                    maxLabel=""
-                    showUnlimited
-                    :unlimitedLabel="$t('settings_mailboxes.forever')"
-                    :isUnlimited="spamRetention.unlimited"
-                    :invalidMessage="error.value"
-                    :disabled="loading.setMailboxSettings"
-                    :unitLabel="$t('mailboxes.days')"
-                    @unlimited="spamRetention.unlimited = $event"
                   />
                   <NsButton
                     kind="primary"
@@ -179,6 +192,8 @@ export default {
         setMailboxSettings: false,
       },
       error: {
+        getMailboxSettings: "",
+        setMailboxSettings: "",
         limit: "",
         value: "",
         spam_folder: "",
