@@ -14,7 +14,7 @@ export default new Vuex.Store({
     instanceLabel: "",
     core: null,
     isAppConfigured: true,
-    userDomain: null,
+    configuration: null,
   },
   mutations: {
     setInstanceName(state, instanceName) {
@@ -29,8 +29,8 @@ export default new Vuex.Store({
     setAppConfigured(state, value) {
       state.isAppConfigured = value;
     },
-    setUserDomain(state, userDomain) {
-      state.userDomain = userDomain;
+    setConfiguration(state, configuration) {
+      state.configuration = configuration;
     },
   },
   actions: {
@@ -46,8 +46,8 @@ export default new Vuex.Store({
     setAppConfiguredInStore(context, value) {
       context.commit("setAppConfigured", value);
     },
-    setUserDomainInStore(context, userDomain) {
-      context.commit("setUserDomain", userDomain);
+    setConfigurationInStore(context, configuration) {
+      context.commit("setConfiguration", configuration);
     },
   },
   modules: {},

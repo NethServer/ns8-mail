@@ -72,7 +72,7 @@ export default {
       "setInstanceLabelInStore",
       "setCoreInStore",
       "setAppConfiguredInStore",
-      "setUserDomainInStore",
+      "setConfigurationInStore",
     ]),
     async getInstanceLabel() {
       const taskAction = "get-name";
@@ -158,7 +158,7 @@ export default {
     },
     getConfigurationCompleted(taskContext, taskResult) {
       const config = taskResult.output;
-      this.setUserDomainInStore(config.user_domain);
+      this.setConfigurationInStore(config);
 
       if (config.hostname) {
         this.setAppConfiguredInStore(true);

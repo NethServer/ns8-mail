@@ -26,7 +26,8 @@
     "no_services": "No services",
     "no_images": "No images",
     "no_volumes": "No volumes",
-    "user_domain": "User domain"
+    "user_domain": "User domain",
+    "mail_hostname": "Mail server hostname"
   },
   "settings": {
     "title": "Settings",
