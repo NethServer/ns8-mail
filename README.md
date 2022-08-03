@@ -18,11 +18,11 @@ Output example:
 As an example, the following command configures a mail server
 "mail.example.com" with default settings.
 
-    api-cli run module/mail1/configure-module --data '{"hostname":"mail.example.com","user_domain":"ad.example.com","mailbox_quota_mb":200,"mail_domain":"example.com"}'
+    api-cli run module/mail1/configure-module --data '{"hostname":"mail.example.com","user_domain":"ad.example.com","mail_domain":"example.com"}'
 
 - Users from the domain "ad.example.com" can authenticate with SMTP
-  submission, IMAP and POP services. They are offered a mailbox quota of
-  200 MB.
+  submission, IMAP and POP services. They are offered an unlimited mailbox
+  quota by default.
 
 - The domain "example.com" is accepted as final destination with the
   default configuration for the SMTP MX server, listening on port 25.

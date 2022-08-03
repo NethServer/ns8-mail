@@ -25,10 +25,12 @@ except:
 mailboxes = {}
 
 for ouser in rusers['userList']:
-    if ouser in disabled_users:
-        continue # skip disabled user
-
-    mailboxes[ouser] = {"user": ouser}
+    if ouser == 'vmail':
+        continue
+    elif ouser in disabled_users:
+        mailboxes[ouser] = {"user": ouser, "enabled": False}
+    else:
+        mailboxes[ouser] = {"user": ouser}
 
 for oquota in rquotas:
     if not oquota['username'] in mailboxes:

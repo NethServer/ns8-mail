@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "set-user-mailbox input",
+    "$id": "http://schema.nethserver.org/mail/set-user-mailbox-input.json",
+    "description": "Alter the `enabled` attribute of a user mailbox",
+    "examples": [
+        {
+            "user": "administrator",
+            "enabled": false
+        }
+    ],
+    "type": "object",
+    "required": [
+        "user",
+        "enabled"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "user": {
+            "type": "string",
+            "title": "User name",
+            "description": "LDAP user identifier",
+            "minLength": 1
+        },
+        "enabled": {
+            "type": "boolean",
+            "title": "Enabled state",
+            "description": "If a user mailbox is disabled it cannot receive messages, and it cannot be selected as address destination"
+        }
+    }
+}

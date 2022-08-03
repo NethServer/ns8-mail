@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "set-master-users input",
+    "$id": "http://schema.nethserver.org/mail/set-master-users.json",
+    "description": "Set a new list of master users, users that can impersonate other IMAP users",
+    "examples": [
+        {
+            "master_users": [
+                "administrator",
+                "jsmith"
+            ]
+        }
+    ],
+    "type": "object",
+    "required": [
+        "master_users"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "master_users": {
+            "title": "Master user list",
+            "type": "array",
+            "items": {
+                "title": "Master user name",
+                "type": "string",
+                "minLength": 1
+            }
+        }
+    }
+}

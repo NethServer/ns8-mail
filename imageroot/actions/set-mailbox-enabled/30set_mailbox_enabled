@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+import os
+
+request = json.load(sys.stdin)
+muser = request['user']
+
+needs_reload = False
+
+if 'enabled' in request:
+    disabled_users = set()
+    if os.getenv("DOVECOT_DISABLED_USERS"):
+        disabled_users = set(os.getenv('DOVECOT_DISABLED_USERS', "").split(","))
+
+    user_is_enabled = muser not in disabled_users
+
+    if request['enabled'] == False and user_is_enabled:
+        # disable an enabled user
+        disabled_users.add(muser)
+        needs_reload = True
+    elif request['enabled'] == True and not user_is_enabled:
+        # enable a disabled user
+        disabled_users.remove(muser)
+        needs_reload = True
+
+if needs_reload:
+    os.environ["DOVECOT_DISABLED_USERS"] = ",".join(disabled_users)
+    agent.set_env("DOVECOT_DISABLED_USERS", os.environ["DOVECOT_DISABLED_USERS"])
+    agent.run_helper('podman', 'exec', '--env=DOVECOT_*', '--env-file=dovecot.env', 'dovecot', 'reload-config')
+    agent.dump_env()

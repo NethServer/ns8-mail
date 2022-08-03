@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+
+request = json.load(sys.stdin)
+
+if 'quota' in request:
+    quota = int(request['quota']['limit'])
+    agent.set_env("DOVECOT_QUOTA_MB", quota)
+
+if 'spam_folder' in request:
+    if request['spam_folder']['enabled'] == True:
+        spam_folder = request['spam_folder']['name']
+    else:
+        spam_folder = ""
+
+    agent.set_env("DOVECOT_SPAM_FOLDER", spam_folder)
+
+if 'spam_retention' in request:
+    spam_retention = int(request['spam_retention']['value'])
+    agent.set_env("DOVECOT_SPAM_RETENTION", spam_retention)
+
+agent.dump_env()

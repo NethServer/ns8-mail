@@ -7,8 +7,7 @@
         {
             "user_domain": "ad.dom.test",
             "hostname": "mail.dom.test",
-            "mail_domain": "dom.test",
-            "mailbox_quota_mb": 2000
+            "mail_domain": "dom.test"
         }
     ],
     "type": "object",
@@ -17,12 +16,6 @@
         "hostname"
     ],
     "properties": {
-        "mailbox_quota_mb": {
-            "type": ["integer", "null"],
-            "title": "User mailbox quota",
-            "description": "Default user mailbox quota expressed in MB (megabytes). Set 0 for unlimited default quota. Set null to disable quota plugin completely.",
-            "minimum": 0
-        },
         "user_domain": {
             "type": "string",
             "title": "User domain name",
