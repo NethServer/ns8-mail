@@ -13,8 +13,8 @@ TCP ports are open
 Login TLS policy
     [Template]    Retry test
     SMTP STARTTLS offered on port 25
-    SMTP AUTH local login
-    SMTP AUTH submissions login
+    SMTP AUTH PLAIN not offered without TLS
+    SMTP AUTH submissions good login
 
 *** Keywords ***
 SMTP STARTTLS offered on port 25
