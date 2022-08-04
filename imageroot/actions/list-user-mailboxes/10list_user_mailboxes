@@ -55,6 +55,8 @@ sdb = mail.pcdb_connect(readonly=True)
 for rforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user != dest""").fetchall():
     if not rforward['user'] in mailboxes:
         continue # unknown username, skip
+    if rforward['user'] in disabled_users:
+        continue # disabled user, skip
 
     if not 'forward' in mailboxes[rforward['user']]:
         mailboxes[rforward['user']]['forward'] = {"destinations":[]}
@@ -64,6 +66,9 @@ for rforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user !=
 for kforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user = dest""").fetchall():
     if not kforward['user'] in mailboxes:
         continue # unknown username, skip
+
+    if kforward['user'] in disabled_users:
+        continue # disabled user, skip
 
     if not 'forward' in mailboxes[kforward['user']]:
         continue # no forwards, keepcopy is useless
@@ -92,6 +97,9 @@ for kventry in uspamret_reply:
 
     if not kuser in mailboxes:
         continue # unknown username, skip
+
+    if kuser in disabled_users:
+        continue # disabled user, skip
 
     mailboxes[kuser]['spam_retention'] = {
         'custom': True,
