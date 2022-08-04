@@ -50,6 +50,14 @@ const routes = [
       ),
   },
   {
+    path: "/settingsMasterUsers",
+    name: "SettingsMasterUsers",
+    component: () =>
+      import(
+        /* webpackChunkName: "settings-master-users" */ "../views/settings/SettingsMasterUsers.vue"
+      ),
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting

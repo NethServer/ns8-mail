@@ -44,7 +44,7 @@
       </cv-side-nav-link>
       <cv-side-nav-link
         @click="goToAppPage(instanceName, 'settings')"
-        :class="{ 'current-page': isLinkActive('settings') }"
+        :class="{ 'current-page': isSettingsActive() }"
       >
         <template v-slot:nav-icon><Settings20 /></template>
         <span>{{ $t("settings.title") }}</span>
@@ -100,6 +100,9 @@ export default {
   methods: {
     isLinkActive(page) {
       return this.getPage() === page;
+    },
+    isSettingsActive() {
+      return this.getPage().startsWith("settings");
     },
     onAppNavigation() {
       // highlight current page in side menu

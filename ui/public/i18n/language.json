@@ -8,7 +8,8 @@
     "group_destination": "Group",
     "public_destination": "Public mailbox",
     "apo_destination": "Missing object",
-    "missing_object": "Missing object"
+    "missing_object": "Missing object",
+    "save_settings": "Save settings"
   },
   "status": {
     "title": "Status",
@@ -25,7 +26,8 @@
     "no_services": "No services",
     "no_images": "No images",
     "no_volumes": "No volumes",
-    "user_domain": "User domain"
+    "user_domain": "User domain",
+    "mail_hostname": "Mail server hostname"
   },
   "settings": {
     "title": "Settings",
@@ -65,7 +67,12 @@
     "add-public-mailbox": "Create public mailbox",
     "alter-public-mailbox": "Edit public mailbox",
     "remove-public-mailbox": "Delete public mailbox",
-    "list-acl-subjects": "List ACL subjects"
+    "list-acl-subjects": "List ACL subjects",
+    "set-mailbox-enabled": "Set mailbox enabled",
+    "get-mailbox-settings": "Get mailbox settings",
+    "set-mailbox-settings": "Set mailbox settings",
+    "get-master-users": "Get master users",
+    "set-master-users": "Set master users"
   },
   "error": {
     "error": "Error",
@@ -211,10 +218,30 @@
     "custom_spam_retention": "Custom spam retention",
     "spam_retention": "Spam retention",
     "forever": "Forever",
+    "specify_retention": "Specify retention",
+    "specify_quota": "Specify quota",
     "days": "Days",
-    "unlimited_quota": "Unlimited quota"
+    "unlimited_quota_using_usage": "Unlimited quota, using {usage}",
+    "disable_mailbox": "Disable mailbox",
+    "confirm_disable_mailbox": "Do you really want to disable mailbox <strong>{mailbox}</strong>?",
+    "confirm_disable_mailbox_2": "It will stop receiving messages and you won't be able to select it as address destination"
   },
   "settings_mailboxes": {
-    "title": "Mailboxes"
+    "title": "Mailboxes",
+    "default_mail_quota": "Default mail quota",
+    "unlimited": "Unlimited",
+    "move_spam_to_junk_folder": "Move spam to junk folder",
+    "junk_folder_name": "Junk folder name",
+    "default_spam_retention": "Default spam retention",
+    "forever": "Forever",
+    "specify_retention": "Specify retention",
+    "specify_quota": "Specify quota",
+    "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required"
+  },
+  "settings_master_users": {
+    "title": "Master users",
+    "page_description": "Master users are privileged users that can impersonate another user while interacting with their mailbox",
+    "master_users": "Master users",
+    "master_users_placeholder": "Choose master users"
   }
 }

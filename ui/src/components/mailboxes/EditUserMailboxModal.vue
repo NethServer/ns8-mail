@@ -89,7 +89,7 @@
         <div v-show="customQuota.enabled" class="toggle-dependent">
           <NsByteSlider
             v-model="customQuota.limit"
-            :label="$t('mailboxes.quota')"
+            label=""
             min="1"
             max="10240"
             step="1"
@@ -98,6 +98,7 @@
             maxLabel=""
             showUnlimited
             :unlimitedLabel="$t('mailboxes.unlimited')"
+            :limitedLabel="$t('mailboxes.specify_quota')"
             :isUnlimited="customQuota.unlimited"
             :byteUnit="customQuota.byteUnit"
             showHumanReadableLabel
@@ -128,7 +129,7 @@
         <div v-show="customSpamRetention.enabled" class="toggle-dependent">
           <NsSlider
             v-model="customSpamRetention.value"
-            :label="$t('mailboxes.spam_retention')"
+            label=""
             min="1"
             max="180"
             step="1"
@@ -137,6 +138,7 @@
             maxLabel=""
             showUnlimited
             :unlimitedLabel="$t('mailboxes.forever')"
+            :limitedLabel="$t('mailboxes.specify_retention')"
             :isUnlimited="customSpamRetention.unlimited"
             :invalidMessage="error.value"
             :disabled="loading.alterUserMailbox"
@@ -176,7 +178,7 @@ export default {
     },
     defaultSpamRetention: {
       type: Number,
-      default: 15,
+      default: 30,
     },
   },
   data() {
@@ -190,13 +192,13 @@ export default {
       },
       customQuota: {
         enabled: false,
-        limit: "1",
+        limit: "10",
         unlimited: true,
         byteUnit: "gib",
       },
       customSpamRetention: {
         enabled: false,
-        value: "0",
+        value: "30",
         unlimited: true,
       },
       loading: {
@@ -236,19 +238,21 @@ export default {
           this.customQuota.enabled = !!this.mailbox.quota.custom;
           this.customQuota.unlimited = !this.mailbox.quota.limit;
 
-          // show quota in MiB if it's not a multiple of 1 GiB
-          if (this.mailbox.quota.limit % 1024 !== 0) {
-            this.customQuota.byteUnit = "mib";
-            this.customQuota.limit = this.mailbox.quota.limit.toString();
-          } else {
-            this.customQuota.byteUnit = "gib";
-            this.customQuota.limit = (
-              this.mailbox.quota.limit / 1024
-            ).toString();
+          if (this.mailbox.quota.limit) {
+            // show quota in MiB if it's not a multiple of 1 GiB
+            if (this.mailbox.quota.limit % 1024 !== 0) {
+              this.customQuota.byteUnit = "mib";
+              this.customQuota.limit = this.mailbox.quota.limit.toString();
+            } else {
+              this.customQuota.byteUnit = "gib";
+              this.customQuota.limit = (
+                this.mailbox.quota.limit / 1024
+              ).toString();
+            }
           }
         } else {
           this.customQuota.enabled = false;
-          this.customQuota.limit = "1";
+          this.customQuota.limit = "10";
           this.customQuota.unlimited = true;
           this.customQuota.byteUnit = "gib";
         }
@@ -260,13 +264,30 @@ export default {
             !!this.mailbox.spam_retention.custom;
           this.customSpamRetention.unlimited =
             !this.mailbox.spam_retention.value;
-          this.customSpamRetention.value =
-            this.mailbox.spam_retention.value.toString();
+
+          if (this.mailbox.spam_retention.value) {
+            this.customSpamRetention.value =
+              this.mailbox.spam_retention.value.toString();
+          } else if (this.defaultSpamRetention) {
+            this.customSpamRetention.value =
+              this.defaultSpamRetention.toString();
+          } else {
+            this.customSpamRetention.value = "30";
+          }
         } else {
           this.customSpamRetention.enabled = false;
-          this.customSpamRetention.value = this.defaultSpamRetention.toString();
-          this.customSpamRetention.unlimited = true;
+          this.customSpamRetention.unlimited = !this.defaultSpamRetention;
+
+          if (this.defaultSpamRetention) {
+            this.customSpamRetention.value =
+              this.defaultSpamRetention.toString();
+          } else {
+            this.customSpamRetention.value = "30";
+          }
         }
+      } else {
+        // closing modal
+        this.clearFields();
       }
     },
     "forward.enabled": function () {

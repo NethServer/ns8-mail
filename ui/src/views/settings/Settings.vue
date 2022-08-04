@@ -20,6 +20,16 @@
           <h6>{{ $t("settings_mailboxes.title") }}</h6>
         </NsTile>
       </cv-column>
+      <cv-column :md="4" :xlg="4">
+        <NsTile
+          :light="true"
+          kind="clickable"
+          @click="goToAppPage(instanceName, 'settingsMasterUsers')"
+          :icon="UserMilitary32"
+        >
+          <h6>{{ $t("settings_master_users.title") }}</h6>
+        </NsTile>
+      </cv-column>
     </cv-row>
   </cv-grid>
 </template>

@@ -44,10 +44,20 @@
         <cv-column :md="4" :max="4">
           <NsInfoCard
             light
-            :title="userDomain ? userDomain.name : '-'"
+            :title="configuration ? configuration.hostname : '-'"
+            :description="$t('status.mail_hostname')"
+            :icon="BareMetalServer32"
+            :loading="!configuration"
+            class="min-height-card"
+          />
+        </cv-column>
+        <cv-column :md="4" :max="4">
+          <NsInfoCard
+            light
+            :title="configuration ? configuration.user_domain.name : '-'"
             :description="$t('status.user_domain')"
             :icon="Events32"
-            :loading="!userDomain"
+            :loading="!configuration"
             class="min-height-card"
           />
         </cv-column>
@@ -313,7 +323,7 @@ export default {
       "instanceLabel",
       "core",
       "appName",
-      "userDomain",
+      "configuration",
     ]),
     installationNodeTitle() {
       if (this.status && this.status.node) {

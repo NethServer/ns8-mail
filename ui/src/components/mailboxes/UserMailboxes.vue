@@ -21,7 +21,7 @@
             :noSearchResultsDescription="
               core.$t('common.no_search_results_description')
             "
-            :isLoading="loading.listUserMailboxes"
+            :isLoading="loading.listUserMailboxes || loading.setMailboxEnabled"
             :skeletonRows="5"
             :isErrorShown="!!error.listUserMailboxes"
             :errorTitle="$t('action.list-user-mailboxes')"
@@ -49,7 +49,15 @@
                 :key="`${rowIndex}`"
                 :value="`${rowIndex}`"
               >
-                <cv-data-table-cell>{{ row.user }} </cv-data-table-cell>
+                <cv-data-table-cell>
+                  {{ row.user }}
+                  <NsTag
+                    v-if="row.enabled == false"
+                    kind="high-contrast"
+                    :label="core.$t('common.disabled')"
+                    size="sm"
+                  ></NsTag>
+                </cv-data-table-cell>
                 <cv-data-table-cell>
                   <template v-if="row.quota">
                     <template v-if="row.quota.limit > 0">
@@ -75,7 +83,11 @@
                       />
                     </template>
                     <template v-else>
-                      {{ $t("mailboxes.unlimited_quota") }}
+                      {{
+                        $t("mailboxes.unlimited_quota_using_usage", {
+                          usage: $options.filters.mibFormat(row.quota.value),
+                        })
+                      }}
                     </template>
                   </template>
                 </cv-data-table-cell>
@@ -149,6 +161,19 @@
                         :label="core.$t('common.edit')"
                       />
                     </cv-overflow-menu-item>
+                    <cv-overflow-menu-item
+                      @click="toggleMailboxEnabled(row)"
+                      :data-test-id="row.user + '-set-enabled'"
+                    >
+                      <NsMenuItem
+                        :icon="Power20"
+                        :label="
+                          row.enabled == false
+                            ? core.$t('common.enable')
+                            : core.$t('common.disable')
+                        "
+                      />
+                    </cv-overflow-menu-item>
                   </cv-overflow-menu>
                 </cv-data-table-cell>
               </cv-data-table-row>
@@ -165,6 +190,14 @@
       @hide="hideEditUserMailboxModal"
       @mailboxAltered="listUserMailboxes"
     />
+    <!-- confirm disable mailbox modal -->
+    <ConfirmDisableMailboxModal
+      :isShown="isShownConfirmDisableMailbox"
+      :mailbox="currentMailbox"
+      :core="core"
+      @hide="hideConfirmDisableMailbox"
+      @confirm="setMailboxEnabled(false)"
+    />
   </div>
 </template>
 
@@ -178,10 +211,11 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import to from "await-to-js";
 import EditUserMailboxModal from "./EditUserMailboxModal";
+import ConfirmDisableMailboxModal from "./ConfirmDisableMailboxModal";
 
 export default {
   name: "UserMailboxes",
-  components: { EditUserMailboxModal },
+  components: { EditUserMailboxModal, ConfirmDisableMailboxModal },
   mixins: [QueryParamService, UtilService, IconService, TaskService],
   data() {
     return {
@@ -191,13 +225,16 @@ export default {
       mailboxes: [],
       isShownEditUserMailboxModal: false,
       defaultSpamRetention: 0,
+      isShownConfirmDisableMailbox: false,
       loading: {
         listUserMailboxes: false,
         alterUserMailbox: false,
+        setMailboxEnabled: false,
       },
       error: {
         listUserMailboxes: "",
         alterUserMailbox: "",
+        setMailboxEnabled: "",
       },
     };
   },
@@ -267,6 +304,74 @@ export default {
     },
     hideEditUserMailboxModal() {
       this.isShownEditUserMailboxModal = false;
+    },
+    toggleMailboxEnabled(mailbox) {
+      this.currentMailbox = mailbox;
+
+      if (mailbox.enabled == false) {
+        // enable mailbox
+        this.setMailboxEnabled(true);
+      } else {
+        // disable mailbox
+        this.showConfirmDisableMailbox();
+      }
+    },
+    showConfirmDisableMailbox() {
+      this.isShownConfirmDisableMailbox = true;
+    },
+    hideConfirmDisableMailbox() {
+      this.isShownConfirmDisableMailbox = false;
+    },
+    async setMailboxEnabled(isEnabled) {
+      this.loading.setMailboxEnabled = true;
+      this.error.setMailboxEnabled = "";
+      const taskAction = "set-mailbox-enabled";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.setMailboxEnabledAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.setMailboxEnabledCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: {
+            user: this.currentMailbox.user,
+            enabled: isEnabled,
+          },
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.setMailboxEnabled = this.getErrorMessage(err);
+        this.loading.setMailboxEnabled = false;
+        return;
+      }
+      this.hideConfirmDisableMailbox();
+    },
+    setMailboxEnabledAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.setMailboxEnabled = this.$t("error.generic_error");
+      this.loading.setMailboxEnabled = false;
+    },
+    setMailboxEnabledCompleted() {
+      this.loading.setMailboxEnabled = false;
+      this.listUserMailboxes();
     },
   },
 };
