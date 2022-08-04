@@ -1,0 +1,4 @@
+Local configuration override
+----------------------------
+
+Any *.conf file in this directory is appended to local.conf

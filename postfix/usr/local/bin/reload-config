@@ -85,6 +85,15 @@ if [ -z "${tmpl_sasl_commentout}" ] ; then
     cat /etc/postfix/dovecot-sasl.cf >> /etc/postfix/main.cf
 fi
 
+# Append override dir contents to main.cf:
+(
+    echo ""
+    echo "# BEGIN Included directives from /etc/postfix/main.cf.d/*.cf:"
+    find /etc/postfix/main.cf.d -name '*.cf' -exec cat '{}' \;
+    echo "# END Included directives from /etc/postfix/main.cf.d/*.cf:"
+    echo ""
+) >> /etc/postfix/main.cf
+
 if [ -n "${POSTFIX_DEBUG}" ] ; then
     postconf -n
 fi

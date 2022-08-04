@@ -22,6 +22,7 @@ ExecStart=/usr/bin/podman run \
     --volume=postfix-queue:/var/spool/postfix:z \
     --volume=dovecot-lmtp:/var/lib/umail:z \
     --volume=/dev/log:/dev/log \
+    --volume=postfix-custom:/etc/postfix/main.cf.d:z \
     ${MAIL_POSTFIX_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/postfix.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/postfix.ctr-id

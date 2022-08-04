@@ -27,6 +27,35 @@ As an example, the following command configures a mail server
 - The domain "example.com" is accepted as final destination with the
   default configuration for the SMTP MX server, listening on port 25.
 
+## Custom configuration
+
+**Dovecot** custom configuration is saved in the `dovecot-custom` volume.
+To edit it, run this command while `dovecot.service` is running:
+
+    podman exec -ti dovecot vi /etc/dovecot/local.conf.d/myoverride.conf
+    systemctl --user reload dovecot
+
+If the service is stopped, start a dedicated container to mount the volume
+properly:
+
+    podman run --rm -ti -v dovecot-custom:/srv:z alpine vi /srv/myoverride.conf
+    systemctl --user reload dovecot
+
+For **Postfix** the commands are similar. Custom configuration is saved in
+the `postfix-custom` volume. Edit it with:
+
+    podman exec -ti postfix vi /etc/postfix/main.cf.d/myoverride.cf
+    systemctl --user reload postfix
+
+If Postfix is stopped run this one instead:
+
+    podman run --rm -ti -v postfix-custom:/srv:z alpine vi /srv/myoverride.cf
+    systemctl --user reload postfix
+
+After applying a custom configuration, check the services are running properly:
+
+    systemctl --user status postfix dovecot
+
 ## User impersonation
 
 The username `vmail` is reserved and granted the *impersonate* privilege.

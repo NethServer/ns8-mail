@@ -97,6 +97,9 @@ Volumes are:
   process through Unix-domain sockets. Contents
      * `lmtp`, the Message Delivery Agent (MDA) Unix-domain
      * `auth`, Dovecot/Postfix SASL integration
+- `/etc/dovecot/local.conf.d`. Local configuration override volume. Any
+  `.conf` file added to this directory is included into Dovecot
+  configuration after `local.conf` contents.
 
 ## Custom user quota
 
