@@ -54,3 +54,36 @@ Check the user SMTP login succeedes
 
 Check the user IMAP login succeedes
     Run Keyword    IMAP login good credentials
+
+Check the postmaster public mailbox is present
+    ${lmailboxes} =   Run task    module/${MID}/list-public-mailboxes    ""
+    ${expected} =    Evaluate    json.loads('''[{"mailbox": "postmaster", "acls": []}]''')
+    Should Be Equal    ${lmailboxes}    ${expected}
+
+Add a public employees mailbox
+    Run task    module/${MID}/add-public-mailbox    {"mailbox":"employees", "acls": [{"stype":"user","subject":{"name":"u1","dtype":"user"},"rights":{"rtype":"full"}},{"stype":"group","subject":{"name":"domain admins","dtype":"group"},"rights":{"rtype":"rw"}},{"stype":"user","subject":{"name":"u2","dtype":"user"},"rights":{"rtype":"ro"}}]}
+
+Check the public mailbox employees is properly configured
+    ${lmailboxes} =    Run task    module/${MID}/list-public-mailboxes    ""
+    FOR  ${ombx}    IN    @{lmailboxes}
+        IF    "${ombx}[mailbox]" == "employees"
+            Length Should Be    ${ombx}[acls]    3
+        END
+    END
+
+Alter public mailbox acls
+    Run task    module/${MID}/alter-public-mailbox    {"mailbox":"employees", "acls": [{"stype":"user","subject":{"name":"u1","dtype":"user"},"rights":{"rtype":"full"}},{"stype":"user","subject":{"name":"u2","dtype":"user"},"rights":{"rtype":"ro"}}]}
+
+Check the ACL was removed from public mailbox employees
+    ${lmailboxes} =    Run task    module/${MID}/list-public-mailboxes    ""
+    FOR  ${ombx}    IN    @{lmailboxes}
+        IF    "${ombx}[mailbox]" == "employees"
+            Length Should Be    ${ombx}[acls]    2
+        END
+    END
+
+Remove the public mailbox employees
+    Run task    module/${MID}/remove-public-mailbox    {"mailbox":"employees"}
+    ${lmailboxes} =   Run task    module/${MID}/list-public-mailboxes    ""
+    ${expected} =    Evaluate    json.loads('''[{"mailbox": "postmaster", "acls": []}]''')
+    Should Be Equal    ${lmailboxes}    ${expected}
