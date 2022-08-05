@@ -41,6 +41,7 @@ try:
         mail.doveadm_query("aclSet", {"user": "vmail", "mailbox": mbxn, "id": subject, "right": acl_values})
 
 except mail.DoveadmError as dex:
+    sdb.rollback()
     if dex.code != 65:
         raise
 
@@ -48,12 +49,19 @@ except mail.DoveadmError as dex:
     json.dump([{'field':'mailbox', 'parameter':'mailbox','value': mbxn, 'error':'mailbox_already_exists'}], fp=sys.stdout)
     sys.exit(3)
 
+except mail.MailDestinationNotFound as mex:
+    sdb.rollback()
+    mail.doveadm_query("mailboxDelete", {"mailbox": [mbxn], "user": "vmail"})
+    agent.set_status('validation-failed')
+    json.dump([{'field':'acls', 'parameter':'acls','value': qacl['subject']['name'], 'error':'acl_subject_not_found'}], fp=sys.stdout)
+    sys.exit(4)
+
 except IntegrityError as iex:
     sdb.rollback()
     # Address exists
     agent.set_status('validation-failed')
     json.dump([{'field':'mailbox', 'parameter':'mailbox','value': mbxn, 'error':'address_already_exists'}], fp=sys.stdout)
-    sys.exit(3)
+    sys.exit(5)
 
 else:
     sdb.commit()

@@ -40,3 +40,8 @@ except mail.DoveadmError as dex:
     agent.set_status('validation-failed')
     json.dump([{'field':'mailbox', 'parameter':'mailbox','value': mbxn, 'error':'mailbox_not_found'}], fp=sys.stdout)
     sys.exit(3)
+
+except mail.MailDestinationNotFound as mex:
+    agent.set_status('validation-failed')
+    json.dump([{'field':'acls', 'parameter':'acls','value': qacl['subject']['name'], 'error':'acl_subject_not_found'}], fp=sys.stdout)
+    sys.exit(4)
