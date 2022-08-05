@@ -24,7 +24,14 @@ with sdb:
     }
     cur = sdb.cursor()
     if cur.execute("SELECT COUNT(*) FROM domains WHERE domain != '*'").fetchone()[0] == 0:
-        # If the postmaster wildcard destination is at its default, update its destination
+        # If the postmaster wildcard destination is at its default, create
+        # "postmaster" public mailbox and set as alias destination.
+        try:
+            # Create postmaster public mailbox, with no ACLs
+            mail.doveadm_query("mailboxCreate", {"mailbox": ["postmaster"], "user": "vmail"})
+        except mail.DoveadmError as dex:
+            if dex.code != 65: # ignore error if mailbox already exists
+                raise
         cur.execute("UPDATE destmap SET dest=? WHERE alocal='postmaster' AND domain='*' AND dest='postmaster'", ('vmail+postmaster',))
         print(agent.SD_DEBUG + f"Creating initial domain {vals['domain']}", file=sys.stderr)
         cur.execute("INSERT INTO domains (domain,addusers) VALUES (:domain,:addusers)", vals)
