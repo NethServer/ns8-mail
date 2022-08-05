@@ -529,7 +529,6 @@
             "properties": {
                 "acls": {
                     "title": "ACL set",
-                    "minLength": 1,
                     "type": "array",
                     "items": {
                         "$ref": "#/$defs/acl-descriptor"
