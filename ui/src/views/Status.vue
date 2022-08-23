@@ -44,7 +44,11 @@
         <cv-column :md="4" :max="4">
           <NsInfoCard
             light
-            :title="configuration ? configuration.hostname : '-'"
+            :title="
+              configuration && configuration.hostname
+                ? configuration.hostname
+                : '-'
+            "
             :description="$t('status.mail_hostname')"
             :icon="BareMetalServer32"
             :loading="!configuration"
@@ -54,7 +58,11 @@
         <cv-column :md="4" :max="4">
           <NsInfoCard
             light
-            :title="configuration ? configuration.user_domain.name : '-'"
+            :title="
+              configuration && configuration.user_domain
+                ? configuration.user_domain.name
+                : '-'
+            "
             :description="$t('status.user_domain')"
             :icon="Events32"
             :loading="!configuration"

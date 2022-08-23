@@ -168,6 +168,8 @@ export default {
     },
     isNextButtonDisabled() {
       return (
+        this.loading.getDefaults ||
+        !this.userDomains.length ||
         this.loading.configureModule ||
         (this.step == "mailHostname" &&
           (!this.hostname || !this.mail_domain)) ||
