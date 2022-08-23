@@ -61,6 +61,7 @@
             :maxDisplayOptions="100"
             acceptUserInput
             showItemType
+            showItemDescription
             selectedItemsColor="high-contrast"
             :options="forward.allDestinationsForUi"
           />
@@ -546,8 +547,9 @@ export default {
           return {
             name: d.name,
             value: `${d.name}_${d.dtype}`,
-            label: d.ui_name || d.name,
+            label: d.name,
             type: this.$t(`common.${d.dtype}_destination`),
+            description: d.ui_name,
           };
         }
       );
