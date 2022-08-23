@@ -159,7 +159,8 @@
     "type_wildcard": "Wildcard",
     "type_domain": "Alias",
     "type_adduser": "User",
-    "type_addgroup": "Group"
+    "type_addgroup": "Group",
+    "address_already_exists": "Address already exists"
   },
   "mailboxes": {
     "title": "Mailboxes",
@@ -224,7 +225,8 @@
     "unlimited_quota_using_usage": "Unlimited quota, using {usage}",
     "disable_mailbox": "Disable mailbox",
     "confirm_disable_mailbox": "Do you really want to disable mailbox <strong>{mailbox}</strong>?",
-    "confirm_disable_mailbox_2": "It will stop receiving messages and you won't be able to select it as address destination"
+    "confirm_disable_mailbox_2": "It will stop receiving messages and you won't be able to select it as address destination",
+    "address_already_exists": "Address already exists"
   },
   "settings_mailboxes": {
     "title": "Mailboxes",
