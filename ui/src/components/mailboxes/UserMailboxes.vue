@@ -155,6 +155,7 @@
                     <cv-overflow-menu-item
                       @click="showEditUserMailboxModal(row)"
                       :data-test-id="row.user + '-edit'"
+                      :disabled="row.enabled == false"
                     >
                       <NsMenuItem
                         :icon="Edit20"
