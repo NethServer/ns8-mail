@@ -1,21 +1,17 @@
 {
   "name": "Mail",
   "description": {
-    "en": "Mail module with SMTP, IMAP, spam and virus filter"
+    "en": "Manage a complete mail server with ease and security"
   },
-  "categories": [],
+  "categories": ["collaboration"],
   "authors": [
     {
-      "name": "Davide Principi",
-      "email": "davide.principi@nethesis.it"
-    },
-    {
-      "name": "Andrea Leardini",
-      "email": "andrea.leardini@nethesis.it"
+      "name": "NethServer team",
+      "email": "nethserver@nethesis.it"
     }
   ],
   "docs": {
-    "documentation_url": "https://docs.mail.com/",
+    "documentation_url": "https://github.com/NethServer/ns8-mail",
     "bug_url": "https://github.com/NethServer/dev",
     "code_url": "https://github.com/NethServer/ns8-mail"
   },

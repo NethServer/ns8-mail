@@ -97,6 +97,7 @@
                     userInputLabel=""
                     :maxDisplayOptions="100"
                     :showItemType="false"
+                    :showItemDescription="false"
                     selectedItemsColor="high-contrast"
                     :options="allMailboxesForUi"
                   />
