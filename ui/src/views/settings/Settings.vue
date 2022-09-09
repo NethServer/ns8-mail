@@ -14,6 +14,16 @@
         <NsTile
           :light="true"
           kind="clickable"
+          @click="goToAppPage(instanceName, 'settingsGeneral')"
+          :icon="Settings32"
+        >
+          <h6>{{ $t("settings_general.title") }}</h6>
+        </NsTile>
+      </cv-column>
+      <cv-column :md="4" :xlg="4">
+        <NsTile
+          :light="true"
+          kind="clickable"
           @click="goToAppPage(instanceName, 'settingsMailboxes')"
           :icon="Box32"
         >

@@ -245,5 +245,10 @@
     "page_description": "Master users are privileged users that can impersonate another user while interacting with their mailbox",
     "master_users": "Master users",
     "master_users_placeholder": "Choose master users"
+  },
+  "settings_general": {
+    "title": "General",
+    "mail_hostname": "Mail server hostname",
+    "user_domain": "User domain"
   }
 }
