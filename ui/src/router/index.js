@@ -42,6 +42,14 @@ const routes = [
       ),
   },
   {
+    path: "/settingsGeneral",
+    name: "SettingsGeneral",
+    component: () =>
+      import(
+        /* webpackChunkName: "settings-general" */ "../views/settings/SettingsGeneral.vue"
+      ),
+  },
+  {
     path: "/settingsMailboxes",
     name: "SettingsMailboxes",
     component: () =>

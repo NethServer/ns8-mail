@@ -68,7 +68,14 @@
           <cv-grid fullWidth class="no-padding">
             <cv-row>
               <cv-column>
-                <cv-form @submit.prevent="setMasterUsers">
+                <cv-skeleton-text
+                  v-if="loading.listUserMailboxes || loading.getMasterUsers"
+                  heading
+                  paragraph
+                  :line-count="5"
+                  width="80%"
+                ></cv-skeleton-text>
+                <cv-form v-else @submit.prevent="setMasterUsers">
                   <NsMultiSelect
                     v-model="selectedMasterUsers"
                     autoFilter
