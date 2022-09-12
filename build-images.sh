@@ -32,7 +32,7 @@ buildah add "${container}" imageroot /imageroot
 buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
-    --label="org.nethserver.images=${repobase}/mail-dovecot:${IMAGETAG:-latest} ${repobase}/mail-postfix:${IMAGETAG:-latest}" \
+    --label="org.nethserver.images=${repobase}/mail-dovecot:${IMAGETAG:-latest} ${repobase}/mail-postfix:${IMAGETAG:-latest} ${repobase}/mail-rspamd:${IMAGETAG:-latest}" \
     --label="org.nethserver.authorizations=node:fwadm traefik@node:certadm" \
     "${container}"
 # Commit the image
@@ -117,6 +117,32 @@ buildah config \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
+
+
+#
+# Rspamd additional image
+#
+reponame="mail-rspamd"
+container=$(buildah from docker.io/library/alpine:3.16)
+buildah run "${container}" /bin/sh <<EOF
+set -e
+apk add --no-cache redis rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
+cat >/var/lib/redis/redis.acl <<'EOC'
+user default on nopass ~* &* +@all -@dangerous
+user rspamd on nopass ~* &* +@all
+EOC
+EOF
+buildah add "${container}" rspamd/ /
+buildah config \
+    --env=RSPAMD_instance=rspamdx \
+    --volume=/var/lib/redis \
+    --volume=/var/lib/rspamd \
+    --entrypoint='["/entrypoint.sh"]' \
+    --cmd='' \
+    "${container}"
+buildah commit "${container}" "${repobase}/${reponame}"
+images+=("${repobase}/${reponame}")
+
 
 #
 # Setup CI when pushing to Github. 

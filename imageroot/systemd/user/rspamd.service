@@ -1,0 +1,31 @@
+[Unit]
+Description=Rspamd mail filter
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+WorkingDirectory=%S/state
+Restart=always
+ExecStartPre=/bin/rm -f %t/rspamd.pid %t/rspamd.ctr-id
+ExecStart=/usr/bin/podman run \
+    --detach \
+    --conmon-pidfile=%t/rspamd.pid \
+    --cidfile=%t/rspamd.ctr-id \
+    --cgroups=no-conmon \
+    --replace --name=%N \
+    --network=host \
+    --env=RSPAMD_* \
+    --volume=rspamd-data:/var/lib/rspamd:Z \
+    --volume=rspamd-redis:/var/lib/redis:Z \
+    --volume=rspamd-override:/etc/rspamd/override.d:z \
+    --volume=/dev/log:/dev/log \
+    ${MAIL_RSPAMD_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/rspamd.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/rspamd.ctr-id
+ExecReload=runagent /usr/bin/podman exec --env=RSPAMD_* %N reload-config
+PIDFile=%t/rspamd.pid
+Type=forking
+SyslogIdentifier=%u
+
+[Install]
+WantedBy=default.target

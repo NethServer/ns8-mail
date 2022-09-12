@@ -108,4 +108,10 @@ smtpd_tls_dh1024_param_file = /etc/ssl/postfix/dh.pem
 smtpd_tls_received_header = yes
 smtpd_tls_auth_only = yes
 
+#
+# Mail filter
+#
+milter_macro_daemon_name = ${tmpl_syslog_name}
+smtpd_milters = ${tmpl_milters}
+
 ### end of main.cf ###

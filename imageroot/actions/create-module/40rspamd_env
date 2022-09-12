@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import agent
+import os
+import string
+import secrets
+
+def genpw():
+    """Generate a random token"""
+    alphabet = string.ascii_letters + string.digits + '%@-+_^,./'
+    return ''.join([secrets.choice(alphabet) for i in range(32)])
+
+agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
+agent.set_env('RSPAMD_adminpw', genpw())
+agent.set_env('POSTFIX_MILTERS', 'inet:localhost:11332')
+agent.dump_env()
