@@ -22,6 +22,20 @@ const routes = [
       import(/* webpackChunkName: "domains" */ "../views/Domains.vue"),
   },
   {
+    path: "/filter",
+    name: "MailFilter",
+    component: () =>
+      import(/* webpackChunkName: "filter" */ "../views/MailFilter.vue"),
+  },
+  {
+    path: "/filterBypassRules",
+    name: "FilterBypassRules",
+    component: () =>
+      import(
+        /* webpackChunkName: "filterBypassRules" */ "../views/FilterBypassRules.vue"
+      ),
+  },
+  {
     path: "/mailboxes",
     name: "Mailboxes",
     component: () =>

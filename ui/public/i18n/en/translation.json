@@ -9,7 +9,10 @@
     "public_destination": "Public mailbox",
     "apo_destination": "Missing object",
     "missing_object": "Missing object",
-    "save_settings": "Save settings"
+    "save_settings": "Save settings",
+    "advanced": "Advanced",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
   },
   "status": {
     "title": "Status",
@@ -30,10 +33,7 @@
     "mail_hostname": "Mail server hostname"
   },
   "settings": {
-    "title": "Settings",
-    "configure_instance": "Configure {instance}",
-    "save": "Save",
-    "test_filed": "Test field"
+    "title": "Settings"
   },
   "about": {
     "title": "About"
@@ -227,6 +227,26 @@
     "confirm_disable_mailbox": "Do you really want to disable mailbox <strong>{mailbox}</strong>?",
     "confirm_disable_mailbox_2": "It will stop receiving messages and you won't be able to select it as address destination",
     "address_already_exists": "Address already exists"
+  },
+  "filter": {
+    "title": "Filter",
+    "antispam": "Antispam",
+    "general": "General",
+    "enable_filter": "Enable filter",
+    "enable_antispam": "Enable antispam",
+    "enable_antivirus": "Enable antivirus",
+    "rspamd_webapp": "Rspamd webapp",
+    "num_rules_configured_c": "No active rule | {n} active rule | {n} active rules",
+    "configure": "Configure",
+    "spam_flag_threshold": "Spam flag threshold",
+    "deny_message_spam_threshold": "Deny message spam threshold",
+    "greylist_threshold": "Greylist threshold",
+    "bypass_rules": "Bypass rules",
+    "add_prefix_to_spam_subject": "Add a prefix to spam messages subject",
+    "prefix": "Prefix"
+  },
+  "filter_bypass_rules": {
+    "title": "Bypass rules"
   },
   "settings_mailboxes": {
     "title": "Mailboxes",
