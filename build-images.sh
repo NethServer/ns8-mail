@@ -126,7 +126,10 @@ reponame="mail-rspamd"
 container=$(buildah from docker.io/library/alpine:3.16)
 buildah run "${container}" /bin/sh <<EOF
 set -e
-apk add --no-cache redis rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
+# Software installation order is important to preserve uid and gid allocation:
+apk add --no-cache redis
+apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
+apk add --no-cache lighttpd lighttpd-mod_auth
 cat >/var/lib/redis/redis.acl <<'EOC'
 user default on nopass ~* &* +@all -@dangerous
 user rspamd on nopass ~* &* +@all

@@ -18,6 +18,12 @@ def genpw():
     return ''.join([secrets.choice(alphabet) for i in range(32)])
 
 agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
-agent.set_env('RSPAMD_adminpw', genpw())
 agent.set_env('POSTFIX_MILTERS', 'inet:localhost:11332')
+
+if not os.path.exists('rspamd.env'):
+    oldmask = os.umask(0o77)
+    with open('rspamd.env', 'w') as fenv:
+        print('RSPAMD_adminpw=' + genpw(), file=fenv)
+    os.umask(oldmask)
+
 agent.dump_env()
