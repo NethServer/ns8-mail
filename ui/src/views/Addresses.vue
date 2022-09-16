@@ -875,7 +875,7 @@ export default {
         case "domain":
           return [address.address];
         case "wildcard": {
-          if (this.internalDomains.length <= 2) {
+          if (this.internalDomains.length && this.internalDomains.length <= 2) {
             // only one domain (plus "Wildcard")
             return [`${address.address}${this.internalDomains[0].value}`];
           } else {
