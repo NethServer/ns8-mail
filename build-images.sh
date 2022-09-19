@@ -130,6 +130,7 @@ set -e
 apk add --no-cache redis
 apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
 apk add --no-cache lighttpd lighttpd-mod_auth
+chown -c root:root /etc/rspamd/local.d/maps.d
 cat >/var/lib/redis/redis.acl <<'EOC'
 user default on nopass ~* &* +@all -@dangerous
 user rspamd on nopass ~* &* +@all
