@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer of clamav-unofficial-sigs service
+
+[Timer]
+OnUnitInactiveSec=60 minutes
+
+[Install]
+WantedBy=timers.target

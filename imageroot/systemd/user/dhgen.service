@@ -8,7 +8,7 @@ ExecStart=mv -v dh.tmp dh.pem
 ExecStartPost=-runagent install-certificate postfix
 ExecStartPost=-runagent install-certificate dovecot
 WorkingDirectory=%S/state
-SyslogIdentifier=%u
+SyslogIdentifier=%u/%N
 
 [Install]
 WantedBy=default.target

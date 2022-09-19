@@ -3,6 +3,8 @@
 # Terminate on error
 set -e
 
+alpine_version=3.16
+
 # Prepare variables for later use
 images=()
 # The image will be pushed to GitHub container registry
@@ -32,7 +34,12 @@ buildah add "${container}" imageroot /imageroot
 buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
-    --label="org.nethserver.images=${repobase}/mail-dovecot:${IMAGETAG:-latest} ${repobase}/mail-postfix:${IMAGETAG:-latest} ${repobase}/mail-rspamd:${IMAGETAG:-latest}" \
+    --label="org.nethserver.images=$(printf "${repobase}/mail-%s:${IMAGETAG:-latest} " \
+        dovecot \
+        postfix \
+        rspamd \
+        clamav \
+    )" \
     --label="org.nethserver.authorizations=node:fwadm traefik@node:certadm" \
     "${container}"
 # Commit the image
@@ -123,7 +130,7 @@ images+=("${repobase}/${reponame}")
 # Rspamd additional image
 #
 reponame="mail-rspamd"
-container=$(buildah from docker.io/library/alpine:3.16)
+container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<EOF
 set -e
 # Software installation order is important to preserve uid and gid allocation:
@@ -131,10 +138,6 @@ apk add --no-cache redis
 apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
 apk add --no-cache lighttpd lighttpd-mod_auth
 chown -c root:root /etc/rspamd/local.d/maps.d
-cat >/var/lib/redis/redis.acl <<'EOC'
-user default on nopass ~* &* +@all -@dangerous
-user rspamd on nopass ~* &* +@all
-EOC
 EOF
 buildah add "${container}" rspamd/ /
 buildah config \
@@ -142,6 +145,47 @@ buildah config \
     --volume=/var/lib/redis \
     --volume=/var/lib/rspamd \
     --entrypoint='["/entrypoint.sh"]' \
+    --cmd='' \
+    "${container}"
+buildah commit "${container}" "${repobase}/${reponame}"
+images+=("${repobase}/${reponame}")
+
+
+#
+# ClamAV additional image
+#
+reponame="mail-clamav"
+container=$(buildah from docker.io/library/alpine:${alpine_version})
+buildah run "${container}" /bin/sh <<'EOF'
+set -e
+apk add --no-cache bash curl wget rsync bind-tools socat gpg gpg-agent
+apk add --no-cache clamav-daemon clamav-scanner 
+apk add --no-cache freshclam
+
+source_url="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/7.2.5"
+mkdir -vp /usr/local/sbin /etc/clamav-unofficial-sigs/override.d/ /var/lib/clamav-unofficial-sigs
+chmod -c 750 /var/lib/clamav-unofficial-sigs
+chown -c clamav:clamav /var/lib/clamav-unofficial-sigs
+(
+    cd /usr/local/sbin
+    curl -sfL -O "${source_url}/clamav-unofficial-sigs.sh"
+    chmod -c 755 clamav-unofficial-sigs.sh
+)
+(
+    cd /etc/clamav-unofficial-sigs
+    curl -sfL -O "${source_url}/config/master.conf"
+    curl -sfL -O "${source_url}/config/user.conf"
+    curl -sfL "${source_url}/config/os/os.alpine.conf" > os.conf
+    chmod -c 644 *.conf
+    echo 'logging_enabled="no"' >> os.conf
+)
+EOF
+buildah add "${container}" clamav/ /
+buildah config \
+    --entrypoint='["/entrypoint.sh"]' \
+    --volume=/etc/clamav-unofficial-sigs/override.d \
+    --volume=/var/lib/clamav \
+    --volume=/var/lib/clamav-unofficial-sigs \
     --cmd='' \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"

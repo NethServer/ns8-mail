@@ -1,0 +1,26 @@
+#!/bin/ash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# shellcheck shell=dash
+
+set -e
+
+sig_type=${1:?Invocation error: the first argument must be either \"freshclam\" or \"cus\"}
+shift # discard first argument
+
+# Wait for clamd to become available, ignoring connection errors.
+clamdscan --ping 60:5 >/dev/null 2>&1
+
+if [ "${sig_type}" = "freshclam" ]; then
+    # Start freshclam
+    exec /usr/bin/freshclam "${@}"
+fi
+
+if [ "${sig_type}" = "cus" ]; then
+    # Start clamav-unofficial-sigs
+    exec su -s /bin/bash - clamav /usr/local/sbin/clamav-unofficial-sigs.sh -- "${@}"
+fi
