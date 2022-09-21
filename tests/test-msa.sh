@@ -1,8 +1,8 @@
 #!/bin/sh
 
-credentials=${1:?}
-mto=${2:?}
-mfrom=${3:-"$(id -nu)@$(hostname -f)"}
+mto=${1:?missing mto}
+mfrom=${2:?missing mfrom}
+credentials=${3:?missing credentials}
 random=$RANDOM
 
 curl -k -s -v --upload-file - --crlf \
