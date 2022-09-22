@@ -20,10 +20,14 @@ Well-known ports
 
 - `RSPAMD_instance` Rspamd instance name, required for syslog identity
   field and used for authentication on the controller HTTP service
-- `RSPAMD_adminpw` Password for the HTTP service
+- `RSPAMD_adminpw` Password of user `admin` on HTTP port 11334
+- `RSPAMD_dkim_selector` The name of the default DKIM selector; the
+  default value is `default`, which is compatible with NS7 to ease the
+  migration of existing mail servers.
 
 ## Volumes
 
+- `/etc/rspamd/override.d` Rspamd custom configuration
 - `/var/lib/rspamd` Rspamd persistent storage
 - `/var/lib/redis` Redis persistent storage
 

@@ -17,6 +17,15 @@ if [ $# -eq 0 ]; then
         chown lighttpd /etc/lighttpd/auth.user
     )
 
+    # Create path for DKIM keys
+    dkim_dir="/var/lib/rspamd/dkim"
+    if [ ! -d "${dkim_dir}" ]; then
+        mkdir -v -m 0750 "${dkim_dir}"
+        echo "Generating DKIM signing key. Add the following TXT record to DNS domains:"
+        rspamadm dkim_keygen -s "${RSPAMD_dkim_selector:?}" -b 2048 -k "${dkim_dir}/${RSPAMD_dkim_selector}.key" | tee "${dkim_dir}/${RSPAMD_dkim_selector}.txt"
+        chgrp -cR rspamd "${dkim_dir}"
+    fi
+
     su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-persistent.conf --syslog-ident ${RSPAMD_instance}/redis-persistent" </dev/null &
     su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-volatile.conf --syslog-ident ${RSPAMD_instance}/redis-volatile" </dev/null &
 
