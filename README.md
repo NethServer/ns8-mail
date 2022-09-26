@@ -29,6 +29,8 @@ As an example, the following command configures a mail server
 
 ## Custom configuration
 
+### Dovecot custom configuration
+
 **Dovecot** custom configuration is saved in the `dovecot-custom` volume.
 To edit it, run this command while `dovecot.service` is running:
 
@@ -40,6 +42,8 @@ properly:
 
     podman run --rm -ti -v dovecot-custom:/srv:z alpine vi /srv/myoverride.conf
     systemctl --user reload dovecot
+
+### Postfix custom configuration
 
 For **Postfix** the commands are similar. Custom configuration is saved in
 the `postfix-custom` volume. Edit it with:
@@ -55,6 +59,47 @@ If Postfix is stopped run this one instead:
 After applying a custom configuration, check the services are running properly:
 
     systemctl --user status postfix dovecot
+
+### Rspamd custom configuration
+
+To customize the **Rspamd** configuration and to access advanced Rspamd
+settings use the Rspamd web admin UI. It is accessible from the local host
+on TCP port 11334. If a SSH port forward is not allowed, configure an
+HTTPS route to expose the web interface publicly, as the web UI is
+protected by a random password. Retrieve the UI password with
+
+    podman exec rspamd ash -c 'echo $RSPAMD_adminpw'
+
+Some settings cannot be controlled by the web UI. In that case, override
+the Rspamd configuration by adding configuration files under
+`/etc/rspamd/override.d`, which is mounted as a persistent volume. For instance run
+
+    podman exec -ti rspamd vi /etc/rspamd/override.d/example.conf
+
+Refer to Rspamd documentation, for the allowed file names and expected
+contents.
+
+The module self-generates a 2048-bit RSA key for DKIM at installation
+time. The key is used for DKIM signing when any message is submitted by an
+authenticated user, or from a local IP address.
+
+It is possible to use a different DKIM key for a particular domain by
+applying the following procedure. Given the DNS TXT record is be selected
+by `myselector`,
+
+1. generate a new key, with the wanted selector:
+
+       rspamadm dkim_keygen -s myselector -b 2048 -k /var/lib/rspamd/dkim/myselector.key > /var/lib/rspamd/dkim/myselector.txt
+       chgrp rspamd /var/lib/rspamd/dkim/myselector.key
+
+2. access the Rspamd admin UI, and edit
+   `/var/lib/rspamd/dkim_selectors.map`. Add a line like
+
+       mydomain.example.com myselector
+
+3. add a DNS TXT record to `mydomain.example.com`, as described in
+   `/var/lib/rspamd/dkim/myselector.txt`
+
 
 ## User impersonation
 

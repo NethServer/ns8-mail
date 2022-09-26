@@ -145,6 +145,7 @@ buildah config \
     --env=RSPAMD_dkim_selector=default \
     --volume=/var/lib/redis \
     --volume=/var/lib/rspamd \
+    --volume=/etc/rspamd/override.d \
     --entrypoint='["/entrypoint.sh"]' \
     --cmd='' \
     "${container}"
