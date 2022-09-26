@@ -30,7 +30,7 @@
       </cv-side-nav-link>
       <cv-side-nav-link
         @click="goToAppPage(instanceName, 'filter')"
-        :class="{ 'current-page': isLinkActive('filter') }"
+        :class="{ 'current-page': isFilterActive() }"
       >
         <template v-slot:nav-icon><Filter20 /></template>
         <span>{{ $t("filter.title") }}</span>
@@ -112,6 +112,9 @@ export default {
     },
     isSettingsActive() {
       return this.getPage().startsWith("settings");
+    },
+    isFilterActive() {
+      return this.getPage().startsWith("filter");
     },
     onAppNavigation() {
       // highlight current page in side menu

@@ -70,6 +70,37 @@
           />
         </cv-column>
         <cv-column :md="4" :max="4">
+          <!-- //// check rspamdLink -->
+          <NsInfoCard
+            light
+            :title="$t('status.rspamd_webapp')"
+            :description="
+              config && config.rspamdLink
+                ? config.rspamdLink
+                : $t('status.not_configured')
+            "
+            :icon="Wikis32"
+            :loading="loading.getConfiguration"
+            :isErrorShown="error.getConfiguration"
+            :errorTitle="$t('error.cannot_retrieve_configuration')"
+            :errorDescription="error.getConfiguration"
+            class="min-height-card"
+          >
+            <template slot="content">
+              <!-- //// check rspamdLink -->
+              <NsButton
+                v-if="config && config.rspamdLink"
+                kind="ghost"
+                :icon="Launch20"
+                :disabled="loading.getConfiguration"
+                @click="goToNextcloudWebapp"
+              >
+                {{ $t("status.open_rspamd") }}
+              </NsButton>
+            </template>
+          </NsInfoCard>
+        </cv-column>
+        <cv-column :md="4" :max="4">
           <NsInfoCard
             light
             :title="status.instance || '-'"
@@ -313,6 +344,7 @@ export default {
       },
       backupRepositories: [],
       backups: [],
+      config: null,
       loading: {
         getStatus: false,
         listBackupRepositories: false,
@@ -530,6 +562,10 @@ export default {
       }
       this.backups = backups;
       this.loading.listBackups = false;
+    },
+    goToNextcloudWebapp() {
+      //// check rspamdLink
+      window.open(`https://${this.config.rspamdLink}`, "_blank");
     },
   },
 };

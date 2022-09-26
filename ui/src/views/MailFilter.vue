@@ -14,10 +14,10 @@
             <NsButton
               kind="tertiary"
               size="field"
-              :icon="Wikis20"
+              :icon="Launch20"
               @click="goToRspamdWebapp()"
               class="page-toolbar-item"
-              >{{ $t("filter.rspamd_webapp") }}
+              >{{ $t("filter.open_rspamd") }}
             </NsButton>
           </div>
         </cv-column>
@@ -97,6 +97,18 @@
           <cv-tile light>
             <h4 class="mg-bottom-md">
               {{ $t("filter_bypass_rules.title") }}
+              <cv-interactive-tooltip
+                alignment="center"
+                direction="right"
+                class="info"
+              >
+                <template slot="trigger">
+                  <Information16 />
+                </template>
+                <template slot="content">
+                  {{ $t("filter_bypass_rules.bypass_rules_tooltip") }}
+                </template>
+              </cv-interactive-tooltip>
             </h4>
             <div class="mg-bottom-lg">
               {{ $tc("filter.num_rules_configured_c", numBypassRules) }}
@@ -105,7 +117,7 @@
               kind="tertiary"
               :icon="ArrowRight20"
               @click="goToAppPage(instanceName, 'filterBypassRules')"
-              >{{ $t("filter.bypass_rules") }}
+              >{{ $t("filter.go_to_bypass_rules") }}
             </NsButton>
           </cv-tile>
         </cv-column>
@@ -232,15 +244,13 @@ import {
   PageTitleService,
 } from "@nethserver/ns8-ui-lib";
 import { mapState } from "vuex";
-// import _cloneDeep from "lodash/cloneDeep"; ////
-// import CreateOrEditAddressModal from "@/components/CreateOrEditAddressModal"; ////
-// import Information16 from "@carbon/icons-vue/es/information/16"; ////
+import Information16 from "@carbon/icons-vue/es/information/16";
 
 //// review
 
 export default {
   name: "MailFilter",
-  components: {},
+  components: { Information16 },
   mixins: [
     TaskService,
     UtilService,

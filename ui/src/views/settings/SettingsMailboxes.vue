@@ -21,8 +21,8 @@
       </cv-column>
     </cv-row>
     <cv-row>
-      <cv-column class="subpage-title">
-        <h3>{{ $t("settings_mailboxes.title") }}</h3>
+      <cv-column class="page-title">
+        <h2>{{ $t("settings_mailboxes.title") }}</h2>
       </cv-column>
     </cv-row>
     <cv-row v-if="error.setMailboxSettings">

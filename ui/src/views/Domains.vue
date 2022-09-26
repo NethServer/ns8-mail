@@ -341,6 +341,7 @@ export default {
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
 
+//// remove (css rules moved to core)
 .card-content {
   flex-direction: column;
   text-align: center;

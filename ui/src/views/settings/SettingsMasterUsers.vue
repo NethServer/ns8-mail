@@ -21,13 +21,13 @@
       </cv-column>
     </cv-row>
     <cv-row>
-      <cv-column class="subpage-title">
-        <h3>{{ $t("settings_master_users.title") }}</h3>
+      <cv-column class="page-title">
+        <h2>{{ $t("settings_master_users.title") }}</h2>
       </cv-column>
     </cv-row>
     <cv-row>
       <cv-column>
-        <div class="title-description mg-bottom-md">
+        <div class="title-description mg-bottom-lg">
           {{ $t("settings_master_users.page_description") }}
         </div>
       </cv-column>
@@ -377,7 +377,7 @@ export default {
 <style scoped lang="scss">
 @import "../../styles/carbon-utils";
 
-.subpage-title {
+.page-title {
   margin-bottom: 0;
 }
 </style>
