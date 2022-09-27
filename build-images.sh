@@ -58,6 +58,7 @@ addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
 apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext
+apk add --no-cache rspamd-client
 (
     # Remove the self-signed certificate
     rm -vf /etc/ssl/dovecot/server.*
@@ -92,6 +93,7 @@ buildah config \
     --env=DOVECOT_DISABLED_USERS= \
     --env=DOVECOT_SPAM_RETENTION= \
     --env=DOVECOT_SPAM_FOLDER=Junk \
+    --env=DOVECOT_TRASH_FOLDER=Trash \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")

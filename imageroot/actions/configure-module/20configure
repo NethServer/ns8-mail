@@ -25,10 +25,12 @@ if not os.path.exists('dovecot.env'):
     alphabet = string.ascii_letters + string.digits + '%@-+_^,./'
     dovecot_api_key = ''.join([secrets.choice(alphabet) for i in range(32)])
     dovecot_vmail_pass = ''.join([secrets.choice(alphabet) for i in range(32)])
+    dovecot_spamt_pass = agent.read_envfile('rspamd.env')['RSPAMD_spamtpw']
     oldmask = os.umask(0o77)
     with open('dovecot.env', 'w') as fenv:
         print("DOVECOT_API_KEY=" + dovecot_api_key, file=fenv)
         print("DOVECOT_VMAIL_PASS=" + dovecot_vmail_pass, file=fenv)
+        print("DOVECOT_SPAMT_PASS=" + dovecot_spamt_pass, file=fenv)
     os.umask(oldmask)
 
     # First configuration default settings

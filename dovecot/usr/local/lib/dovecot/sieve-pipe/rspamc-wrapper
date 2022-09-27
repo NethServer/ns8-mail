@@ -1,0 +1,18 @@
+#!/bin/ash
+# shellcheck shell=dash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+token=$(cat /etc/dovecot/rspamc.token)
+
+/usr/bin/rspamc --header "Authorization: Basic ${token}" "${@}" 
+exit_code=$?
+if [ ${exit_code} -gt 1 ]; then
+    # The exit code 1 is silently ignored. Other values are logged.
+    echo "rspamc exit code ${exit_code} ignored" 1>&2
+fi
+
+exit 0

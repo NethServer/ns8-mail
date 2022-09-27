@@ -27,6 +27,9 @@ login_trusted_networks=${DOVECOT_TRUSTED_NETWORKS:-}
 doveadm_api_key=${DOVECOT_API_KEY:?}
 doveadm_api_port=${DOVECOT_API_PORT:?}
 stats_http_port=${DOVECOT_METRICS_PORT:?}
+tmpl_spam_folder=${DOVECOT_SPAM_FOLDER:-Junk}
+tmpl_spam_subject_prefix=${DOVECOT_SPAM_SUBJECT_PREFIX:-}
+tmpl_trash_folder=${DOVECOT_TRASH_FOLDER:?}
 tmpl_mail_plugins="acl listescape"
 # Note: value "0" means "unlimited default quota"; value "" (empty string)
 # means "quota plugin disabled".
@@ -37,6 +40,13 @@ if [ -n "${DOVECOT_QUOTA_MB}" ]; then
 else
     quota_rule_storage="0"
     condinclude_local_quota=
+fi
+
+# Spam folder auto subscribe?
+if [ -n "${DOVECOT_SPAM_FOLDER}" ]; then
+    tmpl_spam_folder_auto="subscribe"
+else
+    tmpl_spam_folder_auto="no"
 fi
 
 master_users=${DOVECOT_MASTER_USERS}
@@ -64,6 +74,15 @@ if [ -n "${DOVECOT_DEBUG}" ]; then
     ) >> /etc/dovecot/local.conf
     doveconf -n
 fi
+
+(
+    # Compile IMAPSieve global scripts
+    cd /etc/dovecot
+    sievec report-ham.sieve
+    sievec report-spam.sieve
+    # Write the HTTP-Basic Auth token for rspamc-wrapper
+    echo -n "spamt:${DOVECOT_SPAMT_PASS}" | base64 -w 0 > /etc/dovecot/rspamc.token
+)
 
 if [ -f /run/dovecot/master.pid ]; then
     doveadm reload

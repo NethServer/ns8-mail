@@ -13,7 +13,10 @@ if [ $# -eq 0 ]; then
 
     (   # Store Rspamd admin UI credentials for Lighttpd
         umask 027
-        printf "%s:%s\n" "admin" "${RSPAMD_adminpw:?}" >/etc/lighttpd/auth.user
+        printf "%s:%s\n" \
+            "admin" "${RSPAMD_adminpw:?}" \
+            "spamt" "${RSPAMD_spamtpw:?}" \
+        >/etc/lighttpd/auth.user
         chown lighttpd /etc/lighttpd/auth.user
     )
 

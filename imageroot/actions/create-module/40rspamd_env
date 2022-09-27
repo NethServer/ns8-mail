@@ -24,6 +24,7 @@ if not os.path.exists('rspamd.env'):
     oldmask = os.umask(0o77)
     with open('rspamd.env', 'w') as fenv:
         print('RSPAMD_adminpw=' + genpw(), file=fenv)
+        print('RSPAMD_spamtpw=' + genpw(), file=fenv)
     os.umask(oldmask)
 
 agent.dump_env()
