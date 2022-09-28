@@ -70,6 +70,15 @@
           />
         </cv-column>
         <cv-column :md="4" :max="4">
+          <!-- //// remove mock properties -->
+          <FilterStatusCard
+            :isFilterEnabled="true"
+            :isAntispamEnabled="true"
+            :isAntivirusEnabled="false"
+            light
+          />
+        </cv-column>
+        <cv-column :md="4" :max="4">
           <!-- //// check rspamdLink -->
           <NsInfoCard
             light
@@ -321,9 +330,11 @@ import {
   IconService,
   UtilService,
 } from "@nethserver/ns8-ui-lib";
+import FilterStatusCard from "@/components/FilterStatusCard";
 
 export default {
   name: "Status",
+  components: { FilterStatusCard },
   mixins: [TaskService, QueryParamService, IconService, UtilService],
   pageTitle() {
     return this.$t("status.title") + " - " + this.appName;

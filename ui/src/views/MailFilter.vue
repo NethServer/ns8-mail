@@ -130,7 +130,7 @@
               {{ $t("filter.antispam") }}
             </h4>
             <NsSlider
-              v-model="spamFlagTh"
+              v-model="antispam.spamFlagTh"
               :label="$t('filter.spam_flag_threshold')"
               min="1"
               max="25"
@@ -145,7 +145,7 @@
               class="mg-bottom-xlg"
             />
             <NsSlider
-              v-model="denyMessageSpamTh"
+              v-model="antispam.denyMessageSpamTh"
               :label="$t('filter.deny_message_spam_threshold')"
               min="1"
               max="25"
@@ -190,7 +190,7 @@
                   <NsToggle
                     value="prefixSpamValue"
                     :form-item="true"
-                    v-model="isAddPrefixToSpamSubject"
+                    v-model="antispam.isAddPrefixToSpamSubject"
                     :disabled="
                       loading.getFilterConfig || loading.saveFilterConfig
                     "
@@ -205,8 +205,8 @@
                     }}</template>
                   </NsToggle>
                   <NsTextInput
-                    v-if="isAddPrefixToSpamSubject"
-                    v-model.trim="spamSubjectPrefix"
+                    v-if="antispam.isAddPrefixToSpamSubject"
+                    v-model.trim="antispam.spamSubjectPrefix"
                     :label="$t('filter.prefix')"
                     :invalid-message="error.spamSubjectPrefix"
                     :disabled="
@@ -230,12 +230,103 @@
           </cv-tile>
         </cv-column>
       </cv-row>
+      <!-- antivirus -->
+      <cv-row v-if="isFilterEnabled && isAntivirusEnabled">
+        <cv-column>
+          <cv-tile light>
+            <h4 class="mg-bottom-md">
+              {{ $t("filter.antivirus") }}
+            </h4>
+            <NsInlineNotification
+              kind="info"
+              title=""
+              :description="$t('filter.antivirus_signatures_explanation')"
+              :showCloseButton="false"
+            />
+            <NsInlineNotification
+              v-if="
+                antivirus.isClamavOfficialEnabled &&
+                antivirus.systemMemory < 4000
+              "
+              kind="warning"
+              title=""
+              :description="
+                $t('filter.signatures_memory_warning', {
+                  installationNode: getInstallationNodeTitle(),
+                })
+              "
+              :showCloseButton="false"
+            />
+            <NsCheckbox
+              :label="$t('filter.clamav_official_signatures')"
+              v-model="antivirus.isClamavOfficialEnabled"
+              :disabled="loading.getFilterConfig || loading.saveFilterConfig"
+              tooltipAlignment="start"
+              tooltipDirection="right"
+              value="checkAntivirusClamavOfficialEnabled"
+              class="mg-bottom-lg"
+            >
+              <template slot="tooltip">
+                <div
+                  v-html="$t('filter.clamav_official_signatures_tooltip')"
+                ></div>
+              </template>
+            </NsCheckbox>
+            <label class="bx--label">
+              {{ $t("filter.third_party_signatures_rating") }}
+            </label>
+            <cv-interactive-tooltip
+              alignment="center"
+              direction="right"
+              class="tooltip info signatures-tooltip"
+            >
+              <template slot="trigger"></template>
+              <template slot="content">
+                <div
+                  v-html="$t('filter.third_party_signatures_rating_tooltip')"
+                ></div>
+              </template>
+            </cv-interactive-tooltip>
+            <cv-content-switcher
+              @selected="onSignaturesRatingSelected"
+              class="signatures-switcher"
+            >
+              <cv-content-switcher-button
+                owner-id="low"
+                :selected="csbSignaturesLowSelected"
+                >{{ $t("filter.signatures_low") }}</cv-content-switcher-button
+              >
+              <cv-content-switcher-button
+                owner-id="medium"
+                :selected="csbSignaturesMediumSelected"
+                >{{
+                  $t("filter.signatures_medium")
+                }}</cv-content-switcher-button
+              >
+              <cv-content-switcher-button
+                owner-id="high"
+                :selected="csbSignaturesHighSelected"
+                >{{ $t("filter.signatures_high") }}</cv-content-switcher-button
+              >
+            </cv-content-switcher>
+            <NsButton
+              kind="primary"
+              :icon="Save20"
+              @click="save"
+              :disabled="loading.getFilterConfig"
+              :loading="loading.saveFilterConfig"
+              class="mg-top-xlg"
+              >{{ $t("common.save_settings") }}
+            </NsButton>
+          </cv-tile>
+        </cv-column>
+      </cv-row>
     </cv-grid>
   </div>
 </template>
 
 <script>
-// import to from "await-to-js"; ////
+import to from "await-to-js";
 import {
   QueryParamService,
   UtilService,
@@ -270,18 +361,28 @@ export default {
       isFilterEnabled: true,
       isAntispamEnabled: true,
       isAntivirusEnabled: true,
+      //// use antispam: {} object
       numBypassRules: 0, ////
-      spamFlagTh: "6", ////
-      denyMessageSpamTh: "20", ////
-      isAddPrefixToSpamSubject: false,
-      spamSubjectPrefix: "***SPAM***",
+      antispam: {
+        spamFlagTh: "6", ////
+        denyMessageSpamTh: "20", ////
+        isAddPrefixToSpamSubject: false,
+        spamSubjectPrefix: "***SPAM***",
+      },
+      antivirus: {
+        isClamavOfficialEnabled: false,
+        signaturesRating: "low",
+        systemMemory: 0,
+      },
       greylistTh: {
         disabled: true,
         value: "4",
       },
+      status: null,
       loading: {
         getFilterConfig: false,
         saveFilterConfig: false,
+        getStatus: false,
       },
       error: {
         getFilterConfig: "",
@@ -290,11 +391,21 @@ export default {
         denyMessageSpamTh: "",
         greylistTh: "",
         spamSubjectPrefix: "",
+        getStatus: "",
       },
     };
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
+    csbSignaturesLowSelected() {
+      return this.antivirus.signaturesRating === "low";
+    },
+    csbSignaturesMediumSelected() {
+      return this.antivirus.signaturesRating === "medium";
+    },
+    csbSignaturesHighSelected() {
+      return this.antivirus.signaturesRating === "high";
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -306,7 +417,9 @@ export default {
     clearInterval(this.urlCheckInterval);
     next();
   },
-  created() {},
+  created() {
+    this.getStatus();
+  },
   methods: {
     save() {
       console.log("save"); ////
@@ -317,120 +430,80 @@ export default {
     goToBypassRules() {
       console.log("goToBypassRules"); ////
     },
-    // async listAddresses() { ////
-    //   this.addresses = [];
-    //   const taskAction = "list-addresses";
-    //   const eventId = this.getUuid();
-    //   this.loading.listAddresses = true;
-    //   // register to task events
-    //   this.core.$root.$once(
-    //     `${taskAction}-aborted-${eventId}`,
-    //     this.listAddressesAborted
-    //   );
-    //   this.core.$root.$once(
-    //     `${taskAction}-completed-${eventId}`,
-    //     this.listAddressesCompleted
-    //   );
-    //   const res = await to(
-    //     this.createModuleTaskForApp(this.instanceName, {
-    //       action: taskAction,
-    //       extra: {
-    //         title: this.$t("action." + taskAction),
-    //         isNotificationHidden: true,
-    //         eventId,
-    //       },
-    //     })
-    //   );
-    //   const err = res[0];
-    //   if (err) {
-    //     console.error(`error creating task ${taskAction}`, err);
-    //     const errMessage = this.getErrorMessage(err);
-    //     this.error.listAddresses = errMessage;
-    //     this.loading.listAddresses = false;
-    //   }
-    // },
-    // listAddressesAborted(taskResult, taskContext) {
-    //   console.error(`${taskContext.action} aborted`, taskResult);
-    //   this.error.listAddresses = this.$t("error.generic_error");
-    //   this.loading.listAddresses = false;
-    // },
-    // listAddressesCompleted(taskContext, taskResult) {
-    //   this.addUserDomains = taskResult.output.adduser_domains;
-    //   this.addGroupDomains = taskResult.output.addgroup_domains;
-    //   const addresses = taskResult.output.filter.map((address) => {
-    //     const domain = address.domain ? address.domain : "";
-    //     const visibility = address.internal
-    //       ? this.$t("filter.internal")
-    //       : this.$t("filter.public");
-    //     return {
-    //       domain: address.domain,
-    //       address: `${address.local}@${domain}`,
-    //       local: address.local,
-    //       destinations: address.destinations,
-    //       internal: !!address.internal,
-    //       visibility: visibility,
-    //       atype: address.atype,
-    //       type: this.$t(`filter.type_${address.atype}`),
-    //       delete_forbidden: address.delete_forbidden,
-    //       description: address.description,
-    //     };
-    //   });
-    //   this.addresses = filter.sort(this.sortByProperty("address"));
-    //   this.loading.listAddresses = false;
-    // },
-    // async removeAddress(address) { ////
-    //   this.loading.removeAddress = true;
-    //   this.error.removeAddress = "";
-    //   const taskAction = "remove-address";
-    //   const eventId = this.getUuid();
-    //   // register to task error
-    //   this.core.$root.$once(
-    //     `${taskAction}-aborted-${eventId}`,
-    //     this.removeAddressAborted
-    //   );
-    //   // register to task completion
-    //   this.core.$root.$once(
-    //     `${taskAction}-completed-${eventId}`,
-    //     this.removeAddressCompleted
-    //   );
-    //   const res = await to(
-    //     this.createModuleTaskForApp(this.instanceName, {
-    //       action: taskAction,
-    //       data: {
-    //         local: address.local,
-    //         atype: address.atype,
-    //         domain: address.domain,
-    //       },
-    //       extra: {
-    //         title: this.$t("filter.delete_address_address", {
-    //           address: address.address,
-    //         }),
-    //         description: this.core.$t("common.processing"),
-    //         eventId,
-    //       },
-    //     })
-    //   );
-    //   const err = res[0];
-    //   if (err) {
-    //     console.error(`error creating task ${taskAction}`, err);
-    //     this.error.removeAddress = this.getErrorMessage(err);
-    //     this.loading.removeAddress = false;
-    //     return;
-    //   }
-    // },
-    // removeAddressAborted(taskResult, taskContext) {
-    //   console.error(`${taskContext.action} aborted`, taskResult);
-    //   this.loading.removeAddress = false;
-    // },
-    // removeAddressCompleted() {
-    //   this.loading.removeAddress = false;
-    //   // reload addresses
-    //   this.listAddresses();
-    // },
+    onSignaturesRatingSelected(value) {
+      this.signaturesRating = value;
+    },
+    getInstallationNodeTitle() {
+      if (this.status && this.status.node) {
+        if (this.status.node_ui_name) {
+          return this.status.node_ui_name;
+        } else {
+          return this.$t("status.node") + " " + this.status.node;
+        }
+      } else {
+        return "-";
+      }
+    },
+    async getStatus() {
+      this.loading.getStatus = true;
+      this.error.getStatus = "";
+      const taskAction = "get-status";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getStatusAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getStatusCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getStatus = this.getErrorMessage(err);
+        this.loading.getStatus = false;
+        return;
+      }
+    },
+    getStatusAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getStatus = this.$t("error.generic_error");
+      this.loading.getStatus = false;
+    },
+    getStatusCompleted(taskContext, taskResult) {
+      this.status = taskResult.output;
+      this.loading.getStatus = false;
+    },
   },
 };
 </script>
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
+
+.signatures-tooltip {
+  position: relative;
+  top: 3px;
+  margin-left: 0.3rem;
+}
+
+.signatures-switcher {
+  max-width: 25rem;
+}
 </style>

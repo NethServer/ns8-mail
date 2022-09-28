@@ -34,7 +34,9 @@
     "mail_hostname": "Mail server hostname",
     "rspamd_webapp": "Rspamd webapp",
     "not_configured": "Not configured",
-    "open_rspamd": "Open Rspamd"
+    "open_rspamd": "Open Rspamd",
+    "status": "Status",
+    "go_to_filter": "Go to Filter"
   },
   "settings": {
     "title": "Settings"
@@ -250,7 +252,17 @@
     "greylist_threshold": "Greylist threshold",
     "go_to_bypass_rules": "Go to Bypass rules",
     "add_prefix_to_spam_subject": "Add a prefix to spam messages subject",
-    "prefix": "Prefix"
+    "prefix": "Prefix",
+    "antivirus": "Antivirus",
+    "antivirus_signatures_explanation": "Antivirus signature updates are checked at hourly intervals. Changes to antivirus settings will take effect on next signature check",
+    "clamav_official_signatures": "Enable ClamAV official signatures",
+    "clamav_official_signatures_tooltip": "Official ClamAV signatures use a large amount of memory, detect many old threats but are not very effective against the latest malware",
+    "third_party_signatures_rating": "Third-party signatures rating",
+    "third_party_signatures_rating_tooltip": "A higher rating means more blocked threats but also a higher probability of false positives. Recommended ratings are <strong>Low</strong> and <strong>Medium</strong>",
+    "signatures_low": "Low",
+    "signatures_medium": "Medium",
+    "signatures_high": "High",
+    "signatures_memory_warning": "{installationNode} has less than 4GB of RAM. You're strongly advised to disable ClamAV official signatures to avoid memory filling"
   },
   "filter_bypass_rules": {
     "title": "Bypass rules",
