@@ -76,6 +76,12 @@
                       :label="core.$t('common.edit')"
                     />
                   </cv-overflow-menu-item>
+                  <cv-overflow-menu-item @click="showDkimModal(domain)">
+                    <NsMenuItem
+                      :icon="Badge20"
+                      :label="$t('domains.configure_dkim')"
+                    />
+                  </cv-overflow-menu-item>
                   <NsMenuDivider />
                   <cv-overflow-menu-item
                     danger
@@ -146,6 +152,11 @@
         ></p>
       </template>
     </NsDangerDeleteModal>
+    <DkimModal
+      :isShown="isShownDkimModal"
+      :domain="currentDomain"
+      @hide="hideDkimModal"
+    />
   </div>
 </template>
 
@@ -159,10 +170,11 @@ import {
   IconService,
 } from "@nethserver/ns8-ui-lib";
 import CreateOrEditDomainModal from "@/components/CreateOrEditDomainModal";
+import DkimModal from "@/components/DkimModal";
 
 export default {
   name: "Domains",
-  components: { CreateOrEditDomainModal },
+  components: { CreateOrEditDomainModal, DkimModal },
   mixins: [TaskService, IconService, UtilService, QueryParamService],
   pageTitle() {
     return this.$t("domains.title") + " - " + this.appName;
@@ -176,6 +188,7 @@ export default {
       domains: [],
       isEditingDomain: false,
       isShownCreateOrEditDomainModal: false,
+      isShownDkimModal: false,
       currentDomain: {
         domain: "",
       },
@@ -333,6 +346,13 @@ export default {
 
       // reload domains
       this.listDomains();
+    },
+    showDkimModal(domain) {
+      this.currentDomain = domain;
+      this.isShownDkimModal = true;
+    },
+    hideDkimModal() {
+      this.isShownDkimModal = false;
     },
   },
 };

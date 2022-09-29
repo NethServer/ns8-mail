@@ -79,7 +79,9 @@
     "set-mailbox-settings": "Set mailbox settings",
     "get-master-users": "Get master users",
     "set-master-users": "Set master users",
-    "create-bypass-rule": "Create bypass rule"
+    "create-bypass-rule": "Create bypass rule",
+    "get-dkim-config": "Get DKIM configuration",
+    "set-dkim-config": "Set DKIM configuration"
   },
   "error": {
     "error": "Error",
@@ -133,7 +135,14 @@
     "delete_domain_domain": "Delete domain {domain}",
     "accept_unknown_recipients_tooltip": "All email messages sent to unknown recipients will be accepted and delivered to the specified destination. This option cannot be enabled if <strong>Add addresses from user domain</strong> is enabled",
     "add_group_addresses_from_user_domain": "Add group addresses from user domain <strong>{userDomain}</strong>",
-    "add_group_addresses_from_user_domain_tooltip": "Create an email address for every group in the user domain"
+    "add_group_addresses_from_user_domain_tooltip": "Create an email address for every group in the user domain",
+    "configure_dkim": "Configure DKIM",
+    "enable_dkim_on_domain_domain": "Enable DKIM signing on domain <strong>{domain}</strong>",
+    "dkim_tooltip": "Enable DKIM signing for outgoing messages to prevent spoofing",
+    "configure_dkim_for_domain": "Configure DKIM for {domain}",
+    "dkim_txt_record_description": "Create the TXT record required by DKIM at your <strong>{domain}</strong> DNS service provider by choosing <strong>one of the following procedures</strong>:",
+    "dkim_txt_record_key_procedure": "Set <strong>default._domainkey</strong> as record key and paste the record data",
+    "dkim_txt_record_raw_procedure": "Paste the full TXT record in raw form"
   },
   "addresses": {
     "title": "Addresses",
