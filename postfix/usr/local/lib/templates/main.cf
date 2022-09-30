@@ -58,6 +58,9 @@ transport_maps = ${tmpl_transport_maps}
 recipient_delimiter = +
 myorigin = ${tmpl_myorigin}
 
+# Never use local transport, set "mydestination" to empty string:
+mydestination =
+
 #
 # Address verification (memory DB)
 #
