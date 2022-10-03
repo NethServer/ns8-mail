@@ -72,9 +72,35 @@
                     </label>
                     <cv-grid class="no-padding">
                       <cv-row>
+                        <cv-column v-if="!userDomains.length">
+                          <NsTile class="no-mg-bottom">
+                            <NsEmptyState
+                              :title="$t('welcome.no_domain_configured')"
+                            >
+                              <template #description>
+                                <div>
+                                  {{
+                                    $t(
+                                      "welcome.no_domain_configured_description"
+                                    )
+                                  }}
+                                </div>
+                                <NsButton
+                                  kind="ghost"
+                                  :icon="Events20"
+                                  @click="goToDomainsAndUsers"
+                                  class="empty-state-button"
+                                >
+                                  {{ $t("welcome.go_to_domains_and_users") }}
+                                </NsButton>
+                              </template>
+                            </NsEmptyState>
+                          </NsTile>
+                        </cv-column>
                         <cv-column
-                          v-for="userDomain in userDomains"
-                          :key="userDomain.name"
+                          v-else
+                          v-for="(userDomain, index) in userDomains"
+                          :key="index"
                           :md="4"
                           :xlg="4"
                         >
@@ -426,7 +452,7 @@ export default {
       });
 
       // select user domain if get-configuration has completed
-      if (this.config.user_domain.name) {
+      if (this.config.user_domain?.name) {
         this.selectUserDomain(this.config.user_domain.name);
       }
 
@@ -438,6 +464,9 @@ export default {
           d.selected = false;
         }
       }
+    },
+    goToDomainsAndUsers() {
+      this.core.$router.push("/domains");
     },
   },
 };
