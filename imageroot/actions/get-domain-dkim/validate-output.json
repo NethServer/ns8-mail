@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "get-domain-dkim output",
+  "$id": "http://schema.nethserver.org/mail/get-domain-dkim.json",
+  "description": "Get DKIM configuration for a specific domain",
+  "examples": [
+    {
+      "enabled": true,
+      "dkimFullRawRecord": "default._domainkey\tIN\tTXT\t( \"v=DKIM1; k=rsa; \"\n\t  \"p=MIIBIjBNBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWOpvYp1N+tmUhoqv45FeC64jaVwGfYwltP1i1wV+3GtdbIC/NuDVVhDphoedf0Yitpsf3b+CQWS7PQ15xUY4KCN5xBZmVJ3UhJvoA0YTp2OvM8QPaYJGuWwrhyWS0hXN3k/lez+CdycIwllJmhQinpvgDbcY3IJMdDzAbNqyjJDxcLtWJvyT9GNzVFTByfBMtPw5RXI3GN3tx\"\n\t  \"7avE7yb4mQ6mUBtj8Zbg2tCzQZT6L7MgpMhVzR+qAzVKQwqjP9aChFOkGNj05lloc6yV4X04boBjVRFA14kyiAvpMaKR1SeXN5gOwKXOFeOYO7lPdJxMWiQjIG+y8xjnn+lUN7SQIDAQAB\" )  ; ----- DKIM key default for example.org\n",
+      "dkimRecordData": "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkig9w0BAQEFAAOCAH8AMIIBCgKCAQEAtWOpvYp1N+tmUhoqv45FeC64jaVwGfYwltP1i1wV+3GtdbIC/NuDVVhDphoedf0Yitpsf3b+CQWS7PQ15xUY4KCN5xBZmVJ3UhJvoA0Ytp2OvM8QPaYJGuWwrhyWS0hXN3k/lez+CdycIwllJmhQiNpvgDbcY3IJMdDzAbNqyjJDxcltWJvyT9GNzVfTByfBMtPw5RXI3GN3tx7avE7yb4mQ6mUBtj8Zbg2tCzQZT6L7MgpMhVzR+qAzVKQwqjP9aChFOkGNj05lloc6yV4X04boBjVRFA14kyiAvpMaKR1SeXN5gOwKXOFeOYO7lPdJxmWiQjIG+y8xjnn+lUN7SQIDAQAB"
+    },
+    {
+      "enabled": false
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["enabled"],
+  "properties": {
+    "enabled": {
+      "description": "Defines if DKIM is enabled for input domain",
+      "type": "boolean"
+    },
+    "dkimFullRawRecord": {
+      "description": "Full raw content of TXT record for DKIM configuration",
+      "type": "string",
+      "minLength": 1
+    },
+    "dkimRecordData": {
+      "description": "Data for a TXT record with key 'default._domainkey'",
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "set-filter-configuration input",
+  "$id": "http://schema.nethserver.org/mail/set-filter-configuration.json",
+  "description": "Alter filter configuration",
+  "examples": [
+    {
+      "antispam": {
+        "enabled": false
+      },
+      "antivirus": {
+        "enabled": false
+      }
+    },
+    {
+      "antivirus": {
+        "enabled": true,
+        "clamav_official_sigs": true,
+        "third_party_sigs_rating": "high"
+      }
+    },
+    {
+      "antispam": {
+        "enabled": true,
+        "spam_flag_threshold": 6,
+        "deny_message_threshold": 20,
+        "greylist": {
+          "enabled": false
+        },
+        "prefix_email_subject": {
+          "enabled": true,
+          "prefix": "***SPAM***"
+        }
+      }
+    }
+  ],
+  "type": "object",
+  "required": [],
+  "additionalProperties": false,
+  "properties": {
+    "antispam": {
+      "$ref": "http://schema.nethserver.org/mail.json#/$defs/antispam"
+    },
+    "antivirus": {
+      "$ref": "http://schema.nethserver.org/mail.json#/$defs/antivirus"
+    }
+  }
+}
