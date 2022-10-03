@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "get-filter-configuration output",
+  "$id": "http://schema.nethserver.org/mail/get-filter-configuration.json",
+  "description": "Get filter configuration",
+  "examples": [
+    {
+      "bypass_rules": 3,
+      "antispam": {
+        "enabled": true,
+        "spam_flag_threshold": 6,
+        "deny_message_threshold": 20,
+        "greylist": {
+          "enabled": true,
+          "threshold": 4
+        },
+        "prefix_email_subject": {
+          "enabled": true,
+          "prefix": "***SPAM***"
+        }
+      },
+      "antivirus": {
+        "enabled": true,
+        "clamav_official_sigs": false,
+        "third_party_sigs_rating": "low"
+      }
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["bypass_rules", "antispam", "antivirus"],
+  "properties": {
+    "bypass_rules": {
+      "description": "Number of bypass rules defined",
+      "type": "number"
+    },
+    "antispam": {
+      "$ref": "http://schema.nethserver.org/mail.json#/$defs/antispam"
+    },
+    "antivirus": {
+      "$ref": "http://schema.nethserver.org/mail.json#/$defs/antivirus"
+    }
+  }
+}
