@@ -30,30 +30,13 @@
             <h4 class="mg-bottom-md">
               {{ $t("filter.general") }}
             </h4>
-            <!-- enable filter -->
-            <NsToggle
-              value="filterValue"
-              :form-item="true"
-              v-model="isFilterEnabled"
-              :disabled="loading.getFilterConfig || loading.saveFilterConfig"
-              class="toggle-without-label mg-bottom-lg"
-              ref="isFilterEnabled"
-            >
-              <template slot="text-left">{{
-                $t("filter.enable_filter")
-              }}</template>
-              <template slot="text-right">{{
-                $t("filter.enable_filter")
-              }}</template>
-            </NsToggle>
             <!-- enable antispam -->
             <NsToggle
-              v-if="isFilterEnabled"
               value="antispamValue"
               :form-item="true"
               v-model="isAntispamEnabled"
               :disabled="loading.getFilterConfig || loading.saveFilterConfig"
-              class="toggle-without-label mg-bottom-lg toggle-dependent"
+              class="toggle-without-label mg-bottom-lg"
               ref="isAntispamEnabled"
             >
               <template slot="text-left">{{
@@ -65,12 +48,11 @@
             </NsToggle>
             <!-- enable antivirus -->
             <NsToggle
-              v-if="isFilterEnabled"
               value="antivirusValue"
               :form-item="true"
               v-model="isAntivirusEnabled"
               :disabled="loading.getFilterConfig || loading.saveFilterConfig"
-              class="toggle-without-label mg-bottom-lg toggle-dependent"
+              class="toggle-without-label mg-bottom-lg"
               ref="isAntivirusEnabled"
             >
               <template slot="text-left">{{
@@ -92,7 +74,7 @@
         </cv-column>
       </cv-row>
       <!-- bypass rules -->
-      <cv-row v-if="isFilterEnabled">
+      <cv-row>
         <cv-column>
           <cv-tile light>
             <h4 class="mg-bottom-md">
@@ -123,7 +105,7 @@
         </cv-column>
       </cv-row>
       <!-- antispam -->
-      <cv-row v-if="isFilterEnabled && isAntispamEnabled">
+      <cv-row v-if="isAntispamEnabled">
         <cv-column>
           <cv-tile light>
             <h4 class="mg-bottom-md">
@@ -231,7 +213,7 @@
         </cv-column>
       </cv-row>
       <!-- antivirus -->
-      <cv-row v-if="isFilterEnabled && isAntivirusEnabled">
+      <cv-row v-if="isAntivirusEnabled">
         <cv-column>
           <cv-tile light>
             <h4 class="mg-bottom-md">
@@ -358,7 +340,6 @@ export default {
         page: "filter",
       },
       urlCheckInterval: null,
-      isFilterEnabled: true,
       isAntispamEnabled: true,
       isAntivirusEnabled: true,
       //// use antispam: {} object
