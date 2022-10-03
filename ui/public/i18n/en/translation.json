@@ -271,7 +271,7 @@
     "signatures_low": "Low",
     "signatures_medium": "Medium",
     "signatures_high": "High",
-    "signatures_memory_warning": "{installationNode} has less than 4GB of RAM. You're strongly advised to disable ClamAV official signatures to avoid memory filling"
+    "signatures_memory_warning": "<strong>{installationNode}</strong> has less than 4GB of RAM. You're strongly advised to disable ClamAV official signatures to avoid memory filling"
   },
   "filter_bypass_rules": {
     "title": "Bypass rules",
