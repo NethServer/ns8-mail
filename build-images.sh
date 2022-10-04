@@ -93,6 +93,7 @@ buildah config \
     --env=DOVECOT_DISABLED_USERS= \
     --env=DOVECOT_SPAM_RETENTION= \
     --env=DOVECOT_SPAM_FOLDER=Junk \
+    --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
     --env=DOVECOT_TRASH_FOLDER=Trash \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"

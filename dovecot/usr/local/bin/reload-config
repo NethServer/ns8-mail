@@ -5,8 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# shellcheck shell=dash disable=SC2034
-# https://www.shellcheck.net/wiki/SC2034
+# shellcheck shell=dash disable=SC2034,SC3003
 
 set -e
 
@@ -77,9 +76,7 @@ fi
 
 (
     # Compile IMAPSieve global scripts
-    cd /etc/dovecot
-    sievec report-ham.sieve
-    sievec report-spam.sieve
+    sievec /etc/dovecot
     # Write the HTTP-Basic Auth token for rspamc-wrapper
     echo -n "spamt:${DOVECOT_SPAMT_PASS}" | base64 -w 0 > /etc/dovecot/rspamc.token
 )
