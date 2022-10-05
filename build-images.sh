@@ -51,7 +51,7 @@ images+=("${repobase}/${reponame}")
 # davidep: avoid dovecot 2.3.19-r2 - userdb lookup crashes
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/library/alpine:3.15)
+container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
@@ -104,7 +104,7 @@ images+=("${repobase}/${reponame}")
 # Postfix additional image
 #
 reponame="mail-postfix"
-container=$(buildah from docker.io/library/alpine:3.15)
+container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<EOF
 set -e
 apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl
