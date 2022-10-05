@@ -1,12 +1,21 @@
 #!/bin/bash
 
+set -e
+
 LEADER_NODE=$1
 IMAGE_URL=$2
 shift 2
 SSH_KEYFILE=${SSH_KEYFILE:-$HOME/.ssh/id_rsa}
 
-ssh_key="$(cat $SSH_KEYFILE)"
+ssh_key="$(< $SSH_KEYFILE)"
 
+cleanup() {
+    podman cp rf-core-runner:/home/pwuser/outputs tests/
+    podman stop rf-core-runner
+    podman rm rf-core-runner
+}
+
+trap cleanup EXIT
 podman run -i \
     -v .:/home/pwuser/ns8-module:z \
     --volume=site-packages:/home/pwuser/.local/lib/python3.8/site-packages:Z \
@@ -25,11 +34,3 @@ robot -v NODE_ADDR:${LEADER_NODE} \
     --console dotted \
     -d ~/outputs ${@} /home/pwuser/ns8-module/tests/
 EOF
-
-tests_res=$?
-
-podman cp rf-core-runner:/home/pwuser/outputs tests/
-podman stop rf-core-runner
-podman rm rf-core-runner
-
-exit ${tests_res}

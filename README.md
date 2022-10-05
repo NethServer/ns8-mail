@@ -166,4 +166,15 @@ Test the module using the `test-module.sh` script:
 
     ./test-module.sh <NODE_ADDR> ghcr.io/nethserver/mail:latest
 
-The tests are made using [Robot Framework](https://robotframework.org/)
+Additional arguments are forwarded to the `robot` command (see [Robot
+Framework](https://robotframework.org/)).
+
+For instance, to speed up testing on a local machine:
+
+1. skip the account provider removal
+
+       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:mail-rspamd --exclude udomANDremove
+
+2. since then, skip also installation
+
+       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:mail-rspamd --exclude udom
