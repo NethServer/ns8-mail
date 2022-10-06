@@ -10,6 +10,7 @@ SSH_KEYFILE=${SSH_KEYFILE:-$HOME/.ssh/id_rsa}
 ssh_key="$(< $SSH_KEYFILE)"
 
 cleanup() {
+    set +e
     podman cp rf-core-runner:/home/pwuser/outputs tests/
     podman stop rf-core-runner
     podman rm rf-core-runner
@@ -17,6 +18,7 @@ cleanup() {
 
 trap cleanup EXIT
 podman run -i \
+    --network=host \
     -v .:/home/pwuser/ns8-module:z \
     --volume=site-packages:/home/pwuser/.local/lib/python3.8/site-packages:Z \
     --name rf-core-runner ghcr.io/marketsquare/robotframework-browser/rfbrowser-stable:v10.0.3 \
@@ -26,7 +28,7 @@ echo "$ssh_key" > /home/pwuser/ns8-key
 pip install -q -r /home/pwuser/ns8-module/tests/pythonreq.txt
 mkdir ~/outputs
 cd /home/pwuser/ns8-module
-robot -v NODE_ADDR:${LEADER_NODE} \
+exec robot -v NODE_ADDR:${LEADER_NODE} \
     -v IMAGE_URL:${IMAGE_URL} \
     -v SSH_KEYFILE:/home/pwuser/ns8-key \
     --name mail \
