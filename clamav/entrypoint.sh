@@ -11,7 +11,7 @@ set -e
 
 if [ $# -eq 0 ]; then
 
-    if [ -z "$(ls -A1 /var/lib/clamav)" ]; then
+    if [ -z "$(ls -A /var/lib/clamav)" ]; then
         (   # Initialize ClamAV database
             cd /var/lib/clamav
             echo "Creating empty clamav signatures DB in /var/lib/clamav..."
