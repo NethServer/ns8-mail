@@ -51,11 +51,14 @@
           <cv-grid fullWidth class="no-padding">
             <cv-row>
               <cv-column>
+                <h4 class="mg-bottom-md">
+                  {{ $t("settings_mailboxes.quota") }}
+                </h4>
                 <cv-skeleton-text
                   v-if="loading.getMailboxSettings"
                   heading
                   paragraph
-                  :line-count="7"
+                  :line-count="4"
                   width="80%"
                 ></cv-skeleton-text>
                 <cv-form v-else @submit.prevent="setMailboxSettings">
@@ -81,6 +84,35 @@
                     @unlimited="quota.unlimited = $event"
                     @byteUnit="quota.byteUnit = $event"
                   />
+                  <NsButton
+                    kind="primary"
+                    :icon="Save20"
+                    :loading="loading.setMailboxSettings"
+                    :disabled="
+                      loading.getMailboxSettings || loading.setMailboxSettings
+                    "
+                    >{{ $t("common.save_settings") }}</NsButton
+                  >
+                </cv-form>
+              </cv-column>
+            </cv-row>
+          </cv-grid>
+        </cv-tile>
+        <cv-tile light>
+          <cv-grid fullWidth class="no-padding">
+            <cv-row>
+              <cv-column>
+                <h4 class="mg-bottom-md">
+                  {{ $t("settings_mailboxes.spam") }}
+                </h4>
+                <cv-skeleton-text
+                  v-if="loading.getMailboxSettings"
+                  heading
+                  paragraph
+                  :line-count="7"
+                  width="80%"
+                ></cv-skeleton-text>
+                <cv-form v-else @submit.prevent="setMailboxSettings">
                   <NsSlider
                     v-model="spamRetention.value"
                     :label="$t('settings_mailboxes.default_spam_retention')"
@@ -124,7 +156,39 @@
                     :invalid-message="$t(error.spam_folder)"
                     :disabled="loading.setMailboxSettings"
                     class="toggle-dependent"
-                    ref="folder"
+                    ref="spamFolder"
+                  />
+                  <!-- add a prefix to spam messages subject (the same component is in Filter page) -->
+                  <NsToggle
+                    value="prefixSpamValue"
+                    :form-item="true"
+                    v-model="addPrefixToSpamSubject.enabled"
+                    :disabled="
+                      loading.getMailboxSettings || loading.setMailboxSettings
+                    "
+                    :class="[
+                      'toggle-without-label',
+                      { 'mg-bottom-md': addPrefixToSpamSubject.enabled },
+                    ]"
+                    ref="isAddPrefixToSpamSubject"
+                  >
+                    <template slot="text-left">{{
+                      $t("filter.add_prefix_to_spam_subject")
+                    }}</template>
+                    <template slot="text-right">{{
+                      $t("filter.add_prefix_to_spam_subject")
+                    }}</template>
+                  </NsToggle>
+                  <NsTextInput
+                    v-if="addPrefixToSpamSubject.enabled"
+                    v-model.trim="addPrefixToSpamSubject.prefix"
+                    :label="$t('filter.prefix')"
+                    :invalid-message="error.spamSubjectPrefix"
+                    :disabled="
+                      loading.getMailboxSettings || loading.setMailboxSettings
+                    "
+                    class="toggle-dependent"
+                    ref="spamSubjectPrefix"
                   />
                   <NsButton
                     kind="primary"
@@ -187,6 +251,10 @@ export default {
         enabled: true,
         name: "",
       },
+      addPrefixToSpamSubject: {
+        enabled: false,
+        prefix: "",
+      },
       loading: {
         getMailboxSettings: false,
         setMailboxSettings: false,
@@ -197,11 +265,28 @@ export default {
         limit: "",
         value: "",
         spam_folder: "",
+        spamSubjectPrefix: "",
       },
     };
   },
   computed: {
     ...mapState(["core", "appName", "instanceName"]),
+  },
+  watch: {
+    "spamFolder.enabled": function () {
+      if (this.spamFolder.enabled) {
+        this.$nextTick(() => {
+          this.focusElement("spamFolder");
+        });
+      }
+    },
+    "addPrefixToSpamSubject.enabled": function () {
+      if (this.addPrefixToSpamSubject.enabled) {
+        this.$nextTick(() => {
+          this.focusElement("spamSubjectPrefix");
+        });
+      }
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -371,6 +456,8 @@ export default {
       if (!this.spamRetention.unlimited) {
         spamRetention.value = parseInt(this.spamRetention.value);
       }
+
+      //// TODO add a prefix to spam messages subject
 
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {

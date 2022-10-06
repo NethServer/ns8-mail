@@ -168,7 +168,7 @@
                     @unlimited="greylistTh.disabled = $event"
                     class="mg-bottom-xlg"
                   />
-                  <!-- add a prefix to spam messages subject -->
+                  <!-- add a prefix to spam messages subject (the same component is in Settings/Mailboxes) -->
                   <NsToggle
                     value="prefixSpamValue"
                     :form-item="true"
@@ -176,7 +176,10 @@
                     :disabled="
                       loading.getFilterConfig || loading.saveFilterConfig
                     "
-                    class="toggle-without-label mg-bottom-lg"
+                    :class="[
+                      'toggle-without-label',
+                      { 'mg-bottom-md': antispam.isAddPrefixToSpamSubject },
+                    ]"
                     ref="isAddPrefixToSpamSubject"
                   >
                     <template slot="text-left">{{
@@ -386,6 +389,15 @@ export default {
     },
     csbSignaturesHighSelected() {
       return this.antivirus.signaturesRating === "high";
+    },
+  },
+  watch: {
+    "antispam.isAddPrefixToSpamSubject": function () {
+      if (this.antispam.isAddPrefixToSpamSubject) {
+        this.$nextTick(() => {
+          this.focusElement("spamSubjectPrefix");
+        });
+      }
     },
   },
   beforeRouteEnter(to, from, next) {

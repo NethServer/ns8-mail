@@ -307,7 +307,9 @@
     "forever": "Forever",
     "specify_retention": "Specify retention",
     "specify_quota": "Specify quota",
-    "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required"
+    "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required",
+    "quota": "Quota",
+    "spam": "Spam"
   },
   "settings_master_users": {
     "title": "Master users",
