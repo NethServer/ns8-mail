@@ -87,6 +87,10 @@ It is possible to use a different DKIM key for a particular domain by
 applying the following procedure. Given the DNS TXT record is be selected
 by `myselector`,
 
+1. open an interactive shell in the Rspamd running container:
+
+       podman exec -ti rspamd ash
+
 1. generate a new key, with the wanted selector:
 
        rspamadm dkim_keygen -s myselector -b 2048 -k /var/lib/rspamd/dkim/myselector.key > /var/lib/rspamd/dkim/myselector.txt
