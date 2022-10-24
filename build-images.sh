@@ -3,6 +3,8 @@
 # Terminate on error
 set -e
 
+alpine_version=3.16
+
 # Prepare variables for later use
 images=()
 # The image will be pushed to GitHub container registry
@@ -32,7 +34,12 @@ buildah add "${container}" imageroot /imageroot
 buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
-    --label="org.nethserver.images=${repobase}/mail-dovecot:${IMAGETAG:-latest} ${repobase}/mail-postfix:${IMAGETAG:-latest}" \
+    --label="org.nethserver.images=$(printf "${repobase}/mail-%s:${IMAGETAG:-latest} " \
+        dovecot \
+        postfix \
+        rspamd \
+        clamav \
+    )" \
     --label="org.nethserver.authorizations=node:fwadm traefik@node:certadm" \
     "${container}"
 # Commit the image
@@ -44,13 +51,14 @@ images+=("${repobase}/${reponame}")
 # davidep: avoid dovecot 2.3.19-r2 - userdb lookup crashes
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/library/alpine:3.15)
+container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
 apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext
+apk add --no-cache rspamd-client
 (
     # Remove the self-signed certificate
     rm -vf /etc/ssl/dovecot/server.*
@@ -85,6 +93,8 @@ buildah config \
     --env=DOVECOT_DISABLED_USERS= \
     --env=DOVECOT_SPAM_RETENTION= \
     --env=DOVECOT_SPAM_FOLDER=Junk \
+    --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
+    --env=DOVECOT_TRASH_FOLDER=Trash \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
@@ -94,7 +104,7 @@ images+=("${repobase}/${reponame}")
 # Postfix additional image
 #
 reponame="mail-postfix"
-container=$(buildah from docker.io/library/alpine:3.15)
+container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<EOF
 set -e
 apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl
@@ -117,6 +127,75 @@ buildah config \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
+
+
+#
+# Rspamd additional image
+#
+reponame="mail-rspamd"
+container=$(buildah from docker.io/library/alpine:${alpine_version})
+buildah run "${container}" /bin/sh <<EOF
+set -e
+# Software installation order is important to preserve uid and gid allocation:
+apk add --no-cache redis
+apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
+apk add --no-cache lighttpd lighttpd-mod_auth
+chown -c root:root /etc/rspamd/local.d/maps.d
+EOF
+buildah add "${container}" rspamd/ /
+buildah config \
+    --env=RSPAMD_instance=rspamdx \
+    --env=RSPAMD_dkim_selector=default \
+    --volume=/var/lib/redis \
+    --volume=/var/lib/rspamd \
+    --volume=/etc/rspamd/override.d \
+    --entrypoint='["/entrypoint.sh"]' \
+    --cmd='' \
+    "${container}"
+buildah commit "${container}" "${repobase}/${reponame}"
+images+=("${repobase}/${reponame}")
+
+
+#
+# ClamAV additional image
+#
+reponame="mail-clamav"
+container=$(buildah from docker.io/library/alpine:${alpine_version})
+buildah run "${container}" /bin/sh <<'EOF'
+set -e
+apk add --no-cache bash curl wget rsync bind-tools socat gpg gpg-agent
+apk add --no-cache clamav-daemon clamav-scanner 
+apk add --no-cache freshclam
+
+source_url="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/7.2.5"
+mkdir -vp /usr/local/sbin /etc/clamav-unofficial-sigs/override.d/ /var/lib/clamav-unofficial-sigs
+chmod -c 750 /var/lib/clamav-unofficial-sigs
+chown -c clamav:clamav /var/lib/clamav-unofficial-sigs
+(
+    cd /usr/local/sbin
+    curl -sfL -O "${source_url}/clamav-unofficial-sigs.sh"
+    chmod -c 755 clamav-unofficial-sigs.sh
+)
+(
+    cd /etc/clamav-unofficial-sigs
+    curl -sfL -O "${source_url}/config/master.conf"
+    curl -sfL -O "${source_url}/config/user.conf"
+    curl -sfL "${source_url}/config/os/os.alpine.conf" > os.conf
+    chmod -c 644 *.conf
+    echo 'logging_enabled="no"' >> os.conf
+)
+EOF
+buildah add "${container}" clamav/ /
+buildah config \
+    --entrypoint='["/entrypoint.sh"]' \
+    --volume=/etc/clamav-unofficial-sigs/override.d \
+    --volume=/var/lib/clamav \
+    --volume=/var/lib/clamav-unofficial-sigs \
+    --cmd='' \
+    "${container}"
+buildah commit "${container}" "${repobase}/${reponame}"
+images+=("${repobase}/${reponame}")
+
 
 #
 # Setup CI when pushing to Github. 

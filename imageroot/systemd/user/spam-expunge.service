@@ -7,7 +7,7 @@ Requisite=dovecot.service
 Type=oneshot
 ExecStart=podman exec dovecot spam-expunge
 WorkingDirectory=%S/state
-SyslogIdentifier=%u
+SyslogIdentifier=%u/%N
 
 [Install]
 WantedBy=default.target

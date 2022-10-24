@@ -57,8 +57,8 @@ Check the user IMAP login succeedes
 
 Check the postmaster public mailbox is present
     ${lmailboxes} =   Run task    module/${MID}/list-public-mailboxes    ""
-    ${expected} =    Evaluate    json.loads('''[{"mailbox": "postmaster", "acls": []}]''')
-    Should Be Equal    ${lmailboxes}    ${expected}
+    ${expected} =    Evaluate    json.loads('''{"mailbox": "postmaster", "acls": []}''')
+    List Should Contain Value    ${lmailboxes}    ${expected}
 
 Add a public employees mailbox
     Run task    module/${MID}/add-public-mailbox    {"mailbox":"employees", "acls": [{"stype":"user","subject":{"name":"u1","dtype":"user"},"rights":{"rtype":"full"}},{"stype":"group","subject":{"name":"domain admins","dtype":"group"},"rights":{"rtype":"rw"}},{"stype":"user","subject":{"name":"u2","dtype":"user"},"rights":{"rtype":"ro"}}]}
@@ -85,5 +85,7 @@ Check the ACL was removed from public mailbox employees
 Remove the public mailbox employees
     Run task    module/${MID}/remove-public-mailbox    {"mailbox":"employees"}
     ${lmailboxes} =   Run task    module/${MID}/list-public-mailboxes    ""
-    ${expected} =    Evaluate    json.loads('''[{"mailbox": "postmaster", "acls": []}]''')
-    Should Be Equal    ${lmailboxes}    ${expected}
+    ${expected} =    Evaluate    json.loads('''{"mailbox": "postmaster", "acls": []}''')
+    ${notexpected} =    Evaluate     json.loads('''{"mailbox": "employees", "acls": []}''')
+    List Should Contain Value    ${lmailboxes}    ${expected}
+    List Should Not Contain Value    ${lmailboxes}    ${notexpected}

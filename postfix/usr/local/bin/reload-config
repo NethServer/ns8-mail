@@ -43,6 +43,7 @@ else
     tmpl_myorigin='$myhostname'
 fi
 
+tmpl_milters="${POSTFIX_MILTERS}"
 tmpl_mynetworks="127.0.0.1/32 ${POSTFIX_TRUSTED_NETWORK}"
 tmpl_myhostname="${POSTFIX_HOSTNAME:-$(hostname -f)}"
 tmpl_debug_peer_list="${POSTFIX_DEBUG_PEERS:-\$mynetworks}"

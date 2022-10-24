@@ -51,6 +51,9 @@ Private TCP ports:
   no access at all to the mail services. Default empty.
 - `DOVECOT_SPAM_RETENTION`, default empty, which means the feature is disabled and spam is never expunged automatically. See also the `spam-expunge` command.
 - `DOVECOT_SPAM_FOLDER`, default `Junk`. Mailbox folder name where spam messages are moved. See also the `spam-expunge` command.
+- `DOVECOT_SPAM_SUBJECT_PREFIX`, default empty. If set, the string is prefixed to the message `Subject:` header.
+- `DOVECOT_SPAMT_PASS`, password of Rspamd `spamt` user, required for ham/spam training
+- `DOVECOT_TRASH_FOLDER`, default `Trash`. Mailbox folder name where messages are moved when they are deleted.
 
 ## Logs
 

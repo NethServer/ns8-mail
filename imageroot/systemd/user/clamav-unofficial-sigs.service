@@ -1,0 +1,13 @@
+[Unit]
+Description=ClamAV unofficial signatures download
+Requires=clamav.service
+After=clamav.service
+
+[Service]
+Type=oneshot
+ExecStart=podman exec clamav download-sigs cus -s
+WorkingDirectory=%S/state
+SyslogIdentifier=%u/%N
+
+[Install]
+WantedBy=default.target

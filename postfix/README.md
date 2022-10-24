@@ -37,6 +37,7 @@ Standard public TCP ports
 - `POSTFIX_LDAP_PASS`, bind password
 - `POSTFIX_LDAP_SCHEMA`, eg `rfc2307`
 - `POSTFIX_LDAP_BASE`, eg `dc=directory,dc=nh`
+- `POSTFIX_MILTERS`, value for Postfix [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters)
 
 ## Volumes
 
@@ -50,14 +51,6 @@ Standard public TCP ports
 - `/etc/postfix/main.cf.d`. Local configuration override volume. Any `.cf`
   file added to this directory is always appended to the expanded
   `main.cf` file.
-
-## Commands
-
-- `reload-config` expands the service configuration from
-  .
-- `import-certificate` reads from standard input a Tar archive with key,
-  certificate and DH group. It then installs them under the
-  `/etc/ssl/postfix` volume.
 
 ## Commands
 
