@@ -14,8 +14,32 @@ import string
 import secrets
 from agent.ldapproxy import Ldapproxy
 
-request = json.load(sys.stdin)
-odom = Ldapproxy().get_domain(request['user_domain'])
+if os.environ['AGENT_TASK_ACTION'] == 'configure-module':
+    # configure-module: read from stdin
+    request = json.load(sys.stdin)
+    udomname = request['user_domain']
+    hostname = request['hostname']
+else:
+    # restore/import-module: read from environment
+    udomname = os.environ['POSTFIX_ORIGIN']
+    hostname = os.environ['MAIL_HOSTNAME']
+
+try:
+    odom = Ldapproxy().get_domain(udomname)
+    'host' in odom # Throw exception if odom is None
+except:
+    # During restore the domain could be unavailable. Use a fallback
+    # configuration, pointing to nowhere, just to set the variables.
+    # Once the domain becomes available, the event will fix them.
+    odom = {
+        'host': '127.0.0.1',
+        'port': 0,
+        'schema': 'rfc2307',
+        'location': 'internal',
+        'base_dn': '',
+        'bind_dn': '',
+        'bind_password': '',
+    }
 
 with agent.redis_connect() as rdb:
     cluster_network = rdb.get('cluster/network') or ""
@@ -33,13 +57,13 @@ if not os.path.exists('dovecot.env'):
         print("DOVECOT_SPAMT_PASS=" + dovecot_spamt_pass, file=fenv)
     os.umask(oldmask)
 
+if os.getenv('DOVECOT_QUOTA_MB') is None:
     # First configuration default settings
     agent.set_env('DOVECOT_QUOTA_MB', "0") # Enable quota with no limit
     agent.set_env('DOVECOT_SPAM_RETENTION', "15") # Enable the feature with 15 days retention
     agent.set_env('DOVECOT_SPAM_FOLDER', 'Junk') # Default spam folder name, enabled
     agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '') # Default spam subject prefix: empty - disabled
 
-hostname = request['hostname']
 agent.set_env('MAIL_HOSTNAME', hostname)
 agent.set_env('DOVECOT_LDAP_HOST', odom['host'])
 agent.set_env('DOVECOT_LDAP_PORT', odom['port'])
@@ -59,6 +83,6 @@ agent.set_env('POSTFIX_LDAP_BASE', odom['base_dn'])
 agent.set_env('POSTFIX_SYSLOG_NAME', os.environ['MODULE_ID'])
 agent.set_env('POSTFIX_TRUSTED_NETWORK', cluster_network)
 agent.set_env('POSTFIX_HOSTNAME', hostname)
-agent.set_env('POSTFIX_ORIGIN', request['user_domain'])
+agent.set_env('POSTFIX_ORIGIN', udomname)
 
 agent.dump_env() # Save to environment file before starting the systemd unit

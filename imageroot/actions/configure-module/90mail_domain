@@ -13,6 +13,7 @@ import mail
 
 request = json.load(sys.stdin)
 if not 'mail_domain' in request:
+    # Not in first configuration? Exit here.
     sys.exit(0)
 
 sdb = mail.pcdb_connect()
