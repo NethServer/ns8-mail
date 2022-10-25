@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import os
+import json
+import agent
+import mail
+
+# Global stdout redirection:
+sys.stdout = sys.stderr
+
+sdb = mail.pcdb_connect()
+sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
+
+# Import hostname -d output:
+with open('mail_domain.txt') as dfp:
+    mdomname = dfp.read().strip()
+
+# Import config printjson postfix output:
+jpostfix = json.load(open('postfix.json'))
+dyngroups_is_enabled = jpostfix['props'].get('DynamicGroupAlias') == 'enabled'
+
+try:
+    # Create postmaster public mailbox, with no ACLs
+    mail.doveadm_query("mailboxCreate", {"mailbox": ["postmaster"], "user": "vmail"})
+except mail.DoveadmError as dex:
+    if dex.code != 65: # ignore error if mailbox already exists
+        raise
+
+with sdb:
+    cur = sdb.cursor()
+
+    # Configure postmaster alias to use the public mailbox
+    cur.execute("UPDATE destmap SET dest=? WHERE alocal='postmaster' AND domain='*' AND dest='postmaster'", ('vmail+postmaster',))
+
+    print(agent.SD_INFO + "Importing domains...")
+    for xdom in json.load(open('domains.json')):
+        if xdom.get('type') != 'domain':
+            continue
+
+        if xdom['props'].get('TransportType') != 'LocalDelivery':
+            continue
+
+        vals = {
+            'domain': xdom['name'],
+            'addusers': 0,
+            'addgroups': 0,
+            'catchall': None,
+            'bccaddr': None,
+            'ddesc': xdom['props'].get('Description')
+        }
+
+        if vals['domain'] == mdomname:
+            vals['addusers'] = 1
+            vals['addgroups'] = 1 if dyngroups_is_enabled else 0
+
+        if xdom['props'].get('UnknownRecipientsActionType') == 'deliver':
+            catchall = xdom['props'].get('UnknownRecipientsActionDeliverMailbox')
+            if catchall == 'root':
+                catchall = 'vmail+postmaster'
+            vals['catchall'] = catchall
+
+        if xdom['props'].get('AlwaysBccStatus') == 'enabled':
+            vals['bccaddr'] = xdom['props'].get('AlwaysBccAddress')
+
+        cur.execute("INSERT INTO domains (domain, addusers, addgroups, catchall, bccaddr, ddesc) VALUES (:domain, :addusers, :addgroups, :catchall, :bccaddr, :ddesc)", vals)
+
+# Apply new configuration
+agent.run_helper('systemctl', '--user', 'reload', 'postfix')
