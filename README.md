@@ -114,6 +114,15 @@ Another module can obtain `vmail` credentials by invoking the action
 `reveal-master-credentials`, provided it has been granted the `mailadm`
 role.
 
+## Public mailboxes
+
+Subfolders of Vmail's INBOX are visible to all users under the Public
+namespace.  Vmail's INBOX is initialized with a special `lookup`
+permission granted to all authenticated users. To reset it run this
+command:
+
+    podman exec dovecot doveadm acl set -u vmail INBOX authenticated lookup
+
 ## Services
 
 1. Dovecot -- `dovecot.service`. See also dovecot/README.md
