@@ -26,7 +26,11 @@ if [[ -n "${SKIP_UI_BUILD}" ]]; then
     buildah run nodebuilder-mail sh -c "cd /usr/src/ui && mkdir -p dist && touch dist/index.html"
 else
     echo "Build static UI files with node..."
-    buildah run nodebuilder-mail sh -c "cd /usr/src/ui && yarn install && yarn build"
+    buildah run \
+        --workingdir=/usr/src/ui \
+        --env="NODE_OPTIONS=--openssl-legacy-provider" \
+        nodebuilder-mail \
+        sh -c "yarn install && yarn build"
 fi
 
 # Add imageroot directory to the container image
