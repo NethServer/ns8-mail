@@ -7,6 +7,12 @@ The web API service provided by the Rspamd controller process runs behind
 a Lighttpd HTTP reverse proxy, that is responsible for user
 authentication.
 
+Access to web UI and API on
+
+    http://127.0.0.1:11334
+
+See `RSPAMD_adminpw` for the password of user `admin`.
+
 ## TCP ports
 
 Well-known ports
