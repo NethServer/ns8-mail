@@ -114,13 +114,38 @@ Another module can obtain `vmail` credentials by invoking the action
 `reveal-master-credentials`, provided it has been granted the `mailadm`
 role.
 
+## Public mailboxes
+
+Subfolders of Vmail's INBOX are visible to all users under the Public
+namespace.  Vmail's INBOX is initialized with a special `lookup`
+permission granted to all authenticated users. To reset it run this
+command:
+
+    podman exec dovecot doveadm acl set -u vmail INBOX authenticated lookup
+
 ## Services
 
 1. Dovecot -- `dovecot.service`. See also dovecot/README.md
 2. Postfix -- `postfix.service`. See also postfix/README.md
-3. Rspamd -- N/A
+3. Rspamd -- `rspamd.service`. See also rspamd/README.md
 4. Diffie-Hellman group generator `dhgen.service`. Starts at module boot,
    then every 15 days. See also `dhgen.timer`.
+
+## Rspamd admin UI
+
+To access the admin web UI of Rspamd point the browser to
+
+    http://127.0.0.1:11334
+
+- User name `admin`
+- Obtain the password with the following command:
+
+      podman exec rspamd sh -c 'echo $RSPAMD_adminpw'
+
+It is possible to expose the web UI with the following methods:
+
+1. add a HTTP route in Traefik
+2. setup SSH local port forward (e.g. `-L11334:localhost:11334`)
 
 ## Service discovery
 

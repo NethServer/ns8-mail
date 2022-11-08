@@ -66,7 +66,7 @@ def get_domains():
 
 def get_public_mailboxes():
     mailboxes =  []
-    for ombx in doveadm_query("mailboxList", {"user": "vmail"}):
+    for ombx in doveadm_query("mailboxList", {"user": "vmail","mailboxMask":["Public/*"]}):
         if ombx['mailbox'] == 'INBOX':
             continue
         mbxn = ombx['mailbox'].removeprefix("Public/")

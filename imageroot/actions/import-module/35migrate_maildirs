@@ -1,0 +1,70 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2
+
+domain_suffix=$(< mail_domain.txt)
+
+podman run -i \
+    --name=migrate_maildirs --replace --rm \
+    --network=none \
+    --env=DOVECOT_* \
+    --volume=dovecot-data:/var/lib/vmail:z \
+    "${MAIL_DOVECOT_IMAGE:?}" \
+    ash -s "${domain_suffix,,}" <<'EOF'
+
+# shellcheck shell=ash disable=SC3060,SC3028
+
+# Utility function
+ends_with_suffix() {
+    echo "$1" | awk -F "${2}" '{ if(NF < 2) { exit(1) } }'
+    return $?
+}
+
+# Regexp matching the domain suffix substring
+rx_domain_suffix="${1//./\\.}"
+
+# Migrate dict DB
+sed -i -r "/@${rx_domain_suffix}(\/|\$)/ s/@${rx_domain_suffix}\b//g" shared-mailboxes.db
+
+# Migrate mail home dirs
+for entry in *; do
+    if [ ! -d "${entry}" ]; then
+        continue # skip non-directory entries
+    elif ! ends_with_suffix "${entry}" "@${1}" || [ "${entry}" = "vmail@${1}" ] ; then
+        echo "Skipped migration of ${entry}"
+        continue # skip non-matching directories
+    fi
+
+    # Remove the domain suffix from the dir name:
+    ddest="${entry%%@${1}}"
+
+    # Rename if destination is already present:
+    if [ -d "${ddest}" ]; then
+        echo -n "Destination for ${entry} already exists: "
+        mv -v "${ddest}" "${ddest}.$RANDOM"
+    fi
+
+    # Mail home migration
+    echo -n "Renamed "
+    mv -v "${entry}" "${ddest}"
+
+    # Fix IMAP acls: remove the domain suffix, remove ACLs for root
+    find "${ddest}" -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
+        -e "s/@${rx_domain_suffix}\b//g" \
+        -e "/^user=root / d"
+
+done
+
+# Fix IMAP acls under the vmail/ and root/ directories, remove ACLs for root
+find root/ vmail/ -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
+    -e "s/@${rx_domain_suffix}\b//g" \
+    -e "/^user=root / d"
+
+exit 0
+
+EOF

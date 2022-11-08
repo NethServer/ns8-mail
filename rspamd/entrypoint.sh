@@ -33,6 +33,8 @@ if [ $# -eq 0 ]; then
     su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-volatile.conf --syslog-ident ${RSPAMD_instance}/redis-volatile" </dev/null &
 
     (   # Start Rspamd with syslog redirects
+        mkdir -v -m 0750 -p /run/rspamd
+        chown -c rspamd:lighttpd /run/rspamd
         /usr/sbin/rspamd -u rspamd -g rspamd -f <&- 2>&1 | \
         logger -t "${RSPAMD_instance:?}/rspamd" -p MAIL.INFO
     ) &

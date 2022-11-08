@@ -24,6 +24,11 @@ ExecStart=/usr/bin/podman run \
     --volume=dovecot-lmtp:/var/lib/umail:z \
     --volume=dovecot-custom:/etc/dovecot/local.conf.d:z \
     ${MAIL_DOVECOT_IMAGE}
+
+# Wait until API and monitoring endpoint services are fully started
+ExecStartPost=/usr/bin/bash -c "while ! exec 3<>/dev/tcp/127.0.0.1/9288 &>/dev/null; do sleep 1 ; done"
+ExecStartPost=/usr/bin/bash -c "while ! exec 3<>/dev/tcp/127.0.0.1/9289 &>/dev/null; do sleep 1 ; done"
+
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/dovecot.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/dovecot.ctr-id
 ExecReload=runagent /usr/bin/podman exec --env=DOVECOT_* --env-file=dovecot.env %N reload-config

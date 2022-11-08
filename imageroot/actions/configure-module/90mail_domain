@@ -13,6 +13,7 @@ import mail
 
 request = json.load(sys.stdin)
 if not 'mail_domain' in request:
+    # Not in first configuration? Exit here.
     sys.exit(0)
 
 sdb = mail.pcdb_connect()
@@ -32,6 +33,10 @@ with sdb:
         except mail.DoveadmError as dex:
             if dex.code != 65: # ignore error if mailbox already exists
                 raise
+
+        # Set default ACLs for vmail (Public) INBOX. It must be visible to authenticated users.
+        mail.doveadm_query("aclSet", {"user": "vmail", "mailbox": "INBOX", "id": "authenticated", "right": ["lookup"]})
+
         cur.execute("UPDATE destmap SET dest=? WHERE alocal='postmaster' AND domain='*' AND dest='postmaster'", ('vmail+postmaster',))
         print(agent.SD_DEBUG + f"Creating initial domain {vals['domain']}", file=sys.stderr)
         cur.execute("INSERT INTO domains (domain,addusers) VALUES (:domain,:addusers)", vals)

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+podman exec -i  postfix ash -c 'rm -vf /srv/pcdb.sqlite ; sqlite3 -batch /srv/pcdb.sqlite' < pcdb-dump.sql

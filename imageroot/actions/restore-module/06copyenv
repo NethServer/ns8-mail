@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import json
+import agent
+
+request = json.load(sys.stdin)
+
+original_environment = request['environment']
+
+for evar in [
+        "DOVECOT_QUOTA_MB",
+        "DOVECOT_SPAM_FOLDER",
+        "DOVECOT_SPAM_RETENTION",
+        "DOVECOT_SPAM_SUBJECT_PREFIX",
+        "DOVECOT_TRUSTED_NETWORKS",
+        "DOVECOT_MASTER_USERS",
+        "MAIL_HOSTNAME",
+        "POSTFIX_HOSTNAME",
+        "POSTFIX_ORIGIN",
+        "POSTFIX_TRUSTED_NETWORK",
+    ]:
+    if evar in original_environment:
+        agent.set_env(evar, original_environment[evar])
+
+agent.dump_env()

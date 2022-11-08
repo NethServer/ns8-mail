@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+echo "Dumping Mail state to disk:"
+podman exec postfix sqlite3 /srv/pcdb.sqlite .dump > pcdb-dump.sql
