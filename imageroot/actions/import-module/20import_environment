@@ -23,9 +23,9 @@ else:
     agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '')
 
 # Default mailbox quota migration
-quota_mb = ''
+quota_mb = '0' # 0=unlimited
 if jdovecot['props'].get('QuotaStatus') == 'enabled':
-    # Convert ns7 value to MB size
+    # Try to convert ns7 value to MB size
     try:
         quota_mb = str(int(jdovecot['props'].get('QuotaDefaultSize', '0')) * 10)
     except:
