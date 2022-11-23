@@ -49,6 +49,7 @@ def get_acls(mbxn):
                 }
                 break
         else:
+            rights_set.discard("-") # ignore bogus right value
             oacl['rights'] = {
                 "rtype": "custom",
                 "values": list(rights_set),
