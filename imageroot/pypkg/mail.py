@@ -277,7 +277,7 @@ def get_rights_map():
     rights_map = {}
     rights_map['ro'] = {"lookup", "read", "write-seen"}
     rights_map['rw'] = rights_map['ro'] | {"insert", "create", "write", "write-deleted"}
-    rights_map['full'] = rights_map['rw'] | {"expunge", "admin", "post"}
+    rights_map['full'] = rights_map['rw'] | {"delete", "expunge", "admin", "post"}
     return rights_map
 
 def abort_with_json_if_not_configured(data, exit_code=0):

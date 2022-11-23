@@ -53,16 +53,18 @@ for entry in *; do
     echo -n "Renamed "
     mv -v "${entry}" "${ddest}"
 
-    # Fix IMAP acls: remove the domain suffix, remove ACLs for root
+    # Fix IMAP acls: remove the domain suffix, remove ACLs for root, add "delete" flag to "full access"
     find "${ddest}" -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
         -e "s/@${rx_domain_suffix}\b//g" \
+        -e "s/\bakeilprwts\b/akxeilprwts/g" \
         -e "/^user=root / d"
 
 done
 
-# Fix IMAP acls under the vmail/ and root/ directories, remove ACLs for root
+# Fix IMAP acls under the vmail/ and root/ directories, remove ACLs for root, add "delete" flag to "full access"
 find root/ vmail/ -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
     -e "s/@${rx_domain_suffix}\b//g" \
+    -e "s/\bakeilprwts\b/akxeilprwts/g" \
     -e "/^user=root / d"
 
 exit 0
