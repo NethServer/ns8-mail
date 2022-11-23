@@ -69,7 +69,7 @@ def import_mailbox(xmailbox):
         cur.execute("""INSERT INTO userattrs (user, internal) VALUES (?, ?)""", (alocal, 1,))
 
     # Convert comma-separated (non-empty) values to a list of addresses
-    fwaddresses = [fwad.strip() for fwad in filter(None, props.get('MailForwardAddress').split(','))]
+    fwaddresses = [fwad.strip() for fwad in filter(None, props.get('MailForwardAddress', '').split(','))]
     if props.get('MailForwardStatus') == 'enabled' and fwaddresses:
         cur.executemany("""INSERT INTO userforwards (user, dest) VALUES (?, ?)""", [(alocal, fwad,) for fwad in fwaddresses])
         if props.get('MailForwardKeepMessageCopy') == 'yes':
