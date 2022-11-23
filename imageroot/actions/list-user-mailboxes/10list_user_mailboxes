@@ -9,6 +9,7 @@ import json
 import sys
 import os
 import mail
+import agent
 
 mail.abort_with_json_if_not_configured([])
 
@@ -17,10 +18,16 @@ rusers = mail.doveadm_query("user", {"userMask":"*"})
 gquota = os.getenv("DOVECOT_QUOTA_MB", "")
 disabled_users = mail.get_disabled_users()
 
+rquotas = []
 try:
     rquotas = mail.doveadm_query("quotaGet", {"allUsers":True})
-except:
-    rquotas = []
+except mail.DoveadmError as ex:
+    if ex.code == 75:
+        print(agent.SD_WARNING + "Quota information is temporarly unavailable. Try again later.", ex, file=sys.stderr)
+    else:
+        print(agent.SD_ERROR + "quotaGet error", ex, file=sys.stderr)
+except Exception:
+    pass
 
 mailboxes = {}
 
