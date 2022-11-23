@@ -576,6 +576,7 @@
                 "stype": {
                     "title": "Subject type",
                     "enum": [
+                        "none",
                         "user",
                         "group"
                     ]
