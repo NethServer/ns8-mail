@@ -486,8 +486,7 @@
                     "type": "integer",
                     "title": "Percent",
                     "description": "Quota usage percentage",
-                    "minimum": 0,
-                    "maximum": 100
+                    "minimum": 0
                 },
                 "custom": {
                     "type": "boolean",
