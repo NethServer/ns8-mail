@@ -81,7 +81,7 @@ def import_mailbox(xmailbox):
             if vquota == 'unlimited':
                 uquota = '0'
             else:
-                uquota = int(vquota) * 10
+                uquota = mail.convert_ns7_quota(vquota)
 
             mail.doveadm_query("dictSet", {
                 "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
