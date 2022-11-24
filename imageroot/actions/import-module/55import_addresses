@@ -15,7 +15,9 @@ import sqlite3
 # Global stdout redirection:
 sys.stdout = sys.stderr
 
-dovecot_disabled_users = []
+# Force "root" disabled, to protect the mailbox contents. If a "root" user is
+# created in LDAP, it inherits the existing mailbox.
+dovecot_disabled_users = ['root']
 
 sdb = mail.pcdb_connect()
 sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
