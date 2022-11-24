@@ -207,3 +207,36 @@ For instance, to speed up testing on a local machine:
 2. since then, skip also installation
 
        SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:mail-rspamd --exclude udom
+
+## Migration from nethserver-mail (NS7)
+
+The NS7 migration tool (`nethserver-ns8-migration` RPM) transfers the
+Email app configuration and mailboxes data. It invokes the `import-module`
+action, which implements the conversion procedure from NS7 to NS8 format.
+
+Migration notes:
+
+1. SMTP/IMAP user name. Any `@domain` suffix is ignored, only the user
+   name is considered.
+
+1. Mail storage. The user `@domain` suffix was removed in NS8. Mailbox
+   paths are renamed from the old `user@domain` form to new `user` (yes,
+   it is the same of NS6). ACLs and shared-mailboxes.db files are fixed
+   accordingly.
+
+1. "Full control" ACLs now includes the "delete" permission. Granted ACLs
+   are upgraded as necessary.
+
+1. `root` user. In NS8 a **root user does not exist**. The mailbox
+   contents are transferred though. For additional security the `root`
+   mailbox is marked "disabled" in `DOVECOT_DISABLED_USERS`. It is
+   possible to access its contents by either configuring it as shared, or
+   by creating a "root" user in the LDAP database with a new, secure
+   password.
+
+1. Quota temporarly unavailable. The new "quota count" Dovecot backend is
+   used. Large mailboxes need a while to reindex the quota size. During
+   reindexing, quota information is not available and the following
+   message is logged:
+
+       quota-count: Ongoing quota calculation blocked
