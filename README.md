@@ -220,19 +220,17 @@ Migration notes:
    name is considered.
 
 1. Mail storage. The user `@domain` suffix was removed in NS8. Mailbox
-   paths are renamed from the old `user@domain` form to new `user` (yes,
-   it is the same of NS6). ACLs and shared-mailboxes.db files are fixed
-   accordingly.
+   paths are renamed from the old `user@domain` form to new `user`. ACLs
+   and shared-mailboxes.db files are fixed accordingly.
 
 1. "Full control" ACLs now includes the "delete" permission. Granted ACLs
    are upgraded as necessary.
 
-1. `root` user. In NS8 a **root user does not exist**. The mailbox
-   contents are transferred though. For additional security the `root`
-   mailbox is marked "disabled" in `DOVECOT_DISABLED_USERS`. It is
-   possible to access its contents by either configuring it as shared, or
-   by creating a "root" user in the LDAP database with a new, secure
-   password.
+1. `root` user. Even if in NS8 a **root user does not exist**, its mailbox
+   contents are transferred. For additional security the `root` mailbox is
+   marked "disabled" in `DOVECOT_DISABLED_USERS`. It is possible to access
+   its contents by either configuring it as shared, or by creating a
+   "root" user in the LDAP database with a new, secure password.
 
 1. Quota temporarly unavailable. The new "quota count" Dovecot backend is
    used. Large mailboxes need a while to reindex the quota size. During
