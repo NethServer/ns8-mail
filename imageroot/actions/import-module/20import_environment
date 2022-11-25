@@ -9,6 +9,7 @@ import sys
 import json
 import agent
 import socket
+import mail
 
 # Read files sent by the nethserver-ns8-migration tool on ns7
 jrspamd = json.load(open("rspamd.json"))
@@ -27,9 +28,10 @@ quota_mb = '0' # 0=unlimited
 if jdovecot['props'].get('QuotaStatus') == 'enabled':
     # Try to convert ns7 value to MB size
     try:
-        quota_mb = str(int(jdovecot['props'].get('QuotaDefaultSize', '0')) * 10)
-    except:
-        pass
+        quota_mb = mail.convert_ns7_quota(jdovecot['props']['QuotaDefaultSize'])
+    except Exception as qex:
+        print(agent.SD_WARNING + "QuotaDefaultSize conversion failed", qex, file=sys.stderr)
+
 agent.set_env('DOVECOT_QUOTA_MB', quota_mb)
 
 # Spam folder migration

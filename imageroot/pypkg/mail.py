@@ -11,6 +11,7 @@ import json
 import sys
 import cluster.userdomains
 import sqlite3
+import math
 from agent.ldapclient import Ldapclient, LdapclientEntryNotFound
 from agent.ldapproxy import Ldapproxy
 
@@ -277,7 +278,7 @@ def get_rights_map():
     rights_map = {}
     rights_map['ro'] = {"lookup", "read", "write-seen"}
     rights_map['rw'] = rights_map['ro'] | {"insert", "create", "write", "write-deleted"}
-    rights_map['full'] = rights_map['rw'] | {"expunge", "admin", "post"}
+    rights_map['full'] = rights_map['rw'] | {"delete", "expunge", "admin", "post"}
     return rights_map
 
 def abort_with_json_if_not_configured(data, exit_code=0):
@@ -287,3 +288,12 @@ def abort_with_json_if_not_configured(data, exit_code=0):
 
 def get_disabled_users():
     return ["vmail"] + os.getenv("DOVECOT_DISABLED_USERS", "").lower().split(",")
+
+def convert_ns7_quota(squota):
+    """Convert a string value representing ns7 mailbox quota to Mail module format"""
+    # Apply a correction ratio, see https://github.com/NethServer/nethserver-mail/blob/c83db346fa6d1c310fb2430c85f3f2c2389fa01d/server/etc/e-smith/templates/etc/dovecot/dovecot.conf/50quota#L9
+    fquota = int(squota) * 102.4
+    if fquota > 20000:
+        # Round it up to match the next GiB multiple:
+        fquota = math.ceil(fquota / 1024.0) * 1024
+    return str(int(fquota))

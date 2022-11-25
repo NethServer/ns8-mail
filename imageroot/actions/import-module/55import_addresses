@@ -15,7 +15,9 @@ import sqlite3
 # Global stdout redirection:
 sys.stdout = sys.stderr
 
-dovecot_disabled_users = []
+# Force "root" disabled, to protect the mailbox contents. If a "root" user is
+# created in LDAP, it inherits the existing mailbox.
+dovecot_disabled_users = ['root']
 
 sdb = mail.pcdb_connect()
 sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
@@ -24,8 +26,11 @@ sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
 with open('mail_domain.txt') as dfp:
     mdomname = dfp.read().strip()
 
+# Import the full list of users and groups
+accounts = set(json.load(open('users.json'))) | set(json.load(open('groups.json')))
+
 def import_address(xaddress):
-    global sdb
+    global sdb, accounts
     if not xaddress['props'].get('Account'):
         return
 
@@ -38,7 +43,9 @@ def import_address(xaddress):
 
     for dest in props.get('Account', '').split(','):
         if dest == 'root':
-            continue # skip "root": it is not migrated
+            dest = 'vmail+postmaster'
+        if dest in accounts:
+            dest = dest.removesuffix('@' + mdomname)
         cur.execute("""INSERT INTO destmap (alocal, domain, dest) VALUES (?,?,?)""", (alocal, domain, dest,))
 
     cur.execute("""INSERT INTO addresses (alocal, domain, internal, adesc) VALUES (:alocal, :domain, :internal, :adesc)""", {
@@ -69,7 +76,7 @@ def import_mailbox(xmailbox):
         cur.execute("""INSERT INTO userattrs (user, internal) VALUES (?, ?)""", (alocal, 1,))
 
     # Convert comma-separated (non-empty) values to a list of addresses
-    fwaddresses = [fwad.strip() for fwad in filter(None, props.get('MailForwardAddress').split(','))]
+    fwaddresses = [fwad.strip() for fwad in filter(None, props.get('MailForwardAddress', '').split(','))]
     if props.get('MailForwardStatus') == 'enabled' and fwaddresses:
         cur.executemany("""INSERT INTO userforwards (user, dest) VALUES (?, ?)""", [(alocal, fwad,) for fwad in fwaddresses])
         if props.get('MailForwardKeepMessageCopy') == 'yes':
@@ -81,7 +88,7 @@ def import_mailbox(xmailbox):
             if vquota == 'unlimited':
                 uquota = '0'
             else:
-                uquota = int(vquota) * 10
+                uquota = mail.convert_ns7_quota(vquota)
 
             mail.doveadm_query("dictSet", {
                 "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
