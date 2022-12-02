@@ -63,7 +63,6 @@ adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
 apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext
 apk add --no-cache rspamd-client
-apk add --no-cache dovecot-fts-lucene
 (
     # Remove the self-signed certificate
     rm -vf /etc/ssl/dovecot/server.*
