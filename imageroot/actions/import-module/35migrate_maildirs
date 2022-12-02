@@ -33,7 +33,7 @@ sed -i -r "/@${rx_domain_suffix}(\/|\$)/ s/@${rx_domain_suffix}\b//g" shared-mai
 
 # Migrate mail home dirs
 for entry in *; do
-    if [ ! -d "${entry}" ]; then
+    if [ ! -d "${entry}" ] || [ "${entry}" = "@${1}" ]; then
         continue # skip non-directory entries
     elif ! ends_with_suffix "${entry}" "@${1}" || [ "${entry}" = "vmail@${1}" ] ; then
         echo "Skipped migration of ${entry}"
