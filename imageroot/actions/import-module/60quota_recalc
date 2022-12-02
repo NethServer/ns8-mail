@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2
+
+# Run the recalculation loop in background until next container restart,
+# or the quota calculation completes (whichever comes first).
+podman exec -d dovecot ash -c '
+while ! doveadm quota get -A ; do
+    retv=$?
+    if [ $retv = 75 ]; then
+        echo "[NOTICE] Quota calculation in progress ..."
+        sleep 5
+        continue
+    else
+        echo "[ERROR] Error in getting quota $retv"
+        exit $retv
+    fi
+done'
+
+exit 0
