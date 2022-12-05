@@ -9,12 +9,14 @@ TCP ports are open
     25
     587
     465
+    10587
 
 Login TLS policy
     [Template]    Retry test
     SMTP STARTTLS offered on port 25
     SMTP AUTH PLAIN not offered without TLS
     SMTP AUTH submissions good login
+    SMTP AUTH PLAIN offered on 10587
 
 *** Keywords ***
 SMTP STARTTLS offered on port 25

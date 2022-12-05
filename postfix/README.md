@@ -17,6 +17,7 @@ Standard public TCP ports
 - MTA - Message Transfer Agent (SMTP) 25
 - MSA - Message Submission Agent (SMTP) 587
 - MSA - Message Submission Agent (SMTPS -- SMTP with TLS wrap) 465
+- MSA - Message Submission Agent (SMTP) 10587 - AUTH over TLS not required
 
 ## Environment variables
 

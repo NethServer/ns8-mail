@@ -39,3 +39,7 @@ submissions inet n      -       n       -       -       smtpd
         -o syslog_name=${tmpl_syslog_name}/${S}service_name
 ${tmpl_sasl_commentout}        -o smtpd_sasl_auth_enable=yes
         -o smtpd_tls_wrappermode=yes
+:10587      inet n      -       n       -       -       smtpd
+        -o syslog_name=${tmpl_syslog_name}/${S}service_name
+${tmpl_sasl_commentout}        -o smtpd_sasl_auth_enable=yes
+        -o smtpd_tls_auth_only=no
