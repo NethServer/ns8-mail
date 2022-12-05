@@ -33,7 +33,7 @@ with agent.redis_connect(privileged=True) as prdb:
 
     ksubmission = agent_id + "/srv/tcp/submission"
     trx.delete(ksubmission).hset(ksubmission, mapping={
-        "port": "587",
+        "port": "10587",
         "host": node_address,
         "node": str(node_id),
         "user_domain": udomname,
