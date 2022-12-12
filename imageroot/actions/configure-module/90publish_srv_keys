@@ -14,6 +14,7 @@ node_id = int(os.environ['NODE_ID'])
 agent_id = os.environ['AGENT_ID']
 module_uuid = os.environ['MODULE_UUID']
 udomname = os.environ['POSTFIX_ORIGIN']
+hostname = os.environ['MAIL_HOSTNAME']
 
 with agent.redis_connect() as rdb:
     node_address = rdb.hget(f'node/{node_id}/vpn', 'ip_address')
@@ -29,6 +30,7 @@ with agent.redis_connect(privileged=True) as prdb:
         "node": str(node_id),
         "user_domain": udomname,
         "module_uuid": module_uuid,
+        "mail_hostname": hostname
     })
 
     ksubmission = agent_id + "/srv/tcp/submission"
@@ -38,6 +40,7 @@ with agent.redis_connect(privileged=True) as prdb:
         "node": str(node_id),
         "user_domain": udomname,
         "module_uuid": module_uuid,
+        "mail_hostname": hostname
     })
 
     # Publish change event
