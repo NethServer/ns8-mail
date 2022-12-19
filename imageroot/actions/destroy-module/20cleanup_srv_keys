@@ -25,12 +25,4 @@ with agent.redis_connect(privileged=True) as prdb:
     ksubmission = agent_id + "/srv/tcp/submission"
     trx.delete(ksubmission)
 
-    # Publish change event
-    trx.publish(agent_id + "/event/mail-settings-changed", json.dumps({
-        "reason": os.getenv("AGENT_TASK_ACTION", "unknown"),
-        "module_id": os.environ['MODULE_ID'],
-        "node_id": node_id,
-        "module_uuid": module_uuid,
-    }))
-
     trx.execute()
