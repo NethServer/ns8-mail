@@ -10,7 +10,8 @@ exec 1>&2
 # Run the recalculation loop in background until next container restart,
 # or the quota calculation completes (whichever comes first).
 podman exec -d dovecot ash -c '
-while ! doveadm quota get -A ; do
+while true; do
+    doveadm quota get -A >/dev/null
     retv=$?
     if [ $retv = 75 ]; then
         echo "[NOTICE] Quota calculation in progress ..."
