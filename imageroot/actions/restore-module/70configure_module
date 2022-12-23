@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Symlinked by actions:
+# - clone-module
+# - restore-module
+
+import sys
+import json
+import os
+import agent
+
+
+request = json.load(sys.stdin)
+renv = request['environment']
+
+configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
+    "user_domain": renv["POSTFIX_ORIGIN"],
+    "hostname": renv["MAIL_HOSTNAME"],
+})
+agent.assert_exp(configure_retval['exit_code'] == 0, "The configure-module subtask failed!")
+
+settings_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-mailbox-settings', data={
+    "spam_retention": {
+        "value": int(renv.get("DOVECOT_SPAM_RETENTION", "15"))
+    },
+    "spam_folder": {
+        "enabled": bool(renv.get("DOVECOT_SPAM_FOLDER", "")),
+        "name": renv.get("DOVECOT_SPAM_FOLDER", "Junk")
+    },
+    "quota": {
+        "limit": int(renv.get("DOVECOT_QUOTA_MB", "0"))
+    }
+})
+agent.assert_exp(settings_retval['exit_code'] == 0, "The set-mailbox-settings subtask failed!")
+
+masters_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-master-users', data={
+    "master_users": list(filter(None, renv.get("DOVECOT_MASTER_USERS", "").split(",")))
+})
+agent.assert_exp(masters_retval['exit_code'] == 0, "The set-master-users subtask failed!")
+
+

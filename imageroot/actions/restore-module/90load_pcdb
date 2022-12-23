@@ -6,3 +6,5 @@
 #
 
 podman exec -i  postfix ash -c 'rm -vf /srv/pcdb.sqlite ; sqlite3 -batch /srv/pcdb.sqlite' < pcdb-dump.sql
+
+systemctl --user reload postfix
