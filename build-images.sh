@@ -3,7 +3,7 @@
 # Terminate on error
 set -e
 
-alpine_version=3.16
+alpine_version=3.16.3
 
 # Prepare variables for later use
 images=()
@@ -18,7 +18,7 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-mail container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-mail; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-mail -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
+    buildah from --name nodebuilder-mail -v "${PWD}:/usr/src:Z" docker.io/library/node:18.12.1-alpine
 fi
 
 if [[ -n "${SKIP_UI_BUILD}" ]]; then
