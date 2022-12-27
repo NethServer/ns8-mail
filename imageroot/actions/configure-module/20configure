@@ -14,6 +14,11 @@ import string
 import secrets
 from agent.ldapproxy import Ldapproxy
 
+def genpw():
+    """Generate a random token"""
+    alphabet = string.ascii_letters + string.digits + '%@-+_^,./'
+    return ''.join([secrets.choice(alphabet) for i in range(32)])
+
 request = json.load(sys.stdin)
 udomname = request['user_domain']
 hostname = request['hostname']
@@ -21,17 +26,20 @@ hostname = request['hostname']
 with agent.redis_connect() as rdb:
     cluster_network = rdb.get('cluster/network') or ""
 
-if not os.path.exists('dovecot.env'):
-    # Generate a persistent random token for Dovecot admin HTTP API
-    alphabet = string.ascii_letters + string.digits + '%@-+_^,./'
-    dovecot_api_key = ''.join([secrets.choice(alphabet) for i in range(32)])
-    dovecot_vmail_pass = ''.join([secrets.choice(alphabet) for i in range(32)])
-    dovecot_spamt_pass = agent.read_envfile('rspamd.env')['RSPAMD_spamtpw']
+if not os.path.exists('rspamd.env'):
+    # First-time configuration defaults
+    agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
+    agent.set_env('POSTFIX_MILTERS', 'inet:localhost:11332')
+    spamt_pass = genpw()
     oldmask = os.umask(0o77)
+    with open('rspamd.env', 'w') as fenv:
+        print('RSPAMD_adminpw=' + genpw(), file=fenv)
+        print('RSPAMD_spamtpw=' + spamt_pass, file=fenv)
+
     with open('dovecot.env', 'w') as fenv:
-        print("DOVECOT_API_KEY=" + dovecot_api_key, file=fenv)
-        print("DOVECOT_VMAIL_PASS=" + dovecot_vmail_pass, file=fenv)
-        print("DOVECOT_SPAMT_PASS=" + dovecot_spamt_pass, file=fenv)
+        print("DOVECOT_API_KEY=" + genpw(), file=fenv)
+        print("DOVECOT_VMAIL_PASS=" + genpw(), file=fenv)
+        print("DOVECOT_SPAMT_PASS=" + spamt_pass, file=fenv)
     os.umask(oldmask)
 
 if not 'DOVECOT_QUOTA_MB' in os.environ:

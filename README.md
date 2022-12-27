@@ -130,6 +130,8 @@ command:
 3. Rspamd -- `rspamd.service`. See also rspamd/README.md
 4. Diffie-Hellman group generator `dhgen.service`. Starts at module boot,
    then every 15 days. See also `dhgen.timer`.
+5. Freshclam signatures download -- `freshclam.service` (with timer)
+6. ClamAV unofficial signatures download -- `clamav-unofficial-sigs.service` (with timer)
 
 ## Rspamd admin UI
 
