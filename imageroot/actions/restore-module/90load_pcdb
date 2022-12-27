@@ -11,3 +11,5 @@ exec 1>&2 # ensure any output is sent to stderr
 podman exec -i  postfix ash -c 'rm -vf /srv/pcdb.sqlite ; sqlite3 -batch /srv/pcdb.sqlite' < pcdb-dump.sql
 
 systemctl --user reload postfix
+
+rm -vf pcdb-dump.sql
