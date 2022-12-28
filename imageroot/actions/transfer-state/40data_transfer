@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+set -e
+exec 1>&2
+
+# Import RSYNC_IMAGE value:
+. /etc/nethserver/core.env
+
+# Import parameters from action JSON input:
+IFS=$'\t' read -r ruser RSYNC_PASSWORD rhost rport < <(jq -r '[ .credentials[0], .credentials[1], .address, .port ] | join("\t")')
+
+RSYNC_ENDPOINT="rsync://${ruser}@${rhost}:${rport}"
+export RSYNC_PASSWORD
+
+podman run -i --replace --name data_transfer \
+    --workdir=/srv --rm --network=host --privileged \
+    --env=RSYNC_PASSWORD \
+    --volume=clamav-cus:/srv/volumes/clamav-cus \
+    --volume=clamav-db:/srv/volumes/clamav-db \
+    --volume=dovecot-data:/srv/volumes/dovecot-data \
+    "${RSYNC_IMAGE:?}" \
+    rsync -a ./ "${RSYNC_ENDPOINT:?}/data/"
+## TODO: add --info=progress2 to rsync and catch transfer progress
+
+module-dump-state # Dumps the sqlite DB. Needs postfix container running.
+
+# Ready to stop services and run the final transfer.
+systemctl --user stop dovecot postfix rspamd

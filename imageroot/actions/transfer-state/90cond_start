@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+set -e
+exec 1>&2
+
+# Import parameters from action JSON input:
+read -r replace < <(jq -r .replace)
+
+if [[ "${replace}" != "true" ]]; then
+    # Start again services
+    systemctl --user start dovecot postfix rspamd
+fi
