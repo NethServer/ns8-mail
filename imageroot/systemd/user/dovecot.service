@@ -33,7 +33,8 @@ ExecStartPost=/usr/bin/bash -c "while ! exec 3<>/dev/tcp/127.0.0.1/9289 &>/dev/n
 
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/dovecot.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/dovecot.ctr-id
-ExecReload=runagent /usr/bin/podman exec --env=DOVECOT_* --env-file=dovecot.env %N reload-config
+ExecReload=runagent discover-services
+ExecReload=runagent /usr/bin/podman exec --env=DOVECOT_* --env-file=dovecot.env --env-file=discovery.env %N reload-config
 PIDFile=%t/dovecot.pid
 Type=forking
 SyslogIdentifier=%u
