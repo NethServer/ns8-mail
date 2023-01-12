@@ -14,7 +14,6 @@ systemctl --user --now enable clamav.service
 # enforcment should be subject to some condition and preserved after
 # restore-module and clone-module.
 systemctl --user --now enable clamav-unofficial-sigs.timer
-systemctl --user --now enable --no-block clamav-unofficial-sigs.service
 
 systemctl --user enable dovecot.service
 systemctl --user reload-or-restart dovecot.service

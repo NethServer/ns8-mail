@@ -2,6 +2,7 @@
 Description=Timer of clamav-unofficial-sigs service
 
 [Timer]
+OnActiveSec=20 minutes
 OnUnitInactiveSec=60 minutes
 
 [Install]
