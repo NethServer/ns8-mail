@@ -3,8 +3,7 @@ Description=Diffie-Hellman group generator
 
 [Service]
 Type=oneshot
-ExecStart=openssl dhparam -out dh.tmp 2048
-ExecStart=mv -v dh.tmp dh.pem
+ExecStart=runagent generate-dhpem
 ExecStartPost=-runagent install-certificate postfix
 ExecStartPost=-runagent install-certificate dovecot
 WorkingDirectory=%S/state
