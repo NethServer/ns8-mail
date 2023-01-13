@@ -62,10 +62,12 @@ for entry in *; do
 done
 
 # Fix IMAP acls under the vmail/ and root/ directories, remove ACLs for root, add "delete" flag to "full access"
-find root/ vmail/ -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
-    -e "s/@${rx_domain_suffix}\b//g" \
-    -e "s/\bakeilprwts\b/akxeilprwts/g" \
-    -e "/^user=root / d"
+for entry in root vmail; do
+    find "${entry}" -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
+        -e "s/@${rx_domain_suffix}\b//g" \
+        -e "s/\bakeilprwts\b/akxeilprwts/g" \
+        -e "/^user=root / d"
+done
 
 exit 0
 

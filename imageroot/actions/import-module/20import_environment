@@ -48,5 +48,3 @@ else:
 hostname = socket.getfqdn().lower()
 agent.set_env('MAIL_HOSTNAME', hostname)
 agent.set_env('POSTFIX_HOSTNAME', hostname)
-
-agent.dump_env()
