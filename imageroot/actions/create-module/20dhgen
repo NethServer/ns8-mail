@@ -9,4 +9,3 @@ set -e    # exit immediately if an error occurs
 exec 1>&2 # ensure any output is sent to stderr
 
 systemctl --user enable --now dhgen.timer
-systemctl --user enable --now --no-block dhgen.service
