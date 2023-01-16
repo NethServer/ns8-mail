@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+set -e
+
+exec 1>&2
+trap 'rm -rvf dkim.migration' EXIT
+
+tar -C dkim.migration -cv ./ | podman cp - rspamd:/var/lib/rspamd/dkim/
+podman exec rspamd sh -c 'chown -c rspamd:rspamd /var/lib/rspamd/dkim/*'
