@@ -26,7 +26,7 @@ except:
     # Once the domain becomes available, the event will fix them.
     odom = {
         'host': '127.0.0.1',
-        'port': 0,
+        'port': '0',
         'schema': 'rfc2307',
         'location': 'internal',
         'base_dn': 'dc=dovecot,dc=invalid',
