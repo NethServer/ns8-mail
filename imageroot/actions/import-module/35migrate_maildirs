@@ -12,6 +12,7 @@ domain_suffix=$(< mail_domain.txt)
 podman run -i \
     --name=migrate_maildirs --replace --rm \
     --network=none \
+    --log-driver=none \
     --env=DOVECOT_* \
     --volume=dovecot-data:/var/lib/vmail:z \
     "${MAIL_DOVECOT_IMAGE:?}" \
@@ -33,25 +34,34 @@ sed -i -r "/@${rx_domain_suffix}(\/|\$)/ s/@${rx_domain_suffix}\b//g" shared-mai
 
 # Migrate mail home dirs
 for entry in *; do
-    if [ ! -d "${entry}" ] || [ "${entry}" = "@${1}" ]; then
-        continue # skip non-directory entries
-    elif ! ends_with_suffix "${entry}" "@${1}" || [ "${entry}" = "vmail@${1}" ] ; then
-        echo "Skipped migration of ${entry}"
+    if [ ! -d "${entry}" ]; then
+        continue # ignore non-directory entries
+    elif [ "${entry}" = root ] || [ "${entry}" = vmail ]; then
+        # Do not rename, just fix ACLs
+        ddest="${entry}"
+    elif ends_with_suffix "${entry}" "@${1}"; then
+        # Remove the domain suffix from the dir name:
+        ddest="${entry%%@${1}}"
+
+        # Skip bogus entries:
+        if [ "${ddest}" = vmail ] || [ "${ddest}" = root ] || [ -z "${ddest}" ]; then
+            echo "Bogus entry ignored: \`${entry}\`"
+            continue
+        fi
+
+        # Backup of destination if it is already present:
+        if [ -d "${ddest}" ]; then
+            echo -n "Destination for \`${entry}\` already exists: "
+            mv -v "${ddest}" "${ddest}.$RANDOM"
+        fi
+
+        # Mail home migration
+        echo -n "Renamed "
+        mv -v "${entry}" "${ddest}"
+    else
+        echo "Skipped migration of \`${entry}\`"
         continue # skip non-matching directories
     fi
-
-    # Remove the domain suffix from the dir name:
-    ddest="${entry%%@${1}}"
-
-    # Rename if destination is already present:
-    if [ -d "${ddest}" ]; then
-        echo -n "Destination for ${entry} already exists: "
-        mv -v "${ddest}" "${ddest}.$RANDOM"
-    fi
-
-    # Mail home migration
-    echo -n "Renamed "
-    mv -v "${entry}" "${ddest}"
 
     # Fix IMAP acls: remove the domain suffix, remove ACLs for root, add "delete" flag to "full access"
     find "${ddest}" -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
@@ -59,14 +69,6 @@ for entry in *; do
         -e "s/\bakeilprwts\b/akxeilprwts/g" \
         -e "/^user=root / d"
 
-done
-
-# Fix IMAP acls under the vmail/ and root/ directories, remove ACLs for root, add "delete" flag to "full access"
-for entry in root vmail; do
-    find "${entry}" -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
-        -e "s/@${rx_domain_suffix}\b//g" \
-        -e "s/\bakeilprwts\b/akxeilprwts/g" \
-        -e "/^user=root / d"
 done
 
 exit 0
