@@ -287,9 +287,7 @@ def abort_with_json_if_not_configured(data, exit_code=0):
         sys.exit(exit_code)
 
 def get_disabled_users():
-    disabled_users = list(filter(None, os.getenv("DOVECOT_DISABLED_USERS", "").lower().split(",")))
-    disabled_users.append("vmail")
-    return disabled_users
+    return list(filter(None, os.getenv("DOVECOT_DISABLED_USERS", "").lower().split(",")))
 
 def convert_ns7_quota(squota):
     """Convert a string value representing ns7 mailbox quota to Mail module format"""
