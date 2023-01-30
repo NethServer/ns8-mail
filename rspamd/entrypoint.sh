@@ -43,6 +43,11 @@ if [ $# -eq 0 ]; then
         logger -t "${RSPAMD_instance:?}/lighttpd" -p DAEMON.INFO
     ) &
 
+    # Start local Unbound DNS server (UDP port 11336)
+    echo "log-identity: ${RSPAMD_instance:?}/unbound" >> /etc/unbound/server.include
+    /usr/sbin/unbound-anchor -v || :
+    /usr/sbin/unbound -d <&- &
+
     wait -n
     exit $?
 else
