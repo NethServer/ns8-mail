@@ -21,6 +21,7 @@ Well-known ports
 - 11333 normal worker (scanner)
 - 11334 controller worker (behind Lighttpd HTTP proxy)
 - 11335 fuzzy worker
+- 11336 unbound (recursive, caching DNS resolver)
 
 ## Environment variables
 
