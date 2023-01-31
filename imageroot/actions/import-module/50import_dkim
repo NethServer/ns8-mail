@@ -10,5 +10,6 @@ set -e
 exec 1>&2
 trap 'rm -rvf dkim.migration' EXIT
 
+mv -v dkim.migration/default.private dkim.migration/default.key
 tar -C dkim.migration -cv ./ | podman cp - rspamd:/var/lib/rspamd/dkim/
 podman exec rspamd sh -c 'chown -c rspamd:rspamd /var/lib/rspamd/dkim/*'
