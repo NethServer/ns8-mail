@@ -23,7 +23,7 @@ ExecStart=/usr/bin/podman run \
     --volume=rspamd-override:/etc/rspamd/override.d:z \
     --volume=/dev/log:/dev/log \
     ${MAIL_RSPAMD_IMAGE}
-ExecStop=/usr/bin/podman stop --ignore --cidfile %t/rspamd.ctr-id -t 10
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/rspamd.ctr-id -t 60
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/rspamd.ctr-id
 ExecReload=runagent /usr/bin/podman exec --env=RSPAMD_* %N reload-config
 PIDFile=%t/rspamd.pid

@@ -11,6 +11,7 @@ ExecStartPre=-runagent install-certificate dovecot
 ExecStartPre=runagent discover-services
 ExecStart=/usr/bin/podman run \
     --detach \
+    --init \
     --conmon-pidfile=%t/dovecot.pid \
     --cidfile=%t/dovecot.ctr-id \
     --cgroups=no-conmon \
@@ -28,10 +29,11 @@ ExecStart=/usr/bin/podman run \
     ${MAIL_DOVECOT_IMAGE}
 
 # Wait until API and monitoring endpoint services are fully started
+TimeoutStartSec=180s
 ExecStartPost=/usr/bin/bash -c "while ! exec 3<>/dev/tcp/127.0.0.1/9288 &>/dev/null; do sleep 1 ; done"
 ExecStartPost=/usr/bin/bash -c "while ! exec 3<>/dev/tcp/127.0.0.1/9289 &>/dev/null; do sleep 1 ; done"
 
-ExecStop=/usr/bin/podman stop --ignore --cidfile %t/dovecot.ctr-id -t 10
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/dovecot.ctr-id -t 80
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/dovecot.ctr-id
 ExecReload=runagent discover-services
 ExecReload=runagent /usr/bin/podman exec --env=DOVECOT_* --env-file=dovecot.env --env-file=discovery.env %N reload-config
