@@ -168,12 +168,12 @@ reponame="mail-clamav"
 container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
-apk add --no-cache bash curl wget rsync bind-tools socat gpg gpg-agent
+apk add --no-cache ncurses bash curl wget rsync bind-tools socat gpg gpg-agent
 apk add --no-cache clamav-daemon clamav-scanner 
 apk add --no-cache freshclam
 
 source_url="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/7.2.5"
-mkdir -vp /usr/local/sbin /etc/clamav-unofficial-sigs/override.d/ /var/lib/clamav-unofficial-sigs
+mkdir -vp /usr/local/sbin /etc/clamav-unofficial-sigs /var/lib/clamav-unofficial-sigs
 chmod -c 750 /var/lib/clamav-unofficial-sigs
 chown -c clamav:clamav /var/lib/clamav-unofficial-sigs
 (
@@ -183,8 +183,8 @@ chown -c clamav:clamav /var/lib/clamav-unofficial-sigs
 )
 (
     cd /etc/clamav-unofficial-sigs
-    curl -sfL -O "${source_url}/config/master.conf"
-    curl -sfL -O "${source_url}/config/user.conf"
+    curl -sfL "${source_url}/config/master.conf" > master.conf
+    curl -sfL "${source_url}/config/user.conf" > user.conf.orig
     curl -sfL "${source_url}/config/os/os.alpine.conf" > os.conf
     chmod -c 644 *.conf
     echo 'logging_enabled="no"' >> os.conf
@@ -193,7 +193,7 @@ EOF
 buildah add "${container}" clamav/ /
 buildah config \
     --entrypoint='["/entrypoint.sh"]' \
-    --volume=/etc/clamav-unofficial-sigs/override.d \
+    --volume=/etc/clamav-unofficial-sigs \
     --volume=/var/lib/clamav \
     --volume=/var/lib/clamav-unofficial-sigs \
     --cmd='' \

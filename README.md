@@ -104,6 +104,45 @@ by `myselector`,
 3. add a DNS TXT record to `mydomain.example.com`, as described in
    `/var/lib/rspamd/dkim/myselector.txt`
 
+## Configuration override for ClamAV unofficial signatures 
+
+Changes to `clamav-unofficial-sigs` configuration are volatile. When the
+`clamav` container is stopped, local configuration changes are lost.
+
+To manage a persistent and custom `clamav-unofficial-sigs` configuration:
+
+1. Edit the `state/environment` file and set the following variable
+
+       CLAMAV_CUSCFG_VOLUME_FLAGS=Z
+
+1. Restart the clamav container. The configuration is now mounted on a persistent volume, `clamav-cus-cfg`:
+
+       systemctl --user restart clamav
+
+1. Edit `/etc/clamav-unofficial-sigs/user.conf` as wanted:
+
+       podman exec -ti clamav vi /etc/clamav-unofficial-sigs/user.conf
+
+To switch back to the volatile configuration
+
+1. Edit the variable line in `state/environment` (or remove it completely):
+
+       CLAMAV_CUSCFG_VOLUME_FLAGS=O
+
+1. Stop the clamav service
+
+1. Remove the custom changes:
+
+       podman volume rm clamav-cus-cfg
+
+1. Start the clamav service
+
+Either in persistent or volatile mode, changes to the configuration are
+picked up on the next `clamav-unofficial-sigs.timer` run.
+
+To forcibly download new signatures, run:
+
+    podman exec clamav download-sigs cus -F
 
 ## User impersonation
 

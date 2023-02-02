@@ -3,11 +3,11 @@ Description=ClamAV anti-virus
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
+Environment=CLAMAV_CUSCFG_VOLUME_FLAGS=O
 EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/clamav.pid %t/clamav.ctr-id
-ExecStartPre=/bin/mkdir -pv ./clamav-unofficial-sigs
 ExecStart=/usr/bin/podman run \
     --detach \
     --init \
@@ -17,7 +17,7 @@ ExecStart=/usr/bin/podman run \
     --replace --name=%N \
     --volume=clamav-db:/var/lib/clamav:Z \
     --volume=clamav-cus:/var/lib/clamav-unofficial-sigs:Z \
-    --volume=./clamav-unofficial-sigs:/etc/clamav-unofficial-sigs/override.d:z \
+    --volume=clamav-cus-cfg:/etc/clamav-unofficial-sigs:${CLAMAV_CUSCFG_VOLUME_FLAGS} \
     --network=host \
     ${MAIL_CLAMAV_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/clamav.ctr-id -t 10

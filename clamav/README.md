@@ -16,10 +16,12 @@ None
 ## Volumes
 
 - `/var/lib/clamav` ClamAV signature DB
-- `/var/lib/clamav-unofficial-sigs` Signatures cache, fetched by [clamav-unofficial-sigs.sh](https://github.com/extremeshok/clamav-unofficial-sigs), _CUS_ in short
-- `/etc/clamav-unofficial-sigs/override.d` Override clamav-unofficial-sigs
-  configuration. Put a `user.conf` file in it, and the default one is
-  completely overwritten.
+- `/var/lib/clamav-unofficial-sigs` Signatures cache, fetched by
+  [clamav-unofficial-sigs.sh](https://github.com/extremeshok/clamav-unofficial-sigs),
+  _CUS_ in short
+- `/etc/clamav-unofficial-sigs` Configuration files. This volume can be
+  mounted with overlay "O" flag, that means any change to its contents are
+  temporary, thus they are lost when the container is stopped.
 
 ## Commands
 
