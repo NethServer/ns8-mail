@@ -99,6 +99,7 @@ buildah config \
     --env=DOVECOT_SPAM_FOLDER=Junk \
     --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
     --env=DOVECOT_TRASH_FOLDER=Trash \
+    --env=DOVECOT_MAX_USERIP_CONNECTIONS=20 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
