@@ -18,7 +18,7 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-mail container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-mail; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-mail -v "${PWD}:/usr/src:Z" docker.io/library/node:18.13.0-alpine
+    buildah from --name nodebuilder-mail -v "${PWD}:/usr/src:Z" docker.io/library/node:18.14.0-alpine
 fi
 
 if [[ -n "${SKIP_UI_BUILD}" ]]; then
