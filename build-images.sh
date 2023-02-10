@@ -3,7 +3,7 @@
 # Terminate on error
 set -e
 
-alpine_version=3.17.1
+alpine_version=3.17.2
 
 # Prepare variables for later use
 images=()
