@@ -12,6 +12,7 @@ ExecStartPre=runagent discover-services
 ExecStart=/usr/bin/podman run \
     --detach \
     --init \
+    --cap-add=sys_chroot \
     --conmon-pidfile=%t/dovecot.pid \
     --cidfile=%t/dovecot.ctr-id \
     --cgroups=no-conmon \
