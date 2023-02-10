@@ -27,7 +27,26 @@ with open('mail_domain.txt') as dfp:
     mdomname = dfp.read().strip()
 
 # Import the full list of users and groups
-accounts = set(json.load(open('users.json'))) | set(json.load(open('groups.json')))
+susers = set(json.load(open('users.json')))
+sgroups = set(json.load(open('groups.json')))
+accounts = susers | sgroups
+esmithdb = json.load(open('accounts.json'))
+
+def group_conflict(address):
+    """Lookup address in esmithdb for both exact and wildcard match modes"""
+    global esmithdb, sgroups
+
+    if not address in sgroups:
+        return False # No conflict with group names
+
+    for record in esmithdb:
+        if record['type'] != 'pseudonym':
+            continue
+        if address == record['name']:
+            return True # exact match found
+        if record['name'][-1] == '@' and address.startswith(record['name']):
+            return True # wildcard match found
+    return False
 
 def import_address(xaddress):
     global sdb, accounts
@@ -44,7 +63,10 @@ def import_address(xaddress):
     for dest in props.get('Account', '').split(','):
         if dest == 'root':
             dest = 'vmail+postmaster'
-        if dest in accounts:
+        elif group_conflict(dest):
+            # preserve "dest" as "external" mail address, print a warning
+            print(agent.SD_WARNING + f"The address alias {dest} has higher priority than a group of users with the same name")
+        elif dest in accounts:
             dest = dest.removesuffix('@' + mdomname)
         cur.execute("""INSERT INTO destmap (alocal, domain, dest) VALUES (?,?,?)""", (alocal, domain, dest,))
 
@@ -125,7 +147,7 @@ def import_group(xgroup):
 
 with sdb:
     print(agent.SD_INFO + "Importing addresses and mailboxes...")
-    for xrecord in json.load(open('accounts.json')):
+    for xrecord in esmithdb:
         try:
             if xrecord.get('type') == 'pseudonym':
                 import_address(xrecord)

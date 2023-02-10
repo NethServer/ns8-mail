@@ -30,6 +30,7 @@ tmpl_spam_folder=${DOVECOT_SPAM_FOLDER:-Junk}
 tmpl_spam_subject_prefix=${DOVECOT_SPAM_SUBJECT_PREFIX:-}
 tmpl_trash_folder=${DOVECOT_TRASH_FOLDER:?}
 tmpl_mail_plugins="acl listescape"
+tmpl_mail_max_userip_connections="${DOVECOT_MAX_USERIP_CONNECTIONS:-20}"
 # Note: value "0" means "unlimited default quota"; value "" (empty string)
 # means "quota plugin disabled".
 if [ -n "${DOVECOT_QUOTA_MB}" ]; then

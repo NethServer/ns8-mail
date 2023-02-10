@@ -37,7 +37,7 @@ for entry in *; do
     if [ ! -d "${entry}" ]; then
         continue # ignore non-directory entries
     elif [ "${entry}" = root ] || [ "${entry}" = vmail ]; then
-        # Do not rename, just fix ACLs
+        # Do not rename, just fix ACLs and shared namespace
         ddest="${entry}"
     elif ends_with_suffix "${entry}" "@${1}"; then
         # Remove the domain suffix from the dir name:
@@ -62,6 +62,13 @@ for entry in *; do
         echo "Skipped migration of \`${entry}\`"
         continue # skip non-matching directories
     fi
+
+    # Fix paths for shared namespace
+    find "${ddest}" -type d -path "${ddest}/Maildir/shared/*@${1}" -print | (
+        while read -r shared_entry ; do
+            mv -vf "${shared_entry}" "{shared_entry%%@${1}}" || :
+        done
+    )
 
     # Fix IMAP acls: remove the domain suffix, remove ACLs for root, add "delete" flag to "full access"
     find "${ddest}" -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
