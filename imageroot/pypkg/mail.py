@@ -297,3 +297,52 @@ def convert_ns7_quota(squota):
         # Round it up to match the next GiB multiple:
         fquota = math.ceil(fquota / 1024.0) * 1024
     return str(int(fquota))
+
+def rspamd_api_get_kvmap(map_name):
+    """Read the rspamd map_name and convert it to a dict type"""
+    endpoint = 'http://127.0.0.1:11334/'
+    rspamd_env = agent.read_envfile('rspamd.env')
+    credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
+
+    # First request. Get the list of maps to convert map_name to a map ID
+    for omap in requests.get(endpoint + 'maps', auth=credentials).json():
+        if omap.get('uri') == '/var/lib/rspamd/' + map_name:
+            break
+    else:
+        return {}
+
+    # Retrieve the matching map
+    rgetmap = requests.get(endpoint + 'getmap', auth=credentials, headers={'Map': str(omap["map"])})
+
+    kvmap = {} # Convert text data to key-value dict
+    for emap in rgetmap.text.split("\n"):
+        try:
+            ekey, eval = emap.split(None, 1) # 1 split at most!
+        except ValueError:
+            continue # Ignore bogus lines
+        kvmap[ekey] = eval
+
+    return kvmap
+
+def rspamd_api_set_kvmap(map_name, map_dict):
+    """Overwrite the rspamd map_name, converting map_dict to plain text values"""
+    endpoint = 'http://127.0.0.1:11334/'
+    rspamd_env = agent.read_envfile('rspamd.env')
+    credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
+
+    # First request. Get the list of maps to convert map_name to a map ID
+    for omap in requests.get(endpoint + 'maps', auth=credentials).json():
+        if omap.get('uri') == '/var/lib/rspamd/' + map_name:
+            break
+    else:
+        raise Exception('Map not found: ' + map_name)
+
+    # Prepare the new map file contents
+    payload = ''
+    for mkey, mval in map_dict.items():
+        payload += mkey + ' ' + mval + '\n'
+    else:
+        payload += '\n' # at least a newline...
+
+    # Overwrite the matching map
+    requests.post(endpoint + 'savemap', auth=credentials, headers={'Map': str(omap["map"])}, data=payload).raise_for_status()
