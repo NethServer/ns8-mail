@@ -33,6 +33,8 @@ Well-known ports
 - `RSPAMD_dkim_selector` The name of the default DKIM selector; the
   default value is `default`, which is compatible with NS7 to ease the
   migration of existing mail servers.
+- `RSPAMD_clamav_endpoint` The `IP:port` address of a ClamAV instance.
+  Empty string disables the AV check completely.
 
 ## Volumes
 

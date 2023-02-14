@@ -7,8 +7,8 @@
 
 exec 1>&2
 
-systemctl --user --now enable rspamd.service
 systemctl --user --now enable clamav.service
+systemctl --user --now enable rspamd.service
 
 # XXX: Unconditionally enable and start ClamAV unofficial sigs. This
 # enforcment should be subject to some condition and preserved after

@@ -346,3 +346,7 @@ def rspamd_api_set_kvmap(map_name, map_dict):
 
     # Overwrite the matching map
     requests.post(endpoint + 'savemap', auth=credentials, headers={'Map': str(omap["map"])}, data=payload).raise_for_status()
+
+def is_clamav_enabled():
+    """Check if the clamav service is enabled or not, returning a boolean value"""
+    return agent.run_helper('systemctl', '--user', 'is-enabled', 'clamav.service').returncode == 0
