@@ -4,6 +4,7 @@ Description=ClamAV anti-virus
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Environment=CLAMAV_CUSCFG_VOLUME_FLAGS=O
+Environment=CLAMAV_CUS_RATING=MEDIUM
 EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 Restart=always
