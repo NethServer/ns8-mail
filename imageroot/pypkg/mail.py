@@ -300,22 +300,8 @@ def convert_ns7_quota(squota):
 
 def rspamd_api_get_kvmap(map_name):
     """Read the rspamd map_name and convert it to a dict type"""
-    endpoint = 'http://127.0.0.1:11334/'
-    rspamd_env = agent.read_envfile('rspamd.env')
-    credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
-
-    # First request. Get the list of maps to convert map_name to a map ID
-    for omap in requests.get(endpoint + 'maps', auth=credentials).json():
-        if omap.get('uri') == '/var/lib/rspamd/' + map_name:
-            break
-    else:
-        return {}
-
-    # Retrieve the matching map
-    rgetmap = requests.get(endpoint + 'getmap', auth=credentials, headers={'Map': str(omap["map"])})
-
     kvmap = {} # Convert text data to key-value dict
-    for emap in rgetmap.text.split("\n"):
+    for emap in rspamd_api_get_map_raw(map_name).split("\n"):
         try:
             ekey, eval = emap.split(None, 1) # 1 split at most!
         except ValueError:
@@ -326,6 +312,66 @@ def rspamd_api_get_kvmap(map_name):
 
 def rspamd_api_set_kvmap(map_name, map_dict):
     """Overwrite the rspamd map_name, converting map_dict to plain text values"""
+    # Prepare the new map file contents
+    payload = ''
+    for mkey, mval in map_dict.items():
+        payload += mkey + ' ' + mval + '\n'
+    else:
+        payload += '\n' # at least a newline...
+
+    return rspamd_api_set_map_raw(map_name, payload)
+
+def rspamd_get_bypass_maps():
+    """Get the contents of bypass maps"""
+    endpoint = 'http://127.0.0.1:11334/'
+    rspamd_env = agent.read_envfile('rspamd.env')
+    credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
+
+    maps = {}
+
+    # Get the list of map IDs
+    for omap in requests.get(endpoint + 'maps', auth=credentials).json():
+        if not omap['uri'].startswith('/var/lib/rspamd/bypass_'):
+            continue # skip unknown maps
+
+        oreq = requests.get(endpoint + 'getmap', auth=credentials, headers={'Map': str(omap["map"])})
+        entries = list(filter(str.strip, oreq.text.split("\n"))) # ignore empty lines in the map file
+        maps[omap["uri"].removeprefix('/var/lib/rspamd/bypass_').removesuffix('.map')] = entries
+
+    return maps
+
+def rspamd_api_set_vmap(map_name, map_values):
+    """Overwrite the rspamd map_name, converting map_values to plain text values"""
+    if map_values:
+        payload = '\n'.join(map_values)
+    else:
+        payload = '\n' # at least a newline...
+
+    return rspamd_api_set_map_raw(map_name, payload)
+
+def rspamd_api_get_vmap(map_name):
+    """Read the rspamd map_name and convert it to a list type"""
+    # Strip whitespaces and empty lines
+    return list(filter(str.strip, rspamd_api_get_map_raw(map_name).split("\n")))
+
+def rspamd_api_get_map_raw(map_name):
+    endpoint = 'http://127.0.0.1:11334/'
+    rspamd_env = agent.read_envfile('rspamd.env')
+    credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
+
+    # First request. Get the list of maps to convert map_name to a map ID
+    for omap in requests.get(endpoint + 'maps', auth=credentials).json():
+        if omap.get('uri') == '/var/lib/rspamd/' + map_name:
+            break
+    else:
+        return ''
+
+    # Retrieve the matching map
+    rgetmap = requests.get(endpoint + 'getmap', auth=credentials, headers={'Map': str(omap["map"])})
+    rgetmap.raise_for_status()
+    return rgetmap.text
+
+def rspamd_api_set_map_raw(map_name, payload):
     endpoint = 'http://127.0.0.1:11334/'
     rspamd_env = agent.read_envfile('rspamd.env')
     credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
@@ -337,15 +383,9 @@ def rspamd_api_set_kvmap(map_name, map_dict):
     else:
         raise Exception('Map not found: ' + map_name)
 
-    # Prepare the new map file contents
-    payload = ''
-    for mkey, mval in map_dict.items():
-        payload += mkey + ' ' + mval + '\n'
-    else:
-        payload += '\n' # at least a newline...
-
     # Overwrite the matching map
     requests.post(endpoint + 'savemap', auth=credentials, headers={'Map': str(omap["map"])}, data=payload).raise_for_status()
+    return True
 
 def rspamd_api_get_thresholds():
     """Get a thresholds map"""
@@ -387,6 +427,21 @@ def rspamd_api_set_thresholds(thresholds_map):
 
     requests.post(endpoint + 'saveactions', auth=credentials, json=threshold_values).raise_for_status()
 
+def get_bypass_map_name(mtype, mdirection):
+    """Convert UI bypass attributes to a Rspamd dynamic map name"""
+    map_attrs = {
+        ("email", "from"): "sender",
+        ("domain", "from"): "sender_domain",
+        ("email", "to"): "recipient",
+        ("domain", "to"): "recipient_domain",
+        ("ip", "from"): "ip",
+        ("cidr", "from"): "ip",
+    }
+
+    try:
+        return 'bypass_' + map_attrs[(mtype, mdirection)] + '.map'
+    except KeyError as kex:
+        raise Exception(f'Rules for ({mtype}, {mdirection}) are not defined') from kex
 
 def is_clamav_enabled():
     """Check if the clamav service is enabled or not, returning a boolean value"""

@@ -20,6 +20,9 @@ odata =  {
     "antispam": {"enabled": False},
 }
 
+# count of bypass_rules, removing duplicated entries:
+odata["bypass_rules"] = sum([len(set(l)) for l in mail.rspamd_get_bypass_maps().values()])
+
 #
 # antivirus
 #

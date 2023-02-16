@@ -690,7 +690,11 @@
             "type": "object",
             "title": "Bypass rule",
             "description": "A bypass rule defines email messages that are not subject to the filter",
-            "required": ["value", "type", "direction"],
+            "required": [
+                "value",
+                "type",
+                "direction"
+            ],
             "properties": {
                 "value": {
                     "description": "Can be a domain, an email address, an IP address or a CIDR network",
@@ -698,14 +702,72 @@
                     "minLength": 1
                 },
                 "type": {
-                    "description": "Bypass rule type",
-                    "enum": ["domain", "ip", "email", "cidr"]
+                    "description": "Bypass rule type"
                 },
                 "direction": {
                     "description": "Bypass rule direction",
-                    "enum": ["from", "to"]
+                    "enum": [
+                        "from",
+                        "to"
+                    ]
                 }
-            }
+            },
+            "anyOf": [
+                {
+                    "properties": {
+                        "value": {
+                            "anyOf": [
+                                {
+                                    "format": "ipv6"
+                                },
+                                {
+                                    "format": "ipv4"
+                                }
+                            ]
+                        },
+                        "type": {
+                            "const": "ip"
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "value": {
+                            "anyOf": [
+                                {
+                                    "pattern": "[0-9a-fA-F.:]+\/[0-9]+"
+                                },
+                                {
+                                    "pattern": "[0-9.]+\/[0-9]+"
+                                }
+                            ]
+                        },
+                        "type": {
+                            "const": "cidr"
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "value": {
+                            "format": "email"
+                        },
+                        "type": {
+                            "const": "email"
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "value": {
+                            "format": "hostname"
+                        },
+                        "type": {
+                            "const": "domain"
+                        }
+                    }
+                }
+            ]
         },
         "antispam": {
             "type": "object",
