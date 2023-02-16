@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+import os
+
+request = json.load(sys.stdin)
+
+#
+# Antivirus settings object
+#
+if 'antivirus' in request:
+    rav = request['antivirus']
+    if rav['enabled']:
+        agent.run_helper('systemctl', '--user', 'enable', '--now', 'clamav.service').check_returncode()
+    else:
+        agent.run_helper('systemctl', '--user', 'disable', '--now', 'clamav.service').check_returncode()
+
+    if 'third_party_sigs_rating' in rav:
+        agent.set_env('CLAMAV_CUS_RATING', rav['third_party_sigs_rating'].upper())
+
+    if 'clamav_official_sigs' in rav:
+        if rav['clamav_official_sigs']:
+            agent.run_helper('systemctl', '--user', 'enable', '--now', 'freshclam.timer').check_returncode()
+        else:
+            agent.run_helper('systemctl', '--user', 'disable', '--now', 'freshclam.timer').check_returncode()
+
+#
+# Antispam settings object
+#
+if 'antispam' in request:
+    ras = request['antispam']
+    if ras['enabled']:
+        agent.set_env('RSPAMD_antispam_checks_enabled', '1')
+        # Current thresholds as base
+        thm = mail.rspamd_api_get_thresholds()
+        if 'spam_flag_threshold' in ras:
+            thm['add header'] = float(ras['spam_flag_threshold'])
+
+        if 'deny_message_threshold' in ras:
+            thm['reject'] = float(ras['deny_message_threshold'])
+
+        if 'greylist' in ras:
+            if ras['greylist']['enabled'] and 'threshold' in ras['greylist']:
+                thm['greylist'] = float(ras['greylist']['threshold'])
+                agent.set_env('RSPAMD_greylist_enabled', '1')
+            else:
+                thm['greylist'] = None
+                agent.set_env('RSPAMD_greylist_enabled', '')
+
+        mail.rspamd_api_set_thresholds(thm)
+
+        if 'prefix_email_subject' in ras:
+            if ras['prefix_email_subject']['enabled'] and 'prefix' in ras['prefix_email_subject']:
+                agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', ras['prefix_email_subject']['prefix'])
+            else:
+                agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '')
+    else: # ras['enabled'] is false
+        agent.set_env('RSPAMD_antispam_checks_enabled', '')

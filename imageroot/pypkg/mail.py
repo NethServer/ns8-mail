@@ -347,6 +347,47 @@ def rspamd_api_set_kvmap(map_name, map_dict):
     # Overwrite the matching map
     requests.post(endpoint + 'savemap', auth=credentials, headers={'Map': str(omap["map"])}, data=payload).raise_for_status()
 
+def rspamd_api_get_thresholds():
+    """Get a thresholds map"""
+    endpoint = 'http://127.0.0.1:11334/'
+    rspamd_env = agent.read_envfile('rspamd.env')
+    credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
+
+    thresholds_map = {}
+
+    for ethreshold in requests.get(endpoint + 'actions', auth=credentials).json():
+        if ethreshold['value'] is not None:
+            thresholds_map[ethreshold['action']] = ethreshold['value']
+
+    return thresholds_map
+
+def rspamd_api_set_thresholds(thresholds_map):
+    """Set the thresholds map. Missing values are set to null (None)"""
+    tindex_map = {
+        'greylist': 3,
+        'add header': 2,
+        # 'rewrite subject': 1, never set: it is implemented by a Dovecot Sieve rule
+        'reject': 0,
+    }
+
+    threshold_values = [None, None, None, None]
+
+    for tkey, tval in thresholds_map.items():
+        if tkey in tindex_map:
+            if tval is None:
+                continue # ignore, None is the default
+            try:
+                threshold_values[tindex_map[tkey]] = float(tval)
+            except ValueError:
+                pass
+
+    endpoint = 'http://127.0.0.1:11334/'
+    rspamd_env = agent.read_envfile('rspamd.env')
+    credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
+
+    requests.post(endpoint + 'saveactions', auth=credentials, json=threshold_values).raise_for_status()
+
+
 def is_clamav_enabled():
     """Check if the clamav service is enabled or not, returning a boolean value"""
     return agent.run_helper('systemctl', '--user', 'is-enabled', 'clamav.service').returncode == 0

@@ -10,9 +10,6 @@ exec 1>&2
 systemctl --user --now enable clamav.service
 systemctl --user --now enable rspamd.service
 
-# XXX: Unconditionally enable and start ClamAV unofficial sigs. This
-# enforcment should be subject to some condition and preserved after
-# restore-module and clone-module.
 systemctl --user --now enable clamav-unofficial-sigs.timer
 
 systemctl --user enable dovecot.service
