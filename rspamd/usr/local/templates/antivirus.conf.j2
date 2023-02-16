@@ -2,7 +2,7 @@
 # Antivirus -- https://rspamd.com/doc/modules/antivirus.html
 #
 
-{% if env.clamav_endpoint %}
+{% if not (env.clamav_endpoint == "") -%}
 clamav {
     servers = "{= env.clamav_endpoint =}";
 
@@ -21,4 +21,4 @@ clamav {
     # `whitelist` points to a map of signature names. Hits on these signatures are ignored.
     whitelist = "/etc/rspamd/antivirus.wl";
 }
-{% endif %}
+{% endif -%}

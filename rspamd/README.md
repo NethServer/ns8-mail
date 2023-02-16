@@ -35,7 +35,11 @@ Well-known ports
   migration of existing mail servers.
 - `RSPAMD_clamav_endpoint` The `IP:port` address of a ClamAV instance.
   Empty string disables the AV check completely.
-
+- `RSPAMD_antispam_checks_enabled` Empty string means "disabled": in this
+  case Rspamd runs only DKIM signatures and AV checks. Other string values
+  is "enabled": Rspamd runs also anti-spam checks.
+- `RSPAMD_greylist_enabled` Empty string means greylist is disabled. Other
+  string values enable the greylist feature.
 ## Volumes
 
 - `/etc/rspamd/override.d` Rspamd custom configuration
