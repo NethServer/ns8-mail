@@ -14,6 +14,7 @@ cd /usr/local/templates
 rspamadm template actions.conf.j2 > /etc/rspamd/local.d/actions.conf
 rspamadm template antivirus.conf.j2 > /etc/rspamd/local.d/antivirus.conf
 rspamadm template greylist.conf.j2 > /etc/rspamd/local.d/greylist.conf
+rspamadm template multimap.conf.j2 > /etc/rspamd/local.d/multimap.conf
 rspamadm template rspamd.conf.local.j2 > /etc/rspamd/rspamd.conf.local
 
 main_process=$(pgrep 'rspamd: main process' || :)

@@ -40,6 +40,9 @@ Well-known ports
   is "enabled": Rspamd runs also anti-spam checks.
 - `RSPAMD_greylist_enabled` Empty string means greylist is disabled. Other
   string values enable the greylist feature.
+- `RSPAMD_bypass_score` If undefined (default) bypass rules are applied as
+  an accept prefilter. Set to a negative number to turn the rules to ham
+  score and run antivirus checks (e.g. `RSPAMD_bypass_score=-5.000`)
 ## Volumes
 
 - `/etc/rspamd/override.d` Rspamd custom configuration
