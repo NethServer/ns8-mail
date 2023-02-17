@@ -279,3 +279,8 @@ Migration notes:
    message is logged:
 
        quota-count: Ongoing quota calculation blocked
+
+1. Filter bypass rules and Postfix `mynetworks` setting are converted and
+   imported from the following e-smith DB props:
+   `postfix/AccessBypassList`, `rspamd/SenderWhiteList`,
+   `rspamd/RecipientWhiteList`.
