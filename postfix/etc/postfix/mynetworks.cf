@@ -1,0 +1,8 @@
+#
+# mynetworks -- additional network and IP addresses with relay permissions
+# Sqlite backend configuration
+#
+
+dbpath = /srv/pcdb.sqlite
+query = SELECT network
+  FROM mynetworks

@@ -86,3 +86,5 @@ its contents for the exact SQL schema. This is a summary of the available tables
 - `userattrs` Store the "internal" flag for LDAP users
 - `groupattrs` Store the "internal" flag for LDAP groups
 - `userforwards` Forward address map for LDAP users
+- `mynetworks` Records are added to Postfix
+  [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks) setting
