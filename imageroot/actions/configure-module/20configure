@@ -26,9 +26,9 @@ hostname = request['hostname']
 with agent.redis_connect() as rdb:
     cluster_network = rdb.get('cluster/network') or ""
 
+agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
 if not os.path.exists('rspamd.env'):
     # First-time configuration defaults
-    agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
     agent.set_env('POSTFIX_MILTERS', 'inet:localhost:11332')
     spamt_pass = genpw()
     oldmask = os.umask(0o77)

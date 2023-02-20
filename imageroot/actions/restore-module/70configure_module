@@ -43,9 +43,6 @@ def unit_was_enabled(unit, fallback=True):
     except:
         return fallback
 
-# Restore antispam and greylist switches state
-agent.set_env('RSPAMD_antispam_checks_enabled', renv.get('RSPAMD_antispam_checks_enabled', '1'))
-agent.set_env('RSPAMD_greylist_enabled', renv.get('RSPAMD_greylist_enabled', ''))
 # Restore antivirus configuration state
 filter_retval =  agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-filter-configuration', data={
     "antivirus": {
@@ -54,7 +51,7 @@ filter_retval =  agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-fi
         "third_party_sigs_rating": renv.get('CLAMAV_CUS_RATING', "MEDIUM").lower(),
     },
     # - custom antispam thresholds are stored in rspamd-data volume
-    # - antispam state and greylist switches state are in the environment
+    # - antispam state and greylist switches state are in the environment from 06copyenv
 })
 agent.assert_exp(filter_retval['exit_code'] == 0, "The set-filter-configuration subtask failed!")
 
