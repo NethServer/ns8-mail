@@ -36,4 +36,3 @@ if needs_reload:
     os.environ["DOVECOT_DISABLED_USERS"] = ",".join(disabled_users)
     agent.set_env("DOVECOT_DISABLED_USERS", os.environ["DOVECOT_DISABLED_USERS"])
     agent.run_helper('podman', 'exec', '--env=DOVECOT_*', '--env-file=dovecot.env', 'dovecot', 'reload-config')
-    agent.dump_env()

@@ -33,7 +33,16 @@ Well-known ports
 - `RSPAMD_dkim_selector` The name of the default DKIM selector; the
   default value is `default`, which is compatible with NS7 to ease the
   migration of existing mail servers.
-
+- `RSPAMD_clamav_endpoint` The `IP:port` address of a ClamAV instance.
+  Empty string disables the AV check completely.
+- `RSPAMD_antispam_checks_enabled` Empty string means "disabled": in this
+  case Rspamd runs only DKIM signatures and AV checks. Other string values
+  is "enabled": Rspamd runs also anti-spam checks.
+- `RSPAMD_greylist_enabled` Empty string means greylist is disabled. Other
+  string values enable the greylist feature.
+- `RSPAMD_bypass_score` If undefined (default) bypass rules are applied as
+  an accept prefilter. Set to a negative number to turn the rules to ham
+  score and run antivirus checks (e.g. `RSPAMD_bypass_score=-5.000`)
 ## Volumes
 
 - `/etc/rspamd/override.d` Rspamd custom configuration

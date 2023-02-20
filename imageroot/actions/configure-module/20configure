@@ -26,9 +26,9 @@ hostname = request['hostname']
 with agent.redis_connect() as rdb:
     cluster_network = rdb.get('cluster/network') or ""
 
+agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
 if not os.path.exists('rspamd.env'):
     # First-time configuration defaults
-    agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
     agent.set_env('POSTFIX_MILTERS', 'inet:localhost:11332')
     spamt_pass = genpw()
     oldmask = os.umask(0o77)
@@ -48,6 +48,19 @@ if not 'DOVECOT_QUOTA_MB' in os.environ:
     agent.set_env('DOVECOT_SPAM_RETENTION', "15") # Enable the feature with 15 days retention
     agent.set_env('DOVECOT_SPAM_FOLDER', 'Junk') # Default spam folder name, enabled
     agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '') # Default spam subject prefix: empty - disabled
+
+if not 'CLAMAV_CUS_RATING' in os.environ:
+    # Initial value for default_dbs_rating parameter of clamav-unofficial-sigs
+    agent.set_env('CLAMAV_CUS_RATING', 'MEDIUM')
+    # Initial state of clamav.service:
+    agent.run_helper('systemctl', '--user', 'enable', '--now', 'clamav.service')
+    # Initial state of freshclam.timer is disabled: ClamAV official signatures not loaded
+    # Expect true: systemctl --user is-enabled freshclam.timer == "disabled"
+
+if not 'RSPAMD_antispam_checks_enabled' in os.environ:
+    # Initial values for Rspamd config templates
+    agent.set_env('RSPAMD_antispam_checks_enabled', '1') # Expect antispam enabled
+    agent.set_env('RSPAMD_greylist_enabled', '') # Expect greylist disabled
 
 agent.set_env('MAIL_HOSTNAME', hostname)
 agent.set_env('DOVECOT_INSTANCE_NAME', os.environ['MODULE_ID'])

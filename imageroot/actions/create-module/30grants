@@ -19,5 +19,6 @@ redis-exec SADD "${AGENT_ID}/roles/mailadm" "reveal-master-credentials" "get-*" 
 #
 redis-exec SADD "${AGENT_ID}/roles/selfadm" \
     "configure-module" \
+    "set-filter-configuration" \
     "set-mailbox-settings" \
     "set-master-users"

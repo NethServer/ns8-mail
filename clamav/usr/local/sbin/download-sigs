@@ -21,18 +21,10 @@ if [ "${sig_type}" = "freshclam" ]; then
 fi
 
 if [ "${sig_type}" = "cus" ]; then
-    cfg_dir="/etc/clamav-unofficial-sigs"
-    # Copy override files for clamav-unofficial-sigs:
-    for cfg_file in additional_dbs.txt master.conf user.conf os.conf; do
-        if [ -f "${cfg_dir}/override.d/${cfg_file}" ]; then
-            echo "Applying ${cfg_dir}/override.d/${cfg_file}"
-            cat "${cfg_dir}/${cfg_file}" > "${cfg_dir}/${cfg_file}.orig"
-            cat "${cfg_dir}/override.d/${cfg_file}" > "${cfg_dir}/${cfg_file}"
-        elif [ -f "${cfg_dir}/${cfg_file}.orig" ]; then
-            echo "Restoring ${cfg_dir}/${cfg_file}.orig"
-            mv -v "${cfg_dir}/${cfg_file}.orig" "${cfg_dir}/${cfg_file}"
-        fi
-    done
+    if [ -n "${CLAMAV_CUS_RATING}" ]; then
+        # Apply rating value to user.conf
+        set-cus-rating "${CLAMAV_CUS_RATING}"
+    fi
     # Start clamav-unofficial-sigs
     exec su -s /bin/bash - clamav /usr/local/sbin/clamav-unofficial-sigs.sh -- "${@}"
 fi

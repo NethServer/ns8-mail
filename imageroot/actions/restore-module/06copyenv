@@ -15,6 +15,8 @@ original_environment = request['environment']
 
 for evar in [
         "DOVECOT_SPAM_SUBJECT_PREFIX",
+        "RSPAMD_antispam_checks_enabled",
+        "RSPAMD_greylist_enabled",
         "DOVECOT_TRUSTED_NETWORKS",
         "POSTFIX_TRUSTED_NETWORK",
     ]:

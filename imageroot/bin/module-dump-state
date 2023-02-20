@@ -7,3 +7,6 @@
 
 echo "Dumping Mail state to disk:"
 podman exec postfix sqlite3 /srv/pcdb.sqlite .dump > pcdb-dump.sql
+for unit in clamav.service freshclam.timer; do
+    systemctl --user is-enabled "${unit}" > "${unit}".is-enabled || : # ignore exit code
+done

@@ -7,3 +7,4 @@
 
 echo "Cleaning up Mail state:"
 rm -vf pcdb-dump.sql
+rm -vf *.is-enabled

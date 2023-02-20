@@ -1,0 +1,10 @@
+#
+# Conditionally disable greylist -- https://rspamd.com/doc/faq.html#how-can-i-disable-greylisting
+#
+
+{% if env.greylist_enabled == "" -%}
+#
+# Disable greylist
+#
+enabled = false;
+{% endif -%}

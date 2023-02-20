@@ -161,4 +161,3 @@ with sdb:
 
 if dovecot_disabled_users:
     agent.set_env('DOVECOT_DISABLED_USERS', ','.join(dovecot_disabled_users))
-    agent.dump_env()

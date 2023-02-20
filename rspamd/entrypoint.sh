@@ -11,6 +11,8 @@ set -e
 
 if [ $# -eq 0 ]; then
 
+    reload-config
+
     (   # Store Rspamd admin UI credentials for Lighttpd
         umask 027
         printf "%s:%s\n" \

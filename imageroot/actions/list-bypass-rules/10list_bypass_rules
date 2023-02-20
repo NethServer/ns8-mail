@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+
+bypass_rules = []
+
+map_attrs = {
+    "sender": ("email", "from"),
+    "sender_domain": ("domain", "from"),
+    "recipient": ("email", "to"),
+    "recipient_domain": ("domain", "to"),
+    "ip": (lambda v: "cidr" if '/' in v else "ip", "from"),
+}
+
+for kmap, lmap in mail.rspamd_get_bypass_maps().items():
+        # remove duplicates and sort entries
+        lmap = list(set(lmap))
+        lmap.sort()
+        (tname, tdir) = map_attrs[kmap]
+        for mval in lmap:
+            bypass_rules.append(
+                {
+                    "type": tname(mval) if callable(tname) else tname,
+                    "direction": tdir,
+                    "value": mval,
+                }
+            )
+
+json.dump({"bypass_rules": bypass_rules}, fp=sys.stdout)

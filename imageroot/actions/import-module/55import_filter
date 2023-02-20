@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import os
+import json
+import agent
+import mail
+import sqlite3
+
+# Global stdout redirection:
+sys.stdout = sys.stderr
+
+sdb = mail.pcdb_connect()
+sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
+
+jrspamd = json.load(open('rspamd.json'))['props']
+jpostfix = json.load(open('postfix.json'))['props']
+jclamd = json.load(open('clamd.json'))['props']
+
+maps = {
+    'bypass_sender.map': '',
+    'bypass_sender_domain.map': '',
+    'bypass_recipient.map': '',
+    'bypass_recipient_domain.map': '',
+    'bypass_ip.map': '',
+}
+
+for ebypass in list(filter(None, jrspamd.get('SenderWhiteList','').split(','))):
+    if '@' in ebypass:
+        maps['bypass_sender.map'] += ebypass + "\n"
+    else:
+        maps['bypass_sender_domain.map'] += ebypass + "\n"
+
+for ebypass in list(filter(None, jrspamd.get('RecipientWhiteList','').split(','))):
+    if '@' in ebypass:
+        maps['bypass_recipient.map'] += ebypass + "\n"
+    else:
+        maps['bypass_recipient_domain.map'] += ebypass + "\n"
+
+with sdb:
+    cur = sdb.cursor()
+    for ebypass in list(filter(None, jpostfix.get('AccessBypassList','').split(','))):
+        maps['bypass_ip.map'] += ebypass + "\n"
+        try:
+            cur.execute("""INSERT INTO mynetworks (network) VALUES (?)""", (ebypass,))
+        except sqlite3.Error as iex:
+            print(agent.SD_WARNING + f"Skipping open relay policy for IP {ebypass}:", iex)
+
+for map_name, payload in maps.items():
+    if payload:
+        print(agent.SD_INFO + "Set bypass map " + map_name + ":", payload.replace('\n', ', '), file=sys.stderr)
+        mail.rspamd_api_set_map_raw(map_name, payload)
+
+
+#
+# Thresholds
+#
+try:
+    spam_flag_threshold = float(jrspamd.get('SpamTag2Level', '6'))
+    deny_message_threshold = float(jrspamd.get('SpamKillLevel', '15'))
+except ValueError:
+    print(agent.SD_WARNING + "Conversion of spam thresholds failed.", file=sys.stderr)
+    spam_flag_threshold = 6
+    deny_message_threshold = 15
+
+if jrspamd.get('SpamSubjectPrefixStatus', '') == 'enabled':
+    oprefix_email_subject = {
+        "enabled": True,
+        "prefix": jrspamd.get('SpamSubjectPrefixString', '***SPAM***')
+    }
+else:
+    oprefix_email_subject = {
+        "enabled": False,
+    }
+
+# Greylist switch
+try:
+    ogreylist = {
+        "enabled": True,
+        "threshold": float(jrspamd.get('SpamGreyLevel')),
+    }
+except ValueError:
+    ogreylist = {
+        "enabled": False,
+    }
+
+# Antispam main switch
+if jrspamd.get('SpamCheckStatus', 'enabled') == 'enabled':
+    oantispam = {
+        "enabled": True,
+        "spam_flag_threshold": spam_flag_threshold,
+        "deny_message_threshold": deny_message_threshold,
+        "greylist": ogreylist,
+        "prefix_email_subject": oprefix_email_subject,
+    }
+else:
+    oantispam = {
+        "enabled": False,
+    }
+
+# Antivirus main switch
+if jrspamd.get('VirusCheckStatus', 'enabled') == 'enabled':
+    oantivirus = {
+        "enabled": True,
+        "clamav_official_sigs": jclamd.get('OfficialSignatures', 'disabled') == 'enabled',
+        "third_party_sigs_rating": jclamd.get('UnofficialSignaturesRating', 'medium'),
+    }
+else:
+    oantivirus = {
+        "enabled": False,
+    }
+
+#
+# Apply filter settings
+#
+configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-filter-configuration', data={
+      "antispam": oantispam,
+      "antivirus": oantivirus,
+})
+# NOTE: Ignore the subtask failure, assuming default filter settings are retained.

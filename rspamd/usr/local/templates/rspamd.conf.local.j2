@@ -1,0 +1,21 @@
+#
+# rspamd.conf.local -- override settings
+#
+
+{% if env.antispam_checks_enabled == "" -%}
+#
+# Disable SPAM checks, DKIM signing only
+#
+settings {
+    checks_bypass {
+        name = "checks_bypass";
+        hostname = "/./";
+        priority = "high";
+        apply {
+            CHECKS_BYPASS = 0.0;
+            symbols_enabled = ["DKIM_SIGNED", "CLAM_VIRUS"];
+        }
+        symbols = ["CHECKS_BYPASS"];
+    }
+}
+{% endif -%}

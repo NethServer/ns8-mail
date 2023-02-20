@@ -1,0 +1,12 @@
+#!/bin/ash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# shellcheck shell=dash
+set -e
+
+sed  "/^default_dbs_rating=/ c \default_dbs_rating=\"${CLAMAV_CUS_RATING:?}\"" \
+    /etc/clamav-unofficial-sigs/user.conf

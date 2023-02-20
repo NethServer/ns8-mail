@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+
+request = json.load(sys.stdin)
+
+rvalue = request['value']
+rtype = request['type']
+rdir = request['direction']
+
+map_name = mail.get_bypass_map_name(rtype, rdir)
+
+# Retrieve the current values
+mvalues = mail.rspamd_api_get_vmap(map_name)
+if rvalue in mvalues:
+    agent.set_status('validation-failed')
+    json.dump([{'field':'value', 'parameter':'value','value': rvalue, 'error':'bypass_rule_already_exists'}], fp=sys.stdout)
+    sys.exit(3)
+
+mvalues.append(rvalue) # append then set new map contents
+mail.rspamd_api_set_vmap(map_name, mvalues)

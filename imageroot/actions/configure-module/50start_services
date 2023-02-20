@@ -7,16 +7,12 @@
 
 exec 1>&2
 
-systemctl --user --now enable rspamd.service
-systemctl --user --now enable clamav.service
+# Expect some service are always enabled
+systemctl --user enable dovecot.service postfix.service rspamd.service
 
-# XXX: Unconditionally enable and start ClamAV unofficial sigs. This
-# enforcment should be subject to some condition and preserved after
-# restore-module and clone-module.
+# Expect some services are always running. Start them if they are stopped,
+# reload otherwise
+systemctl --user reload-or-restart dovecot.service postfix.service rspamd.service
+
+# Expect CUS timer is always enabled and active
 systemctl --user --now enable clamav-unofficial-sigs.timer
-
-systemctl --user enable dovecot.service
-systemctl --user reload-or-restart dovecot.service
-
-systemctl --user enable postfix.service
-systemctl --user reload-or-restart postfix.service

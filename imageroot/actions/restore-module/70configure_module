@@ -33,6 +33,28 @@ settings_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-m
 })
 agent.assert_exp(settings_retval['exit_code'] == 0, "The set-mailbox-settings subtask failed!")
 
+def unit_was_enabled(unit, fallback=True):
+    """Check the backup set if the given Systemd unit was enabled"""
+    try:
+        # Check if file contents are equal to "enabled":
+        with open(f'{unit}.is-enabled') as ufh:
+            return ufh.read().strip() == "enabled"
+        # Expect .is-enabled file is removed on the next backup procedure run
+    except:
+        return fallback
+
+# Restore antivirus configuration state
+filter_retval =  agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-filter-configuration', data={
+    "antivirus": {
+        "enabled": unit_was_enabled('clamav.service', True),
+        "clamav_official_sigs": unit_was_enabled('freshclam.timer', False),
+        "third_party_sigs_rating": renv.get('CLAMAV_CUS_RATING', "MEDIUM").lower(),
+    },
+    # - custom antispam thresholds are stored in rspamd-data volume
+    # - antispam state and greylist switches state are in the environment from 06copyenv
+})
+agent.assert_exp(filter_retval['exit_code'] == 0, "The set-filter-configuration subtask failed!")
+
 masters_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-master-users', data={
     "master_users": list(filter(None, renv.get("DOVECOT_MASTER_USERS", "").split(",")))
 })
