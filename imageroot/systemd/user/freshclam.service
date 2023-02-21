@@ -1,6 +1,6 @@
 [Unit]
 Description=Freshclam signatures download
-Requires=clamav.service
+Requisite=clamav.service
 After=clamav.service
 
 [Service]
@@ -8,6 +8,3 @@ Type=oneshot
 ExecStart=podman exec clamav download-sigs freshclam
 WorkingDirectory=%S/state
 SyslogIdentifier=%u/%N
-
-[Install]
-WantedBy=default.target

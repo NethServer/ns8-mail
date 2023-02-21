@@ -21,6 +21,10 @@ if [ "${sig_type}" = "freshclam" ]; then
 fi
 
 if [ "${sig_type}" = "cus" ]; then
+    if [ -n "${CLAMAV_CUS_RATING}" ]; then
+        # Apply rating value to user.conf
+        set-cus-rating "${CLAMAV_CUS_RATING}"
+    fi
     # Start clamav-unofficial-sigs
     exec su -s /bin/bash - clamav /usr/local/sbin/clamav-unofficial-sigs.sh -- "${@}"
 fi

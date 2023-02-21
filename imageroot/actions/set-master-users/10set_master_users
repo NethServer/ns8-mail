@@ -30,4 +30,3 @@ for muser in master_users:
         sys.exit(2)
 
 agent.set_env('DOVECOT_MASTER_USERS', ",".join(master_users))
-agent.dump_env()

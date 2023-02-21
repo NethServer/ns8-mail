@@ -104,6 +104,45 @@ by `myselector`,
 3. add a DNS TXT record to `mydomain.example.com`, as described in
    `/var/lib/rspamd/dkim/myselector.txt`
 
+## Configuration override for ClamAV unofficial signatures 
+
+Changes to `clamav-unofficial-sigs` configuration are volatile. When the
+`clamav` container is stopped, local configuration changes are lost.
+
+To manage a persistent and custom `clamav-unofficial-sigs` configuration:
+
+1. Edit the `state/environment` file and set the following variable
+
+       CLAMAV_CUSCFG_VOLUME_FLAGS=Z
+
+1. Restart the clamav container. The configuration is now mounted on a persistent volume, `clamav-cus-cfg`:
+
+       systemctl --user restart clamav
+
+1. Edit `/etc/clamav-unofficial-sigs/user.conf` as wanted:
+
+       podman exec -ti clamav vi /etc/clamav-unofficial-sigs/user.conf
+
+To switch back to the volatile configuration
+
+1. Edit the variable line in `state/environment` (or remove it completely):
+
+       CLAMAV_CUSCFG_VOLUME_FLAGS=O
+
+1. Stop the clamav service
+
+1. Remove the custom changes:
+
+       podman volume rm clamav-cus-cfg
+
+1. Start the clamav service
+
+Either in persistent or volatile mode, changes to the configuration are
+picked up on the next `clamav-unofficial-sigs.timer` run.
+
+To forcibly download new signatures, run:
+
+    podman exec clamav download-sigs cus -F
 
 ## User impersonation
 
@@ -114,13 +153,40 @@ Another module can obtain `vmail` credentials by invoking the action
 `reveal-master-credentials`, provided it has been granted the `mailadm`
 role.
 
+## Public mailboxes
+
+Subfolders of Vmail's INBOX are visible to all users under the Public
+namespace.  Vmail's INBOX is initialized with a special `lookup`
+permission granted to all authenticated users. To reset it run this
+command:
+
+    podman exec dovecot doveadm acl set -u vmail INBOX authenticated lookup
+
 ## Services
 
 1. Dovecot -- `dovecot.service`. See also dovecot/README.md
 2. Postfix -- `postfix.service`. See also postfix/README.md
-3. Rspamd -- N/A
+3. Rspamd -- `rspamd.service`. See also rspamd/README.md
 4. Diffie-Hellman group generator `dhgen.service`. Starts at module boot,
    then every 15 days. See also `dhgen.timer`.
+5. Freshclam signatures download -- `freshclam.service` (with timer)
+6. ClamAV unofficial signatures download -- `clamav-unofficial-sigs.service` (with timer)
+
+## Rspamd admin UI
+
+To access the admin web UI of Rspamd point the browser to
+
+    http://127.0.0.1:11334
+
+- User name `admin`
+- Obtain the password with the following command:
+
+      podman exec rspamd sh -c 'echo $RSPAMD_adminpw'
+
+It is possible to expose the web UI with the following methods:
+
+1. add a HTTP route in Traefik
+2. setup SSH local port forward (e.g. `-L11334:localhost:11334`)
 
 ## Service discovery
 
@@ -182,3 +248,39 @@ For instance, to speed up testing on a local machine:
 2. since then, skip also installation
 
        SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:mail-rspamd --exclude udom
+
+## Migration from nethserver-mail (NS7)
+
+The NS7 migration tool (`nethserver-ns8-migration` RPM) transfers the
+Email app configuration and mailboxes data. It invokes the `import-module`
+action, which implements the conversion procedure from NS7 to NS8 format.
+
+Migration notes:
+
+1. SMTP/IMAP user name. Any `@domain` suffix is ignored, only the user
+   name is considered.
+
+1. Mail storage. The user `@domain` suffix was removed in NS8. Mailbox
+   paths are renamed from the old `user@domain` form to new `user`. ACLs
+   and shared-mailboxes.db files are fixed accordingly.
+
+1. "Full control" ACLs now includes the "delete" permission. Granted ACLs
+   are upgraded as necessary.
+
+1. `root` user. Even if in NS8 a **root user does not exist**, its mailbox
+   contents are transferred. For additional security the `root` mailbox is
+   marked "disabled" in `DOVECOT_DISABLED_USERS`. It is possible to access
+   its contents by either configuring it as shared, or by creating a
+   "root" user in the LDAP database with a new, secure password.
+
+1. Quota temporarly unavailable. The new "quota count" Dovecot backend is
+   used. Large mailboxes need a while to reindex the quota size. During
+   reindexing, quota information is not available and the following
+   message is logged:
+
+       quota-count: Ongoing quota calculation blocked
+
+1. Filter settings are migrated. Filter bypass rules and Postfix
+   `mynetworks` setting are converted and imported from the following
+   e-smith DB props: `postfix/AccessBypassList`, `rspamd/SenderWhiteList`,
+   `rspamd/RecipientWhiteList`.

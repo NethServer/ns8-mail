@@ -13,3 +13,12 @@ exec 1>&2 # ensure any output is sent to stderr
 # module configuration
 #
 redis-exec SADD "${AGENT_ID}/roles/mailadm" "reveal-master-credentials" "get-*" "list-*"
+
+#
+# Allow the instance itself to run some subtasks during restore and clone actions
+#
+redis-exec SADD "${AGENT_ID}/roles/selfadm" \
+    "configure-module" \
+    "set-filter-configuration" \
+    "set-mailbox-settings" \
+    "set-master-users"

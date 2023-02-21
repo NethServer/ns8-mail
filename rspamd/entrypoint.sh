@@ -11,6 +11,8 @@ set -e
 
 if [ $# -eq 0 ]; then
 
+    reload-config
+
     (   # Store Rspamd admin UI credentials for Lighttpd
         umask 027
         printf "%s:%s\n" \
@@ -33,6 +35,8 @@ if [ $# -eq 0 ]; then
     su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-volatile.conf --syslog-ident ${RSPAMD_instance}/redis-volatile" </dev/null &
 
     (   # Start Rspamd with syslog redirects
+        mkdir -v -m 0750 -p /run/rspamd
+        chown -c rspamd:lighttpd /run/rspamd
         /usr/sbin/rspamd -u rspamd -g rspamd -f <&- 2>&1 | \
         logger -t "${RSPAMD_instance:?}/rspamd" -p MAIL.INFO
     ) &
@@ -40,6 +44,11 @@ if [ $# -eq 0 ]; then
         /usr/sbin/lighttpd -D -f /etc/lighttpd/lighttpd.conf <&- 2>&1 3>&1 | \
         logger -t "${RSPAMD_instance:?}/lighttpd" -p DAEMON.INFO
     ) &
+
+    # Start local Unbound DNS server (UDP port 11336)
+    echo "log-identity: ${RSPAMD_instance:?}/unbound" >> /etc/unbound/server.include
+    /usr/sbin/unbound-anchor -v || :
+    /usr/sbin/unbound -d <&- &
 
     wait -n
     exit $?

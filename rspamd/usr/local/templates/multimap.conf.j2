@@ -1,0 +1,74 @@
+#
+# Multimap -- https://rspamd.com/doc/modules/multimap.html
+#
+
+#
+{% if env.bypass_score -%}
+# bypass group of rules -- add score {= env.bypass_score =}
+{% else -%}
+# bypass prefilter rules
+{% endif -%}
+#
+BYPASS_SENDER {
+    {% if env.bypass_score -%}
+    group = "bypass";
+    score = {= env.bypass_score =};
+    {% else -%}
+    prefilter = true;
+    action = "accept";
+    {% endif -%}
+    type = "from";
+    filter = "email";
+    map = ["${DBDIR}/bypass_sender.map"];
+}
+
+BYPASS_SENDER_DOMAIN {
+    {% if env.bypass_score -%}
+    group = "bypass";
+    score = {= env.bypass_score =};
+    {% else -%}
+    prefilter = true;
+    action = "accept";
+    {% endif -%}
+    type = "from";
+    filter = "email:domain";
+    map = ["${DBDIR}/bypass_sender_domain.map"];
+}
+
+BYPASS_RECIPIENT {
+    {% if env.bypass_score -%}
+    group = "bypass";
+    score = {= env.bypass_score =};
+    {% else -%}
+    prefilter = true;
+    action = "accept";
+    {% endif -%}
+    type = "rcpt";
+    filter = "email";
+    map = ["${DBDIR}/bypass_recipient.map"];
+}
+
+BYPASS_RECIPIENT_DOMAIN {
+    {% if env.bypass_score -%}
+    group = "bypass";
+    score = {= env.bypass_score =};
+    {% else -%}
+    prefilter = true;
+    action = "accept";
+    {% endif -%}
+    type = "rcpt";
+    filter = "email:domain";
+    map = ["${DBDIR}/bypass_recipient_domain.map"];
+}
+
+BYPASS_IP {
+    {% if env.bypass_score -%}
+    group = "bypass";
+    score = {= env.bypass_score =};
+    {% else -%}
+    prefilter = true;
+    action = "accept";
+    {% endif -%}
+    type = "ip";
+    map = ["${DBDIR}/bypass_ip.map"];
+}

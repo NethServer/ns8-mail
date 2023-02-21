@@ -119,3 +119,9 @@ INSERT INTO destmap (alocal, domain, dest) VALUES (
     '*',
     'postmaster'
 );
+
+-- mynetworks
+CREATE TABLE mynetworks (
+    "network" TEXT NOT NULL,
+    PRIMARY KEY ("network")
+);

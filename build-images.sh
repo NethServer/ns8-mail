@@ -3,7 +3,7 @@
 # Terminate on error
 set -e
 
-alpine_version=3.16
+alpine_version=3.17.2
 
 # Prepare variables for later use
 images=()
@@ -18,7 +18,7 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-mail container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-mail; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-mail -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
+    buildah from --name nodebuilder-mail -v "${PWD}:/usr/src:Z" docker.io/library/node:18.14.1-alpine
 fi
 
 if [[ -n "${SKIP_UI_BUILD}" ]]; then
@@ -26,7 +26,11 @@ if [[ -n "${SKIP_UI_BUILD}" ]]; then
     buildah run nodebuilder-mail sh -c "cd /usr/src/ui && mkdir -p dist && touch dist/index.html"
 else
     echo "Build static UI files with node..."
-    buildah run nodebuilder-mail sh -c "cd /usr/src/ui && yarn install && yarn build"
+    buildah run \
+        --workingdir=/usr/src/ui \
+        --env="NODE_OPTIONS=--openssl-legacy-provider" \
+        nodebuilder-mail \
+        sh -c "yarn install && yarn build"
 fi
 
 # Add imageroot directory to the container image
@@ -95,6 +99,7 @@ buildah config \
     --env=DOVECOT_SPAM_FOLDER=Junk \
     --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
     --env=DOVECOT_TRASH_FOLDER=Trash \
+    --env=DOVECOT_MAX_USERIP_CONNECTIONS=20 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
@@ -140,6 +145,7 @@ set -e
 apk add --no-cache redis
 apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
 apk add --no-cache lighttpd lighttpd-mod_auth
+apk add --no-cache unbound
 chown -c root:root /etc/rspamd/local.d/maps.d
 EOF
 buildah add "${container}" rspamd/ /
@@ -163,12 +169,12 @@ reponame="mail-clamav"
 container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
-apk add --no-cache bash curl wget rsync bind-tools socat gpg gpg-agent
+apk add --no-cache ncurses bash curl wget rsync bind-tools socat gpg gpg-agent
 apk add --no-cache clamav-daemon clamav-scanner 
 apk add --no-cache freshclam
 
 source_url="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/7.2.5"
-mkdir -vp /usr/local/sbin /etc/clamav-unofficial-sigs/override.d/ /var/lib/clamav-unofficial-sigs
+mkdir -vp /usr/local/sbin /etc/clamav-unofficial-sigs /var/lib/clamav-unofficial-sigs
 chmod -c 750 /var/lib/clamav-unofficial-sigs
 chown -c clamav:clamav /var/lib/clamav-unofficial-sigs
 (
@@ -178,8 +184,8 @@ chown -c clamav:clamav /var/lib/clamav-unofficial-sigs
 )
 (
     cd /etc/clamav-unofficial-sigs
-    curl -sfL -O "${source_url}/config/master.conf"
-    curl -sfL -O "${source_url}/config/user.conf"
+    curl -sfL "${source_url}/config/master.conf" > master.conf
+    curl -sfL "${source_url}/config/user.conf" > user.conf.orig
     curl -sfL "${source_url}/config/os/os.alpine.conf" > os.conf
     chmod -c 644 *.conf
     echo 'logging_enabled="no"' >> os.conf
@@ -188,7 +194,7 @@ EOF
 buildah add "${container}" clamav/ /
 buildah config \
     --entrypoint='["/entrypoint.sh"]' \
-    --volume=/etc/clamav-unofficial-sigs/override.d \
+    --volume=/etc/clamav-unofficial-sigs \
     --volume=/var/lib/clamav \
     --volume=/var/lib/clamav-unofficial-sigs \
     --cmd='' \
@@ -200,9 +206,10 @@ images+=("${repobase}/${reponame}")
 #
 # Setup CI when pushing to Github. 
 # Warning! docker::// protocol expects lowercase letters (,,)
-if [[ -n "${CI}" ]]; then
+if [[ -n "${GITHUB_OUTPUT}" ]]; then
     # Set output value for Github Actions
-    printf "::set-output name=images::%s\n" "${images[*],,}"
+    printf "images=%s\n" "${images[*],,}" >> "${GITHUB_OUTPUT}"
+    printf " - %s:${IMAGETAG:-latest}\n" "${images[@],,}" >> $GITHUB_STEP_SUMMARY
 else
     # Just print info for manual push
     printf "Publish the images with:\n\n"

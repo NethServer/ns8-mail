@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2
+
+# Expect some service are always enabled
+systemctl --user enable dovecot.service postfix.service rspamd.service
+
+# Expect some services are always running. Start them if they are stopped,
+# reload otherwise
+systemctl --user reload-or-restart dovecot.service postfix.service rspamd.service
+
+# Expect CUS timer is always enabled and active
+systemctl --user --now enable clamav-unofficial-sigs.timer

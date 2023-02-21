@@ -45,6 +45,14 @@ SMTP AUTH PLAIN not offered without TLS
     Should Contain    ${err}    250-STARTTLS
     Should Not Contain    ${err}    250-AUTH PLAIN LOGIN
 
+SMTP AUTH PLAIN offered on 10587
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    timeout ${curl_timeout} curl -v --mail-rcpt postmaster@domain.test smtp://127.0.0.1:10587
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${err}    ESMTP Postfix
+    Should Contain    ${err}    250-AUTH PLAIN LOGIN
+
 SMTP AUTH submissions good login
     ${out}  ${err}  ${rc} =    Execute Command
     ...    timeout ${curl_timeout} curl -k -v -u u1:Nethesis,1234 --mail-rcpt postmaster@domain.test smtps://127.0.0.1:465

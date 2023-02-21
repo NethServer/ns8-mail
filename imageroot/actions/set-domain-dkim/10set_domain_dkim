@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+import subprocess
+import os
+
+request = json.load(sys.stdin)
+
+selectors_map = mail.rspamd_api_get_kvmap('dkim_selectors.map')
+
+selector = selectors_map.get(request['domain'], "default")
+is_enabled = not ('.' in selector or '/' in selector or selector.lower().startswith('disabled ')) # not-disabled
+
+if not is_enabled and request['enabled'] is True:
+    selectors_map[request['domain']] = selector.lower().removeprefix('disabled ')
+elif is_enabled and request['enabled'] is False:
+    selectors_map[request['domain']] = 'disabled ' + selector
+else:
+    sys.exit(0) # nothing to do
+
+
+# Filter out entries with "default" value:
+selectors_map = {mkey: mval for mkey, mval in selectors_map.items() if mval != 'default'}
+
+# Apply changes
+mail.rspamd_api_set_kvmap('dkim_selectors.map', selectors_map)

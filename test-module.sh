@@ -33,6 +33,5 @@ exec robot -v NODE_ADDR:${LEADER_NODE} \
     -v SSH_KEYFILE:/home/pwuser/ns8-key \
     --name mail \
     --skiponfailure unstable \
-    --console dotted \
     -d ~/outputs ${@} /home/pwuser/ns8-module/tests/
 EOF

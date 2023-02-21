@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+#
+# Find settings for LDAP service
+#
+
+import os
+import sys
+import json
+import agent
+import mail
+from agent.ldapproxy import Ldapproxy
+
+udomname = os.environ['POSTFIX_ORIGIN']
+
+try:
+    odom = Ldapproxy().get_domain(udomname)
+    'host' in odom # Throw exception if odom is None
+except:
+    # During restore the domain could be unavailable. Use a fallback
+    # configuration, pointing to nowhere, just to set the variables.
+    # Once the domain becomes available, the event will fix them.
+    odom = {
+        'host': '127.0.0.1',
+        'port': '0',
+        'schema': 'rfc2307',
+        'location': 'internal',
+        'base_dn': 'dc=dovecot,dc=invalid',
+        'bind_dn': 'cn=example,dc=dovecot,dc=invalid',
+        'bind_password': 'invalid',
+    }
+
+tmpfile = "discover.env." + str(os.getpid())
+
+if mail.is_clamav_enabled():
+    # Use the local ClamAV instance.
+    rspamd_clamav_endpoint = '127.0.0.1:11330'
+else:
+    # If the local ClamAV instance is disabled it is possible to fall back
+    # to a remote one: just set the variable value in the environment.
+    rspamd_clamav_endpoint = os.getenv('RSPAMD_clamav_endpoint', '')
+
+with open(tmpfile, "w") as denv:
+    print('DOVECOT_LDAP_HOST=' + odom['host'], file=denv)
+    print('DOVECOT_LDAP_PORT=' + odom['port'], file=denv)
+    print('DOVECOT_LDAP_USER=' + odom['bind_dn'], file=denv)
+    print('DOVECOT_LDAP_PASS=' + odom['bind_password'], file=denv)
+    print('DOVECOT_LDAP_SCHEMA=' + odom['schema'], file=denv)
+    print('DOVECOT_LDAP_BASE=' + odom['base_dn'], file=denv)
+
+    print('POSTFIX_LDAP_PORT=' + odom['port'], file=denv)
+    print('POSTFIX_LDAP_USER=' + odom['bind_dn'], file=denv)
+    print('POSTFIX_LDAP_HOST=' + odom['host'], file=denv)
+    print('POSTFIX_LDAP_PASS=' + odom['bind_password'], file=denv)
+    print('POSTFIX_LDAP_SCHEMA=' + odom['schema'], file=denv)
+    print('POSTFIX_LDAP_BASE=' + odom['base_dn'], file=denv)
+
+    print('RSPAMD_clamav_endpoint=' + rspamd_clamav_endpoint, file=denv)
+os.replace(tmpfile, "discovery.env")

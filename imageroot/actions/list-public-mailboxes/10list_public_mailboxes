@@ -26,6 +26,8 @@ def get_acls(mbxn):
                 "stype": "user",
                 "subject": mail.mailbox_to_destination(idx),
             }
+        elif dacl['id'] == 'group=vmail':
+            continue # skip default ACLs for the vmail master user
         elif dacl['id'].startswith('group='):
             idx = dacl['id'].removeprefix('group=')
             oacl = {
@@ -49,6 +51,7 @@ def get_acls(mbxn):
                 }
                 break
         else:
+            rights_set.discard("-") # ignore bogus right value
             oacl['rights'] = {
                 "rtype": "custom",
                 "values": list(rights_set),

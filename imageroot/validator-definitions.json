@@ -486,8 +486,7 @@
                     "type": "integer",
                     "title": "Percent",
                     "description": "Quota usage percentage",
-                    "minimum": 0,
-                    "maximum": 100
+                    "minimum": 0
                 },
                 "custom": {
                     "type": "boolean",
@@ -576,6 +575,7 @@
                 "stype": {
                     "title": "Subject type",
                     "enum": [
+                        "none",
                         "user",
                         "group"
                     ]
@@ -675,6 +675,178 @@
                     "title": "Subject name for UI",
                     "description": "String representation of the ACL subject",
                     "type": "string"
+                }
+            }
+        },
+        "bypass-rules": {
+            "type": "array",
+            "title": "Bypass rules",
+            "description": "List of bypass rules",
+            "items": {
+                "$ref": "#/$defs/bypass-rule"
+            }
+        },
+        "bypass-rule": {
+            "type": "object",
+            "title": "Bypass rule",
+            "description": "A bypass rule defines email messages that are not subject to the filter",
+            "required": [
+                "value",
+                "type",
+                "direction"
+            ],
+            "properties": {
+                "value": {
+                    "description": "Can be a domain, an email address, an IP address or a CIDR network",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "type": {
+                    "description": "Bypass rule type"
+                },
+                "direction": {
+                    "description": "Bypass rule direction",
+                    "enum": [
+                        "from",
+                        "to"
+                    ]
+                }
+            },
+            "anyOf": [
+                {
+                    "properties": {
+                        "value": {
+                            "anyOf": [
+                                {
+                                    "format": "ipv6"
+                                },
+                                {
+                                    "format": "ipv4"
+                                }
+                            ]
+                        },
+                        "type": {
+                            "const": "ip"
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "value": {
+                            "anyOf": [
+                                {
+                                    "pattern": "[0-9a-fA-F.:]+\/[0-9]+"
+                                },
+                                {
+                                    "pattern": "[0-9.]+\/[0-9]+"
+                                }
+                            ]
+                        },
+                        "type": {
+                            "const": "cidr"
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "value": {
+                            "format": "email"
+                        },
+                        "type": {
+                            "const": "email"
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "value": {
+                            "format": "hostname"
+                        },
+                        "type": {
+                            "const": "domain"
+                        }
+                    }
+                }
+            ]
+        },
+        "antispam": {
+            "type": "object",
+            "title": "Antispam",
+            "description": "Antispam configuration",
+            "required": [
+                "enabled"
+            ],
+            "properties": {
+                "enabled": {
+                    "description": "Defines if antispam is enabled",
+                    "type": "boolean"
+                },
+                "spam_flag_threshold": {
+                    "description": "Spam flag threshold",
+                    "type": "number"
+                },
+                "deny_message_threshold": {
+                    "description": "Deny message threshold",
+                    "type": "number"
+                },
+                "greylist": {
+                    "type": "object",
+                    "title": "Greylist",
+                    "description": "Greylist configuration",
+                    "required": ["enabled"],
+                    "properties": {
+                        "enabled": {
+                            "description": "Defines if greylist is enabled",
+                            "type": "boolean"
+                        },
+                        "threshold": {
+                            "description": "Greylist threshold",
+                            "type": "number"
+                        }
+                    }
+                },
+                "prefix_email_subject": {
+                    "type": "object",
+                    "title": "Prefix email subject",
+                    "description": "Configure if the subject of spam messages are prefixed with a string",
+                    "required": ["enabled"],
+                    "properties": {
+                        "enabled": {
+                            "description": "Defines if email subject prefixing",
+                            "type": "boolean"
+                        },
+                        "prefix": {
+                            "description": "Prefix for the subject of spam messages",
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    }
+                }
+            }
+        },
+        "antivirus": {
+            "type": "object",
+            "title": "Antivirus",
+            "description": "Antivirus configuration",
+            "required": [
+                "enabled"
+            ],
+            "properties": {
+                "enabled": {
+                    "description": "Defines if antivirus is enabled",
+                    "type": "boolean"
+                },
+                "clamav_official_sigs": {
+                    "description": "Defines if ClamAV official signatures are enabled",
+                    "type": "boolean"
+                },
+                "third_party_sigs_rating": {
+                    "description": "Defines the level of third-party signatures enabled. A higher rating means more blocked threats but also a higher probability of false positives. Recommended ratings are 'low' and 'medium'",
+                    "enum": [
+                        "low",
+                        "medium",
+                        "high"
+                    ]
                 }
             }
         }

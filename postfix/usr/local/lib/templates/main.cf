@@ -38,7 +38,7 @@ myhostname = ${tmpl_myhostname}
 syslog_name = ${tmpl_syslog_name}
 alias_maps =
 alias_database =
-mynetworks = ${tmpl_mynetworks}
+mynetworks = ${tmpl_mynetworks} sqlite:${S}meta_directory/mynetworks.cf
 debug_peer_list = ${S}{debug_delivery?{${tmpl_debug_peer_list}}:{}}
 
 #

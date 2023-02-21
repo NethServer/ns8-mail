@@ -10,10 +10,11 @@ import sys
 import agent
 import os
 
-request = json.load(sys.stdin)
 node_id = int(os.environ['NODE_ID'])
 agent_id = os.environ['AGENT_ID']
 module_uuid = os.environ['MODULE_UUID']
+udomname = os.environ['POSTFIX_ORIGIN']
+hostname = os.environ['MAIL_HOSTNAME']
 
 with agent.redis_connect() as rdb:
     node_address = rdb.hget(f'node/{node_id}/vpn', 'ip_address')
@@ -27,17 +28,19 @@ with agent.redis_connect(privileged=True) as prdb:
         "port": "143",
         "host": node_address,
         "node": str(node_id),
-        "user_domain": request['user_domain'],
+        "user_domain": udomname,
         "module_uuid": module_uuid,
+        "mail_hostname": hostname
     })
 
     ksubmission = agent_id + "/srv/tcp/submission"
     trx.delete(ksubmission).hset(ksubmission, mapping={
-        "port": "587",
+        "port": "10587",
         "host": node_address,
         "node": str(node_id),
-        "user_domain": request['user_domain'],
+        "user_domain": udomname,
         "module_uuid": module_uuid,
+        "mail_hostname": hostname
     })
 
     # Publish change event

@@ -1,0 +1,20 @@
+#
+# Actions -- https://rspamd.org/doc/configuration/metrics.html#actions
+#
+
+# 0
+{% if env.greylist_enabled == "" -%}
+greylist = null;
+{% else -%}
+greylist = 5;
+{% endif -%}
+
+# 1
+add_header = 6;
+
+# 2
+rewrite_subject = null;
+
+# 3
+reject = 15;
+

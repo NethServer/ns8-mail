@@ -8,6 +8,7 @@ EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/rspamd.pid %t/rspamd.ctr-id
+ExecStartPre=runagent discover-services
 ExecStart=/usr/bin/podman run \
     --detach \
     --init \
@@ -18,14 +19,16 @@ ExecStart=/usr/bin/podman run \
     --network=host \
     --env=RSPAMD_* \
     --env-file=rspamd.env \
+    --env-file=discovery.env \
     --volume=rspamd-data:/var/lib/rspamd:Z \
     --volume=rspamd-redis:/var/lib/redis:Z \
     --volume=rspamd-override:/etc/rspamd/override.d:z \
     --volume=/dev/log:/dev/log \
     ${MAIL_RSPAMD_IMAGE}
-ExecStop=/usr/bin/podman stop --ignore --cidfile %t/rspamd.ctr-id -t 10
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/rspamd.ctr-id -t 60
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/rspamd.ctr-id
-ExecReload=runagent /usr/bin/podman exec --env=RSPAMD_* %N reload-config
+ExecReload=runagent discover-services
+ExecReload=runagent /usr/bin/podman exec --env=RSPAMD_* --env-file=rspamd.env --env-file=discovery.env %N reload-config
 PIDFile=%t/rspamd.pid
 Type=forking
 SyslogIdentifier=%u

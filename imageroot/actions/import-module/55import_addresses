@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import os
+import json
+import agent
+import mail
+import sqlite3
+
+# Global stdout redirection:
+sys.stdout = sys.stderr
+
+# Force "root" disabled, to protect the mailbox contents. If a "root" user is
+# created in LDAP, it inherits the existing mailbox.
+dovecot_disabled_users = ['root']
+
+sdb = mail.pcdb_connect()
+sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
+
+# Import hostname -d output:
+with open('mail_domain.txt') as dfp:
+    mdomname = dfp.read().strip()
+
+# Import the full list of users and groups
+susers = set(json.load(open('users.json')))
+sgroups = set(json.load(open('groups.json')))
+accounts = susers | sgroups
+esmithdb = json.load(open('accounts.json'))
+
+def group_conflict(address):
+    """Lookup address in esmithdb for both exact and wildcard match modes"""
+    global esmithdb, sgroups
+
+    if not address in sgroups:
+        return False # No conflict with group names
+
+    for record in esmithdb:
+        if record['type'] != 'pseudonym':
+            continue
+        if address == record['name']:
+            return True # exact match found
+        if record['name'][-1] == '@' and address.startswith(record['name']):
+            return True # wildcard match found
+    return False
+
+def import_address(xaddress):
+    global sdb, accounts
+    if not xaddress['props'].get('Account'):
+        return
+
+    props = xaddress['props']
+    cur = sdb.cursor()
+
+    alocal, domain = xaddress['name'].split('@', 1)
+    if not domain:
+        domain = '*' # wildcard address
+
+    for dest in props.get('Account', '').split(','):
+        if dest == 'root':
+            dest = 'vmail+postmaster'
+        elif group_conflict(dest):
+            # preserve "dest" as "external" mail address, print a warning
+            print(agent.SD_WARNING + f"The address alias {dest} has higher priority than a group of users with the same name")
+        elif dest in accounts:
+            dest = dest.removesuffix('@' + mdomname)
+        cur.execute("""INSERT INTO destmap (alocal, domain, dest) VALUES (?,?,?)""", (alocal, domain, dest,))
+
+    cur.execute("""INSERT INTO addresses (alocal, domain, internal, adesc) VALUES (:alocal, :domain, :internal, :adesc)""", {
+        'alocal': alocal,
+        'domain': domain,
+        'internal': 1 if props.get('Access') == 'private' else 0,
+        'adesc': props.get('Description'),
+    })
+
+
+def import_mailbox(xmailbox):
+    global sdb, mdomname, dovecot_disabled_users
+    alocal, domain = xmailbox['name'].split('@', 1)
+    if domain != mdomname:
+        print(agent.SD_WARNING + f"Skipped user record {xmailbox}: unknown domain suffix.")
+        return
+
+    props = xmailbox['props']
+
+    if props.get('MailStatus') == 'disabled':
+        print(agent.SD_WARNING + f"Skipped {xmailbox}: user mail service disabled.")
+        dovecot_disabled_users.append(alocal)
+        return
+
+    cur = sdb.cursor()
+
+    if props.get('MailAccess') == 'private':
+        cur.execute("""INSERT INTO userattrs (user, internal) VALUES (?, ?)""", (alocal, 1,))
+
+    # Convert comma-separated (non-empty) values to a list of addresses
+    fwaddresses = [fwad.strip() for fwad in filter(None, props.get('MailForwardAddress', '').split(','))]
+    if props.get('MailForwardStatus') == 'enabled' and fwaddresses:
+        cur.executemany("""INSERT INTO userforwards (user, dest) VALUES (?, ?)""", [(alocal, fwad,) for fwad in fwaddresses])
+        if props.get('MailForwardKeepMessageCopy') == 'yes':
+            cur.execute("""INSERT INTO userforwards (user, dest) VALUES (?, ?)""", (alocal, alocal,))
+
+    if props.get('MailQuotaType') == 'custom':
+        try:
+            vquota = props.get('MailQuotaCustom')
+            if vquota == 'unlimited':
+                uquota = '0'
+            else:
+                uquota = mail.convert_ns7_quota(vquota)
+
+            mail.doveadm_query("dictSet", {
+                "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
+                "key":"shared/" + alocal,
+                "value": uquota,
+            })
+        except Exception as qex:
+            print(agent.SD_WARNING + f"Failed to set custom user quota for {alocal}:", qex)
+
+    if props.get('MailSpamRetentionStatus') == 'enabled':
+        try:
+            spamret = int(props.get('MailSpamRetentionTime').removesuffix('d'))
+            mail.doveadm_query("dictSet", {
+                "dictUri": "file:/var/lib/dovecot/dict/uspamret.db",
+                "key":"shared/spam_retention/" + alocal,
+                "value": spamret,
+            })
+        except Exception as qex:
+            print(agent.SD_WARNING + f"Failed to set custom user spam retention for {alocal}:", qex)
+
+
+def import_group(xgroup):
+    global sdb, mdomname
+    props = xgroup['props']
+    if not xgroup.get('name', '').endswith('@' + mdomname):
+        print(agent.SD_WARNING + f"Ignoring group record", xgroup)
+        return
+
+    if props.get('MailAccess') == 'private' or props.get('MailStatus') == 'disabled':
+        # Disabled groups are mapped to flag-internal for a design constraint
+        gname = xgroup['name'].removesuffix('@' + mdomname)
+        cur = sdb.cursor()
+        cur.execute("""INSERT INTO groupattrs ("group",internal) VALUES (?,?)""", (gname, 1,))
+
+with sdb:
+    print(agent.SD_INFO + "Importing addresses and mailboxes...")
+    for xrecord in esmithdb:
+        try:
+            if xrecord.get('type') == 'pseudonym':
+                import_address(xrecord)
+            elif xrecord.get('type') == 'user':
+                import_mailbox(xrecord)
+            elif xrecord.get('type') == 'group':
+                import_group(xrecord)
+        except sqlite3.Error as iex:
+            print(agent.SD_WARNING + f"Skipping record {xrecord}:", iex)
+
+
+if dovecot_disabled_users:
+    agent.set_env('DOVECOT_DISABLED_USERS', ','.join(dovecot_disabled_users))

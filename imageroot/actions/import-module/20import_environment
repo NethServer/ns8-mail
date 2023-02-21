@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import json
+import agent
+import socket
+import mail
+
+# Read files sent by the nethserver-ns8-migration tool on ns7
+jrspamd = json.load(open("rspamd.json"))
+jdovecot = json.load(open("dovecot.json"))
+
+agent.set_env('POSTFIX_ORIGIN', open('user_domain.txt').read().strip())
+
+# Spam subject prefix migration
+if jrspamd['props'].get('SpamSubjectPrefixStatus') == 'enabled':
+    agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', jrspamd['props'].get('SpamSubjectPrefixString', ''))
+else:
+    agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '')
+
+# Default mailbox quota migration
+quota_mb = '0' # 0=unlimited
+if jdovecot['props'].get('QuotaStatus') == 'enabled':
+    # Try to convert ns7 value to MB size
+    try:
+        quota_mb = mail.convert_ns7_quota(jdovecot['props']['QuotaDefaultSize'])
+    except Exception as qex:
+        print(agent.SD_WARNING + "QuotaDefaultSize conversion failed", qex, file=sys.stderr)
+
+agent.set_env('DOVECOT_QUOTA_MB', quota_mb)
+
+# Spam folder migration
+agent.set_env('DOVECOT_SPAM_FOLDER', jdovecot['props'].get('SpamFolder', 'Junk'))
+
+# Default spam retention time migration
+if jdovecot['props'].get('SpamRetentionTime', '').endswith('d'):
+    agent.set_env('DOVECOT_SPAM_RETENTION', jdovecot['props'].get('SpamRetentionTime').rstrip('d'))
+else:
+    agent.set_env('DOVECOT_SPAM_RETENTION', '15')
+
+# Set the node host name as default. These values can be changed from the
+# UI at any time.
+hostname = socket.getfqdn().lower()
+agent.set_env('MAIL_HOSTNAME', hostname)
+agent.set_env('POSTFIX_HOSTNAME', hostname)

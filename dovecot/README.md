@@ -54,6 +54,7 @@ Private TCP ports:
 - `DOVECOT_SPAM_SUBJECT_PREFIX`, default empty. If set, the string is prefixed to the message `Subject:` header.
 - `DOVECOT_SPAMT_PASS`, password of Rspamd `spamt` user, required for ham/spam training
 - `DOVECOT_TRASH_FOLDER`, default `Trash`. Mailbox folder name where messages are moved when they are deleted.
+- `DOVECOT_MAX_USERIP_CONNECTIONS`, default `20`. Set dovecot `mail_max_userip_connections` configuration parameter.
 
 ## Logs
 
