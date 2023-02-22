@@ -6,6 +6,7 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import { loadLanguage } from "./i18n";
 
 import CarbonComponentsVue from "@carbon/vue";
 Vue.use(CarbonComponentsVue);
@@ -42,10 +43,8 @@ for (const f in Filters) {
 
 Vue.use(VueI18n);
 const i18n = new VueI18n();
-const messages = require("../public/i18n/language.json");
-const langCode = navigator.language.substr(0, 2);
-i18n.setLocaleMessage(langCode, messages);
-i18n.locale = langCode;
+const navigatorLang = navigator.language.substring(0, 2);
+loadLanguage(navigatorLang, i18n);
 
 Vue.config.productionTip = false;
 
