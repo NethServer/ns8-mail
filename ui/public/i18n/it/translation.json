@@ -1,6 +1,6 @@
 {
     "common": {
-        "required": "",
+        "required": "Obbligatorio",
         "processing": "",
         "public_destination": "",
         "external_destination": "",
@@ -24,7 +24,7 @@
         "list-user-mailboxes": "",
         "get-status": "",
         "alter-public-mailbox": "",
-        "configure-module": "",
+        "configure-module": "Configura modulo",
         "remove-public-mailbox": "",
         "add-domain": "",
         "set-mailbox-settings": "",
@@ -203,21 +203,21 @@
         "user_domain": ""
     },
     "status": {
-        "created": "",
+        "created": "Creato",
         "app_images": "",
-        "services": "",
-        "no_services": "",
+        "services": "Servizio | Servizi",
+        "no_services": "Nessun servizio",
         "installation_node": "",
-        "name": "",
+        "name": "Nome",
         "app_instance": "",
-        "size": "",
-        "no_images": "",
+        "size": "Dimensione",
+        "no_images": "Nessuna immagine",
         "user_domain": "",
-        "node": "",
+        "node": "Nodo",
         "mount": "",
-        "title": "",
+        "title": "Stato",
         "app_volumes": "",
-        "no_volumes": "",
+        "no_volumes": "Nessun volume",
         "mail_hostname": ""
     },
     "settings_master_users": {
@@ -234,19 +234,19 @@
         "network_timeout": "",
         "generic_error": "",
         "cannot_retrieve_module_info": "",
-        "network_error": "",
+        "network_error": "Errore di rete",
         "403": "",
-        "404": "",
+        "404": "Risorsa non trovata",
         "cannot_retrieve_installed_modules": "",
-        "error": "",
-        "validation_error": "",
+        "error": "Errore",
+        "validation_error": "Errore di validazione",
         "401": ""
     },
     "settings": {
-        "configure_instance": "",
-        "save": "",
+        "configure_instance": "Configura {instance}",
+        "save": "Salva",
         "test_filed": "",
-        "title": ""
+        "title": "Impostazioni"
     },
     "about": {
         "title": ""
