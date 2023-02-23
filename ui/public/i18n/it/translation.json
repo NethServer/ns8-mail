@@ -204,19 +204,19 @@
     },
     "status": {
         "created": "Creato",
-        "app_images": "",
+        "app_images": "Immagine app|Immagini app",
         "services": "Servizio | Servizi",
         "no_services": "Nessun servizio",
         "installation_node": "",
         "name": "Nome",
-        "app_instance": "",
+        "app_instance": "Istanza app",
         "size": "Dimensione",
         "no_images": "Nessuna immagine",
         "user_domain": "",
         "node": "Nodo",
         "mount": "",
         "title": "Stato",
-        "app_volumes": "",
+        "app_volumes": "Volume app|Volumi app",
         "no_volumes": "Nessun volume",
         "mail_hostname": ""
     },
@@ -227,17 +227,17 @@
         "page_description": ""
     },
     "task": {
-        "cannot_create_task": "",
+        "cannot_create_task": "Impossibile eseguire task [action]",
         "task_aborted": ""
     },
     "error": {
         "network_timeout": "",
         "generic_error": "",
-        "cannot_retrieve_module_info": "",
+        "cannot_retrieve_module_info": "Impossibile recuperare info modulo",
         "network_error": "Errore di rete",
         "403": "",
         "404": "Risorsa non trovata",
-        "cannot_retrieve_installed_modules": "",
+        "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati",
         "error": "Errore",
         "validation_error": "Errore di validazione",
         "401": ""
@@ -249,6 +249,6 @@
         "title": "Impostazioni"
     },
     "about": {
-        "title": ""
+        "title": "Informazioni"
     }
 }
