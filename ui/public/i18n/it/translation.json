@@ -227,20 +227,20 @@
         "page_description": ""
     },
     "task": {
-        "cannot_create_task": "Impossibile eseguire task [action]",
+        "cannot_create_task": "Impossibile eseguire task {action}",
         "task_aborted": ""
     },
     "error": {
-        "network_timeout": "",
-        "generic_error": "",
+        "network_timeout": "Timeout di rete",
+        "generic_error": "Qualcosa è andato storto",
         "cannot_retrieve_module_info": "Impossibile recuperare info modulo",
         "network_error": "Errore di rete",
-        "403": "",
+        "403": "Operazione non autorizzata",
         "404": "Risorsa non trovata",
         "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati",
         "error": "Errore",
         "validation_error": "Errore di validazione",
-        "401": ""
+        "401": "Autenticazione non valida"
     },
     "settings": {
         "configure_instance": "Configura {instance}",
