@@ -161,3 +161,4 @@ with sdb:
 
 if dovecot_disabled_users:
     agent.set_env('DOVECOT_DISABLED_USERS', ','.join(dovecot_disabled_users))
+    agent.run_helper("systemctl", "--user", "-T", "reload", "dovecot")
