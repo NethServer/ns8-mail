@@ -18,13 +18,13 @@ auth_bind = yes
 base = ${ldap_base_dn}
 
 # Filter for password lookups (passdb lookup)
-pass_filter = (&(|(sAMAccountName=%L{username})(userPrincipalName=%{user}))(objectClass=user)(objectCategory=person))
+pass_filter = (&(|(sAMAccountName=%L{username})(userPrincipalName=%{user}))(objectClass=user)(objectCategory=person)${ldap_users_search_filter_clause})
 
 # Attributes returned for prefetch DB
 pass_attrs = =user=%L{ldap:sAMAccountName}
 
 # Attributes to get the list of all users
 iterate_attrs = =user=%L{ldap:sAMAccountName}
-iterate_filter = (&(objectClass=user)(objectCategory=person))
+iterate_filter = (&(objectClass=user)(objectCategory=person)${ldap_users_search_filter_clause})
 user_attrs = =user=%L{ldap:sAMAccountName}
-user_filter = (&(objectClass=user)(sAMAccountName=%L{username})(objectCategory=person))
+user_filter = (&(objectClass=user)(sAMAccountName=%L{username})(objectCategory=person)${ldap_users_search_filter_clause})
