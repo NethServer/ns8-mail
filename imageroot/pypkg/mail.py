@@ -108,10 +108,10 @@ def get_addresses():
         # If at least one domain is marked "addusers", append "adduser" addresses
         ldapclient = _create_ldapclient()
         for euser in ldapclient.list_users():
-            akey = euser["user"] + '@+'
+            akey = euser["user"].lower() + '@+'
             addresses[akey] = {
                 "atype": "adduser",
-                "local": euser["user"],
+                "local": euser["user"].lower(),
                 "description": euser["display_name"],
             }
         for ruser in sdb.execute("""SELECT user FROM userattrs WHERE internal = 1""").fetchall():
@@ -122,10 +122,10 @@ def get_addresses():
     if sdb.execute("""SELECT COUNT(*) FROM domains WHERE addgroups = 1""").fetchone()[0] > 0:
         ldapclient = _create_ldapclient()
         for egroup in ldapclient.list_groups():
-            akey = egroup["group"] + '@#'
+            akey = egroup["group"].lower() + '@#'
             addresses[akey] = {
                 "atype": "addgroup",
-                "local": egroup["group"],
+                "local": egroup["group"].lower(),
                 "description": egroup["description"],
             }
         for rgroup in sdb.execute("""SELECT "group" FROM groupattrs WHERE internal = 1""").fetchall():
@@ -153,7 +153,7 @@ def destination_to_mailbox(odest):
         except LdapclientEntryNotFound as oex:
             raise MailDestinationNotFound() from oex
         else:
-            return odest['name']
+            return odest['name'].lower()
 
     elif odest['dtype'] == 'group':
         try:
@@ -161,7 +161,7 @@ def destination_to_mailbox(odest):
         except LdapclientEntryNotFound as oex:
             raise MailDestinationNotFound() from oex
         else:
-            return odest['name']
+            return odest['name'].lower()
 
     elif odest['dtype'] == 'apo':
         # Do not store APO destinations in the DB.
@@ -196,8 +196,8 @@ class DestEncoder(json.JSONEncoder):
         # users or cherrypick entries from the LDAP DB.
         self.cherrypick = LdapDestination._icount < 12
         if not self.cherrypick:
-            self.euser_list = dict([(item["user"], item) for item in self.ldapclient.list_users()])
-            self.egroup_list = dict([(item["group"], item) for item in self.ldapclient.list_groups()])
+            self.euser_list = dict([(item["user"].lower(), item) for item in self.ldapclient.list_users()])
+            self.egroup_list = dict([(item["group"].lower(), item) for item in self.ldapclient.list_groups()])
 
     def default(self, obj):
         sobj = str(obj)
@@ -217,7 +217,7 @@ class DestEncoder(json.JSONEncoder):
         else:
             return {
                 "dtype": "group",
-                "name": egroup["group"],
+                "name": egroup["group"].lower(),
                 "ui_name": egroup["description"],
             }
 
@@ -233,7 +233,7 @@ class DestEncoder(json.JSONEncoder):
         else:
             return {
                 "dtype": "user",
-                "name": euser["user"],
+                "name": euser["user"].lower(),
                 "ui_name": euser["display_name"],
             }
 
