@@ -9,17 +9,21 @@ Check user mailboxes are available
     Should Contain    ${jpayload}    "u1"
     Should Contain    ${jpayload}    "u2"
     Should Contain    ${jpayload}    "u3"
-    Should Contain    ${jpayload}    "admin"
+    Should Contain    ${jpayload}    "administrator"
+
+Check system and disabled mailboxes are unavailable
+    ${jpayload} =    Run task    module/${MID}/list-user-mailboxes    ""    decode_json=${FALSE}
     Should Not Contain    ${jpayload}    "vmail"
+    Should Not Contain    ${jpayload}    "ldapservice"
 
 Change user mailbox attributes
-    Run task    module/${MID}/alter-user-mailbox    {"user":"u1","forward":{"destinations":[{"dtype":"user","name":"admin"}]},"quota":{"limit":31},"spam_retention":{"value":7,"custom":true}}
+    Run task    module/${MID}/alter-user-mailbox    {"user":"u1","forward":{"destinations":[{"dtype":"user","name":"administrator"}]},"quota":{"limit":31},"spam_retention":{"value":7,"custom":true}}
 
 Check user mailbox attibute changes were applied
     ${lmailboxes} =    Run task    module/${MID}/list-user-mailboxes    ""
     FOR  ${ombx}    IN    @{lmailboxes}[user_mailboxes]
         IF    "${ombx}[user]" == "u1"
-            Should Be Equal    ${ombx}[forward][destinations][0][name]    admin
+            Should Be Equal    ${ombx}[forward][destinations][0][name]    administrator
             Should Be Equal As Integers    ${ombx}[quota][limit]    31
             Should Be Equal As Integers    ${ombx}[spam_retention][value]    7
         ELSE
