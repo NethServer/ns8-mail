@@ -465,7 +465,7 @@ export default {
       this.loading.listBackupRepositories = false;
     },
     listBackupRepositoriesCompleted(taskContext, taskResult) {
-      let backupRepositories = taskResult.output.sort(
+      let backupRepositories = taskResult.output.repositories.sort(
         this.sortByProperty("name")
       );
       this.backupRepositories = backupRepositories;
