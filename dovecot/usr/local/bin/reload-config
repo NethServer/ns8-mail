@@ -19,6 +19,7 @@ ldap_port=${DOVECOT_LDAP_PORT:?}
 ldap_base_dn=${DOVECOT_LDAP_BASE:?}
 ldap_bind_dn=${DOVECOT_LDAP_USER}
 ldap_bind_password=${DOVECOT_LDAP_PASS}
+ldap_users_search_filter_clause=
 submission_host=${DOVECOT_SUBMISSION_HOST:?}
 submission_port=${DOVECOT_SUBMISSION_PORT:?}
 instance_name=${DOVECOT_INSTANCE_NAME:-dovecot}
@@ -55,9 +56,21 @@ set +a
 echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::" > /etc/dovecot/users
 
 if [ -n "${DOVECOT_DISABLED_USERS}" ]; then
-    echo "${DOVECOT_DISABLED_USERS}" | tr ',' $'\n' | sed '/^$/ d ; s/$/:::::::/' > /etc/dovecot/disabled-users
-else
-    echo "" > /etc/dovecot/disabled-users
+    # Transform the CSV list in a LDAP filter NOT-ORs clause
+    ldap_users_search_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" -e '{
+        if (schema == "rfc2307") {
+            attr_name = "uid"
+        } else if (schema == "ad") {
+            attr_name = "sAMAccountName"
+        }
+        filter_clause = ""
+        for(idx=1; idx <= NF; ++idx) {
+            filter_clause = filter_clause sprintf("(%s=%s)", attr_name, $idx)
+        }
+        if (filter_clause != "") {
+            print "(!(|" filter_clause "))"
+        }
+    }')
 fi
 
 envsubst >/etc/dovecot/ldapconf.sh <"${TEMPLATES_DIR:?}/ldapconf.sh"

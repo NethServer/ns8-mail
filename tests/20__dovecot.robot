@@ -5,9 +5,9 @@ Resource    keywords.resource
 Library     SSHLibrary
 
 *** Test Cases ***
-Bind to Active Directory user domain
+Bind to LDAP user domain
     Run task     module/${MID}/configure-module
-    ...          {"hostname":"mail.domain.test","user_domain":"ad.dom.test","mail_domain":"domain.test"}
+    ...          {"hostname":"mail.domain.test","user_domain":"ldap.dom.test","mail_domain":"domain.test"}
 
 TCP ports are open
     [Template]    Retry until TCP port is open
@@ -40,21 +40,21 @@ Login TLS policy
     TLS required on non-secure IMAP connections
     IMAPs endpoint login
 
-Active Directory Login checks
-    [Template]    Retry test
-    IMAP login good credentials
-    IMAP login bad credentials
-    LDAP user credentials are bad with AD
-
-Switch to LDAP user domain
-    Run task     module/${MID}/configure-module
-    ...          {"hostname":"mail.domain.test","user_domain":"ldap.dom.test","mail_domain":"domain.test"}
-
 LDAP Login checks
     [Template]    Retry test
     IMAP login good credentials
     IMAP login bad credentials
     AD user credentials are bad with LDAP
+
+Switch to AD user domain
+    Run task     module/${MID}/configure-module
+    ...          {"hostname":"mail.domain.test","user_domain":"ad.dom.test","mail_domain":"domain.test"}
+
+Active Directory Login checks
+    [Template]    Retry test
+    IMAP login good credentials
+    IMAP login bad credentials
+    LDAP user credentials are bad with AD
 
 *** Keywords ***
 LDAP user credentials are bad with AD

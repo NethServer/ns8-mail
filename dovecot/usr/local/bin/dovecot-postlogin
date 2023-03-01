@@ -36,7 +36,7 @@ if [ -z "${ACL_GROUPS}" ]; then
         attr="cn"
     elif [ "${DOVECOT_LDAP_SCHEMA}" = ad ]; then
         userdn=$(ldap_search "(&(objectClass=user)(sAMAccountName=${USER}))" dn)
-        filter="(&(objectClass=group)(member=${userdn}))"
+        filter="(&(objectClass=group)(groupType:1.2.840.113556.1.4.803:=2)(member=${userdn}))"
         attr="sAMAccountName"
     fi
 

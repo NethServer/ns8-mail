@@ -33,9 +33,11 @@ except:
         'base_dn': 'dc=dovecot,dc=invalid',
         'bind_dn': 'cn=example,dc=dovecot,dc=invalid',
         'bind_password': 'invalid',
+        'hidden_users': [],
+        'hidden_groups': [],
     }
 
-tmpfile = "discover.env." + str(os.getpid())
+tmpfile = ".discovery.env." + str(os.getpid()) + ".tmp"
 
 if mail.is_clamav_enabled():
     # Use the local ClamAV instance.
@@ -45,7 +47,11 @@ else:
     # to a remote one: just set the variable value in the environment.
     rspamd_clamav_endpoint = os.getenv('RSPAMD_clamav_endpoint', '')
 
+# Array of LDAP user entries we want to block:
+disabled_users = list(filter(str.strip, os.getenv('DOVECOT_DISABLED_USERS', '').split(','))) + odom['hidden_users']
+
 with open(tmpfile, "w") as denv:
+    print('DOVECOT_DISABLED_USERS=' + ",".join(disabled_users), file=denv)
     print('DOVECOT_LDAP_HOST=' + odom['host'], file=denv)
     print('DOVECOT_LDAP_PORT=' + odom['port'], file=denv)
     print('DOVECOT_LDAP_USER=' + odom['bind_dn'], file=denv)

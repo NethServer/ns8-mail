@@ -16,7 +16,6 @@ mail.abort_with_json_if_not_configured([])
 rusers = mail.doveadm_query("user", {"userMask":"*"})
 
 gquota = os.getenv("DOVECOT_QUOTA_MB", "")
-disabled_users = mail.get_disabled_users()
 
 rquotas = []
 try:
@@ -31,11 +30,15 @@ except Exception:
 
 mailboxes = {}
 
+for disabled_user in mail.get_disabled_users():
+    mailboxes[disabled_user] = {
+        "user": disabled_user,
+        "enabled": False,
+    }
+
 for ouser in rusers['userList']:
     if ouser == 'vmail':
         continue
-    elif ouser in disabled_users:
-        mailboxes[ouser] = {"user": ouser, "enabled": False}
     else:
         mailboxes[ouser] = {"user": ouser}
 
@@ -62,8 +65,6 @@ sdb = mail.pcdb_connect(readonly=True)
 for rforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user != dest""").fetchall():
     if not rforward['user'] in mailboxes:
         continue # unknown username, skip
-    if rforward['user'] in disabled_users:
-        continue # disabled user, skip
 
     if not 'forward' in mailboxes[rforward['user']]:
         mailboxes[rforward['user']]['forward'] = {"destinations":[]}
@@ -73,9 +74,6 @@ for rforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user !=
 for kforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user = dest""").fetchall():
     if not kforward['user'] in mailboxes:
         continue # unknown username, skip
-
-    if kforward['user'] in disabled_users:
-        continue # disabled user, skip
 
     if not 'forward' in mailboxes[kforward['user']]:
         continue # no forwards, keepcopy is useless
@@ -104,9 +102,6 @@ for kventry in uspamret_reply:
 
     if not kuser in mailboxes:
         continue # unknown username, skip
-
-    if kuser in disabled_users:
-        continue # disabled user, skip
 
     mailboxes[kuser]['spam_retention'] = {
         'custom': True,
