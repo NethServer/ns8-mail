@@ -6,10 +6,10 @@
   <NsModal
     size="default"
     :visible="isShown"
-    :primary-button-disabled="loading.setDkimConfig"
-    :isLoading="loading.setDkimConfig"
+    :primary-button-disabled="loading.setDomainDkim"
+    :isLoading="loading.setDomainDkim"
     @modal-hidden="onModalHidden"
-    @primary-click="setDkimConfig"
+    @primary-click="setDomainDkim"
   >
     <template slot="title">
       <span>{{ $t("domains.configure_dkim") }}</span>
@@ -25,117 +25,137 @@
       </cv-interactive-tooltip>
     </template>
     <template slot="content">
-      <cv-form @submit.prevent="setDkimConfig">
-        <NsToggle
-          value="dkimValue"
-          :form-item="true"
-          v-model="isDkimEnabled"
-          :disabled="loading.getDkimConfig || loading.setDkimConfig"
-          hideLabel
-          class="mg-bottom-lg"
-        >
-          <template slot="text-left">
-            <span
-              v-html="
-                $t('domains.enable_dkim_on_domain_domain', {
-                  domain: domain.domain,
-                })
-              "
-            ></span>
-          </template>
-          <template slot="text-right"
-            ><span
-              v-html="
-                $t('domains.enable_dkim_on_domain_domain', {
-                  domain: domain.domain,
-                })
-              "
-            >
-            </span>
-          </template>
-        </NsToggle>
-        <template v-if="isDkimEnabled">
-          <NsInlineNotification
-            kind="warning"
-            title=""
-            :description="
-              $t('domains.dkim_txt_record_description', {
-                domain: domain.domain,
-              })
-            "
-            :showCloseButton="false"
-          />
-          <cv-accordion ref="accordion">
-            <cv-accordion-item :open="toggleAccordion[0]">
-              <template slot="title"
-                ><span
-                  v-html="$t('domains.dkim_txt_record_key_procedure')"
-                ></span
-              ></template>
-              <template slot="content">
-                <!-- //// remove mock -->
-                <NsCodeSnippet
-                  light
-                  copyTipPosition="left"
-                  copyTipAlignment="center"
-                  :copyTooltip="core.$t('common.copy_to_clipboard')"
-                  :copy-feedback="core.$t('common.copied_to_clipboard')"
-                  :feedback-aria-label="core.$t('common.copied_to_clipboard')"
-                  :wrap-text="true"
-                  :moreText="core.$t('common.show_more')"
-                  :lessText="core.$t('common.show_less')"
-                  expanded
-                  hideExpandButton
-                  class="mg-top-sm"
-                  >v=DKIM1; k=rsa;
-                  p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWOpvYp1N+tmUhoqv45FdD85keVwGfYwltP1i1wV+3GtdbIC/NuDVVhDphoedf0Yitpsf3b+CQWS7PQ15xUY4KCN5xBZmVJ3UhJvoA0YTp2OvM8QPaYJGuWwrhyWS0hXN3k/lez+CdycIwllJmhQinpvgDbcY3IGnCCIgHNqyjJDxcltWJvyT9GNzVfTByfBMtPw5RXI3GN3tx7avE7yb4mQ6mUBtj8Zbg2tCzQZT6L7MgpMhVzR+qAzVKQwqjP9aChFOkGNj05lloc6yV4X04boBjVRFA14kyiAvpMaKR1SeXN5gOwKXOFeOYO7lPdJxMWiQjIG+y8xjnn+lUN7SQIDAQAB
-                  ////</NsCodeSnippet
-                >
-              </template>
-            </cv-accordion-item>
-          </cv-accordion>
-          <cv-accordion ref="accordion">
-            <cv-accordion-item :open="toggleAccordion[0]">
-              <template slot="title">{{
-                $t("domains.dkim_txt_record_raw_procedure")
-              }}</template>
-              <template slot="content">
-                <!-- //// remove mock -->
-                <NsCodeSnippet
-                  light
-                  copyTipPosition="left"
-                  copyTipAlignment="center"
-                  :copyTooltip="core.$t('common.copy_to_clipboard')"
-                  :copy-feedback="core.$t('common.copied_to_clipboard')"
-                  :feedback-aria-label="core.$t('common.copied_to_clipboard')"
-                  :wrap-text="true"
-                  :moreText="core.$t('common.show_more')"
-                  :lessText="core.$t('common.show_less')"
-                  expanded
-                  hideExpandButton
-                  class="mg-top-sm"
-                  >default._domainkey IN TXT ( "v=DKIM1; k=rsa; "
-                  "p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWOpvYp1N+tmUhoqv45FdD85keVwGfYwltP1i1wV+3GtdbIC/NuDVVhDphoedf0Yitpsf3b+CQWS7PQ15xUY4KCN5xBZmVJ3UhJvoA0YTp2OvM8QPaYJGuWwrhyWS0hXN3k/lez+CdycIwllJmhQinpvgDbcY3IGnCCIgHNqyjJDxcltWJvyT9GNzVfTByfBMtPw5RXI3GN3tx"
-                  "7avE7yb4mQ6mUBtj8Zbg2tCzQZT6L7MgpMhVzR+qAzVKQwqjP9aChFOkGNj05lloc6yV4X04boBjVRFA14kyiAvpMaKR1SeXN5gOwKXOFeOYO7lPdJxMWiQjIG+y8xjnn+lUN7SQIDAQAB"
-                  ) ; ----- DKIM key default for ent.andre.org
-                  ////</NsCodeSnippet
-                >
-              </template>
-            </cv-accordion-item>
-          </cv-accordion>
-        </template>
-        <!-- need to wrap error notification inside a div: custom elements like NsInlineNotification don't have scrollIntoView() function -->
-        <div ref="setDkimConfigError">
-          <!-- //// check action.create-bypass-rule -->
-          <NsInlineNotification
-            v-if="error.setDkimConfig"
-            kind="error"
-            :title="$t('action.set-dkim-config')"
-            :description="error.setDkimConfig"
-            :showCloseButton="false"
-          />
-        </div>
-      </cv-form>
+      <!-- skeleton -->
+      <template v-if="loading.getDomainDkim">
+        <cv-skeleton-text
+          width="90%"
+          :paragraph="true"
+          :line-count="3"
+        ></cv-skeleton-text>
+      </template>
+      <template v-else>
+        <cv-form @submit.prevent="setDomainDkim">
+          <NsToggle
+            value="dkimValue"
+            :form-item="true"
+            v-model="isDkimEnabled"
+            :disabled="loading.getDomainDkim || loading.setDomainDkim"
+            hideLabel
+            class="mg-bottom-lg"
+          >
+            <template slot="text-left">
+              <span
+                v-html="
+                  $t('domains.dkim_on_domain_domain', {
+                    domain: domain.domain,
+                  })
+                "
+              ></span>
+            </template>
+            <template slot="text-right"
+              ><span
+                v-html="
+                  $t('domains.dkim_on_domain_domain', {
+                    domain: domain.domain,
+                  })
+                "
+              >
+              </span>
+            </template>
+          </NsToggle>
+          <transition name="fade">
+            <template v-if="isDkimEnabled">
+              <div>
+                <NsInlineNotification
+                  kind="warning"
+                  title=""
+                  :description="
+                    $t('domains.dkim_txt_record_description', {
+                      domain: domain.domain,
+                    })
+                  "
+                  :showCloseButton="false"
+                />
+                <cv-accordion ref="accordion">
+                  <cv-accordion-item :open="toggleAccordion[0]">
+                    <template slot="title"
+                      ><span
+                        v-html="$t('domains.dkim_txt_record_key_procedure')"
+                      ></span
+                    ></template>
+                    <template slot="content">
+                      <!-- //// remove mock -->
+                      <NsCodeSnippet
+                        light
+                        copyTipPosition="left"
+                        copyTipAlignment="center"
+                        :copyTooltip="core.$t('common.copy_to_clipboard')"
+                        :copy-feedback="core.$t('common.copied_to_clipboard')"
+                        :feedback-aria-label="
+                          core.$t('common.copied_to_clipboard')
+                        "
+                        :wrap-text="true"
+                        :moreText="core.$t('common.show_more')"
+                        :lessText="core.$t('common.show_less')"
+                        expanded
+                        hideExpandButton
+                        class="mg-top-sm"
+                        >{{ dkimRecordData }}</NsCodeSnippet
+                      >
+                    </template>
+                  </cv-accordion-item>
+                </cv-accordion>
+                <cv-accordion ref="accordion">
+                  <cv-accordion-item :open="toggleAccordion[0]">
+                    <template slot="title">{{
+                      $t("domains.dkim_txt_record_raw_procedure")
+                    }}</template>
+                    <template slot="content">
+                      <NsCodeSnippet
+                        light
+                        copyTipPosition="left"
+                        copyTipAlignment="center"
+                        :copyTooltip="core.$t('common.copy_to_clipboard')"
+                        :copy-feedback="core.$t('common.copied_to_clipboard')"
+                        :feedback-aria-label="
+                          core.$t('common.copied_to_clipboard')
+                        "
+                        :wrap-text="true"
+                        :moreText="core.$t('common.show_more')"
+                        :lessText="core.$t('common.show_less')"
+                        expanded
+                        hideExpandButton
+                        class="mg-top-sm"
+                        >{{ dkimFullRawRecord }}</NsCodeSnippet
+                      >
+                    </template>
+                  </cv-accordion-item>
+                </cv-accordion>
+              </div>
+            </template>
+          </transition>
+          <!-- need to wrap error notification inside a div: custom elements like NsInlineNotification don't have scrollIntoView() function -->
+          <div ref="getDomainDkimError">
+            <NsInlineNotification
+              v-if="error.getDomainDkim"
+              kind="error"
+              :title="$t('action.get-domain-dkim')"
+              :description="error.getDomainDkim"
+              :showCloseButton="false"
+            />
+          </div>
+          <!-- need to wrap error notification inside a div: custom elements like NsInlineNotification don't have scrollIntoView() function -->
+          <div ref="setDomainDkimError">
+            <NsInlineNotification
+              v-if="error.setDomainDkim"
+              kind="error"
+              :title="$t('action.set-domain-dkim')"
+              :description="error.setDomainDkim"
+              :showCloseButton="false"
+            />
+          </div>
+        </cv-form>
+      </template>
     </template>
     <template slot="secondary-button">{{ core.$t("common.cancel") }}</template>
     <template slot="primary-button">{{ $t("common.save_settings") }}</template>
@@ -157,13 +177,15 @@ export default {
   data() {
     return {
       isDkimEnabled: false,
+      dkimFullRawRecord: "",
+      dkimRecordData: "",
       loading: {
-        setDkimConfig: false,
-        getDkimConfig: false,
+        setDomainDkim: false,
+        getDomainDkim: false,
       },
       error: {
-        setDkimConfig: "",
-        getDkimConfig: "",
+        setDomainDkim: "",
+        getDomainDkim: "",
       },
     };
   },
@@ -174,14 +196,25 @@ export default {
     isShown: function () {
       if (this.isShown) {
         this.clearErrors();
+        this.getDomainDkim();
       }
     },
-    "error.setDkimConfig": function () {
-      if (this.error.setDkimConfig) {
+    "error.getDomainDkim": function () {
+      if (this.error.getDomainDkim) {
         // scroll to notification error
 
         this.$nextTick(() => {
-          const el = this.$refs.setDkimConfigError;
+          const el = this.$refs.getDomainDkimError;
+          this.scrollToElement(el);
+        });
+      }
+    },
+    "error.setDomainDkim": function () {
+      if (this.error.setDomainDkim) {
+        // scroll to notification error
+
+        this.$nextTick(() => {
+          const el = this.$refs.setDomainDkimError;
           this.scrollToElement(el);
         });
       }
@@ -192,28 +225,82 @@ export default {
       this.clearErrors();
       this.$emit("hide");
     },
-    async setDkimConfig() {
-      this.loading.setDkimConfig = true;
-      this.error.setDkimConfig = "";
-      const taskAction = "set-dkim-config";
+    async getDomainDkim() {
+      this.loading.getDomainDkim = true;
+      this.error.getDomainDkim = "";
+      const taskAction = "get-domain-dkim";
       const eventId = this.getUuid();
 
       // register to task error
       this.core.$root.$once(
         `${taskAction}-aborted-${eventId}`,
-        this.setDkimConfigAborted
+        this.getDomainDkimAborted
       );
+
       // register to task completion
       this.core.$root.$once(
         `${taskAction}-completed-${eventId}`,
-        this.setDkimConfigCompleted
+        this.getDomainDkimCompleted
       );
 
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            dkim: this.isDkimEnabled,
+            domain: this.domain.domain,
+          },
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getDomainDkim = this.getErrorMessage(err);
+        this.loading.getDomainDkim = false;
+        return;
+      }
+    },
+    getDomainDkimAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getDomainDkim = this.$t("error.generic_error");
+      this.loading.getDomainDkim = false;
+    },
+    getDomainDkimCompleted(taskContext, taskResult) {
+      console.log("getDomainDkimCompleted", taskResult.output); ////
+
+      this.isDkimEnabled = taskResult.output.enabled;
+      this.dkimFullRawRecord = taskResult.output.dkimFullRawRecord;
+      this.dkimRecordData = taskResult.output.dkimRecordData;
+      this.loading.getDomainDkim = false;
+    },
+    async setDomainDkim() {
+      this.loading.setDomainDkim = true;
+      this.error.setDomainDkim = "";
+      const taskAction = "set-domain-dkim";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.setDomainDkimAborted
+      );
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.setDomainDkimCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: {
+            domain: this.domain.domain,
+            enabled: this.isDkimEnabled,
           },
           extra: {
             title: this.$t("domains.configure_dkim_for_domain", {
@@ -228,20 +315,17 @@ export default {
 
       if (err) {
         console.error(`error creating task ${taskAction}`, err);
-        this.error.setDkimConfig = this.getErrorMessage(err);
-        this.loading.setDkimConfig = false;
+        this.error.setDomainDkim = this.getErrorMessage(err);
+        this.loading.setDomainDkim = false;
         return;
       }
     },
-    setDkimConfigAborted(taskResult, taskContext) {
+    setDomainDkimAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
-      this.loading.setDkimConfig = false;
-
-      // hide modal so that user can see error notification
-      this.$emit("hide");
+      this.loading.setDomainDkim = false;
     },
-    setDkimConfigCompleted() {
-      this.loading.setDkimConfig = false;
+    setDomainDkimCompleted() {
+      this.loading.setDomainDkim = false;
       this.isDkimEnabled = false;
       this.$emit("hide");
     },
@@ -251,4 +335,15 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
+
+//// move to core
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>
