@@ -70,11 +70,14 @@
           />
         </cv-column>
         <cv-column :md="4" :max="4">
-          <!-- //// remove mock properties -->
           <FilterStatusCard
-            :isFilterEnabled="true"
-            :isAntispamEnabled="true"
-            :isAntivirusEnabled="false"
+            :isAntispamEnabled="
+              filterConfig ? filterConfig.antispam.enabled : false
+            "
+            :isAntivirusEnabled="
+              filterConfig ? filterConfig.antivirus.enabled : false
+            "
+            :loading="loading.getFilterConfiguration"
             light
           />
         </cv-column>
@@ -102,7 +105,7 @@
                 kind="ghost"
                 :icon="Launch20"
                 :disabled="loading.getConfiguration"
-                @click="goToNextcloudWebapp"
+                @click="goToRspamdWebapp"
               >
                 {{ $t("status.open_rspamd") }}
               </NsButton>
@@ -356,15 +359,18 @@ export default {
       backupRepositories: [],
       backups: [],
       config: null,
+      filterConfig: null,
       loading: {
         getStatus: false,
         listBackupRepositories: false,
         listBackups: false,
+        getFilterConfiguration: false,
       },
       error: {
         getStatus: "",
         listBackupRepositories: "",
         listBackups: "",
+        getFilterConfiguration: "",
       },
     };
   },
@@ -417,6 +423,7 @@ export default {
   created() {
     this.getStatus();
     this.listBackupRepositories();
+    this.getFilterConfiguration();
   },
   methods: {
     async getStatus() {
@@ -574,7 +581,55 @@ export default {
       this.backups = backups;
       this.loading.listBackups = false;
     },
-    goToNextcloudWebapp() {
+    async getFilterConfiguration() {
+      this.loading.getFilterConfiguration = true;
+      this.error.getFilterConfiguration = "";
+      const taskAction = "get-filter-configuration";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getFilterConfigurationAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getFilterConfigurationCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getFilterConfiguration = this.getErrorMessage(err);
+        this.loading.getFilterConfiguration = false;
+        return;
+      }
+    },
+    getFilterConfigurationAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getFilterConfiguration = this.$t("error.generic_error");
+      this.loading.getFilterConfiguration = false;
+    },
+    getFilterConfigurationCompleted(taskContext, taskResult) {
+      console.log("! getFilterConfigurationCompleted", taskResult.output); ////
+
+      this.filterConfig = taskResult.output;
+      this.loading.getFilterConfiguration = false;
+    },
+    goToRspamdWebapp() {
       //// check rspamdLink
       window.open(`https://${this.config.rspamdLink}`, "_blank");
     },

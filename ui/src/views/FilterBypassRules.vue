@@ -40,6 +40,17 @@
           </h2>
         </cv-column>
       </cv-row>
+      <cv-row>
+        <cv-column>
+          <NsInlineNotification
+            v-if="error.removeBypassRule"
+            kind="error"
+            :title="$t('action.remove-bypass-rule')"
+            :description="error.removeBypassRule"
+            :showCloseButton="false"
+          />
+        </cv-column>
+      </cv-row>
       <cv-row class="toolbar">
         <cv-column>
           <NsButton
@@ -114,42 +125,19 @@
                   </cv-data-table-cell>
                   <cv-data-table-cell>
                     <div class="justify-flex-end">
-                      <cv-icon-button
-                        :label="$t('common.delete')"
+                      <NsButton
                         kind="danger"
                         :icon="TrashCan20"
                         size="small"
-                        tipPosition="left"
-                        tipAlignment="center"
                         @click="willDeleteBypassRule(row)"
-                      />
+                        >{{ $t("common.delete") }}
+                      </NsButton>
                     </div>
                   </cv-data-table-cell>
                 </cv-data-table-row>
               </template>
             </NsDataTable>
           </cv-tile>
-          <!-- <NsInfoCard ////
-            light
-            :title="rule.value"
-            :icon="Rule32"
-          >
-            <template slot="content">
-              <div class="card-content">
-                <div class="row description">
-                  {{ getDescription(rule) }}
-                </div>
-                <NsButton
-                  kind="danger--ghost"
-                  :icon="TrashCan20"
-                  @click="willDeleteBypassRule(rule)"
-                  class="row"
-                >
-                  {{ $t("filter_bypass_rules.delete_rule") }}
-                </NsButton>
-              </div>
-            </template>
-          </NsInfoCard> -->
         </cv-column>
       </cv-row>
     </cv-grid>
@@ -163,7 +151,7 @@
 </template>
 
 <script>
-// import to from "await-to-js"; ////
+import to from "await-to-js";
 import {
   QueryParamService,
   UtilService,
@@ -206,6 +194,7 @@ export default {
       },
       error: {
         listBypassRules: "",
+        removeBypassRule: "",
       },
     };
   },
@@ -309,33 +298,108 @@ export default {
         type: typeString,
       });
     },
-    listBypassRules() {
-      console.log("listBypassRules"); ////
+    async listBypassRules() {
+      this.loading.listBypassRules = true;
+      this.error.listBypassRules = "";
+      const taskAction = "list-bypass-rules";
+      const eventId = this.getUuid();
 
-      //// remove mock
-      const rules = [
-        {
-          value: "nicedomain.org",
-          type: "domain",
-          direction: "from",
-        },
-        {
-          value: "9.9.9.9",
-          type: "ip",
-          direction: "to",
-        },
-        {
-          value: "importantclient@domain.com",
-          type: "email",
-          direction: "from",
-        },
-      ];
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.listBypassRulesAborted
+      );
 
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.listBypassRulesCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.listBypassRules = this.getErrorMessage(err);
+        this.loading.listBypassRules = false;
+        return;
+      }
+    },
+    listBypassRulesAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.listBypassRules = this.$t("error.generic_error");
+      this.loading.listBypassRules = false;
+    },
+    listBypassRulesCompleted(taskContext, taskResult) {
+      const rules = taskResult.output.bypass_rules;
       rules.sort(this.sortByProperty("direction"));
       this.rules = rules;
+      this.loading.listBypassRules = false;
     },
-    removeBypassRule() {
-      console.log("removeBypassRule"); ////
+    async removeBypassRule(rule) {
+      this.loading.removeBypassRule = true;
+      this.error.removeBypassRule = "";
+      const taskAction = "remove-bypass-rule";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.removeBypassRuleAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.removeBypassRuleCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: {
+            direction: rule.direction,
+            type: rule.type,
+            value: rule.value,
+          },
+          extra: {
+            title: this.$t("filter_bypass_rules.delete_bypass_rule_for", {
+              value: rule.value,
+            }),
+            description: this.$t("common.processing"),
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.removeBypassRule = this.getErrorMessage(err);
+        this.loading.removeBypassRule = false;
+        return;
+      }
+    },
+    removeBypassRuleAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.removeBypassRule = this.$t("error.generic_error");
+      this.loading.removeBypassRule = false;
+    },
+    removeBypassRuleCompleted() {
+      this.loading.removeBypassRule = false;
+
+      // reload addresses
+      this.$emit("reloadBypassRules");
     },
   },
 };

@@ -81,9 +81,13 @@
     "set-mailbox-settings": "Set mailbox settings",
     "get-master-users": "Get master users",
     "set-master-users": "Set master users",
-    "create-bypass-rule": "Create bypass rule",
+    "add-bypass-rule": "Create bypass rule",
     "get-dkim-config": "Get DKIM configuration",
-    "set-dkim-config": "Set DKIM configuration"
+    "set-dkim-config": "Set DKIM configuration",
+    "list-bypass-rules": "List bypass rules",
+    "remove-bypass-rule": "Delete bypass rule",
+    "get-filter-configuration": "Get filter configuration",
+    "set-filter-configuration": "Set filter configuration"
   },
   "error": {
     "error": "Error",
@@ -273,7 +277,8 @@
     "signatures_low": "Low",
     "signatures_medium": "Medium",
     "signatures_high": "High",
-    "signatures_memory_warning": "<strong>{installationNode}</strong> has less than 4GB of RAM. You're strongly advised to disable ClamAV official signatures to avoid memory filling"
+    "signatures_memory_warning": "<strong>{installationNode}</strong> has less than 4GB of RAM. You're strongly advised to disable ClamAV official signatures to avoid memory filling",
+    "save_filter_settings": "Save filter settings"
   },
   "filter_bypass_rules": {
     "title": "Bypass rules",
@@ -297,7 +302,9 @@
     "type_ip_l": "IP address",
     "type_cidr_l": "CIDR network",
     "create_bypass_rule_for": "Create bypass rule for {value}",
-    "bypass_rule_is_going_to_be_deleted": "Bypass rule for {value} is going to be deleted..."
+    "bypass_rule_is_going_to_be_deleted": "Bypass rule for {value} is going to be deleted...",
+    "delete_bypass_rule_for": "Delete bypass rule for {value}",
+    "bypass_rule_already_exists": "This bypass rule already exists"
   },
   "settings_mailboxes": {
     "title": "Mailboxes settings",

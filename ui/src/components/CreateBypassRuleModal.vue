@@ -6,16 +6,16 @@
   <NsModal
     size="default"
     :visible="isShown"
-    :primary-button-disabled="loading.createBypassRule"
-    :isLoading="loading.createBypassRule"
+    :primary-button-disabled="loading.addBypassRule"
+    :isLoading="loading.addBypassRule"
     @modal-hidden="onModalHidden"
-    @primary-click="createBypassRule"
+    @primary-click="addBypassRule"
   >
     <template slot="title">{{
       $t("filter_bypass_rules.create_bypass_rule")
     }}</template>
     <template slot="content">
-      <cv-form @submit.prevent="createBypassRule">
+      <cv-form @submit.prevent="addBypassRule">
         <cv-content-switcher
           @selected="onDirectionSelected"
           class="direction-switcher mg-bottom-lg"
@@ -66,7 +66,7 @@
           :label="valueLabel"
           :placeholder="valuePlaceholder"
           :invalid-message="error.value"
-          :disabled="loading.createBypassRule"
+          :disabled="loading.addBypassRule"
           ref="value"
         />
         <!-- <div class="icon-and-text"> ////
@@ -83,13 +83,12 @@
         </div> -->
 
         <!-- need to wrap error notification inside a div: custom elements like NsInlineNotification don't have scrollIntoView() function -->
-        <div ref="createBypassRuleError">
-          <!-- //// check action.create-bypass-rule -->
+        <div ref="addBypassRuleError">
           <NsInlineNotification
-            v-if="error.createBypassRule"
+            v-if="error.addBypassRule"
             kind="error"
-            :title="$t('action.create-bypass-rule')"
-            :description="error.createBypassRule"
+            :title="$t('action.add-bypass-rule')"
+            :description="error.addBypassRule"
             :showCloseButton="false"
           />
         </div>
@@ -110,7 +109,7 @@ import { mapState } from "vuex";
 //// review
 
 export default {
-  name: "CreateBypassRuleModal",
+  name: "AddBypassRuleModal",
   mixins: [UtilService, TaskService, IconService],
   props: {
     isShown: Boolean,
@@ -121,10 +120,10 @@ export default {
       type: "email",
       value: "",
       loading: {
-        createBypassRule: false,
+        addBypassRule: false,
       },
       error: {
-        createBypassRule: "",
+        addBypassRule: "",
         value: "",
       },
     };
@@ -173,12 +172,12 @@ export default {
         this.clearErrors();
       }
     },
-    "error.createBypassRule": function () {
-      if (this.error.createBypassRule) {
+    "error.addBypassRule": function () {
+      if (this.error.addBypassRule) {
         // scroll to notification error
 
         this.$nextTick(() => {
-          const el = this.$refs.createBypassRuleError;
+          const el = this.$refs.addBypassRuleError;
           this.scrollToElement(el);
         });
       }
@@ -202,7 +201,7 @@ export default {
     onTypeSelected(value) {
       this.type = value;
     },
-    validateCreateBypassRule() {
+    validateAddBypassRule() {
       this.clearErrors();
       let isValidationOk = true;
 
@@ -229,35 +228,35 @@ export default {
       }
       return isValidationOk;
     },
-    async createBypassRule() {
-      if (!this.validateCreateBypassRule()) {
+    async addBypassRule() {
+      if (!this.validateAddBypassRule()) {
         return;
       }
-      this.loading.createBypassRule = true;
-      this.error.createBypassRule = "";
-      const taskAction = "create-bypass-rule";
+      this.loading.addBypassRule = true;
+      this.error.addBypassRule = "";
+      const taskAction = "add-bypass-rule";
       const eventId = this.getUuid();
 
       // register to task error
       this.core.$root.$once(
         `${taskAction}-aborted-${eventId}`,
-        this.createBypassRuleAborted
+        this.addBypassRuleAborted
       );
 
       // register to task validation
       this.core.$root.$once(
         `${taskAction}-validation-ok-${eventId}`,
-        this.createBypassRuleValidationOk
+        this.addBypassRuleValidationOk
       );
       this.core.$root.$once(
         `${taskAction}-validation-failed-${eventId}`,
-        this.createBypassRuleValidationFailed
+        this.addBypassRuleValidationFailed
       );
 
       // register to task completion
       this.core.$root.$once(
         `${taskAction}-completed-${eventId}`,
-        this.createBypassRuleCompleted
+        this.addBypassRuleCompleted
       );
 
       const res = await to(
@@ -281,26 +280,26 @@ export default {
 
       if (err) {
         console.error(`error creating task ${taskAction}`, err);
-        this.error.createBypassRule = this.getErrorMessage(err);
-        this.loading.createBypassRule = false;
+        this.error.addBypassRule = this.getErrorMessage(err);
+        this.loading.addBypassRule = false;
         return;
       }
     },
-    createBypassRuleAborted(taskResult, taskContext) {
+    addBypassRuleAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
-      this.loading.createBypassRule = false;
+      this.loading.addBypassRule = false;
 
       // hide modal so that user can see error notification
       this.$emit("hide");
     },
-    createBypassRuleValidationOk() {
-      this.loading.createBypassRule = false;
+    addBypassRuleValidationOk() {
+      this.loading.addBypassRule = false;
 
       // hide modal after validation
       this.$emit("hide");
     },
-    createBypassRuleValidationFailed(validationErrors) {
-      this.loading.createBypassRule = false;
+    addBypassRuleValidationFailed(validationErrors) {
+      this.loading.addBypassRule = false;
       let focusAlreadySet = false;
 
       for (const validationError of validationErrors) {
@@ -319,231 +318,17 @@ export default {
         }
       }
     },
-    createBypassRuleCompleted() {
-      this.loading.createBypassRule = false;
+    addBypassRuleCompleted() {
+      this.loading.addBypassRule = false;
       this.clearFields();
 
       // reload addresses
       this.$emit("reloadBypassRules");
     },
     clearFields() {
-      this.local = "";
-      this.isInternal = false;
-      this.description = "";
-      this.selectedDestinations = [];
-    },
-    async listDestinations() {
-      this.loading.listDestinations = true;
-      this.error.listDestinations = "";
-      const taskAction = "list-destinations";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.listDestinationsAborted
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.listDestinationsCompleted
-      );
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          extra: {
-            title: this.$t("action." + taskAction),
-            isNotificationHidden: true,
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.listDestinations = this.getErrorMessage(err);
-        this.loading.listDestinations = false;
-        return;
-      }
-    },
-    listDestinationsAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.listDestinations = this.$t("error.generic_error");
-      this.loading.listDestinations = false;
-    },
-    listDestinationsCompleted(taskContext, taskResult) {
-      this.loading.listDestinations = false;
-      this.allDestinations = taskResult.output;
-
-      this.allDestinationsForUi = this.allDestinations.map((d) => {
-        return {
-          name: d.name,
-          value: `${d.name}_${d.dtype}`,
-          label: d.name,
-          type: this.$t(`common.${d.dtype}_destination`),
-          description: d.ui_name,
-        };
-      });
-
-      if (this.isEditing) {
-        const selectedDestinations = [];
-
-        for (const d of this.address.destinations) {
-          const destFound = this.allDestinationsForUi.find((dui) => {
-            return dui.value === `${d.name}_${d.dtype}`;
-          });
-
-          if (destFound) {
-            selectedDestinations.push(destFound.value);
-          } else {
-            // destination input by user
-            selectedDestinations.push(d.name);
-
-            this.allDestinationsForUi.push({
-              name: d.name,
-              value: d.name,
-              label: d.name,
-              type: this.$t(`common.external_destination`),
-            });
-          }
-        }
-
-        this.$nextTick(() => {
-          this.selectedDestinations = selectedDestinations;
-        });
-      }
-    },
-    async alterAddress() {
-      if (!this.validateCreateBypassRule()) {
-        return;
-      }
-
-      this.loading.alterAddress = true;
-      this.error.alterAddress = "";
-      const taskAction = "alter-address";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.alterAddressAborted
-      );
-
-      // register to task validation
-      this.core.$root.$once(
-        `${taskAction}-validation-ok-${eventId}`,
-        this.alterAddressValidationOk
-      );
-      this.core.$root.$once(
-        `${taskAction}-validation-failed-${eventId}`,
-        this.alterAddressValidationFailed
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.alterAddressCompleted
-      );
-
-      const destinations = [];
-
-      for (const selectedDestination of this.selectedDestinations) {
-        const destFound = this.allDestinations.find(
-          (d) => selectedDestination === `${d.name}_${d.dtype}`
-        );
-
-        if (destFound) {
-          destinations.push(destFound);
-        } else {
-          // destination input by user
-          destinations.push({
-            dtype: "external",
-            name: selectedDestination,
-          });
-        }
-      }
-
-      const alterAddressData = {
-        local: this.local,
-        internal: this.isInternal,
-        destinations: destinations,
-        description: this.description,
-      };
-
-      let domainForNotification = "";
-
-      if (this.selectedDomainId == "wildcard") {
-        alterAddressData.atype = "wildcard";
-      } else {
-        alterAddressData.atype = "domain";
-        alterAddressData.domain = this.selectedDomainId;
-        domainForNotification = this.selectedDomainId;
-      }
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          data: alterAddressData,
-          extra: {
-            title: this.$t("addresses.edit_address_address", {
-              address: `${this.local}@${domainForNotification}`,
-            }),
-            description: this.$t("common.processing"),
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.alterAddress = this.getErrorMessage(err);
-        this.loading.alterAddress = false;
-        return;
-      }
-    },
-    alterAddressAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.loading.alterAddress = false;
-
-      // hide modal so that user can see error notification
-      this.$emit("hide");
-    },
-    alterAddressValidationOk() {
-      this.loading.alterAddress = false;
-
-      // hide modal after validation
-      this.$emit("hide");
-    },
-    alterAddressValidationFailed(validationErrors) {
-      this.loading.alterAddress = false;
-      let focusAlreadySet = false;
-
-      for (const validationError of validationErrors) {
-        const param = validationError.parameter;
-
-        // set i18n error message
-        this.error[param] = this.getI18nStringWithFallback(
-          "addresses." + validationError.error,
-          "error." + validationError.error,
-          this.core
-        );
-
-        if (!focusAlreadySet && param != "(root)") {
-          this.focusElement(param);
-          focusAlreadySet = true;
-        }
-      }
-    },
-    alterAddressCompleted() {
-      this.loading.alterAddress = false;
-      this.clearFields();
-
-      // reload addresses
-      this.$emit("reloadAddresses");
+      this.direction = "from";
+      this.type = "email";
+      this.value = "";
     },
   },
 };

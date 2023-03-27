@@ -7,56 +7,22 @@
     <NsInfoCard
       :title="$t('filter.title')"
       :icon="Filter32"
-      :loading="loading"
+      :loading="false"
       :light="light"
       class="ns-filter-status-card ns-card"
     >
-      <!-- <cv-tile kind="standard" :light="light" class="ns-filter-status-card"> ////
-      <div class="row">
-        <NsSvg :svg="Filter32" />
-      </div>
-      <div class="row">
-        <h3 class="title">{{ $t("filter.title") }}</h3>
-      </div>
-      <div v-if="loading" class="row">
-        <cv-skeleton-text
-          :paragraph="true"
-          :line-count="2"
-          class="mg-top-sm"
-        ></cv-skeleton-text>
-      </div>
-      <template v-else> -->
       <template slot="content">
         <div class="card-content">
           <div class="table-wrapper">
             <div class="table">
-              <!-- filter -->
-              <div class="tr">
-                <div class="td label">{{ $t("filter.title") }}</div>
-                <div class="td value">
-                  <span v-if="isFilterEnabled">
-                    <span>{{ $t("common.enabled") }}</span>
-                    <NsSvg
-                      :svg="CheckmarkFilled16"
-                      class="ns-success mg-left-sm status-icon"
-                    />
-                  </span>
-                  <template v-else>
-                    <span>
-                      {{ $t("common.disabled") }}
-                    </span>
-                    <NsSvg
-                      :svg="CloseFilled16"
-                      class="ns-disabled mg-left-sm status-icon"
-                    />
-                  </template>
-                </div>
-              </div>
               <!-- antispam -->
               <div class="tr">
                 <div class="td label">{{ $t("filter.antispam") }}</div>
                 <div class="td value">
-                  <span v-if="isAntispamEnabled">
+                  <span v-if="loading" class="skeleton-container">
+                    <cv-skeleton-text class="skeleton-line"></cv-skeleton-text>
+                  </span>
+                  <span v-else-if="isAntispamEnabled">
                     <span>{{ $t("common.enabled") }}</span>
                     <NsSvg
                       :svg="CheckmarkFilled16"
@@ -78,7 +44,10 @@
               <div class="tr">
                 <div class="td label">{{ $t("filter.antivirus") }}</div>
                 <div class="td value">
-                  <span v-if="isAntivirusEnabled">
+                  <span v-if="loading" class="skeleton-container">
+                    <cv-skeleton-text class="skeleton-line"></cv-skeleton-text>
+                  </span>
+                  <span v-else-if="isAntivirusEnabled">
                     <span>{{ $t("common.enabled") }}</span>
                     <NsSvg
                       :svg="CheckmarkFilled16"
@@ -100,24 +69,11 @@
             kind="ghost"
             :icon="ArrowRight20"
             @click="goToFilter"
-            :disabled="loading"
             class="mg-top-sm"
             >{{ $t("status.go_to_filter") }}
           </NsButton>
         </div>
       </template>
-      <!-- <div> ////
-        <div class="row mg-top-sm">
-          <NsButton
-            kind="tertiary"
-            size="field"
-            :icon="ArrowRight20"
-            @click="goToBackup"
-            :disabled="loading"
-            >{{ $t("status.go_to_filter") }}
-          </NsButton>
-        </div>
-      </div> -->
     </NsInfoCard>
   </div>
 </template>
@@ -133,7 +89,6 @@ export default {
   components: {},
   mixins: [UtilService, IconService, TaskService],
   props: {
-    isFilterEnabled: Boolean,
     isAntispamEnabled: Boolean,
     isAntivirusEnabled: Boolean,
     loading: Boolean,
@@ -142,7 +97,6 @@ export default {
   computed: {
     ...mapState(["instanceName", "core"]),
   },
-  created() {}, ////
   methods: {
     goToFilter() {
       this.goToAppPage(this.instanceName, "filter");
@@ -156,6 +110,16 @@ export default {
 
 .status {
   font-weight: bold;
+}
+
+.skeleton-container {
+  display: inline-block;
+  width: 5rem;
+}
+
+.skeleton-line {
+  position: relative;
+  top: 0.7rem;
 }
 
 //// remove classes already on the core
