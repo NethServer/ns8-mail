@@ -23,23 +23,24 @@ selectors_map = mail.rspamd_api_get_kvmap('dkim_selectors.map')
 selector = selectors_map.get(request['domain'], "default")
 
 is_enabled = not ('.' in selector or '/' in selector or selector.lower().startswith('disabled ')) # not-disabled
+if not is_enabled and selector.lower().startswith('disabled '):
+    selector = selector.lower().removeprefix('disabled ').strip()
 
-if is_enabled:
-    pcat = subprocess.run(f'podman exec rspamd cat /var/lib/rspamd/dkim/{selector}.txt', stdout=subprocess.PIPE, stderr=sys.stderr, shell=True, text=True)
+pcat = subprocess.run(f'podman exec rspamd cat /var/lib/rspamd/dkim/{selector}.txt', stdout=subprocess.PIPE, stderr=sys.stderr, shell=True, text=True)
 
-    # Transform PEM-encoded public key in a base64 plain string:
-    prsa = subprocess.run(f'podman exec rspamd cat /var/lib/rspamd/dkim/{selector}.key | openssl rsa -pubout -outform PEM', stdout=subprocess.PIPE, stderr=sys.stderr, shell=True, text=True)
-    pubkey = ''
-    for pemline in prsa.stdout.split(os.linesep):
-        if pemline == '' or pemline.startswith('----'):
-            continue
-        pubkey += pemline
+# Transform PEM-encoded public key in a base64 plain string:
+prsa = subprocess.run(f'podman exec rspamd cat /var/lib/rspamd/dkim/{selector}.key | openssl rsa -pubout -outform PEM', stdout=subprocess.PIPE, stderr=sys.stderr, shell=True, text=True)
+pubkey = ''
+for pemline in prsa.stdout.split(os.linesep):
+    if pemline == '' or pemline.startswith('----'):
+        continue
+    pubkey += pemline
 
-    if pubkey and pcat.stdout:
-        odata = {
-            "enabled": True,
-            "dkimRecordData": f"v=DKIM1; k=rsa; p={pubkey}",
-            "dkimFullRawRecord": pcat.stdout,
-        }
+if pubkey and pcat.stdout:
+    odata = {
+        "enabled": is_enabled,
+        "dkimRecordData": f"v=DKIM1; k=rsa; p={pubkey}",
+        "dkimFullRawRecord": pcat.stdout,
+    }
 
 json.dump(odata, fp=sys.stdout)
