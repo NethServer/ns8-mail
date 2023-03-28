@@ -13,7 +13,9 @@
     "advanced": "Advanced",
     "enabled": "Enabled",
     "disabled": "Disabled",
-    "delete": "Delete"
+    "delete": "Delete",
+    "mail_hostname": "Mail server hostname",
+    "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider"
   },
   "status": {
     "title": "Status",
@@ -31,7 +33,6 @@
     "no_images": "No images",
     "no_volumes": "No volumes",
     "user_domain": "User domain",
-    "mail_hostname": "Mail server hostname",
     "rspamd_webapp": "Rspamd webapp",
     "not_configured": "Not configured",
     "open_rspamd": "Open Rspamd",
@@ -107,7 +108,6 @@
     "title": "Welcome to Mail",
     "welcome_message": "Enter the following information to start using Mail",
     "create_domain": "Create domain",
-    "mail_hostname": "Mail server hostname",
     "primary_mail_domain": "Primary mail domain",
     "user_domain": "User domain",
     "select_domain_description": "Select a user domain for the mail server. An email address will be created for every user in this domain",
@@ -328,7 +328,6 @@
   },
   "settings_general": {
     "title": "General settings",
-    "mail_hostname": "Mail server hostname",
     "user_domain": "User domain"
   }
 }

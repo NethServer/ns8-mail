@@ -49,7 +49,7 @@
                 ? configuration.hostname
                 : '-'
             "
-            :description="$t('status.mail_hostname')"
+            :description="$t('common.mail_hostname')"
             :icon="BareMetalServer32"
             :loading="!configuration"
             class="min-height-card"

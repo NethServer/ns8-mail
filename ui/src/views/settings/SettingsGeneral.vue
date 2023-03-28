@@ -62,11 +62,17 @@
                   <cv-form v-else @submit.prevent="configureModule">
                     <NsTextInput
                       v-model.trim="config.hostname"
-                      :label="$t('settings_general.mail_hostname')"
+                      :label="$t('common.mail_hostname')"
                       :invalid-message="error.hostname"
                       :disabled="loading.configureModule"
                       ref="hostname"
-                    />
+                    >
+                      <template slot="tooltip">
+                        <span
+                          v-html="$t('common.mail_hostname_tooltip')"
+                        ></span>
+                      </template>
+                    </NsTextInput>
                     <label class="bx--label">
                       {{ $t("settings_general.user_domain") }}
                     </label>

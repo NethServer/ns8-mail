@@ -60,12 +60,16 @@
             </div>
             <NsTextInput
               v-model.trim="hostname"
-              :label="$t('welcome.mail_hostname')"
+              :label="$t('common.mail_hostname')"
               :invalid-message="error.hostname"
               :disabled="loading.configureModule"
               @input="onChangeMailHostname"
               ref="hostname"
-            />
+            >
+              <template slot="tooltip">
+                <span v-html="$t('common.mail_hostname_tooltip')"></span>
+              </template>
+            </NsTextInput>
             <NsTextInput
               v-model.trim="mail_domain"
               :label="$t('welcome.primary_mail_domain')"
