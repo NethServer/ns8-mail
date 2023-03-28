@@ -10,6 +10,7 @@
         "enabled": true,
         "spam_flag_threshold": 6,
         "deny_message_threshold": 20,
+        "rspamd_path": "rspamd1",
         "greylist": {
           "enabled": true,
           "threshold": 4
@@ -22,7 +23,11 @@
       "antivirus": {
         "enabled": true,
         "clamav_official_sigs": false,
-        "third_party_sigs_rating": "low"
+        "third_party_sigs_rating": "low",
+        "memory_info": {
+          "installed": 2048,
+          "recommended": 4096
+        }
       }
     }
   ],
