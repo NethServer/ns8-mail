@@ -863,7 +863,7 @@
                     ],
                     "properties": {
                         "installed": {
-                            "description": "Installed memory on installation node, expressed in MiB",
+                            "description": "Installed memory on the local node, expressed in MiB",
                             "type": "number"
                         },
                         "recommended": {
