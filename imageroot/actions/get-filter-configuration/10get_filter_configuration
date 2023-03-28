@@ -29,6 +29,7 @@ odata["bypass_rules"] = sum([len(set(l)) for l in mail.rspamd_get_bypass_maps().
 odata["antivirus"]["enabled"] = mail.is_clamav_enabled()
 odata["antivirus"]["clamav_official_sigs"] = agent.run_helper('systemctl', '--user', 'is-enabled', 'freshclam.timer').returncode == 0
 odata["antivirus"]["third_party_sigs_rating"] = get_cus_rating()
+odata["antivirus"]["memory_info"] = mail.get_system_meminfo()
 
 #
 # antispam
