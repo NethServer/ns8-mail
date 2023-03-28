@@ -789,6 +789,11 @@
                     "description": "Deny message threshold",
                     "type": "number"
                 },
+                "rspamd_path": {
+                    "description": "Used to build Rspamd webapp URL (e.g. https://myhost.example.com/<rspamd_path>)",
+                    "type": "string",
+                    "minLength": 1
+                },
                 "greylist": {
                     "type": "object",
                     "title": "Greylist",
@@ -847,6 +852,25 @@
                         "medium",
                         "high"
                     ]
+                },
+                "memory_info": {
+                    "type": "object",
+                    "title": "Memory info",
+                    "description": "Provides installed memory and minimum recommended memory to enable ClamAV official signatures",
+                    "required": [
+                        "installed",
+                        "recommended"
+                    ],
+                    "properties": {
+                        "installed": {
+                            "description": "Installed memory on the local node, expressed in MiB",
+                            "type": "number"
+                        },
+                        "recommended": {
+                            "description": "Minimum recommended memory to enable ClamAV official signatures, expressed in MiB",
+                            "type": "number"
+                        }
+                    }
                 }
             }
         }
