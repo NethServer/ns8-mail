@@ -11,14 +11,20 @@
         </cv-column>
         <cv-column :md="4" :xlg="6">
           <div class="page-toolbar">
-            <NsButton
-              kind="tertiary"
-              size="field"
-              :icon="Launch20"
-              @click="goToRspamdWebapp()"
+            <cv-tooltip
+              alignment="center"
+              direction="left"
+              :tip="$t('common.rspamd_credentials_tooltip')"
               class="page-toolbar-item"
-              >{{ $t("filter.open_rspamd") }}
-            </NsButton>
+            >
+              <NsButton
+                kind="tertiary"
+                size="field"
+                :icon="Launch20"
+                @click="goToRspamdWebapp()"
+                >{{ $t("filter.open_rspamd") }}
+              </NsButton>
+            </cv-tooltip>
           </div>
         </cv-column>
       </cv-row>
@@ -148,9 +154,25 @@
           </cv-tile>
         </cv-column>
       </cv-row>
+      <!-- skeleton -->
+      <cv-row v-if="loading.getFilterConfiguration">
+        <cv-column>
+          <cv-tile light>
+            <cv-skeleton-text
+              heading
+              :paragraph="true"
+              :line-count="7"
+              width="80%"
+            ></cv-skeleton-text>
+          </cv-tile>
+        </cv-column>
+      </cv-row>
       <!-- antispam -->
       <transition name="fade">
-        <cv-row v-if="!loading.getFilterConfiguration && antispam.enabled">
+        <cv-row
+          v-if="!loading.getFilterConfiguration && antispam.enabled"
+          key="antispam"
+        >
           <cv-column>
             <cv-tile light>
               <h4 class="mg-bottom-md">
@@ -283,7 +305,10 @@
       </transition>
       <!-- antivirus -->
       <transition name="fade">
-        <cv-row v-if="!loading.getFilterConfiguration && antivirus.enabled">
+        <cv-row
+          v-if="!loading.getFilterConfiguration && antivirus.enabled"
+          key="antivirus"
+        >
           <cv-column>
             <cv-tile light>
               <h4 class="mg-bottom-md">
@@ -295,14 +320,18 @@
                 :description="$t('filter.antivirus_signatures_explanation')"
                 :showCloseButton="false"
               />
-              <!-- //// read system memory from api -->
               <NsInlineNotification
-                v-if="antivirus.enabled && systemMemory < 4000"
+                v-if="
+                  antivirus.enabled &&
+                  antivirus.memory_info.installed <
+                    antivirus.memory_info.recommended
+                "
                 kind="warning"
                 title=""
                 :description="
                   $t('filter.signatures_memory_warning', {
                     installationNode: getInstallationNodeTitle(),
+                    recommendedMemoryGb: antivirusRecommendedMemoryGb,
                   })
                 "
                 :showCloseButton="false"
@@ -402,8 +431,7 @@ import {
 import { mapState } from "vuex";
 import Information16 from "@carbon/icons-vue/es/information/16";
 import _merge from "lodash/merge";
-
-//// review
+import _round from "lodash/round";
 
 export default {
   name: "MailFilter",
@@ -429,21 +457,27 @@ export default {
         enabled: false,
         spam_flag_threshold: "1",
         deny_message_threshold: "1",
+        rspamd_path: "",
         greylist: {
           enabled: false,
           threshold: "1",
         },
         prefix_email_subject: {
           enabled: false,
-          prefix: "***SPAM***", //// test
+          prefix: "",
         },
       },
       antivirus: {
         enabled: false,
         clamav_official_sigs: false,
         third_party_sigs_rating: "medium",
+        memory_info: {
+          available: 0,
+          installed: 0,
+          recommended: 0,
+        },
       },
-      systemMemory: 0, //// remove
+      antivirusRecommendedMemoryGb: 0,
       status: null,
       loading: {
         getFilterConfiguration: false,
@@ -512,14 +546,14 @@ export default {
           enabled: this.antivirus.enabled,
         },
       };
-
-      console.log("saveGeneralSection", actionPayload); ////
-
       this.loading.saveGeneralSection = true;
       this.setFilterConfiguration(actionPayload, "general");
     },
     goToRspamdWebapp() {
-      console.log("goToRspamdWebapp"); ////
+      if (this.antispam.rspamd_path) {
+        const rspamdUrl = `${window.location.protocol}//${window.location.hostname}/${this.antispam.rspamd_path}`;
+        window.open(rspamdUrl, "_blank");
+      }
     },
     onSignaturesRatingSelected(value) {
       this.antivirus.third_party_sigs_rating = value;
@@ -624,8 +658,6 @@ export default {
       this.loading.getFilterConfiguration = false;
     },
     getFilterConfigurationCompleted(taskContext, taskResult) {
-      console.log("!!! getFilterConfigurationCompleted", taskResult.output); ////
-
       this.numBypassRules = taskResult.output.bypass_rules;
 
       // convert values for NsSliders to strings
@@ -650,10 +682,11 @@ export default {
 
       _merge(this.antispam, taskResult.output.antispam);
       _merge(this.antivirus, taskResult.output.antivirus);
+      this.antivirusRecommendedMemoryGb = _round(
+        this.antivirus.memory_info.recommended / 1024,
+        2
+      );
       this.loading.getFilterConfiguration = false;
-
-      console.log("!! this.antispam", this.antispam); ////
-      console.log("!! this.antivirus", this.antivirus); ////
     },
     async setFilterConfiguration(actionPayload, section) {
       this.loading.setFilterConfiguration = true;
@@ -730,8 +763,6 @@ export default {
       }
     },
     setFilterConfigurationCompleted() {
-      console.log("! setFilterConfigurationCompleted"); ////
-
       this.loading.setFilterConfiguration = false;
       this.loading.saveGeneralSection = false;
       this.loading.saveAntispamSection = false;
@@ -772,9 +803,6 @@ export default {
         actionPayload.antispam.prefix_email_subject.prefix =
           this.antispam.prefix_email_subject.prefix;
       }
-
-      console.log("saveAntispamSection", actionPayload); ////
-
       this.loading.saveAntispamSection = true;
       this.setFilterConfiguration(actionPayload, "antispam");
     },
@@ -786,9 +814,6 @@ export default {
           third_party_sigs_rating: this.antivirus.third_party_sigs_rating,
         },
       };
-
-      console.log("saveAntivirusSection", actionPayload); ////
-
       this.loading.saveAntivirusSection = true;
       this.setFilterConfiguration(actionPayload, "antivirus");
     },

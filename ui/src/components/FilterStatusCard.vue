@@ -7,12 +7,15 @@
     <NsInfoCard
       :title="$t('filter.title')"
       :icon="Filter32"
-      :loading="false"
+      :loading="loading"
+      :isErrorShown="isErrorShown"
+      :errorTitle="errorTitle"
+      :errorDescription="errorDescription"
       :light="light"
       class="ns-filter-status-card ns-card"
     >
       <template slot="content">
-        <div class="card-content">
+        <div v-show="!loading && !isErrorShown" class="card-content">
           <div class="table-wrapper">
             <div class="table">
               <!-- antispam -->
@@ -82,8 +85,6 @@
 import { mapState } from "vuex";
 import { UtilService, IconService, TaskService } from "@nethserver/ns8-ui-lib";
 
-//// review
-
 export default {
   name: "FilterStatusCard",
   components: {},
@@ -92,6 +93,12 @@ export default {
     isAntispamEnabled: Boolean,
     isAntivirusEnabled: Boolean,
     loading: Boolean,
+    isErrorShown: {
+      type: Boolean,
+      default: false,
+    },
+    errorTitle: String,
+    errorDescription: String,
     light: Boolean,
   },
   computed: {
@@ -108,10 +115,6 @@ export default {
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
 
-.status {
-  font-weight: bold;
-}
-
 .skeleton-container {
   display: inline-block;
   width: 5rem;
@@ -120,26 +123,6 @@ export default {
 .skeleton-line {
   position: relative;
   top: 0.7rem;
-}
-
-//// remove classes already on the core
-
-.table-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-}
-
-.table {
-  display: table;
-}
-
-.tr {
-  display: table-row;
-}
-
-.td {
-  display: table-cell;
 }
 
 .label {
@@ -153,28 +136,8 @@ export default {
   text-align: left;
 }
 
-.card-content {
-  flex-direction: column;
-  text-align: center;
-
-  .row {
-    margin-bottom: $spacing-05;
-  }
-
-  .description {
-    color: $ui-04;
-  }
-}
-
 .status-icon {
   position: relative;
   top: 2px;
 }
-
-//// remove
-.ns-disabled {
-  color: #767676 !important;
-  fill: #767676 !important;
-}
-//// end remove
 </style>

@@ -15,7 +15,8 @@
     "disabled": "Disabled",
     "delete": "Delete",
     "mail_hostname": "Mail server hostname",
-    "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider"
+    "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
+    "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd webapp"
   },
   "status": {
     "title": "Status",
@@ -102,7 +103,7 @@
     "cannot_retrieve_module_info": "Cannot retrieve module info",
     "cannot_retrieve_installed_modules": "Cannot retrieve installed modules",
     "invalid_pattern": "Invalid pattern",
-    "cannot_retrieve_configuration": "Cannot retrieve configuration"
+    "cannot_retrieve_filter_configuration": "Cannot retrieve filter configuration"
   },
   "welcome": {
     "title": "Welcome to Mail",
@@ -277,7 +278,7 @@
     "signatures_low": "Low",
     "signatures_medium": "Medium",
     "signatures_high": "High",
-    "signatures_memory_warning": "<strong>{installationNode}</strong> has less than 4GB of RAM. You're strongly advised to disable ClamAV official signatures to avoid memory filling",
+    "signatures_memory_warning": "<strong>{installationNode}</strong> has less than {recommendedMemoryGb} GiB of RAM. You're strongly advised to keep ClamAV official signatures disabled to avoid memory filling",
     "save_filter_settings": "Save filter settings"
   },
   "filter_bypass_rules": {

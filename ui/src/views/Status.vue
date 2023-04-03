@@ -78,33 +78,31 @@
               filterConfig ? filterConfig.antivirus.enabled : false
             "
             :loading="loading.getFilterConfiguration"
+            :isErrorShown="!!error.getFilterConfiguration"
+            :errorTitle="$t('error.cannot_retrieve_filter_configuration')"
+            :errorDescription="error.getFilterConfiguration"
             light
           />
         </cv-column>
         <cv-column :md="4" :max="4">
-          <!-- //// check rspamdLink -->
           <NsInfoCard
             light
             :title="$t('status.rspamd_webapp')"
-            :description="
-              config && config.rspamdLink
-                ? config.rspamdLink
-                : $t('status.not_configured')
-            "
+            :description="$t('common.rspamd_credentials_tooltip')"
             :icon="Wikis32"
-            :loading="loading.getConfiguration"
-            :isErrorShown="error.getConfiguration"
-            :errorTitle="$t('error.cannot_retrieve_configuration')"
-            :errorDescription="error.getConfiguration"
-            class="min-height-card"
+            :loading="loading.getFilterConfiguration"
+            :isErrorShown="!!error.getFilterConfiguration"
+            :errorTitle="$t('error.cannot_retrieve_filter_configuration')"
+            :errorDescription="error.getFilterConfiguration"
           >
             <template slot="content">
-              <!-- //// check rspamdLink -->
               <NsButton
-                v-if="config && config.rspamdLink"
+                v-show="
+                  !loading.getFilterConfiguration &&
+                  !error.getFilterConfiguration
+                "
                 kind="ghost"
                 :icon="Launch20"
-                :disabled="loading.getConfiguration"
                 @click="goToRspamdWebapp"
               >
                 {{ $t("status.open_rspamd") }}
@@ -624,14 +622,14 @@ export default {
       this.loading.getFilterConfiguration = false;
     },
     getFilterConfigurationCompleted(taskContext, taskResult) {
-      console.log("! getFilterConfigurationCompleted", taskResult.output); ////
-
       this.filterConfig = taskResult.output;
       this.loading.getFilterConfiguration = false;
     },
     goToRspamdWebapp() {
-      //// check rspamdLink
-      window.open(`https://${this.config.rspamdLink}`, "_blank");
+      if (this.filterConfig && this.filterConfig.antispam.rspamd_path) {
+        const rspamdUrl = `${window.location.protocol}//${window.location.hostname}/${this.filterConfig.antispam.rspamd_path}`;
+        window.open(rspamdUrl, "_blank");
+      }
     },
   },
 };
