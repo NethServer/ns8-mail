@@ -407,25 +407,6 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
-
-//// remove (css rules moved to core)
-.card-content {
-  flex-direction: column;
-  text-align: center;
-
-  .row {
-    margin-bottom: $spacing-05;
-  }
-
-  .row:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.description {
-  color: $ui-04;
-}
-
 .justify-flex-end {
   display: flex;
   justify-content: flex-end;

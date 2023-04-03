@@ -335,15 +335,4 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
-
-//// move to core
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
 </style>
