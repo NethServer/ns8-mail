@@ -69,19 +69,6 @@
           :disabled="loading.addBypassRule"
           ref="value"
         />
-        <!-- <div class="icon-and-text"> ////
-          <NsSvg :svg="InformationFilled16" class="icon ns-info" />
-          <div
-            v-html="
-              $t('filter_bypass_rules.rule_description', {
-                $t('filter_bypass_rules.direction,
-                type,
-                value,
-              })
-            "
-          ></div>
-        </div> -->
-
         <!-- need to wrap error notification inside a div: custom elements like NsInlineNotification don't have scrollIntoView() function -->
         <div ref="addBypassRuleError">
           <NsInlineNotification
@@ -106,10 +93,8 @@ import to from "await-to-js";
 import { UtilService, TaskService, IconService } from "@nethserver/ns8-ui-lib";
 import { mapState } from "vuex";
 
-//// review
-
 export default {
-  name: "AddBypassRuleModal",
+  name: "CreateBypassRuleModal",
   mixins: [UtilService, TaskService, IconService],
   props: {
     isShown: Boolean,
@@ -336,10 +321,6 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
-
-// .icon-and-text { ////
-//   justify-content: flex-start;
-//}
 
 .direction-switcher {
   max-width: 20rem;

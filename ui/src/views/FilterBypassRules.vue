@@ -65,7 +65,6 @@
       <cv-row>
         <cv-column>
           <cv-tile light>
-            <!-- //// check errorTitle and errorDescription -->
             <NsDataTable
               :allRows="rules"
               :columns="i18nTableColumns"
@@ -162,8 +161,6 @@ import {
 import { mapState } from "vuex";
 import Information16 from "@carbon/icons-vue/es/information/16";
 import CreateBypassRuleModal from "@/components/CreateBypassRuleModal";
-
-//// review
 
 export default {
   name: "MailFilter",
@@ -275,8 +272,6 @@ export default {
         (el) => el.name === rule.value
       );
 
-      console.log("cancelDeleteBypassRule, timeoutFound", timeoutFound); ////
-
       if (timeoutFound) {
         clearTimeout(timeoutFound.timeout);
 
@@ -291,12 +286,6 @@ export default {
 
       // reload bypass rules
       this.listBypassRules();
-    },
-    getDescription(rule) {
-      const typeString = this.$t(`filter_bypass_rules.type_${rule.type}`);
-      return this.$t(`filter_bypass_rules.allow_${rule.direction}_type`, {
-        type: typeString,
-      });
     },
     async listBypassRules() {
       this.loading.listBypassRules = true;

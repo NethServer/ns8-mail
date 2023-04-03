@@ -457,8 +457,6 @@ export default {
         spamRetention.value = parseInt(this.spamRetention.value);
       }
 
-      //// TODO add a prefix to spam messages subject
-
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,

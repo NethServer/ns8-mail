@@ -362,6 +362,6 @@ export default {
 @import "../styles/carbon-utils";
 
 .description {
-  color: $ui-04;
+  color: $text-05;
 }
 </style>

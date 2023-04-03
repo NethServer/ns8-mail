@@ -84,7 +84,6 @@
                       ></span
                     ></template>
                     <template slot="content">
-                      <!-- //// remove mock -->
                       <NsCodeSnippet
                         light
                         copyTipPosition="left"
@@ -271,8 +270,6 @@ export default {
       this.loading.getDomainDkim = false;
     },
     getDomainDkimCompleted(taskContext, taskResult) {
-      console.log("getDomainDkimCompleted", taskResult.output); ////
-
       this.isDkimEnabled = taskResult.output.enabled;
       this.dkimFullRawRecord = taskResult.output.dkimFullRawRecord;
       this.dkimRecordData = taskResult.output.dkimRecordData;
