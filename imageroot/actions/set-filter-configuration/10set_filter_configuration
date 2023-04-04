@@ -48,8 +48,9 @@ if 'antispam' in request:
             thm['reject'] = float(ras['deny_message_threshold'])
 
         if 'greylist' in ras:
-            if ras['greylist']['enabled'] and 'threshold' in ras['greylist']:
-                thm['greylist'] = float(ras['greylist']['threshold'])
+            if ras['greylist']['enabled']:
+                greylist_fallback_threshold = float(thm.get('add header', 6.0)) / 2.0
+                thm['greylist'] = float(ras['greylist'].get('threshold', greylist_fallback_threshold))
                 agent.set_env('RSPAMD_greylist_enabled', '1')
             else:
                 thm['greylist'] = None

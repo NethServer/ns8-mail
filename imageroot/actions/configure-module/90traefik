@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Configure traefik route for Rspamd
+# Rule: only one instance of Rspamd runs on a specific node
+
+import os
+import sys
+import json
+import agent
+import agent.tasks
+
+rspamd_route_id = os.environ['MODULE_ID'] + '-rspamd'
+rspamd_path = '/rspamd'
+
+if agent.http_route_in_use(domain=None, path=rspamd_path):
+    sys.exit(0) # HTTP route exists, skip this step
+
+default_traefik_id = agent.resolve_agent_id('traefik@node')
+if default_traefik_id is None:
+    sys.exit(0)
+
+response = agent.tasks.run(
+    agent_id=default_traefik_id,
+    action='set-route',
+    data={
+        'instance': rspamd_route_id,
+        'url': f'http://127.0.0.1:11334', # port number of rspamd
+        'path': rspamd_path, # only one module instance per node
+        'http2https': True,
+        'strip_prefix': True,
+    },
+    extra={'isNotificationHidden': True},
+)
+
+# Check if traefik configuration has been successfull
+agent.assert_exp(response['exit_code'] == 0)

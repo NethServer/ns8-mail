@@ -443,3 +443,27 @@ def get_bypass_map_name(mtype, mdirection):
 def is_clamav_enabled():
     """Check if the clamav service is enabled or not, returning a boolean value"""
     return agent.run_helper('systemctl', '--user', 'is-enabled', 'clamav.service').returncode == 0
+
+def get_system_meminfo():
+    """
+    Parse /proc/meminfo and extract some fields
+    See https://www.kernel.org/doc/html/latest/filesystems/proc.html?highlight=meminfo#meminfo
+    """
+    meminfo = {
+        "installed": 0,
+        "available": 0,
+        "recommended": 4096
+    }
+
+    try:
+        with open("/proc/meminfo") as fh:
+            for fline in fh:
+                fields = fline.split()
+                if fields[0] == 'MemTotal:':
+                    meminfo["installed"] = math.floor(int(fields[1])/1024)
+                if fields[0] == 'MemAvailable:':
+                    meminfo["available"] = math.floor(int(fields[1])/1024)
+    except Exception as ex:
+        print(agent.SD_DEBUG + "get_system_meminfo()", str(ex), file=sys.stderr)
+
+    return meminfo

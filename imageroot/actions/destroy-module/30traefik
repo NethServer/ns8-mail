@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Remove the Rspamd route
+
+import os
+import sys
+import json
+import agent
+import agent.tasks
+
+rspamd_route_id = os.environ['MODULE_ID'] + '-rspamd'
+
+default_traefik_id = agent.resolve_agent_id('traefik@node')
+if default_traefik_id is None:
+    sys.exit(0)
+
+# Remove our traefik route (if exists) ignoring errors
+response = agent.tasks.run(
+    agent_id=default_traefik_id,
+    action='delete-route',
+    data={
+        'instance': rspamd_route_id,
+    },
+    extra={'isNotificationHidden': True},
+)
