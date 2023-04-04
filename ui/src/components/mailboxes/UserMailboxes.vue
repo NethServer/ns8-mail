@@ -1,5 +1,5 @@
 <!--
-  Copyright (C) 2022 Nethesis S.r.l.
+  Copyright (C) 2023 Nethesis S.r.l.
   SPDX-License-Identifier: GPL-3.0-or-later
 -->
 <template>
@@ -12,6 +12,7 @@
             :columns="i18nTableColumns"
             :rawColumns="tableColumns"
             :sortable="true"
+            :customSortTable="sortUserMailboxes"
             :pageSizes="[10, 25, 50, 100]"
             :overflow-menu="true"
             isSearchable
@@ -373,6 +374,24 @@ export default {
     setMailboxEnabledCompleted() {
       this.loading.setMailboxEnabled = false;
       this.listUserMailboxes();
+    },
+    sortUserMailboxes(sortProperty) {
+      if (sortProperty != "quota") {
+        // default sort
+        return this.sortByProperty(sortProperty);
+      }
+
+      // sort by quota
+
+      return function (a, b) {
+        if (a.quota.value < b.quota.value) {
+          return -1;
+        }
+        if (a.quota.value > b.quota.value) {
+          return 1;
+        }
+        return 0;
+      };
     },
   },
 };

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2022 Nethesis S.r.l.
+// Copyright (C) 2023 Nethesis S.r.l.
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 import Vue from "vue";
@@ -20,6 +20,20 @@ const routes = [
     name: "Domains",
     component: () =>
       import(/* webpackChunkName: "domains" */ "../views/Domains.vue"),
+  },
+  {
+    path: "/filter",
+    name: "MailFilter",
+    component: () =>
+      import(/* webpackChunkName: "filter" */ "../views/MailFilter.vue"),
+  },
+  {
+    path: "/filterBypassRules",
+    name: "FilterBypassRules",
+    component: () =>
+      import(
+        /* webpackChunkName: "filterBypassRules" */ "../views/FilterBypassRules.vue"
+      ),
   },
   {
     path: "/mailboxes",

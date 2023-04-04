@@ -1,5 +1,5 @@
 <!--
-  Copyright (C) 2022 Nethesis S.r.l.
+  Copyright (C) 2023 Nethesis S.r.l.
   SPDX-License-Identifier: GPL-3.0-or-later
 -->
 <template>
@@ -17,7 +17,7 @@
           @click="goToAppPage(instanceName, 'settingsGeneral')"
           :icon="Settings32"
         >
-          <h6>{{ $t("settings_general.title") }}</h6>
+          <h6>{{ $t("settings.general") }}</h6>
         </NsTile>
       </cv-column>
       <cv-column :md="4" :xlg="4">
@@ -27,7 +27,7 @@
           @click="goToAppPage(instanceName, 'settingsMailboxes')"
           :icon="Box32"
         >
-          <h6>{{ $t("settings_mailboxes.title") }}</h6>
+          <h6>{{ $t("settings.mailboxes") }}</h6>
         </NsTile>
       </cv-column>
       <cv-column :md="4" :xlg="4">

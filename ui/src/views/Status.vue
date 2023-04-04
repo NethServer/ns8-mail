@@ -1,5 +1,5 @@
 <!--
-  Copyright (C) 2022 Nethesis S.r.l.
+  Copyright (C) 2023 Nethesis S.r.l.
   SPDX-License-Identifier: GPL-3.0-or-later
 -->
 <template>
@@ -49,7 +49,7 @@
                 ? configuration.hostname
                 : '-'
             "
-            :description="$t('status.mail_hostname')"
+            :description="$t('common.mail_hostname')"
             :icon="BareMetalServer32"
             :loading="!configuration"
             class="min-height-card"
@@ -68,6 +68,47 @@
             :loading="!configuration"
             class="min-height-card"
           />
+        </cv-column>
+        <cv-column :md="4" :max="4">
+          <FilterStatusCard
+            :isAntispamEnabled="
+              filterConfig ? filterConfig.antispam.enabled : false
+            "
+            :isAntivirusEnabled="
+              filterConfig ? filterConfig.antivirus.enabled : false
+            "
+            :loading="loading.getFilterConfiguration"
+            :isErrorShown="!!error.getFilterConfiguration"
+            :errorTitle="$t('error.cannot_retrieve_filter_configuration')"
+            :errorDescription="error.getFilterConfiguration"
+            light
+          />
+        </cv-column>
+        <cv-column :md="4" :max="4">
+          <NsInfoCard
+            light
+            :title="$t('status.rspamd_webapp')"
+            :description="$t('common.rspamd_credentials_tooltip')"
+            :icon="Wikis32"
+            :loading="loading.getFilterConfiguration"
+            :isErrorShown="!!error.getFilterConfiguration"
+            :errorTitle="$t('error.cannot_retrieve_filter_configuration')"
+            :errorDescription="error.getFilterConfiguration"
+          >
+            <template slot="content">
+              <NsButton
+                v-show="
+                  !loading.getFilterConfiguration &&
+                  !error.getFilterConfiguration
+                "
+                kind="ghost"
+                :icon="Launch20"
+                @click="goToRspamdWebapp"
+              >
+                {{ $t("status.open_rspamd") }}
+              </NsButton>
+            </template>
+          </NsInfoCard>
         </cv-column>
         <cv-column :md="4" :max="4">
           <NsInfoCard
@@ -290,9 +331,11 @@ import {
   IconService,
   UtilService,
 } from "@nethserver/ns8-ui-lib";
+import FilterStatusCard from "@/components/FilterStatusCard";
 
 export default {
   name: "Status",
+  components: { FilterStatusCard },
   mixins: [TaskService, QueryParamService, IconService, UtilService],
   pageTitle() {
     return this.$t("status.title") + " - " + this.appName;
@@ -313,15 +356,19 @@ export default {
       },
       backupRepositories: [],
       backups: [],
+      config: null,
+      filterConfig: null,
       loading: {
         getStatus: false,
         listBackupRepositories: false,
         listBackups: false,
+        getFilterConfiguration: false,
       },
       error: {
         getStatus: "",
         listBackupRepositories: "",
         listBackups: "",
+        getFilterConfiguration: "",
       },
     };
   },
@@ -374,6 +421,7 @@ export default {
   created() {
     this.getStatus();
     this.listBackupRepositories();
+    this.getFilterConfiguration();
   },
   methods: {
     async getStatus() {
@@ -530,6 +578,58 @@ export default {
       }
       this.backups = backups;
       this.loading.listBackups = false;
+    },
+    async getFilterConfiguration() {
+      this.loading.getFilterConfiguration = true;
+      this.error.getFilterConfiguration = "";
+      const taskAction = "get-filter-configuration";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getFilterConfigurationAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getFilterConfigurationCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getFilterConfiguration = this.getErrorMessage(err);
+        this.loading.getFilterConfiguration = false;
+        return;
+      }
+    },
+    getFilterConfigurationAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getFilterConfiguration = this.$t("error.generic_error");
+      this.loading.getFilterConfiguration = false;
+    },
+    getFilterConfigurationCompleted(taskContext, taskResult) {
+      this.filterConfig = taskResult.output;
+      this.loading.getFilterConfiguration = false;
+    },
+    goToRspamdWebapp() {
+      if (this.filterConfig && this.filterConfig.antispam.rspamd_path) {
+        const rspamdUrl = `${window.location.protocol}//${window.location.hostname}/${this.filterConfig.antispam.rspamd_path}`;
+        window.open(rspamdUrl, "_blank");
+      }
     },
   },
 };

@@ -1,5 +1,5 @@
 <!--
-  Copyright (C) 2022 Nethesis S.r.l.
+  Copyright (C) 2023 Nethesis S.r.l.
   SPDX-License-Identifier: GPL-3.0-or-later
 -->
 <template>
@@ -12,7 +12,7 @@
         <cv-column :md="4" :xlg="6">
           <div class="page-toolbar">
             <NsButton
-              kind="ghost"
+              kind="tertiary"
               size="field"
               :icon="Settings20"
               @click="goToMailboxesSettings()"
@@ -38,11 +38,21 @@
             <NsTabs
               :container="false"
               :aria-label="core.$t('common.tab_navigation')"
+              :noDefaultToFirst="true"
+              @tab-selected="tabSelected"
             >
-              <cv-tab id="tab-1" :label="$t('mailboxes.user_mailboxes')">
+              <cv-tab
+                id="tab-1"
+                :label="$t('mailboxes.user_mailboxes')"
+                :selected="q.view === 'user-mailboxes'"
+              >
                 <UserMailboxes />
               </cv-tab>
-              <cv-tab id="tab-2" :label="$t('mailboxes.public_mailboxes')">
+              <cv-tab
+                id="tab-2"
+                :label="$t('mailboxes.public_mailboxes')"
+                :selected="q.view === 'public-mailboxes'"
+              >
                 <PublicMailboxes />
               </cv-tab>
             </NsTabs>
@@ -82,6 +92,7 @@ export default {
     return {
       q: {
         page: "mailboxes",
+        view: "",
       },
       urlCheckInterval: null,
     };
@@ -99,9 +110,21 @@ export default {
     clearInterval(this.urlCheckInterval);
     next();
   },
+  mounted() {
+    if (!this.q.view) {
+      this.q.view = "user-mailboxes";
+    }
+  },
   methods: {
     goToMailboxesSettings() {
       this.goToAppPage(this.instanceName, "settingsMailboxes");
+    },
+    tabSelected(tabNum) {
+      if (tabNum == 0) {
+        this.q.view = "user-mailboxes";
+      } else if (tabNum == 1) {
+        this.q.view = "public-mailboxes";
+      }
     },
   },
 };

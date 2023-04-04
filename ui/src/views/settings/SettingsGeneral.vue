@@ -1,5 +1,5 @@
 <!--
-  Copyright (C) 2022 Nethesis S.r.l.
+  Copyright (C) 2023 Nethesis S.r.l.
   SPDX-License-Identifier: GPL-3.0-or-later
 -->
 <template>
@@ -21,8 +21,8 @@
       </cv-column>
     </cv-row>
     <cv-row>
-      <cv-column class="subpage-title">
-        <h3>{{ $t("settings_general.title") }}</h3>
+      <cv-column class="page-title">
+        <h2>{{ $t("settings_general.title") }}</h2>
       </cv-column>
     </cv-row>
     <cv-row v-if="error.configureModule">
@@ -62,19 +62,51 @@
                   <cv-form v-else @submit.prevent="configureModule">
                     <NsTextInput
                       v-model.trim="config.hostname"
-                      :label="$t('settings_general.mail_hostname')"
+                      :label="$t('common.mail_hostname')"
                       :invalid-message="error.hostname"
                       :disabled="loading.configureModule"
                       ref="hostname"
-                    />
+                    >
+                      <template slot="tooltip">
+                        <span
+                          v-html="$t('common.mail_hostname_tooltip')"
+                        ></span>
+                      </template>
+                    </NsTextInput>
                     <label class="bx--label">
                       {{ $t("settings_general.user_domain") }}
                     </label>
                     <cv-grid class="no-padding">
                       <cv-row>
+                        <cv-column v-if="!userDomains.length">
+                          <NsTile class="no-mg-bottom">
+                            <NsEmptyState
+                              :title="$t('welcome.no_domain_configured')"
+                            >
+                              <template #description>
+                                <div>
+                                  {{
+                                    $t(
+                                      "welcome.no_domain_configured_description"
+                                    )
+                                  }}
+                                </div>
+                                <NsButton
+                                  kind="ghost"
+                                  :icon="Events20"
+                                  @click="goToDomainsAndUsers"
+                                  class="empty-state-button"
+                                >
+                                  {{ $t("welcome.go_to_domains_and_users") }}
+                                </NsButton>
+                              </template>
+                            </NsEmptyState>
+                          </NsTile>
+                        </cv-column>
                         <cv-column
-                          v-for="userDomain in userDomains"
-                          :key="userDomain.name"
+                          v-else
+                          v-for="(userDomain, index) in userDomains"
+                          :key="index"
                           :md="4"
                           :xlg="4"
                         >
@@ -426,7 +458,7 @@ export default {
       });
 
       // select user domain if get-configuration has completed
-      if (this.config.user_domain.name) {
+      if (this.config.user_domain?.name) {
         this.selectUserDomain(this.config.user_domain.name);
       }
 
@@ -438,6 +470,9 @@ export default {
           d.selected = false;
         }
       }
+    },
+    goToDomainsAndUsers() {
+      this.core.$router.push("/domains");
     },
   },
 };
