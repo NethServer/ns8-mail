@@ -9,7 +9,14 @@
         "group_destination": "Group",
         "missing_object": "Missing object",
         "user_destination": "User",
-        "save_settings": "Save settings"
+        "save_settings": "Save settings",
+        "advanced": "Advanced",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "delete": "Delete",
+        "mail_hostname": "Mail server hostname",
+        "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
+        "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd webapp"
     },
     "action": {
         "list-acl-subjects": "List ACL subjects",
@@ -41,7 +48,14 @@
         "list-addresses": "List addresses",
         "get-mailbox-settings": "Get mailbox settings",
         "list-domains": "List domains",
-        "set-mailbox-enabled": "Set mailbox enabled"
+        "set-mailbox-enabled": "Set mailbox enabled",
+        "add-bypass-rule": "Create bypass rule",
+        "get-domain-dkim": "Get domain DKIM",
+        "set-domain-dkim": "Set domain DKIM",
+        "list-bypass-rules": "List bypass rules",
+        "remove-bypass-rule": "Delete bypass rule",
+        "set-filter-configuration": "Set filter configuration",
+        "get-filter-configuration": "Get filter configuration"
     },
     "domains": {
         "no_domain": "No domain",
@@ -68,7 +82,14 @@
         "required_if_copy_inbound_messages": "Required if \"Copy inbound messages\" is enabled",
         "description": "Description",
         "send_to": "Send to email address",
-        "delete_domain_confirm": "Delete domain <strong>{name}</strong>?"
+        "delete_domain_confirm": "Delete domain <strong>{name}</strong>?",
+        "dkim_on_domain_domain": "DKIM signing on domain <strong>{domain}</strong>",
+        "dkim_tooltip": "Enable DKIM signing for outgoing messages to prevent spoofing",
+        "dkim_txt_record_key_procedure": "Set <strong>default._domainkey</strong> as record key and paste the record data",
+        "dkim_txt_record_raw_procedure": "Paste the full TXT record in raw form",
+        "dkim_txt_record_description": "Create the TXT record required by DKIM at your <strong>{domain}</strong> DNS service provider by choosing <strong>one of the following procedures</strong>",
+        "configure_dkim": "Configure DKIM",
+        "configure_dkim_for_domain": "Configure DKIM for {domain}"
     },
     "addresses": {
         "address_already_exists": "Address already exists",
@@ -182,7 +203,9 @@
         "default_mail_quota": "Default mail quota",
         "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required",
         "title": "Mailboxes",
-        "specify_retention": "Specify retention"
+        "specify_retention": "Specify retention",
+        "quota": "Quota",
+        "spam": "Spam"
     },
     "settings_general": {
         "user_domain": "User domain",
@@ -218,7 +241,12 @@
         "title": "Stato",
         "app_volumes": "Volume app|Volumi app",
         "no_volumes": "Nessun volume",
-        "mail_hostname": "Mail server hostname"
+        "mail_hostname": "Mail server hostname",
+        "rspamd_webapp": "Rspamd webapp",
+        "not_configured": "Not configured",
+        "open_rspamd": "Open Rspamd",
+        "status": "Status",
+        "go_to_filter": "Go to Filter"
     },
     "settings_master_users": {
         "master_users_placeholder": "Choose master users",
@@ -240,15 +268,73 @@
         "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati",
         "error": "Errore",
         "validation_error": "Errore di validazione",
-        "401": "Autenticazione non valida"
+        "401": "Autenticazione non valida",
+        "invalid_pattern": "Invalid pattern",
+        "cannot_retrieve_filter_configuration": "Cannot retrieve filter configuration"
     },
     "settings": {
         "configure_instance": "Configura {instance}",
         "save": "Salva",
         "test_filed": "Test field",
-        "title": "Impostazioni"
+        "title": "Impostazioni",
+        "general": "General",
+        "mailboxes": "Mailboxes"
     },
     "about": {
         "title": "Informazioni"
+    },
+    "filter": {
+        "spam_flag_threshold": "Spam flag threshold",
+        "deny_message_spam_threshold": "Deny message spam threshold",
+        "greylist_threshold": "Greylist threshold",
+        "go_to_bypass_rules": "Go to Bypass rules",
+        "add_prefix_to_spam_subject": "Add a prefix to spam messages subject",
+        "prefix": "Prefix",
+        "antivirus": "Antivirus",
+        "antivirus_signatures_explanation": "Antivirus signature updates are checked at hourly intervals. Changes to antivirus settings will take effect on next signature check",
+        "clamav_official_signatures": "Enable ClamAV official signatures",
+        "signatures_low": "Low",
+        "title": "Filter",
+        "antispam": "Antispam",
+        "general": "General",
+        "enable_filter": "Enable filter",
+        "enable_antispam": "Enable antispam",
+        "enable_antivirus": "Enable antivirus",
+        "open_rspamd": "Open Rspamd",
+        "num_rules_configured_c": "No active rule | {n} active rule | {n} active rules",
+        "configure": "Configure",
+        "clamav_official_signatures_tooltip": "Official ClamAV signatures use a large amount of memory, detect many old threats but are not very effective against the latest malware",
+        "third_party_signatures_rating": "Third-party signatures rating",
+        "third_party_signatures_rating_tooltip": "A higher rating means more blocked threats but also a higher probability of false positives. Recommended ratings are <strong>Low</strong> and <strong>Medium</strong>",
+        "signatures_medium": "Medium",
+        "signatures_high": "High",
+        "signatures_memory_warning": "<strong>{installationNode}</strong> has less than {recommendedMemoryGb} GiB of RAM. You're strongly advised to keep ClamAV official signatures disabled to avoid memory filling",
+        "save_filter_settings": "Save filter settings"
+    },
+    "filter_bypass_rules": {
+        "type_ip": "IP address",
+        "type_cidr": "CIDR network",
+        "type_email_l": "email address",
+        "title": "Bypass rules",
+        "bypass_rules_tooltip": "Email filter is bypassed if any of these rules matches",
+        "create_bypass_rule": "Create bypass rule",
+        "delete_rule": "Delete rule",
+        "allow_from": "Allow from",
+        "allow_to": "Allow to",
+        "col_direction": "Allow from/to",
+        "col_value": "Value",
+        "col_type": "Type",
+        "search_rule": "Search rule",
+        "no_bypass_rule": "No bypass rule",
+        "no_bypass_rule_description": "There is no bypass rule configured",
+        "type_email": "Email address",
+        "type_domain": "Domain",
+        "type_domain_l": "domain",
+        "type_ip_l": "IP address",
+        "type_cidr_l": "CIDR network",
+        "create_bypass_rule_for": "Create bypass rule for {value}",
+        "bypass_rule_is_going_to_be_deleted": "Bypass rule for {value} is going to be deleted...",
+        "delete_bypass_rule_for": "Delete bypass rule for {value}",
+        "bypass_rule_already_exists": "This bypass rule already exists"
     }
 }
