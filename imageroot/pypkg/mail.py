@@ -327,7 +327,14 @@ def rspamd_get_bypass_maps():
     maps = {}
 
     # Get the list of map IDs
-    for omap in requests.get(endpoint + 'maps', auth=credentials).json():
+    try:
+        jresponse = requests.get(endpoint + 'maps', auth=credentials).json()
+    except json.JSONDecodeError:
+        # Handle bad Rspamd response during service startup
+        print(agent.SD_DEBUG + "Decode of rspamd/maps response failed", jresponse, file=sys.stderr)
+        return {}
+
+    for omap in jresponse:
         if not omap['uri'].startswith('/var/lib/rspamd/bypass_'):
             continue # skip unknown maps
 
@@ -392,7 +399,14 @@ def rspamd_api_get_thresholds():
 
     thresholds_map = {}
 
-    for ethreshold in requests.get(endpoint + 'actions', auth=credentials).json():
+    try:
+        jresponse = requests.get(endpoint + 'actions', auth=credentials).json()
+    except json.JSONDecodeError:
+        # Handle bad Rspamd response during service startup
+        print(agent.SD_DEBUG + "Decode of rspamd/actions response failed", jresponse, file=sys.stderr)
+        return {}
+
+    for ethreshold in jresponse:
         if ethreshold['value'] is not None:
             thresholds_map[ethreshold['action']] = ethreshold['value']
 

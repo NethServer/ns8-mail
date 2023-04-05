@@ -20,6 +20,11 @@ odata =  {
     "antispam": {"enabled": False},
 }
 
+if not os.path.exists("rspamd.env"):
+    # The module is still not configured, exit now
+    json.dump(odata, fp=sys.stdout)
+    sys.exit(0)
+
 # count of bypass_rules, removing duplicated entries:
 odata["bypass_rules"] = sum([len(set(l)) for l in mail.rspamd_get_bypass_maps().values()])
 
