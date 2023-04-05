@@ -35,7 +35,7 @@ odata["antivirus"]["memory_info"] = mail.get_system_meminfo()
 # antispam
 #
 odata["antispam"]["enabled"] = bool(os.getenv('RSPAMD_antispam_checks_enabled'))
-odata["antispam"]["rspamd_path"] = "rspamd/" # Trailing slash is important for the UI to work!
+odata["antispam"]["rspamd_url"] = f"https://{os.getenv('POSTFIX_HOSTNAME')}/rspamd/"
 thm = mail.rspamd_api_get_thresholds()
 greylist_fallback_threshold = float(thm.get('add header', 6.0)) / 2.0
 odata["antispam"]["spam_flag_threshold"] = float(thm['add header'])
