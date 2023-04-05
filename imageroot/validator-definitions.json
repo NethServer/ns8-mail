@@ -789,8 +789,9 @@
                     "description": "Deny message threshold",
                     "type": "number"
                 },
-                "rspamd_path": {
-                    "description": "Used to build Rspamd webapp URL (e.g. https://myhost.example.com/<rspamd_path>)",
+                "rspamd_url": {
+                    "description": "Rspamd webapp URL",
+                    "example": "https://myhost.example.com/rspamd/",
                     "type": "string",
                     "minLength": 1
                 },

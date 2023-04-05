@@ -10,7 +10,7 @@
         "enabled": true,
         "spam_flag_threshold": 6,
         "deny_message_threshold": 20,
-        "rspamd_path": "rspamd1",
+        "rspamd_url": "https://node.example.com/rspamd/",
         "greylist": {
           "enabled": true,
           "threshold": 4
