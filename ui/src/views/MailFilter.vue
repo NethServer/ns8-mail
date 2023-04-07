@@ -457,7 +457,7 @@ export default {
         enabled: false,
         spam_flag_threshold: "1",
         deny_message_threshold: "1",
-        rspamd_path: "",
+        rspamd_url: "",
         greylist: {
           enabled: false,
           threshold: "1",
@@ -550,9 +550,8 @@ export default {
       this.setFilterConfiguration(actionPayload, "general");
     },
     goToRspamdWebapp() {
-      if (this.antispam.rspamd_path) {
-        const rspamdUrl = `${window.location.protocol}//${window.location.hostname}/${this.antispam.rspamd_path}`;
-        window.open(rspamdUrl, "_blank");
+      if (this.antispam.rspamd_url) {
+        window.open(this.antispam.rspamd_url, "_blank");
       }
     },
     onSignaturesRatingSelected(value) {

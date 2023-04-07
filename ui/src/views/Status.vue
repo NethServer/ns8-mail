@@ -88,7 +88,10 @@
           <NsInfoCard
             light
             :title="$t('status.rspamd_webapp')"
-            :description="$t('common.rspamd_credentials_tooltip')"
+            :titleTooltip="$t('common.rspamd_credentials_tooltip')"
+            titleTooltipAlignment="center"
+            titleTooltipDirection="bottom"
+            :description="$t('status.rspamd_webapp_description')"
             :icon="Wikis32"
             :loading="loading.getFilterConfiguration"
             :isErrorShown="!!error.getFilterConfiguration"
@@ -626,9 +629,8 @@ export default {
       this.loading.getFilterConfiguration = false;
     },
     goToRspamdWebapp() {
-      if (this.filterConfig && this.filterConfig.antispam.rspamd_path) {
-        const rspamdUrl = `${window.location.protocol}//${window.location.hostname}/${this.filterConfig.antispam.rspamd_path}`;
-        window.open(rspamdUrl, "_blank");
+      if (this.filterConfig && this.filterConfig.antispam.rspamd_url) {
+        window.open(this.filterConfig.antispam.rspamd_url, "_blank");
       }
     },
   },

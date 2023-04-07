@@ -16,7 +16,7 @@
         "delete": "Delete",
         "mail_hostname": "Mail server hostname",
         "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
-        "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd webapp"
+        "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd"
     },
     "action": {
         "list-acl-subjects": "List ACL subjects",
@@ -242,7 +242,7 @@
         "app_volumes": "Volume app|Volumi app",
         "no_volumes": "Nessun volume",
         "mail_hostname": "Mail server hostname",
-        "rspamd_webapp": "Rspamd webapp",
+        "rspamd_webapp": "Rspamd",
         "not_configured": "Not configured",
         "open_rspamd": "Open Rspamd",
         "status": "Status",
