@@ -16,7 +16,7 @@
     "delete": "Delete",
     "mail_hostname": "Mail server hostname",
     "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
-    "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd webapp"
+    "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd"
   },
   "status": {
     "title": "Status",
@@ -34,7 +34,8 @@
     "no_images": "No images",
     "no_volumes": "No volumes",
     "user_domain": "User domain",
-    "rspamd_webapp": "Rspamd webapp",
+    "rspamd_webapp": "Rspamd",
+    "rspamd_webapp_description": "Advanced filter management and message history",
     "not_configured": "Not configured",
     "open_rspamd": "Open Rspamd",
     "status": "Status",
