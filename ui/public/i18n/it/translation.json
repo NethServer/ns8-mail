@@ -246,7 +246,8 @@
         "not_configured": "Not configured",
         "open_rspamd": "Open Rspamd",
         "status": "Status",
-        "go_to_filter": "Go to Filter"
+        "go_to_filter": "Go to Filter",
+        "rspamd_webapp_description": "Advanced filter management and message history"
     },
     "settings_master_users": {
         "master_users_placeholder": "Choose master users",
