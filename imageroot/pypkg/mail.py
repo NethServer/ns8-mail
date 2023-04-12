@@ -328,7 +328,7 @@ def rspamd_get_bypass_maps():
 
     # Get the list of map IDs
     try:
-        jresponse = requests.get(endpoint + 'maps', auth=credentials).json()
+        jresponse = requests.get(endpoint + 'maps', timeout=5.0, auth=credentials).json()
     except json.JSONDecodeError:
         # Handle bad Rspamd response during service startup
         print(agent.SD_DEBUG + "Decode of rspamd/maps response failed", jresponse, file=sys.stderr)
@@ -338,7 +338,7 @@ def rspamd_get_bypass_maps():
         if not omap['uri'].startswith('/var/lib/rspamd/bypass_'):
             continue # skip unknown maps
 
-        oreq = requests.get(endpoint + 'getmap', auth=credentials, headers={'Map': str(omap["map"])})
+        oreq = requests.get(endpoint + 'getmap', timeout=5.0, auth=credentials, headers={'Map': str(omap["map"])})
         entries = list(filter(str.strip, oreq.text.split("\n"))) # ignore empty lines in the map file
         maps[omap["uri"].removeprefix('/var/lib/rspamd/bypass_').removesuffix('.map')] = entries
 
@@ -364,14 +364,14 @@ def rspamd_api_get_map_raw(map_name):
     credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
 
     # First request. Get the list of maps to convert map_name to a map ID
-    for omap in requests.get(endpoint + 'maps', auth=credentials).json():
+    for omap in requests.get(endpoint + 'maps', timeout=5.0, auth=credentials).json():
         if omap.get('uri') == '/var/lib/rspamd/' + map_name:
             break
     else:
         return ''
 
     # Retrieve the matching map
-    rgetmap = requests.get(endpoint + 'getmap', auth=credentials, headers={'Map': str(omap["map"])})
+    rgetmap = requests.get(endpoint + 'getmap', timeout=5.0, auth=credentials, headers={'Map': str(omap["map"])})
     rgetmap.raise_for_status()
     return rgetmap.text
 
@@ -381,14 +381,14 @@ def rspamd_api_set_map_raw(map_name, payload):
     credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
 
     # First request. Get the list of maps to convert map_name to a map ID
-    for omap in requests.get(endpoint + 'maps', auth=credentials).json():
+    for omap in requests.get(endpoint + 'maps', timeout=5.0, auth=credentials).json():
         if omap.get('uri') == '/var/lib/rspamd/' + map_name:
             break
     else:
         raise Exception('Map not found: ' + map_name)
 
     # Overwrite the matching map
-    requests.post(endpoint + 'savemap', auth=credentials, headers={'Map': str(omap["map"])}, data=payload).raise_for_status()
+    requests.post(endpoint + 'savemap', timeout=5.0, auth=credentials, headers={'Map': str(omap["map"])}, data=payload).raise_for_status()
     return True
 
 def rspamd_api_get_thresholds():
@@ -400,7 +400,7 @@ def rspamd_api_get_thresholds():
     thresholds_map = {}
 
     try:
-        jresponse = requests.get(endpoint + 'actions', auth=credentials).json()
+        jresponse = requests.get(endpoint + 'actions', timeout=5.0, auth=credentials).json()
     except json.JSONDecodeError:
         # Handle bad Rspamd response during service startup
         print(agent.SD_DEBUG + "Decode of rspamd/actions response failed", jresponse, file=sys.stderr)
@@ -436,7 +436,7 @@ def rspamd_api_set_thresholds(thresholds_map):
     rspamd_env = agent.read_envfile('rspamd.env')
     credentials = ('admin', rspamd_env['RSPAMD_adminpw'])
 
-    requests.post(endpoint + 'saveactions', auth=credentials, json=threshold_values).raise_for_status()
+    requests.post(endpoint + 'saveactions', timeout=5.0, auth=credentials, json=threshold_values).raise_for_status()
 
 def get_bypass_map_name(mtype, mdirection):
     """Convert UI bypass attributes to a Rspamd dynamic map name"""
