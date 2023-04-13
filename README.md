@@ -176,17 +176,7 @@ command:
 
 To access the admin web UI of Rspamd point the browser to
 
-    http://127.0.0.1:11334
-
-- User name `admin`
-- Obtain the password with the following command:
-
-      podman exec rspamd sh -c 'echo $RSPAMD_adminpw'
-
-It is possible to expose the web UI with the following methods:
-
-1. add a HTTP route in Traefik
-2. setup SSH local port forward (e.g. `-L11334:localhost:11334`)
+    https://<mail host>/rspamd/
 
 ## Service discovery
 

@@ -24,6 +24,9 @@ default_traefik_id = agent.resolve_agent_id('traefik@node')
 if default_traefik_id is None:
     sys.exit(0)
 
+# Retrieve the Rspamd privileged password
+rspamd_adminpw = agent.read_envfile("rspamd.env")["RSPAMD_adminpw"]
+
 response = agent.tasks.run(
     agent_id=default_traefik_id,
     action='set-route',
@@ -33,6 +36,15 @@ response = agent.tasks.run(
         'path': rspamd_path, # only one module instance per node
         'http2https': True,
         'strip_prefix': True,
+        "headers": {
+            "request": {
+                "Password": rspamd_adminpw,
+            },
+        },
+        "forward_auth": {
+            "skip_tls_verify": False,
+            "address": f"http://127.0.0.1:9311/api/module/{os.environ['MODULE_ID']}/http-basic/authorize-rspamd",
+        },
     },
     extra={'isNotificationHidden': True},
 )
