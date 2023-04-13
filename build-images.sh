@@ -144,7 +144,6 @@ set -e
 # Software installation order is important to preserve uid and gid allocation:
 apk add --no-cache redis
 apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
-apk add --no-cache lighttpd lighttpd-mod_auth
 apk add --no-cache unbound
 chown -c root:root /etc/rspamd/local.d/maps.d
 EOF

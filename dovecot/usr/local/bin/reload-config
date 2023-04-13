@@ -91,8 +91,8 @@ fi
 (
     # Compile IMAPSieve global scripts
     sievec /etc/dovecot
-    # Write the HTTP-Basic Auth token for rspamc-wrapper
-    echo -n "spamt:${DOVECOT_SPAMT_PASS}" | base64 -w 0 > /etc/dovecot/rspamc.token
+    # Write the Rspamd privileged token for rspamc-wrapper
+    echo -n "${DOVECOT_SPAMT_PASS}" > /etc/dovecot/rspamc.token
 )
 
 if [ -f /run/dovecot/master.pid ]; then
