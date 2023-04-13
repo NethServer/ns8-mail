@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import os
+import agent
+import subprocess
+
+oqueue_status = []
+
+# Output of postqueue -j is one queue item in JSON format for each line
+with subprocess.Popen(["podman", "exec", "postfix", "postqueue", "-j"], stdout=subprocess.PIPE) as pqh:
+    while True:
+        input_line = pqh.stdout.readline()
+        if not input_line:
+            break # EOF
+
+        try:
+            omessage = json.loads(input_line)
+        except json.JSONDecodeError:
+            continue
+
+        oqueue_status.append(omessage)
+
+json.dump({
+    "queue_status": oqueue_status,
+}, fp=sys.stdout)
