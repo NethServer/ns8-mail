@@ -13,15 +13,6 @@ if [ $# -eq 0 ]; then
 
     reload-config
 
-    (   # Store Rspamd admin UI credentials for Lighttpd
-        umask 027
-        printf "%s:%s\n" \
-            "admin" "${RSPAMD_adminpw:?}" \
-            "spamt" "${RSPAMD_spamtpw:?}" \
-        >/etc/lighttpd/auth.user
-        chown lighttpd /etc/lighttpd/auth.user
-    )
-
     # Create path for DKIM keys
     dkim_dir="/var/lib/rspamd/dkim"
     if [ ! -d "${dkim_dir}" ]; then
@@ -36,13 +27,9 @@ if [ $# -eq 0 ]; then
 
     (   # Start Rspamd with syslog redirects
         mkdir -v -m 0750 -p /run/rspamd
-        chown -c rspamd:lighttpd /run/rspamd
+        chown -c rspamd:rspamd /run/rspamd
         /usr/sbin/rspamd -u rspamd -g rspamd -f <&- 2>&1 | \
         logger -t "${RSPAMD_instance:?}/rspamd" -p MAIL.INFO
-    ) &
-    (   # Start Lighttpd with syslog redirects
-        /usr/sbin/lighttpd -D -f /etc/lighttpd/lighttpd.conf <&- 2>&1 3>&1 | \
-        logger -t "${RSPAMD_instance:?}/lighttpd" -p DAEMON.INFO
     ) &
 
     # Start local Unbound DNS server (UDP port 11336)

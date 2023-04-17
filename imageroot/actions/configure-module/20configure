@@ -30,16 +30,15 @@ agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
 if not os.path.exists('rspamd.env'):
     # First-time configuration defaults
     agent.set_env('POSTFIX_MILTERS', 'inet:localhost:11332')
-    spamt_pass = genpw()
     oldmask = os.umask(0o77)
+    rspamd_adminpw = genpw()
     with open('rspamd.env', 'w') as fenv:
-        print('RSPAMD_adminpw=' + genpw(), file=fenv)
-        print('RSPAMD_spamtpw=' + spamt_pass, file=fenv)
+        print('RSPAMD_adminpw=' + rspamd_adminpw, file=fenv)
 
     with open('dovecot.env', 'w') as fenv:
         print("DOVECOT_API_KEY=" + genpw(), file=fenv)
         print("DOVECOT_VMAIL_PASS=" + genpw(), file=fenv)
-        print("DOVECOT_SPAMT_PASS=" + spamt_pass, file=fenv)
+        print("DOVECOT_SPAMT_PASS=" + rspamd_adminpw, file=fenv)
     os.umask(oldmask)
 
 if not 'DOVECOT_QUOTA_MB' in os.environ:

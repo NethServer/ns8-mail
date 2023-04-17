@@ -8,7 +8,7 @@
 
 token=$(cat /etc/dovecot/rspamc.token)
 
-/usr/bin/rspamc --header "Authorization: Basic ${token}" "${@}" 
+/usr/bin/rspamc -P "${token}" "${@}"
 exit_code=$?
 if [ ${exit_code} -gt 1 ]; then
     # The exit code 1 is silently ignored. Other values are logged.
