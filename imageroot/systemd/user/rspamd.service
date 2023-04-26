@@ -25,6 +25,7 @@ ExecStart=/usr/bin/podman run \
     --volume=rspamd-override:/etc/rspamd/override.d:z \
     --volume=/dev/log:/dev/log \
     ${MAIL_RSPAMD_IMAGE}
+ExecStartPost=/usr/bin/bash -c "while ! exec 3<>/dev/tcp/127.0.0.1/11334 &>/dev/null; do sleep 3 ; done ; printf 'GET /ping\r\n\r\n' >&3"
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/rspamd.ctr-id -t 60
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/rspamd.ctr-id
 ExecReload=runagent discover-services
