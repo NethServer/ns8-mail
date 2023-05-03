@@ -27,6 +27,7 @@
               kind="secondary"
               :icon="Email20"
               @click="listDeferredQueue"
+              :disabled="loading.listDeferredQueue || loading.setDeleteQueue"
               >{{ $t("queue.reload_queue") }}
             </NsButton>
           </template>
@@ -36,6 +37,7 @@
               :icon="Email20"
               class="mg-left"
               @click="setResendQueueAll"
+              :disabled="loading.listDeferredQueue || loading.setDeleteQueue"
               >{{ $t("queue.resend_all") }}
             </NsButton>
             <NsButton
@@ -43,6 +45,7 @@
               class="mg-left"
               :icon="TrashCan20"
               @click="toggleDeleteQueueAll"
+              :disabled="loading.listDeferredQueue || loading.setDeleteQueue"
               >{{ $t("queue.delete_all") }}
             </NsButton>
           </template>
