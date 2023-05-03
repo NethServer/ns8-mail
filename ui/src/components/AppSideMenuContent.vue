@@ -50,6 +50,13 @@
         <span>{{ $t("addresses.title") }}</span>
       </cv-side-nav-link>
       <cv-side-nav-link
+        @click="goToAppPage(instanceName, 'deferredQueue')"
+        :class="{ 'current-page': isLinkActive('deferredQueue') }"
+      >
+        <template v-slot:nav-icon><Locked20 /></template>
+        <span>{{ $t("deferredQueue.title") }}</span>
+      </cv-side-nav-link>
+      <cv-side-nav-link
         @click="goToAppPage(instanceName, 'settings')"
         :class="{ 'current-page': isSettingsActive() }"
       >
@@ -75,6 +82,7 @@ import Wikis20 from "@carbon/icons-vue/es/wikis/20";
 import Box20 from "@carbon/icons-vue/es/box/20";
 import At20 from "@carbon/icons-vue/es/at/20";
 import Filter20 from "@carbon/icons-vue/es/filter/20";
+import Locked20 from "@carbon/icons-vue/es/locked/20";
 import { mapState } from "vuex";
 import { QueryParamService, UtilService } from "@nethserver/ns8-ui-lib";
 
@@ -88,6 +96,7 @@ export default {
     At20,
     Box20,
     Filter20,
+    Locked20
   },
   mixins: [QueryParamService, UtilService],
   data() {
