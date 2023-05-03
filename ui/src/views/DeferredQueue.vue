@@ -25,7 +25,7 @@
           <template>
             <NsButton
               kind="secondary"
-              :icon="Email20"
+              :icon="Restart20"
               @click="listDeferredQueue"
               :disabled="loading.listDeferredQueue || loading.setDeleteQueue"
               >{{ $t("queue.reload_queue") }}
