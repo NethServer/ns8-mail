@@ -54,7 +54,7 @@
         :class="{ 'current-page': isLinkActive('deferredQueue') }"
       >
         <template v-slot:nav-icon><Locked20 /></template>
-        <span>{{ $t("deferredQueue.title") }}</span>
+        <span>{{ $t("queue.title") }}</span>
       </cv-side-nav-link>
       <cv-side-nav-link
         @click="goToAppPage(instanceName, 'settings')"
@@ -96,7 +96,7 @@ export default {
     At20,
     Box20,
     Filter20,
-    Locked20
+    Locked20,
   },
   mixins: [QueryParamService, UtilService],
   data() {

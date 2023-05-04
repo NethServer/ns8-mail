@@ -331,5 +331,36 @@
   "settings_general": {
     "title": "General settings",
     "user_domain": "User domain"
+  },
+  "queue": {
+    "title": "Queue",
+    "reload_queue": "Reload",
+    "resend_all": "Resend all",
+    "delete_all": "Delete all",
+    "search_queue": "Search",
+    "col_queue_id": "Queue ID",
+    "col_arrival_time": "Arrival time",
+    "col_sender": "Sender",
+    "col_recipients": "Recipients",
+    "col_message_size": "Message size",
+    "recipients": "recipients",
+    "see_details": "Details",
+    "resend": "Resend",
+    "delete": "Delete",
+    "deferred_queue_details": "Details of the deferred email",
+    "queue_id": "Queue ID",
+    "arrival_time": "Arrival time",
+    "message_size": "Message size",
+    "sender": "Sender",
+    "recipient": "Recipient",
+    "delay_reason": "Delay reason",
+    "close": "Close",
+    "delete_queue": "Delete all emails",
+    "confirm_delete_all_queued_message": "All emails will be deleted, are you sure",
+    "no_queue": "No emails found",
+    "no_queue_description": "The email queue is empty.",
+    "delete_email": "Delete the email",
+    "confirm_delete_queued_message": "The email will be deleted, are you sure",
+    "cancel": "Cancel"
   }
 }

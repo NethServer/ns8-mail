@@ -40,7 +40,7 @@
         </span>
       </div>
     </template>
-    <template slot="primary-button">{{ $t("common.close") }}</template>
+    <template slot="primary-button">{{ $t("queue.close") }}</template>
   </NsModal>
 </template>
 

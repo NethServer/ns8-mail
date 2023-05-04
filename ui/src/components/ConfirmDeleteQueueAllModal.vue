@@ -14,7 +14,7 @@
       <div>{{ $t("queue.confirm_delete_all_queued_message") }}</div>
     </template>
     <template slot="secondary-button">{{ core.$t("common.cancel") }}</template>
-    <template slot="primary-button">{{ $t("queue.delete_queue") }}</template>
+    <template slot="primary-button">{{ $t("queue.delete") }}</template>
   </NsModal>
 </template>
 
