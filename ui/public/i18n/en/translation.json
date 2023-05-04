@@ -356,11 +356,11 @@
     "delay_reason": "Delay reason",
     "close": "Close",
     "delete_queue": "Delete all emails",
-    "confirm_delete_all_queued_message": "All emails will be deleted, are you sure",
-    "no_queue": "No emails found",
+    "confirm_delete_all_queued_message": "All emails will be deleted, are you sure ?",
+    "no_queue": "No email found",
     "no_queue_description": "The email queue is empty.",
     "delete_email": "Delete the email",
-    "confirm_delete_queued_message": "The email will be deleted, are you sure",
+    "confirm_delete_queued_message": "The email will be deleted, are you sure ?",
     "cancel": "Cancel"
   }
 }
