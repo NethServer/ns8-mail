@@ -8,15 +8,15 @@
 import json
 import sys
 import mail
-import socket
+import subprocess
 import agent
 
-hostname = socket.getfqdn().lower()
-
 try:
+    hostname = subprocess.run(['hostname', '-f'], text=True, capture_output=True, check=True).stdout.strip()
     mail_domain = hostname[hostname.index(".") + 1:]
 except ValueError:
-    mail_domain = ""
+    hostname = "myserver.example.org"
+    mail_domain = "example.org"
 
 json.dump({
     'hostname': hostname,
