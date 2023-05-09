@@ -207,12 +207,33 @@
         ></p>
       </template>
     </NsDangerDeleteModal>
-    <ConfirmDeleteQueueAllModal
+
+
+
+        <NsDangerDeleteModal
       :isShown="isShownConfirmDeleteQueueAll"
-      :core="core"
+            :name="currentQueue.delete_all"
+      :title="$t('queue.delete_queue')"
+      :warning="core.$t('common.please_read_carefully')"
+      :description="
+        $t('queue.confirm_delete_all_queued_message')
+      "
+      :typeToConfirm="
+        core.$t('common.type_to_confirm', { name: currentQueue.delete_all })
+      "
+      :isErrorShown="!!error.setDeleteQueueAll"
+      :errorTitle="$t('action.flush-postfix-queue')"
+      :errorDescription="error.setDeleteQueueAll"
       @hide="hideConfirmDeleteQueueAll"
-      @confirm="setDeleteQueueAll(false)"
-    />
+      @confirmDelete="setDeleteQueueAll(false)"
+    >
+      <template slot="explanation">
+        <p
+          class="mg-top-sm"
+          v-html="core.$t('common.this_action_is_not_reversible')"
+        ></p>
+      </template>
+    </NsDangerDeleteModal>
   </div>
 </template>
 
@@ -227,12 +248,10 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import to from "await-to-js";
 import ShowQueueDetailModal from "@/components/ShowQueueDetailModal";
-import ConfirmDeleteQueueAllModal from "@/components/ConfirmDeleteQueueAllModal";
 export default {
   name: "DeferredQueue",
   components: {
-    ShowQueueDetailModal,
-    ConfirmDeleteQueueAllModal,
+    ShowQueueDetailModal
   },
   mixins: [
     QueryParamService,
@@ -268,6 +287,7 @@ export default {
         message_size: 0,
         sender: "",
         recipients: [],
+        delete_all: "delete"
       },
       isShowQueueDetailModal: false,
       loading: {
