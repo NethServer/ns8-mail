@@ -43,7 +43,7 @@
               >{{ $t("queue.reload_queue") }}
             </NsButton>
           </template>
-          <template v-if="deferred_queue.length">
+          <template v-if="queue.length">
             <NsButton
               kind="secondary"
               :icon="Email20"
@@ -103,7 +103,7 @@
             </template>
             <template slot="data">
               <cv-data-table-row
-                v-for="(row, rowIndex) in deferred_queue"
+                v-for="(row, rowIndex) in queue"
                 :key="`${rowIndex}`"
                 :value="`${rowIndex}`"
               >
@@ -309,12 +309,6 @@ export default {
         return this.$t("queue.col_" + column);
       });
     },
-    // we do not want active queue, after timeout active become deferred
-    deferred_queue() {
-      return this.tablePage.filter(function (u) {
-        return u.queue_name == "deferred";
-      });
-    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -380,8 +374,11 @@ export default {
       this.loading.listDeferredQueue = false;
     },
     listDeferredQueueCompleted(taskContext, taskResult) {
-      this.queue = taskResult.output.queue_status;
-      this.check_queue = this.queue[0].queue_name == "deferred" ? true : false;
+      // We want only deferred status in queue
+       this.queue = taskResult.output.queue_status.filter(function (u) {
+        return u.queue_name == "deferred";
+      });
+      this.check_queue = this.queue.length ? true : false;
       this.loading.listDeferredQueue = false;
     },
     toggleDeleteQueueAll() {
