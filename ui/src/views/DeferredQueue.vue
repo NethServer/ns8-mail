@@ -41,7 +41,7 @@
               >{{ $t("queue.resend_all") }}
             </NsButton>
             <NsButton
-              kind="secondary"
+              kind="danger"
               class="mg-left"
               :icon="TrashCan20"
               @click="toggleDeleteQueueAll"
