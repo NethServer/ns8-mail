@@ -72,7 +72,7 @@
             :sortable="true"
             :pageSizes="[10, 25, 50, 100]"
             :overflow-menu="true"
-            isSearchable
+            :isSearchable="check_queue"
             :searchPlaceholder="$t('queue.search_queue')"
             :searchClearLabel="core.$t('common.clear_search')"
             :noSearchResultsLabel="core.$t('common.no_search_results')"
@@ -207,17 +207,12 @@
         ></p>
       </template>
     </NsDangerDeleteModal>
-
-
-
-        <NsDangerDeleteModal
+    <NsDangerDeleteModal
       :isShown="isShownConfirmDeleteQueueAll"
-            :name="currentQueue.delete_all"
+      :name="currentQueue.delete_all"
       :title="$t('queue.delete_queue')"
       :warning="core.$t('common.please_read_carefully')"
-      :description="
-        $t('queue.confirm_delete_all_queued_message')
-      "
+      :description="$t('queue.confirm_delete_all_queued_message')"
       :typeToConfirm="
         core.$t('common.type_to_confirm', { name: currentQueue.delete_all })
       "
@@ -251,7 +246,7 @@ import ShowQueueDetailModal from "@/components/ShowQueueDetailModal";
 export default {
   name: "DeferredQueue",
   components: {
-    ShowQueueDetailModal
+    ShowQueueDetailModal,
   },
   mixins: [
     QueryParamService,
@@ -278,6 +273,7 @@ export default {
         "message_size",
       ],
       queue: [],
+      check_queue: false,
       isShownConfirmDeleteQueue: false,
       isShownConfirmDeleteQueueAll: false,
       isShownQueueDetailModal: false,
@@ -287,7 +283,7 @@ export default {
         message_size: 0,
         sender: "",
         recipients: [],
-        delete_all: "delete"
+        delete_all: "delete",
       },
       isShowQueueDetailModal: false,
       loading: {
@@ -385,6 +381,7 @@ export default {
     },
     listDeferredQueueCompleted(taskContext, taskResult) {
       this.queue = taskResult.output.queue_status;
+      this.check_queue = this.queue[0].queue_name == "deferred" ? true : false;
       this.loading.listDeferredQueue = false;
     },
     toggleDeleteQueueAll() {
