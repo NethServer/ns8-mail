@@ -133,7 +133,7 @@
                       :data-test-id="row.queue_id + '-details'"
                     >
                       <NsMenuItem
-                        :icon="ArrowRight20"
+                        :icon="Information20"
                         :label="$t('queue.see_details')"
                       />
                     </cv-overflow-menu-item>
