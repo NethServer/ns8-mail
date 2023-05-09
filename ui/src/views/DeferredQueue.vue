@@ -177,13 +177,36 @@
       :queue="currentQueue"
       @hide="hideQueueDetailModal"
     />
-    <ConfirmDeleteQueueModal
+    <NsDangerDeleteModal
       :isShown="isShownConfirmDeleteQueue"
-      :queue="currentQueue"
-      :core="core"
+      :name="currentQueue.queue_id"
+      :title="$t('queue.delete_email')"
+      :warning="core.$t('common.please_read_carefully')"
+      :description="
+        $t('queue.delete_email_confirm', {
+          name: currentQueue.queue_id,
+        })
+      "
+      :typeToConfirm="
+        core.$t('common.type_to_confirm', { name: currentQueue.queue_id })
+      "
+      :isErrorShown="!!error.setDeleteQueue"
+      :errorTitle="$t('action.flush-postfix-queue')"
+      :errorDescription="error.setDeleteQueue"
       @hide="hideConfirmDeleteQueue"
-      @confirm="setDeleteQueue(false)"
-    />
+      @confirmDelete="setDeleteQueue(false)"
+    >
+      <template slot="explanation">
+        <p
+          class="mg-top-sm"
+          v-html="$t('queue.confirm_delete_queued_message')"
+        ></p>
+        <p
+          class="mg-top-sm"
+          v-html="core.$t('common.this_action_is_not_reversible')"
+        ></p>
+      </template>
+    </NsDangerDeleteModal>
     <ConfirmDeleteQueueAllModal
       :isShown="isShownConfirmDeleteQueueAll"
       :core="core"
@@ -204,13 +227,11 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import to from "await-to-js";
 import ShowQueueDetailModal from "@/components/ShowQueueDetailModal";
-import ConfirmDeleteQueueModal from "@/components/ConfirmDeleteQueueModal";
 import ConfirmDeleteQueueAllModal from "@/components/ConfirmDeleteQueueAllModal";
 export default {
   name: "DeferredQueue",
   components: {
     ShowQueueDetailModal,
-    ConfirmDeleteQueueModal,
     ConfirmDeleteQueueAllModal,
   },
   mixins: [
