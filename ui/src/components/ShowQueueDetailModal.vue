@@ -18,7 +18,7 @@
       </div>
       <div v-if="queue.message_size" class="key-value-setting">
         <span class="label">{{ $t("queue.message_size") }}</span>
-        <span class="value">{{ queue.message_size }}</span>
+        <span class="value">{{ queue.message_size | byteFormat }}</span>
       </div>
       <div v-if="queue.sender" class="key-value-setting">
         <span class="label">{{ $t("queue.sender") }}</span>

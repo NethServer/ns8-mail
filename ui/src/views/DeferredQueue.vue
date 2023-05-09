@@ -120,7 +120,7 @@
                   </template>
                 </cv-data-table-cell>
                 <cv-data-table-cell>
-                  {{ row.message_size }}
+                  {{ row.message_size | byteFormat }}
                 </cv-data-table-cell>
                 <cv-data-table-cell class="table-overflow-menu-cell">
                   <cv-overflow-menu
