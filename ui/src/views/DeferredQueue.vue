@@ -82,7 +82,7 @@
             :isLoading="loading.listDeferredQueue || loading.setDeleteQueue"
             :skeletonRows="5"
             :isErrorShown="!!error.listDeferredQueue"
-            :errorTitle="$t('queue.list-queue')"
+            :errorTitle="$t('action.report-queue-status')"
             :errorDescription="error.listDeferredQueue"
             :itemsPerPageLabel="core.$t('pagination.items_per_page')"
             :rangeOfTotalItemsLabel="core.$t('pagination.range_of_total_items')"
@@ -220,8 +220,15 @@ export default {
     TaskService,
     DateTimeService,
   ],
+  pageTitle() {
+    return this.$t("queue.title") + " - " + this.appName;
+  },
   data() {
     return {
+      q: {
+        page: "deferredQueue",
+      },
+      urlCheckInterval: null,
       tablePage: [],
       tableColumns: [
         "queue_id",
@@ -234,7 +241,13 @@ export default {
       isShownConfirmDeleteQueue: false,
       isShownConfirmDeleteQueueAll: false,
       isShownQueueDetailModal: false,
-      currentQueue: null,
+      currentQueue: {
+        queue_id: "",
+        arrival_time: 0,
+        message_size: 0,
+        sender: "",
+        recipients: [],
+      },
       isShowQueueDetailModal: false,
       loading: {
         listDeferredQueue: false,
@@ -253,7 +266,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["instanceName", "core"]),
+    ...mapState(["instanceName", "core", "appName"]),
     i18nTableColumns() {
       return this.tableColumns.map((column) => {
         return this.$t("queue.col_" + column);
@@ -265,6 +278,16 @@ export default {
         return u.queue_name == "deferred";
       });
     },
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.watchQueryData(vm);
+      vm.urlCheckInterval = vm.initUrlBindingForApp(vm, vm.q.page);
+    });
+  },
+  beforeRouteLeave(to, from, next) {
+    clearInterval(this.urlCheckInterval);
+    next();
   },
   created() {
     this.listDeferredQueue();

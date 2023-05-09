@@ -90,7 +90,8 @@
     "list-bypass-rules": "List bypass rules",
     "remove-bypass-rule": "Delete bypass rule",
     "get-filter-configuration": "Get filter configuration",
-    "set-filter-configuration": "Set filter configuration"
+    "set-filter-configuration": "Set filter configuration",
+    "report-queue-status": "List deferred messages in postfix queue"
   },
   "error": {
     "error": "Error",
