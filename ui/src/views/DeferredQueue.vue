@@ -7,7 +7,19 @@
     <cv-grid fullWidth>
       <cv-row>
         <cv-column class="page-title">
-          <h2>{{ $t("queue.title") }}</h2>
+          <h2>
+            {{ $t("queue.title") }}
+            <cv-interactive-tooltip
+              alignment="start"
+              direction="right"
+              class="tooltip info mg-left-sm"
+            >
+              <template slot="trigger"></template>
+              <template slot="content">
+                <div v-html="$t('queue.queue_tooltip')"></div>
+              </template>
+            </cv-interactive-tooltip>
+          </h2>
         </cv-column>
       </cv-row>
       <cv-row>

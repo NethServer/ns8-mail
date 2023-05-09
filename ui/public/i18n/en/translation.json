@@ -361,6 +361,7 @@
     "no_queue_description": "The email queue is empty.",
     "delete_email": "Delete the email",
     "confirm_delete_queued_message": "The email will be deleted, are you sure ?",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "queue_tooltip": "Only failed attempts to be delivered are listed in the queue page."
   }
 }
