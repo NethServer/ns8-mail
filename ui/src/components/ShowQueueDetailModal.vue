@@ -33,7 +33,7 @@
             >
             <span class="value">{{ recipient.address }}</span>
           </div>
-          <div>
+          <div class="mg-bottom">
             <div class="label">{{ $t("queue.delay_reason") }}</div>
             <span class="value">{{ recipient.delay_reason }}</span>
           </div>
@@ -60,4 +60,7 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
+.mg-bottom{
+  margin-bottom: 1rem;
+}
 </style>

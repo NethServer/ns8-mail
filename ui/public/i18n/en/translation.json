@@ -347,7 +347,7 @@
     "see_details": "See details",
     "resend": "Resend",
     "delete": "Delete",
-    "deferred_queue_details": "Details of the deferred email",
+    "deferred_queue_details": "Mail message details",
     "queue_id": "Message ID",
     "arrival_time": "Arrival time",
     "message_size": "Message size",
