@@ -340,7 +340,7 @@
     "resend_all": "Resend all",
     "delete_all": "Delete all",
     "search_queue": "Search",
-    "col_queue_id": "Queue ID",
+    "col_queue_id": "Message ID",
     "col_arrival_time": "Arrival time",
     "col_sender": "Sender",
     "col_recipients": "Recipients",
