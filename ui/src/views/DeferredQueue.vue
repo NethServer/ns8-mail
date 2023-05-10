@@ -65,110 +65,117 @@
       </cv-row>
       <cv-row>
         <cv-column>
-          <NsDataTable
-            :allRows="queue"
-            :columns="i18nTableColumns"
-            :rawColumns="tableColumns"
-            :sortable="true"
-            :pageSizes="[10, 25, 50, 100]"
-            :overflow-menu="true"
-            :isSearchable="check_queue"
-            :searchPlaceholder="$t('queue.search_queue')"
-            :searchClearLabel="core.$t('common.clear_search')"
-            :noSearchResultsLabel="core.$t('common.no_search_results')"
-            :noSearchResultsDescription="
-              core.$t('common.no_search_results_description')
-            "
-            :isLoading="loading.listDeferredQueue || loading.setDeleteQueue"
-            :skeletonRows="5"
-            :isErrorShown="!!error.listDeferredQueue"
-            :errorTitle="$t('action.report-queue-status')"
-            :errorDescription="error.listDeferredQueue"
-            :itemsPerPageLabel="core.$t('pagination.items_per_page')"
-            :rangeOfTotalItemsLabel="core.$t('pagination.range_of_total_items')"
-            :ofTotalPagesLabel="core.$t('pagination.of_total_pages')"
-            :backwardText="core.$t('pagination.previous_page')"
-            :forwardText="core.$t('pagination.next_page')"
-            :pageNumberLabel="core.$t('pagination.page_number')"
-            @updatePage="tablePage = $event"
-          >
-            <template slot="empty-state">
-              <NsEmptyState :title="$t('queue.no_queue')">
-                <template #description>
-                  <div>
-                    {{ $t("queue.no_queue_description") }}
-                  </div>
-                </template>
-              </NsEmptyState>
-            </template>
-            <template slot="data">
-              <cv-data-table-row
-                v-for="(row, rowIndex) in queue"
-                :key="`${rowIndex}`"
-                :value="`${rowIndex}`"
-              >
-                <cv-data-table-cell>
-                  {{ row.queue_id }}
-                </cv-data-table-cell>
-                <cv-data-table-row>
-                  <div class="mg-top mg-left gray">
-                    {{
-                      formatDate(
-                        new Date(row.arrival_time * 1000),
-                        "yyyy-MM-dd HH.mm"
-                      )
-                    }}
-                  </div>
+          <cv-tile light>
+            <NsDataTable
+              :allRows="queue"
+              :columns="i18nTableColumns"
+              :rawColumns="tableColumns"
+              :sortable="true"
+              :pageSizes="[10, 25, 50, 100]"
+              :overflow-menu="true"
+              :isSearchable="check_queue"
+              :searchPlaceholder="$t('queue.search_queue')"
+              :searchClearLabel="core.$t('common.clear_search')"
+              :noSearchResultsLabel="core.$t('common.no_search_results')"
+              :noSearchResultsDescription="
+                core.$t('common.no_search_results_description')
+              "
+              :isLoading="loading.listDeferredQueue || loading.setDeleteQueue"
+              :skeletonRows="5"
+              :isErrorShown="!!error.listDeferredQueue"
+              :errorTitle="$t('action.report-queue-status')"
+              :errorDescription="error.listDeferredQueue"
+              :itemsPerPageLabel="core.$t('pagination.items_per_page')"
+              :rangeOfTotalItemsLabel="
+                core.$t('pagination.range_of_total_items')
+              "
+              :ofTotalPagesLabel="core.$t('pagination.of_total_pages')"
+              :backwardText="core.$t('pagination.previous_page')"
+              :forwardText="core.$t('pagination.next_page')"
+              :pageNumberLabel="core.$t('pagination.page_number')"
+              @updatePage="tablePage = $event"
+            >
+              <template slot="empty-state">
+                <NsEmptyState :title="$t('queue.no_queue')">
+                  <template #description>
+                    <div>
+                      {{ $t("queue.no_queue_description") }}
+                    </div>
+                  </template>
+                </NsEmptyState>
+              </template>
+              <template slot="data">
+                <cv-data-table-row
+                  v-for="(row, rowIndex) in queue"
+                  :key="`${rowIndex}`"
+                  :value="`${rowIndex}`"
+                >
+                  <cv-data-table-cell>
+                    {{ row.queue_id }}
+                  </cv-data-table-cell>
+                  <cv-data-table-row>
+                    <div class="mg-top mg-left gray">
+                      {{
+                        formatDate(
+                          new Date(row.arrival_time * 1000),
+                          "yyyy-MM-dd HH.mm"
+                        )
+                      }}
+                    </div>
+                  </cv-data-table-row>
+                  <cv-data-table-cell>
+                    {{ row.sender }}
+                  </cv-data-table-cell>
+                  <cv-data-table-cell>
+                    <template v-if="row.recipients.length == 1">
+                      {{ row.recipients[0].address }}
+                    </template>
+                    <template v-else>
+                      {{ row.recipients.length + " " + $t("queue.recipients") }}
+                    </template>
+                  </cv-data-table-cell>
+                  <cv-data-table-cell>
+                    {{ row.message_size | byteFormat }}
+                  </cv-data-table-cell>
+                  <cv-data-table-cell class="table-overflow-menu-cell">
+                    <cv-overflow-menu
+                      flip-menu
+                      class="table-overflow-menu"
+                      :data-test-id="row.queue_id + '-menu'"
+                    >
+                      <cv-overflow-menu-item
+                        @click="showQueueDetailModal(row)"
+                        :data-test-id="row.queue_id + '-details'"
+                      >
+                        <NsMenuItem
+                          :icon="Information20"
+                          :label="$t('queue.see_details')"
+                        />
+                      </cv-overflow-menu-item>
+                      <cv-overflow-menu-item
+                        @click="setResendQueue(row)"
+                        :data-test-id="row.queue_id + '-resend-queue'"
+                      >
+                        <NsMenuItem
+                          :icon="Email20"
+                          :label="$t('queue.resend')"
+                        />
+                      </cv-overflow-menu-item>
+                      <cv-overflow-menu-item
+                        @click="toggleDeleteQueue(row)"
+                        :data-test-id="row.queue_id + '-delete-queue'"
+                      >
+                        <NsMenuItem
+                          :icon="TrashCan20"
+                          :label="$t('queue.delete')"
+                        />
+                      </cv-overflow-menu-item>
+                    </cv-overflow-menu>
+                  </cv-data-table-cell>
                 </cv-data-table-row>
-                <cv-data-table-cell>
-                  {{ row.sender }}
-                </cv-data-table-cell>
-                <cv-data-table-cell>
-                  <template v-if="row.recipients.length == 1">
-                    {{ row.recipients[0].address }}
-                  </template>
-                  <template v-else>
-                    {{ row.recipients.length + " " + $t("queue.recipients") }}
-                  </template>
-                </cv-data-table-cell>
-                <cv-data-table-cell>
-                  {{ row.message_size | byteFormat }}
-                </cv-data-table-cell>
-                <cv-data-table-cell class="table-overflow-menu-cell">
-                  <cv-overflow-menu
-                    flip-menu
-                    class="table-overflow-menu"
-                    :data-test-id="row.queue_id + '-menu'"
-                  >
-                    <cv-overflow-menu-item
-                      @click="showQueueDetailModal(row)"
-                      :data-test-id="row.queue_id + '-details'"
-                    >
-                      <NsMenuItem
-                        :icon="Information20"
-                        :label="$t('queue.see_details')"
-                      />
-                    </cv-overflow-menu-item>
-                    <cv-overflow-menu-item
-                      @click="setResendQueue(row)"
-                      :data-test-id="row.queue_id + '-resend-queue'"
-                    >
-                      <NsMenuItem :icon="Email20" :label="$t('queue.resend')" />
-                    </cv-overflow-menu-item>
-                    <cv-overflow-menu-item
-                      @click="toggleDeleteQueue(row)"
-                      :data-test-id="row.queue_id + '-delete-queue'"
-                    >
-                      <NsMenuItem
-                        :icon="TrashCan20"
-                        :label="$t('queue.delete')"
-                      />
-                    </cv-overflow-menu-item>
-                  </cv-overflow-menu>
-                </cv-data-table-cell>
-              </cv-data-table-row>
-            </template>
-          </NsDataTable>
+              </template>
+            </NsDataTable>
+          </cv-tile>
         </cv-column>
       </cv-row>
     </cv-grid>
@@ -375,7 +382,7 @@ export default {
     },
     listDeferredQueueCompleted(taskContext, taskResult) {
       // We want only deferred status in queue
-       this.queue = taskResult.output.queue_status.filter(function (u) {
+      this.queue = taskResult.output.queue_status.filter(function (u) {
         return u.queue_name == "deferred";
       });
       this.check_queue = this.queue.length ? true : false;
