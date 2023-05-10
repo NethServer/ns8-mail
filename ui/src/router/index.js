@@ -48,6 +48,12 @@ const routes = [
       import(/* webpackChunkName: "addresses" */ "../views/Addresses.vue"),
   },
   {
+    path: "/deferredQueue",
+    name: "DeferredQueue",
+    component: () =>
+      import(/* webpackChunkName: "addresses" */ "../views/DeferredQueue.vue"),
+  },
+  {
     path: "/settings",
     name: "Settings",
     component: () =>

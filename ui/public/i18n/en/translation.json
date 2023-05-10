@@ -90,7 +90,9 @@
     "list-bypass-rules": "List bypass rules",
     "remove-bypass-rule": "Delete bypass rule",
     "get-filter-configuration": "Get filter configuration",
-    "set-filter-configuration": "Set filter configuration"
+    "set-filter-configuration": "Set filter configuration",
+    "report-queue-status": "List deferred messages in postfix queue",
+    "flush-postfix-queue": "Flush postfix queue"
   },
   "error": {
     "error": "Error",
@@ -331,5 +333,38 @@
   "settings_general": {
     "title": "General settings",
     "user_domain": "User domain"
+  },
+  "queue": {
+    "title": "Queue",
+    "reload_queue": "Reload",
+    "resend_all": "Resend all",
+    "delete_all": "Delete all",
+    "search_queue": "Search",
+    "col_queue_id": "Message ID",
+    "col_arrival_time": "Arrival time",
+    "col_sender": "Sender",
+    "col_recipients": "Recipients",
+    "col_message_size": "Message size",
+    "recipients": "recipients",
+    "see_details": "See details",
+    "resend": "Resend",
+    "delete": "Delete",
+    "deferred_queue_details": "Mail message details",
+    "queue_id": "Message ID",
+    "arrival_time": "Arrival time",
+    "message_size": "Message size",
+    "sender": "Sender",
+    "recipient": "Recipient",
+    "delay_reason": "Delay reason",
+    "close": "Close",
+    "delete_queue": "Delete all emails",
+    "confirm_delete_all_queued_message": "All emails will be deleted, are you sure ?",
+    "no_queue": "Mail queue is empty",
+    "no_queue_description": "The email queue is empty.",
+    "delete_email": "Delete the email",
+    "confirm_delete_queued_message": "The email message will be deleted, are you sure?",
+    "cancel": "Cancel",
+    "queue_tooltip": "These are the messages that are waiting to be relayed in the SMTP mail queue. In normal conditions, this queue should be empty or contain just a few messages.",
+    "delete_email_confirm": "Delete email <strong>{name}</strong>?"
   }
 }
