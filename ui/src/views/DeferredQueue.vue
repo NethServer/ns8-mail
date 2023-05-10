@@ -179,22 +179,22 @@
     </cv-grid>
     <ShowQueueDetailModal
       :isShown="isShownQueueDetailModal"
-      :queue="currentQueue"
+      :queue="currentMessage"
       @hide="hideQueueDetailModal"
     />
     <NsDangerDeleteModal
       :isShown="isShownConfirmDeleteQueue"
-      :name="currentQueue ? currentQueue.queue_id : ''"
+      :name="currentMessage ? currentMessage.queue_id : ''"
       :title="$t('queue.delete_email')"
       :warning="core.$t('common.please_read_carefully')"
       :description="
         $t('queue.delete_email_confirm', {
-          name: currentQueue ? currentQueue.queue_id : '',
+          name: currentMessage ? currentMessage.queue_id : '',
         })
       "
       :typeToConfirm="
         core.$t('common.type_to_confirm', {
-          name: currentQueue ? currentQueue.queue_id : '',
+          name: currentMessage ? currentMessage.queue_id : '',
         })
       "
       :isErrorShown="!!error.setDeleteQueue"
@@ -282,7 +282,7 @@ export default {
       isShownConfirmDeleteQueue: false,
       isShownConfirmDeleteQueueAll: false,
       isShownQueueDetailModal: false,
-      currentQueue: {
+      currentMessage: {
         queue_id: "",
         arrival_time: 0,
         message_size: 0,
@@ -330,7 +330,7 @@ export default {
   },
   methods: {
     showQueueDetailModal(queue) {
-      this.currentQueue = queue;
+      this.currentMessage = queue;
       this.isShownQueueDetailModal = true;
     },
     hideQueueDetailModal() {
@@ -396,7 +396,7 @@ export default {
       this.isShownConfirmDeleteQueueAll = false;
     },
     toggleDeleteQueue(queue) {
-      this.currentQueue = queue;
+      this.currentMessage = queue;
       this.showConfirmDeleteQueue();
     },
     showConfirmDeleteQueue() {
@@ -427,7 +427,7 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            queue: this.currentQueue.queue_id,
+            queue: this.currentMessage.queue_id,
             action: "delete",
           },
           extra: {
