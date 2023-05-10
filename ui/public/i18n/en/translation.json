@@ -359,12 +359,12 @@
     "close": "Close",
     "delete_queue": "Delete all emails",
     "confirm_delete_all_queued_message": "All emails will be deleted, are you sure ?",
-    "no_queue": "No email found",
+    "no_queue": "Mail queue is empty",
     "no_queue_description": "The email queue is empty.",
     "delete_email": "Delete the email",
-    "confirm_delete_queued_message": "The email will be deleted, are you sure ?",
+    "confirm_delete_queued_message": "The email message will be deleted, are you sure?",
     "cancel": "Cancel",
-    "queue_tooltip": "Only failed attempts to be delivered are listed in the queue page.",
+    "queue_tooltip": "These are the messages that are waiting to be relayed in the SMTP mail queue. In normal conditions, this queue should be empty or contain just a few messages.",
     "delete_email_confirm": "Delete email <strong>{name}</strong>?"
   }
 }
