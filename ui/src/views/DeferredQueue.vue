@@ -97,10 +97,8 @@
             >
               <template slot="empty-state">
                 <NsEmptyState :title="$t('queue.no_queue')">
-                  <template #description>
-                    <div>
-                      {{ $t("queue.no_queue_description") }}
-                    </div>
+                  <template #pictogram>
+                    <FaceSatisfiedPictogram />
                   </template>
                 </NsEmptyState>
               </template>
