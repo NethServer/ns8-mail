@@ -184,16 +184,18 @@
     />
     <NsDangerDeleteModal
       :isShown="isShownConfirmDeleteQueue"
-      :name="currentQueue.queue_id"
+      :name="currentQueue ? currentQueue.queue_id : ''"
       :title="$t('queue.delete_email')"
       :warning="core.$t('common.please_read_carefully')"
       :description="
         $t('queue.delete_email_confirm', {
-          name: currentQueue.queue_id,
+          name: currentQueue ? currentQueue.queue_id : '',
         })
       "
       :typeToConfirm="
-        core.$t('common.type_to_confirm', { name: currentQueue.queue_id })
+        core.$t('common.type_to_confirm', {
+          name: currentQueue ? currentQueue.queue_id : '',
+        })
       "
       :isErrorShown="!!error.setDeleteQueue"
       :errorTitle="$t('action.flush-postfix-queue')"
@@ -214,13 +216,11 @@
     </NsDangerDeleteModal>
     <NsDangerDeleteModal
       :isShown="isShownConfirmDeleteQueueAll"
-      :name="currentQueue.delete_all"
+      :name="delete_all"
       :title="$t('queue.delete_queue')"
       :warning="core.$t('common.please_read_carefully')"
       :description="$t('queue.confirm_delete_all_queued_message')"
-      :typeToConfirm="
-        core.$t('common.type_to_confirm', { name: currentQueue.delete_all })
-      "
+      :typeToConfirm="core.$t('common.type_to_confirm', { name: delete_all })"
       :isErrorShown="!!error.setDeleteQueueAll"
       :errorTitle="$t('action.flush-postfix-queue')"
       :errorDescription="error.setDeleteQueueAll"
@@ -288,8 +288,8 @@ export default {
         message_size: 0,
         sender: "",
         recipients: [],
-        delete_all: "delete",
       },
+      delete_all: "delete",
       isShowQueueDetailModal: false,
       loading: {
         listDeferredQueue: false,
