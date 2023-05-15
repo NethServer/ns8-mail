@@ -55,7 +55,9 @@
         "list-bypass-rules": "Elenco regole di bypass",
         "remove-bypass-rule": "Elimina regola di bypass",
         "set-filter-configuration": "Impostare la configurazione del filtro",
-        "get-filter-configuration": "Ottieni la configurazione del filtro"
+        "get-filter-configuration": "Ottieni la configurazione del filtro",
+        "report-queue-status": "Elenco dei messaggi differiti nella coda di postfix",
+        "flush-postfix-queue": "Svuota la coda di postfix"
     },
     "domains": {
         "no_domain": "Nessun dominio",
@@ -337,5 +339,29 @@
         "bypass_rule_is_going_to_be_deleted": "La regola di bypass per {value} sta per essere eliminata...",
         "delete_bypass_rule_for": "Elimina regola di bypass per {value}",
         "bypass_rule_already_exists": "Questa regola di bypass esiste già"
+    },
+    "queue": {
+        "title": "Coda",
+        "reload_queue": "Ricarica",
+        "resend_all": "Invia di nuovo tutto",
+        "delete_all": "Elimina tutto",
+        "search_queue": "Ricerca",
+        "col_queue_id": "ID messaggio",
+        "col_arrival_time": "Orario di arrivo",
+        "arrival_time": "Orario di arrivo",
+        "message_size": "Dimensione del messaggio",
+        "sender": "Mittente",
+        "recipient": "Destinatario",
+        "delay_reason": "Motivo del ritardo",
+        "close": "Chiudi",
+        "delete_queue": "Elimina tutte le email",
+        "confirm_delete_all_queued_message": "Tutte le email verranno cancellate, continuare?",
+        "no_queue": "La coda della posta è vuota",
+        "no_queue_description": "La coda della posta è vuota.",
+        "delete_email": "Elimina l'e-mail",
+        "confirm_delete_queued_message": "Il messaggio e-mail verrà eliminato, procedere?",
+        "cancel": "Annulla",
+        "queue_tooltip": "Questi sono i messaggi in attesa di essere consegnati nella coda di posta SMTP. In condizioni normali, questa coda dovrebbe essere vuota o contenere solo pochi messaggi.",
+        "delete_email_confirm": "Eliminare l'e-mail <strong>{name}</strong>?"
     }
 }
