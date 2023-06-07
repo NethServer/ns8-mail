@@ -384,10 +384,14 @@ export default {
       // sort by quota
 
       return function (a, b) {
-        if (a.quota.value < b.quota.value) {
+        //we might have some undefined quota property
+        let varA = a.quota || { quota: {} };
+        let varB = b.quota || { quota: {} };
+
+        if (varA.value < varB.value) {
           return -1;
         }
-        if (a.quota.value > b.quota.value) {
+        if (varA.value > varB.value) {
           return 1;
         }
         return 0;
