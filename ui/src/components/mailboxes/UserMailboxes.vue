@@ -385,8 +385,8 @@ export default {
 
       return function (a, b) {
         //we might have some undefined quota property
-        let varA = a.quota || { quota: {} };
-        let varB = b.quota || { quota: {} };
+        let varA = a.quota || {};
+        let varB = b.quota || {};
 
         if (varA.value < varB.value) {
           return -1;
