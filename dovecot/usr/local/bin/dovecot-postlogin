@@ -45,8 +45,7 @@ if [ -z "${ACL_GROUPS}" ]; then
     export USERDB_KEYS ACL_GROUPS
 fi
 
-# If the MASTER_USER is outside the passwd-file DB, write the action in the log
-if [ -n "${MASTER_USER}" ] && ! grep -q "^${MASTER_USER}:" /etc/dovecot/users; then
+if [ -n "${MASTER_USER}" ]; then
     logger -t "${DOVECOT_INSTANCE_NAME}" -p mail.notice "impersonated login MASTER_USER=${MASTER_USER} USER=${USER} AUTH_USER=${AUTH_USER} IP=${IP} LOCAL_IP=${LOCAL_IP}"
 fi
 
