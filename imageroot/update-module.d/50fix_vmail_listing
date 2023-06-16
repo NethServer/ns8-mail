@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2
+
+# Do not show Public and Shared/vmail namespaces unless needed by valid
+# shared folders.
+
+podman exec -i dovecot ash <<'EOF'
+if doveadm acl get -u vmail INBOX | grep -q -E '^authenticated +lookup *$'; then
+    echo '[NOTICE] Removing default vmail INBOX ACL "authenticated lookup"'
+    doveadm acl delete -u vmail INBOX authenticated
+fi
+EOF
