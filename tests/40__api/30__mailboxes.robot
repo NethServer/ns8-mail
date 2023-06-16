@@ -1,6 +1,7 @@
 *** Settings ***
 Resource    ../api.resource
 Resource    ../user_domain.resource
+Resource    ../keywords.resource
 Library    Collections
 
 *** Test Cases ***
@@ -51,13 +52,14 @@ Check the user IMAP login fails
     Run Keyword And Expect Error    67 !\= 0    IMAP login good credentials
 
 Enable user mailbox
+    [Documentation]    The API triggers Dovecot reload, subsequent auth request might fail for a while
     Run task    module/${MID}/set-mailbox-enabled    {"user":"u1","enabled":true}
+
+Check the user IMAP login succeedes
+    Wait Until Keyword Succeeds    60 seconds    3 seconds    IMAP login good credentials
 
 Check the user SMTP login succeedes
     Run Keyword    SMTP AUTH submissions good login
-
-Check the user IMAP login succeedes
-    Run Keyword    IMAP login good credentials
 
 Check the postmaster public mailbox is present
     ${lmailboxes} =   Run task    module/${MID}/list-public-mailboxes    ""
