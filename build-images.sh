@@ -149,7 +149,6 @@ chown -c root:root /etc/rspamd/local.d/maps.d
 EOF
 buildah add "${container}" rspamd/ /
 buildah config \
-    --env=RSPAMD_instance=rspamdx \
     --env=RSPAMD_dkim_selector=default \
     --volume=/var/lib/redis \
     --volume=/var/lib/rspamd \

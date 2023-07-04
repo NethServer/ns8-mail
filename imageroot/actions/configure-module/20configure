@@ -26,7 +26,6 @@ hostname = request['hostname']
 with agent.redis_connect() as rdb:
     cluster_network = rdb.get('cluster/network') or ""
 
-agent.set_env('RSPAMD_instance', os.environ['MODULE_ID'])
 if not os.path.exists('rspamd.env'):
     # First-time configuration defaults
     agent.set_env('POSTFIX_MILTERS', 'inet:localhost:11332')
@@ -62,11 +61,9 @@ if not 'RSPAMD_antispam_checks_enabled' in os.environ:
     agent.set_env('RSPAMD_greylist_enabled', '') # Expect greylist disabled
 
 agent.set_env('MAIL_HOSTNAME', hostname)
-agent.set_env('DOVECOT_INSTANCE_NAME', os.environ['MODULE_ID'])
 if not os.getenv('DOVECOT_TRUSTED_NETWORKS'):
     agent.set_env('DOVECOT_TRUSTED_NETWORKS', cluster_network)
 
-agent.set_env('POSTFIX_SYSLOG_NAME', os.environ['MODULE_ID'])
 if not os.getenv('POSTFIX_TRUSTED_NETWORK'):
     agent.set_env('POSTFIX_TRUSTED_NETWORK', cluster_network)
 agent.set_env('POSTFIX_HOSTNAME', hostname)
