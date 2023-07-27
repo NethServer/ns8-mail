@@ -21,8 +21,6 @@ Well-known ports
 
 ## Environment variables
 
-- `RSPAMD_instance` Rspamd instance name, required for syslog identity
-  field and used for authentication on the controller HTTP service
 - `RSPAMD_adminpw` Token for accessing Rspamd controller
 - `RSPAMD_dkim_selector` The name of the default DKIM selector; the
   default value is `default`, which is compatible with NS7 to ease the
@@ -37,6 +35,7 @@ Well-known ports
 - `RSPAMD_bypass_score` If undefined (default) bypass rules are applied as
   an accept prefilter. Set to a negative number to turn the rules to ham
   score and run antivirus checks (e.g. `RSPAMD_bypass_score=-5.000`)
+
 ## Volumes
 
 - `/etc/rspamd/override.d` Rspamd custom configuration

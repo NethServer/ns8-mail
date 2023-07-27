@@ -22,7 +22,6 @@ ldap_bind_password=${DOVECOT_LDAP_PASS}
 ldap_users_search_filter_clause=
 submission_host=${DOVECOT_SUBMISSION_HOST:?}
 submission_port=${DOVECOT_SUBMISSION_PORT:?}
-instance_name=${DOVECOT_INSTANCE_NAME:-dovecot}
 login_trusted_networks=${DOVECOT_TRUSTED_NETWORKS:-}
 doveadm_api_key=${DOVECOT_API_KEY:?}
 doveadm_api_port=${DOVECOT_API_PORT:?}

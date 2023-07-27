@@ -47,7 +47,6 @@ tmpl_milters="${POSTFIX_MILTERS}"
 tmpl_mynetworks="127.0.0.1/32 ${POSTFIX_TRUSTED_NETWORK}"
 tmpl_myhostname="${POSTFIX_HOSTNAME:-$(hostname -f)}"
 tmpl_debug_peer_list="${POSTFIX_DEBUG_PEERS:-\$mynetworks}"
-tmpl_syslog_name=${POSTFIX_SYSLOG_NAME:-postfix}
 tmpl_relay_domains=$(pcdbquery "SELECT group_concat(domain || '=' || transport) FROM domains WHERE transport LIKE '_mtp:%'")
 tmpl_virtual_alias_domains=$(pcdbquery "SELECT group_concat(domain) FROM domains WHERE transport IS NULL AND domain NOT IN ('*', '${POSTFIX_ORIGIN}')")
 tmpl_verify_recipient_address=$(pcdbquery "SELECT 'check_recipient_access inline:{ ' || group_concat(domain || '=reject_unverified_recipient', ' ') || ' }' FROM (SELECT domain FROM domains WHERE domain != '*' UNION SELECT '${POSTFIX_ORIGIN}' WHERE '${POSTFIX_ORIGIN}' != '')")

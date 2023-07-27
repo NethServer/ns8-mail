@@ -24,7 +24,6 @@ Standard public TCP ports
 - `POSTFIX_DEBUG` Integer number. If great than 0 enable detailed log for
   specific components. (1) address rewriting, (2) delivery
 - `POSTFIX_DEBUG_PEERS`. CIDR network or IP addresses that produce detailed smtp/lmtp log. Add value 2 (delivery) to POSTFIX_DEBUG to enable the detailed log. Default is Postfix `mynetworks`.
-- `POSTFIX_SYSLOG_NAME`. Value for [syslog_name](http://www.postfix.org/postconf.5.html#syslog_name), default `postfix`.
 - `POSTFIX_TRUSTED_NETWORK`. Added to Postfix [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks)
 - `POSTFIX_HOSTNAME`. Value for Postfix
   [myhostname](https://www.postfix.org/postconf.5.html#myhostname).

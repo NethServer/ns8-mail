@@ -22,20 +22,17 @@ if [ $# -eq 0 ]; then
         chgrp -cR rspamd "${dkim_dir}"
     fi
 
-    su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-persistent.conf --syslog-ident ${RSPAMD_instance}/redis-persistent" </dev/null &
-    su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-volatile.conf --syslog-ident ${RSPAMD_instance}/redis-volatile" </dev/null &
-
-    (   # Start Rspamd with syslog redirects
-        mkdir -v -m 0750 -p /run/rspamd
-        chown -c rspamd:rspamd /run/rspamd
-        /usr/sbin/rspamd -u rspamd -g rspamd -f <&- 2>&1 | \
-        logger -t "${RSPAMD_instance:?}/rspamd" -p MAIL.INFO
-    ) &
+    su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-persistent.conf" </dev/null &
+    su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-volatile.conf" </dev/null &
 
     # Start local Unbound DNS server (UDP port 11336)
-    echo "log-identity: ${RSPAMD_instance:?}/unbound" >> /etc/unbound/server.include
     /usr/sbin/unbound-anchor -v || :
     /usr/sbin/unbound -d <&- &
+
+    # Start rspamd
+    mkdir -v -m 0750 -p /run/rspamd
+    chown -c rspamd:rspamd /run/rspamd
+    /usr/sbin/rspamd -u rspamd -g rspamd -f <&- &
 
     wait -n
     exit $?

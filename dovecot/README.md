@@ -34,7 +34,6 @@ Private TCP ports:
 - `DOVECOT_LDAP_PASS`, bind password
 - `DOVECOT_LDAP_SCHEMA`, eg `rfc2307`
 - `DOVECOT_LDAP_BASE`, eg `dc=directory,dc=nh`
-- `DOVECOT_INSTANCE_NAME`, default `dovecot` Used as syslog identifier
 - `DOVECOT_TRUSTED_NETWORKS`, eg `10.5.4.0/24` Connections from those
   networks do not require TLS
 - `DOVECOT_DEBUG`, if set enable verbose logging
@@ -59,8 +58,7 @@ Private TCP ports:
 ## Logs
 
 The container sends log messages to `syslog`. Increase log verbosity by
-running `DOVECOT_DEBUG=1 reload-config`. Set syslog identifier with
-`DOVECOT_INSTANCE_NAME`.
+running `DOVECOT_DEBUG=1 reload-config`.
 
 ## Commands
 

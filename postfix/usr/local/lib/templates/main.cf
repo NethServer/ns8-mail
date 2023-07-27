@@ -35,7 +35,6 @@ debug_rewrite = ${tmpl_debug_rewrite}
 compatibility_level = 3.6
 inet_protocols = all
 myhostname = ${tmpl_myhostname}
-syslog_name = ${tmpl_syslog_name}
 alias_maps =
 alias_database =
 mynetworks = ${tmpl_mynetworks} sqlite:${S}meta_directory/mynetworks.cf
@@ -112,7 +111,6 @@ smtpd_tls_auth_only = yes
 #
 # Mail filter
 #
-milter_macro_daemon_name = ${tmpl_syslog_name}
 smtpd_milters = ${tmpl_milters}
 
 ### end of main.cf ###
