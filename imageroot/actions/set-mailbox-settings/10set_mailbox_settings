@@ -27,3 +27,7 @@ if 'spam_folder' in request:
 if 'spam_retention' in request:
     spam_retention = int(request['spam_retention']['value'])
     agent.set_env("DOVECOT_SPAM_RETENTION", spam_retention)
+
+if 'sharedseen' in request:
+    sharedseen = request['sharedseen']['enabled']
+    agent.set_env("DOVECOT_SHAREDSEEN", sharedseen)
