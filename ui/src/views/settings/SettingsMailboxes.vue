@@ -104,6 +104,13 @@
               <cv-column>
                 <h4 class="mg-bottom-md">
                   {{ $t("settings_mailboxes.sharedseen") }}
+                  <cv-tooltip
+                    alignment="start"
+                    direction="bottom"
+                    :tip="$t('settings_mailboxes.sharedseen_explanation_tooltips')"
+                    class="info mg-bottom"
+                  >
+                  </cv-tooltip>
                 </h4>
                 <cv-skeleton-text
                   v-if="loading.getMailboxSettings"
@@ -122,15 +129,6 @@
                     "
                     :class="toggle - without - label"
                   >
-                    <template slot="tooltip">
-                      <span
-                        v-html="
-                          $t(
-                            'settings_mailboxes.sharedseen_explanation_tooltips'
-                          )
-                        "
-                      ></span>
-                    </template>
                     <template slot="text-left">{{
                       $t("common.disabled")
                     }}</template>
