@@ -322,7 +322,9 @@
     "specify_quota": "Specify quota",
     "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required",
     "quota": "Quota",
-    "spam": "Spam"
+    "spam": "Spam",
+    "sharedseen": "Shared seen",
+    "sharedseen_explanation_tooltips": "In a shared mailbox, each user has their copy of the messages they have read, however  if you want to know if a mail has already been read by someone else, you could enable this option for all shared mailboxes"
   },
   "settings_master_users": {
     "title": "Master users",
