@@ -120,8 +120,17 @@
                     :disabled="
                       loading.getMailboxSettings || loading.setMailboxSettings
                     "
-                    :class="toggle-without-label"
+                    :class="toggle - without - label"
                   >
+                    <template slot="tooltip">
+                      <span
+                        v-html="
+                          $t(
+                            'settings_mailboxes.sharedseen_explanation_tooltips'
+                          )
+                        "
+                      ></span>
+                    </template>
                     <template slot="text-left">{{
                       $t("common.disabled")
                     }}</template>
