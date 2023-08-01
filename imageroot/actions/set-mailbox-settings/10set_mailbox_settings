@@ -30,4 +30,4 @@ if 'spam_retention' in request:
 
 if 'sharedseen' in request:
     sharedseen = request['sharedseen']['enabled']
-    agent.set_env("DOVECOT_SHAREDSEEN", sharedseen)
+    agent.set_env("DOVECOT_SHAREDSEEN", "1" if sharedseen else "")

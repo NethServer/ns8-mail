@@ -28,7 +28,7 @@ doveadm_api_key=${DOVECOT_API_KEY:?}
 doveadm_api_port=${DOVECOT_API_PORT:?}
 stats_http_port=${DOVECOT_METRICS_PORT:?}
 tmpl_spam_folder=${DOVECOT_SPAM_FOLDER:-Junk}
-tmpl_sharedseen=$([[ ${DOVECOT_SHAREDSEEN:-True} == 'False' ]] && echo ':INDEXPVT=~/Maildir/shared/%%u' || echo '')
+tmpl_sharedseen=${DOVECOT_SHAREDSEEN:-:INDEXPVT=~/Maildir/shared/%%n}
 tmpl_spam_subject_prefix=${DOVECOT_SPAM_SUBJECT_PREFIX:-}
 tmpl_trash_folder=${DOVECOT_TRASH_FOLDER:?}
 tmpl_mail_plugins="acl listescape notify mail_log"

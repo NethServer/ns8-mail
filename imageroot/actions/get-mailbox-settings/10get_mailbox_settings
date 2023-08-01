@@ -40,7 +40,7 @@ if os.getenv("DOVECOT_SPAM_FOLDER"):
     }
 
 osharedseen = {
-    "enabled": os.getenv("DOVECOT_SHAREDSEEN", 'True') == "True"
+    "enabled": os.getenv("DOVECOT_SHAREDSEEN", '') != ""
 }
 
 json.dump({
