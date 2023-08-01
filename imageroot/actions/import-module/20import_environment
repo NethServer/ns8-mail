@@ -37,6 +37,12 @@ agent.set_env('DOVECOT_QUOTA_MB', quota_mb)
 # Spam folder migration
 agent.set_env('DOVECOT_SPAM_FOLDER', jdovecot['props'].get('SpamFolder', 'Junk'))
 
+# migrate SharedSeen
+if jdovecot['props'].get('SharedSeen') == 'enabled':
+    agent.set_env('DOVECOT_SHAREDSEEN', '1')
+else:
+    agent.set_env('DOVECOT_SHAREDSEEN', '')
+
 # Default spam retention time migration
 if jdovecot['props'].get('SpamRetentionTime', '').endswith('d'):
     agent.set_env('DOVECOT_SPAM_RETENTION', jdovecot['props'].get('SpamRetentionTime').rstrip('d'))
