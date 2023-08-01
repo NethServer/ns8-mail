@@ -48,6 +48,9 @@ if not 'DOVECOT_QUOTA_MB' in os.environ:
     agent.set_env('DOVECOT_SPAM_FOLDER', 'Junk') # Default spam folder name, enabled
     agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '') # Default spam subject prefix: empty - disabled
 
+if not 'DOVECOT_SHAREDSEEN' in os.environ:
+    agent.set_env('DOVECOT_SHAREDSEEN', "1") # enable DOVECOT_SHAREDSEEN by default
+
 if not 'CLAMAV_CUS_RATING' in os.environ:
     # Initial value for default_dbs_rating parameter of clamav-unofficial-sigs
     agent.set_env('CLAMAV_CUS_RATING', 'MEDIUM')
