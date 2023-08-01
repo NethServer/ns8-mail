@@ -104,13 +104,24 @@
               <cv-column>
                 <h4 class="mg-bottom-md">
                   {{ $t("settings_mailboxes.sharedseen") }}
-                  <cv-tooltip
-                    alignment="start"
-                    direction="bottom"
-                    :tip="$t('settings_mailboxes.sharedseen_explanation_tooltips')"
-                    class="info mg-bottom"
+                  <cv-interactive-tooltip
+                    alignment="center"
+                    direction="right"
+                    class="info"
                   >
-                  </cv-tooltip>
+                    <template slot="trigger">
+                      <Information16 />
+                    </template>
+                    <template slot="content">
+                      <div>
+                        {{
+                          $t(
+                            "settings_mailboxes.sharedseen_explanation_tooltips"
+                          )
+                        }}
+                      </div>
+                    </template>
+                  </cv-interactive-tooltip>
                 </h4>
                 <cv-skeleton-text
                   v-if="loading.getMailboxSettings"
