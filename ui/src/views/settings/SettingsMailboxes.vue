@@ -138,7 +138,7 @@
                     :disabled="
                       loading.getMailboxSettings || loading.setMailboxSettings
                     "
-                    :class="toggle - without - label"
+                    class="toggle-without-label"
                   >
                     <template slot="text-left">{{
                       $t("common.disabled")
