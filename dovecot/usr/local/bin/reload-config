@@ -49,6 +49,13 @@ else
     tmpl_spam_folder_auto="no"
 fi
 
+# shared seen empty is false, true is non empty
+if [ -n "${DOVECOT_SHAREDSEEN}" ];then
+    tmpl_sharedseen=""
+else
+    tmpl_sharedseen=":INDEXPVT=~/Maildir/shared/%%n"
+fi
+
 master_users=${DOVECOT_MASTER_USERS}
 set +a
 

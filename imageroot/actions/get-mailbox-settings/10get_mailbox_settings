@@ -39,8 +39,13 @@ if os.getenv("DOVECOT_SPAM_FOLDER"):
         "name": os.getenv("DOVECOT_SPAM_FOLDER"),
     }
 
+osharedseen = {
+    "enabled": os.getenv("DOVECOT_SHAREDSEEN", '') != ""
+}
+
 json.dump({
     "quota": oquota,
     "spam_retention": ospam_retention,
     "spam_folder": ospam_folder,
+    "sharedseen": osharedseen,
 }, fp=sys.stdout)

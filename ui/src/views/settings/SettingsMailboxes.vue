@@ -103,6 +103,57 @@
             <cv-row>
               <cv-column>
                 <h4 class="mg-bottom-md">
+                  {{ $t("settings_mailboxes.shared_mailboxes") }}
+                </h4>
+                <cv-skeleton-text
+                  v-if="loading.getMailboxSettings"
+                  heading
+                  paragraph
+                  :line-count="4"
+                  width="80%"
+                ></cv-skeleton-text>
+                <cv-form v-else @submit.prevent="setMailboxSettings">
+                  <NsToggle
+                    :label="$t('settings_mailboxes.sharedseen')"
+                    value="sharedSeenValue"
+                    :form-item="true"
+                    v-model="sharedseen.enabled"
+                    :disabled="
+                      loading.getMailboxSettings || loading.setMailboxSettings
+                    "
+                    class="toggle-without-label"
+                  >
+                    <template slot="tooltip">
+                      <span
+                        v-html="$t('settings_mailboxes.sharedseen_explanation_tooltips')"
+                      ></span>
+                    </template>
+                    <template slot="text-left">{{
+                      $t("common.disabled")
+                    }}</template>
+                    <template slot="text-right">{{
+                      $t("common.enabled")
+                    }}</template>
+                  </NsToggle>
+                  <NsButton
+                    kind="primary"
+                    :icon="Save20"
+                    :loading="loading.setMailboxSettings"
+                    :disabled="
+                      loading.getMailboxSettings || loading.setMailboxSettings
+                    "
+                    >{{ $t("common.save_settings") }}</NsButton
+                  >
+                </cv-form>
+              </cv-column>
+            </cv-row>
+          </cv-grid>
+        </cv-tile>
+        <cv-tile light>
+          <cv-grid fullWidth class="no-padding">
+            <cv-row>
+              <cv-column>
+                <h4 class="mg-bottom-md">
                   {{ $t("settings_mailboxes.spam") }}
                 </h4>
                 <cv-skeleton-text
@@ -255,6 +306,9 @@ export default {
         enabled: false,
         prefix: "",
       },
+      sharedseen: {
+        enabled: true,
+      },
       loading: {
         getMailboxSettings: false,
         setMailboxSettings: false,
@@ -375,6 +429,7 @@ export default {
       } else {
         this.spamFolder.name = "";
       }
+      this.sharedseen.enabled = settings.sharedseen.enabled;
     },
     validateSetMailboxSettings() {
       this.clearErrors();
@@ -457,6 +512,11 @@ export default {
         spamRetention.value = parseInt(this.spamRetention.value);
       }
 
+      // sharedseen
+      let sharedseen = {
+        enabled: this.sharedseen.enabled,
+      };
+
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
@@ -464,6 +524,7 @@ export default {
             quota: quota,
             spam_folder: spamFolder,
             spam_retention: spamRetention,
+            sharedseen: sharedseen,
           },
           extra: {
             title: this.$t("action." + taskAction),

@@ -14,6 +14,9 @@
             },
             "quota": {
                 "limit": 2000
+            },
+            "sharedseen": {
+                "enabled": true
             }
         }
     ],
@@ -28,6 +31,9 @@
         },
         "quota": {
             "$ref": "http://schema.nethserver.org/mail.json#/$defs/quota-status"
+        },
+        "sharedseen": {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/sharedseen-status"
         }
     }
 }

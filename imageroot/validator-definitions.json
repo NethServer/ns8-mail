@@ -495,6 +495,20 @@
                 }
             }
         },
+        "sharedseen-status": {
+            "type": "object",
+            "title": "SharedSeen status",
+            "description": "SharedSeen configuration",
+            "required": [
+                "enabled"
+            ],
+            "properties": {
+                "enabled": {
+                    "description": "Defines if SharedSeen is enabled or disabled",
+                    "type": "boolean"
+                }
+            }
+        },
         "forward": {
             "type": "object",
             "title": "Forward settings",
@@ -799,7 +813,9 @@
                     "type": "object",
                     "title": "Greylist",
                     "description": "Greylist configuration",
-                    "required": ["enabled"],
+                    "required": [
+                        "enabled"
+                    ],
                     "properties": {
                         "enabled": {
                             "description": "Defines if greylist is enabled",
@@ -815,7 +831,9 @@
                     "type": "object",
                     "title": "Prefix email subject",
                     "description": "Configure if the subject of spam messages are prefixed with a string",
-                    "required": ["enabled"],
+                    "required": [
+                        "enabled"
+                    ],
                     "properties": {
                         "enabled": {
                             "description": "Defines if email subject prefixing",
