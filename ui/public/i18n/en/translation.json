@@ -324,7 +324,7 @@
     "quota": "Quota",
     "spam": "Spam",
     "sharedseen": "Shared seen",
-    "sharedseen_explanation_tooltips": "In a shared mailbox, each user has their copy of the messages they have read, however  if you want to know if a mail has already been read by someone else, you could enable this option for all shared mailboxes"
+    "sharedseen_explanation_tooltips": "If enabled, a message is marked seen (read) by the first user that opens it, with effect for everyone else sharing the same mailbox"
   },
   "settings_master_users": {
     "title": "Master users",
