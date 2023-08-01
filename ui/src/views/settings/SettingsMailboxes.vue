@@ -103,25 +103,7 @@
             <cv-row>
               <cv-column>
                 <h4 class="mg-bottom-md">
-                  {{ $t("settings_mailboxes.sharedseen") }}
-                  <cv-interactive-tooltip
-                    alignment="center"
-                    direction="right"
-                    class="info"
-                  >
-                    <template slot="trigger">
-                      <Information16 />
-                    </template>
-                    <template slot="content">
-                      <div>
-                        {{
-                          $t(
-                            "settings_mailboxes.sharedseen_explanation_tooltips"
-                          )
-                        }}
-                      </div>
-                    </template>
-                  </cv-interactive-tooltip>
+                  {{ $t("settings_mailboxes.shared_mailboxes") }}
                 </h4>
                 <cv-skeleton-text
                   v-if="loading.getMailboxSettings"
@@ -132,6 +114,7 @@
                 ></cv-skeleton-text>
                 <cv-form v-else @submit.prevent="setMailboxSettings">
                   <NsToggle
+                    :label="$t('settings_mailboxes.sharedseen')"
                     value="sharedSeenValue"
                     :form-item="true"
                     v-model="sharedseen.enabled"
@@ -140,6 +123,11 @@
                     "
                     class="toggle-without-label"
                   >
+                    <template slot="tooltip">
+                      <span
+                        v-html="$t('settings_mailboxes.sharedseen_explanation_tooltips')"
+                      ></span>
+                    </template>
                     <template slot="text-left">{{
                       $t("common.disabled")
                     }}</template>
