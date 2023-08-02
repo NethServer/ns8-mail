@@ -7,4 +7,4 @@ ExecStart=runagent generate-dhpem
 ExecStartPost=-runagent install-certificate postfix
 ExecStartPost=-runagent install-certificate dovecot
 WorkingDirectory=%S/state
-SyslogIdentifier=%u/%N
+SyslogIdentifier=%N

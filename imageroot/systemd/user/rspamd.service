@@ -32,7 +32,7 @@ ExecReload=runagent discover-services
 ExecReload=runagent /usr/bin/podman exec --env=RSPAMD_* --env-file=rspamd.env --env-file=discovery.env %N reload-config
 PIDFile=%t/rspamd.pid
 Type=forking
-SyslogIdentifier=%u
+SyslogIdentifier=%N
 
 [Install]
 WantedBy=default.target

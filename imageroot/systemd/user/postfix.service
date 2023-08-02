@@ -31,7 +31,7 @@ ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/postfix.ctr-id
 ExecReload=runagent /usr/bin/podman exec --env=POSTFIX_* %N reload-config
 PIDFile=%t/postfix.pid
 Type=forking
-SyslogIdentifier=%u
+SyslogIdentifier=%N
 
 [Install]
 WantedBy=default.target

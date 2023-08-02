@@ -44,7 +44,7 @@ ExecReload=runagent /usr/bin/podman exec \
     %N reload-config
 PIDFile=%t/dovecot.pid
 Type=forking
-SyslogIdentifier=%u
+SyslogIdentifier=%N
 
 [Install]
 WantedBy=default.target

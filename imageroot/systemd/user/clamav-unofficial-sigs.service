@@ -7,4 +7,4 @@ After=clamav.service
 Type=oneshot
 ExecStart=podman exec clamav download-sigs cus -s
 WorkingDirectory=%S/state
-SyslogIdentifier=%u/%N
+SyslogIdentifier=%N
