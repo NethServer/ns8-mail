@@ -89,7 +89,6 @@ smtpd_relay_restrictions =
 
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
-  reject_unknown_recipient_domain,
   ${tmpl_verify_recipient_address},
 
 #
