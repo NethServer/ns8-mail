@@ -72,7 +72,7 @@
         "add_group_addresses_from_user_domain_tooltip": "Creare un indirizzo e-mail per ogni gruppo del dominio utenti.",
         "delete_domain_domain": "Cancellare il dominio {domain}",
         "delete_domain_explanation": "Anche tutti gli indirizzi e-mail associati saranno eliminati. Tuttavia, tutti i messaggi e-mail ricevuti e inviati da questo dominio saranno conservati.",
-        "create_domain": "Creare dominio",
+        "create_domain": "Crea dominio",
         "name": "Nome",
         "create_domain_domain": "Creare il dominio {domain}",
         "accept_unknown_recipients": "Accetta i destinatari sconosciuti",
