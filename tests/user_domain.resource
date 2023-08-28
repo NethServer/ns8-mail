@@ -27,7 +27,7 @@ TLS required on non-secure IMAP connections
     ...    timeout ${curl_timeout} curl -v -f -u u1:Nethesis,1234 imap://127.0.0.2
     ...    return_rc=True    return_stderr=True
     Should Be Equal As Integers    ${rc}  67
-    Should Contain    ${err}    No known authentication mechanisms supported!
+    Should Contain    ${err}    No known authentication mechanisms supported
 
 IMAPs endpoint login
     ${out}  ${err}  ${rc} =    Execute Command
