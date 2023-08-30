@@ -4,6 +4,7 @@
 set -e
 
 alpine_version=3.17.2
+solr_version=9.3.0
 
 # Prepare variables for later use
 images=()
@@ -43,7 +44,7 @@ buildah config --entrypoint=/ \
         postfix \
         rspamd \
         clamav \
-    )" \
+    ) docker.io/library/solr:${solr_version}" \
     --label="org.nethserver.authorizations=node:fwadm traefik@node:fulladm" \
     "${container}"
 # Commit the image
@@ -61,7 +62,7 @@ set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext
+apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-fts-solr dovecot-lmtpd openldap-clients gettext
 apk add --no-cache rspamd-client
 (
     # Remove the self-signed certificate
