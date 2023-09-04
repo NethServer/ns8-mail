@@ -75,7 +75,7 @@ apk add --no-cache rspamd-client
     rm -rvf "${tmpdir}"
 )
 (
-    apk add --no-cache build-base git autoconf automake libtool dovecot-dev  xapian-core-dev  icu-dev
+    apk add --no-cache build-base git autoconf automake libtool dovecot-dev xapian-core xapian-core-dev  icu-dev
     mkdir /tmp/build
     cd /tmp/build
     git init
@@ -88,7 +88,7 @@ apk add --no-cache rspamd-client
     make install
     # clean what we installed
     rm -rf /tmp/build
-    apk del build-base git autoconf automake libtool dovecot-dev  xapian-core-dev  icu-dev
+    apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
 )
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
