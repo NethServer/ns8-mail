@@ -75,7 +75,7 @@ apk add --no-cache rspamd-client
     rm -rvf "${tmpdir}"
 )
 (
-    apk add build-base git autoconf automake libtool dovecot-dev  xapian-core-dev  icu-dev
+    apk add --no-cache build-base git autoconf automake libtool dovecot-dev  xapian-core-dev  icu-dev
     mkdir /tmp/build
     cd /tmp/build
     git init
