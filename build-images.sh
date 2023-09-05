@@ -61,7 +61,7 @@ set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext
+apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core poppler-utils
 apk add --no-cache rspamd-client
 (
     # Remove the self-signed certificate
@@ -73,6 +73,20 @@ apk add --no-cache rspamd-client
     # Copy the post-install script to generate a new certificate from entrypoint.sh
     mv -v .post-install /usr/local/bin/dovecot-post-install
     rm -rvf "${tmpdir}"
+)
+(
+    apk add --no-cache build-base git autoconf automake libtool dovecot-dev xapian-core-dev  icu-dev
+    mkdir /tmp/build
+    cd /tmp/build
+    git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
+    cd dovecot-fts-flatcurve/
+    ash autogen.sh
+    ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
+    make
+    make install
+    # clean what we installed
+    rm -rf /tmp/build
+    apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
 )
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
