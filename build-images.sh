@@ -61,7 +61,7 @@ set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core
+apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core poppler-utils catdoc
 apk add --no-cache rspamd-client
 (
     # Remove the self-signed certificate
