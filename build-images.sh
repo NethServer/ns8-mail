@@ -83,7 +83,7 @@ apk add --no-cache rspamd-client
     git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
     cd dovecot-fts-flatcurve/
     ash autogen.sh
-    ./configure --with-dovecot=/usr/lib/dovecot/
+    ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
     make
     make install
     # clean what we installed
