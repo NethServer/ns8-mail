@@ -78,8 +78,6 @@ apk add --no-cache rspamd-client
     apk add --no-cache build-base git autoconf automake libtool dovecot-dev xapian-core xapian-core-dev  icu-dev
     mkdir /tmp/build
     cd /tmp/build
-    git init
-    git config --global --add safe.directory /tmp/build
     git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
     cd dovecot-fts-flatcurve/
     ash autogen.sh
