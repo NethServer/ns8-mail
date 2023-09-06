@@ -101,7 +101,7 @@ apk add --no-cache rspamd-client
     cp *.so.* /lib
     ln -s /lib/libmimalloc.so.* /lib/libmimalloc.so || echo "Link not needed"
     # clean what we installed
-    rm -rf mimalloc
+    rm -rf /mimalloc
     apk del git build-base cmake linux-headers
 )
 
