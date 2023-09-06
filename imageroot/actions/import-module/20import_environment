@@ -51,6 +51,6 @@ else:
 
 # Set the node host name as default. These values can be changed from the
 # UI at any time.
-hostname = socket.getfqdn().lower()
+hostname = agent.get_hostname().lower()
 agent.set_env('MAIL_HOSTNAME', hostname)
 agent.set_env('POSTFIX_HOSTNAME', hostname)
