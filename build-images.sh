@@ -88,6 +88,23 @@ apk add --no-cache rspamd-client
     rm -rf /tmp/build
     apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
 )
+(
+    # we build mimalloc
+    apk add --no-cache git build-base cmake linux-headers
+    cd /
+    git clone --depth 1 https://github.com/microsoft/mimalloc
+    cd mimalloc
+    mkdir build
+    cd build
+    cmake ..
+    make -j$(nproc)
+    cp *.so.* /lib
+    ln -s /lib/libmimalloc.so.* /lib/libmimalloc.so || echo "Link not needed"
+    # clean what we installed
+    rm -rf mimalloc
+    apk del git build-base cmake linux-headers
+)
+
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
 sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
@@ -114,6 +131,8 @@ buildah config \
     --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
     --env=DOVECOT_TRASH_FOLDER=Trash \
     --env=DOVECOT_MAX_USERIP_CONNECTIONS=20 \
+    --env=LD_PRELOAD=/lib/libmimalloc.so \
+    --env=MIMALLOC_LARGE_OS_PAGES=1 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
