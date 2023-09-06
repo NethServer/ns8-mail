@@ -18,7 +18,10 @@ sys.stdout = sys.stderr
 sdb = mail.pcdb_connect()
 sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
 
-jrspamd = json.load(open('rspamd.json'))['props']
+try:
+    jrspamd = json.load(open('rspamd.json'))['props']
+except:
+    sys.exit(0)
 jpostfix = json.load(open('postfix.json'))['props']
 jclamd = json.load(open('clamd.json'))['props']
 

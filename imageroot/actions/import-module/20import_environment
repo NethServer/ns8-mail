@@ -18,7 +18,7 @@ jdovecot = json.load(open("dovecot.json"))
 agent.set_env('POSTFIX_ORIGIN', open('user_domain.txt').read().strip())
 
 # Spam subject prefix migration
-if jrspamd['props'].get('SpamSubjectPrefixStatus') == 'enabled':
+if type(jrspamd) is dict and jrspamd['props'].get('SpamSubjectPrefixStatus') == 'enabled':
     agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', jrspamd['props'].get('SpamSubjectPrefixString', ''))
 else:
     agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '')
@@ -51,6 +51,6 @@ else:
 
 # Set the node host name as default. These values can be changed from the
 # UI at any time.
-hostname = socket.getfqdn().lower()
+hostname = agent.get_hostname().lower()
 agent.set_env('MAIL_HOSTNAME', hostname)
 agent.set_env('POSTFIX_HOSTNAME', hostname)
