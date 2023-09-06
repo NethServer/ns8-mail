@@ -11,6 +11,39 @@
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <link href="/cluster-admin/css/core.css" rel="stylesheet" />
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      .loading-app {
+        height: 100vh;
+        background-color: #393939;
+        color: #393939;
+        text-align: center;
+      }
+
+      .loading-app .loader {
+        width: 88px;
+        height: 88px;
+        margin-top: 4rem;
+        border: 8px solid #00a2de;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 690ms linear infinite;
+      }
+
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
   <body>
     <noscript>
@@ -20,7 +53,9 @@
         continue.</strong
       >
     </noscript>
-    <div id="ns8-app"></div>
+    <div id="ns8-app" class="loading-app">
+      <span class="loader"></span>
+    </div>
     <!-- built files will be auto injected -->
   </body>
 </html>
