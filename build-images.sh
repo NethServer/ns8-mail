@@ -61,7 +61,7 @@ set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core poppler-utils
+apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core poppler-utils mimalloc2
 apk add --no-cache rspamd-client
 (
     # Remove the self-signed certificate
@@ -114,6 +114,7 @@ buildah config \
     --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
     --env=DOVECOT_TRASH_FOLDER=Trash \
     --env=DOVECOT_MAX_USERIP_CONNECTIONS=20 \
+    --env=LD_PRELOAD=/usr/lib/libmimalloc.so.2 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
