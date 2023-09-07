@@ -116,7 +116,6 @@ buildah config \
     --env=DOVECOT_TRASH_FOLDER=Trash \
     --env=DOVECOT_MAX_USERIP_CONNECTIONS=20 \
     --env=LD_PRELOAD=/lib/libmimalloc.so \
-    --env=MIMALLOC_LARGE_OS_PAGES=1 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
