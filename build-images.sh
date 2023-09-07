@@ -55,7 +55,7 @@ images+=("${repobase}/${reponame}")
 # davidep: avoid dovecot 2.3.19-r2 - userdb lookup crashes
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/library/alpine:${alpine_version})
+container=$(buildah from docker.io/frolvlad/alpine-glibc:alpine-3.17)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
@@ -87,22 +87,6 @@ apk add --no-cache rspamd-client
     # clean what we installed
     rm -rf /tmp/build
     apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
-)
-(
-    # we build mimalloc
-    apk add --no-cache git build-base cmake linux-headers
-    cd /
-    git clone --depth 1 https://github.com/microsoft/mimalloc
-    cd mimalloc
-    mkdir build
-    cd build
-    cmake ..
-    make -j$(nproc)
-    cp *.so.* /lib
-    ln -s /lib/libmimalloc.so.* /lib/libmimalloc.so || echo "Link not needed"
-    # clean what we installed
-    rm -rf /mimalloc
-    apk del git build-base cmake linux-headers
 )
 
 mkdir -p /var/lib/dovecot/dict/uquota
