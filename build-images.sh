@@ -55,13 +55,13 @@ images+=("${repobase}/${reponame}")
 # davidep: avoid dovecot 2.3.19-r2 - userdb lookup crashes
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/frolvlad/alpine-glibc:alpine-3.17)
+container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core poppler-utils
+apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core poppler-utils mimalloc2
 apk add --no-cache rspamd-client
 (
     # Remove the self-signed certificate
