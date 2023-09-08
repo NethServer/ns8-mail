@@ -275,6 +275,12 @@ Migration notes:
    e-smith DB props: `postfix/AccessBypassList`, `rspamd/SenderWhiteList`,
    `rspamd/RecipientWhiteList`.
 
+1. New Full Text Search (FTS) engine Flatcurve. Old FTS indexes are
+   excluded from the migration. To massively rebuild the search indexes
+   run the following command during system idle time:
+
+       podman exec dovecot nice doveadm index -A -q '*'
+
 ## UI translation
 
 Translated with [Weblate](https://hosted.weblate.org/projects/ns8/).
