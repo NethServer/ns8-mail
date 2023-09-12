@@ -66,7 +66,7 @@ apt update
  export DEBIAN_FRONTEND=noninteractive && apt install -y dovecot-core dovecot-imapd dovecot-ldap \
     dovecot-sieve dovecot-managesieved  \
     dovecot-pop3d dovecot-lmtpd \
-    poppler-utils gettext-base
+    poppler-utils gettext-base poppler-utils xapian-tools libxapian30
  export DEBIAN_FRONTEND=noninteractive && apt install --no-install-recommends -y rspamd
  apt-get autoremove --purge -y && \
     apt-get autoclean && \
@@ -82,20 +82,23 @@ apt update
 #     mv -v .post-install /usr/local/bin/dovecot-post-install
 #     rm -rvf "${tmpdir}"
 # )
-# (
-#     apk add --no-cache build-base git autoconf automake libtool dovecot-dev xapian-core-dev  icu-dev # gettext xapian-core poppler-utils
-#     mkdir /tmp/build
-#     cd /tmp/build
-#     git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
-#     cd dovecot-fts-flatcurve/
-#     ash autogen.sh
-#     ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
-#     make
-#     make install
-#     # clean what we installed
-#     rm -rf /tmp/build
-#     apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
-# )
+ (
+    apt update 
+    apt install -y --no-install-recommends git autoconf automake libtool dovecot-dev libxapian-dev libicu-dev build-essential
+    mkdir -vp /tmp/build
+    cd /tmp/build
+    git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
+    cd dovecot-fts-flatcurve/
+    bash autogen.sh
+    ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
+    make
+    make install
+    rm -rf /tmp/build
+    apt purge  git autoconf automake libtool dovecot-dev libxapian-dev libicu-dev build-essential -y
+    apt-get autoremove --purge -y && \
+    apt-get autoclean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/
+ )
 mkdir -p /etc/dovecot/local.conf.d
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
