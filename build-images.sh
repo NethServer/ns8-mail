@@ -4,6 +4,7 @@
 set -e
 
 alpine_version=3.17.2
+debian_version=stable-20230904-slim
 
 # Prepare variables for later use
 images=()
@@ -55,39 +56,47 @@ images+=("${repobase}/${reponame}")
 # davidep: avoid dovecot 2.3.19-r2 - userdb lookup crashes
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/library/alpine:${alpine_version})
+container=$(buildah from docker.io/debian:${debian_version})
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
-addgroup -g 101 -S vmail
-adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
+addgroup --system --gid 101 vmail
+adduser --system --uid 100 --group --home /var/lib/vmail vmail
 chmod -c 700 /var/lib/vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core poppler-utils mimalloc2
-apk add --no-cache rspamd-client
-(
-    # Remove the self-signed certificate
-    rm -vf /etc/ssl/dovecot/server.*
-    tmpdir=$(mktemp -d)
-    cd "${tmpdir}"
-    apk fetch --no-cache dovecot
-    tar xfv dovecot-*.apk .post-install
-    # Copy the post-install script to generate a new certificate from entrypoint.sh
-    mv -v .post-install /usr/local/bin/dovecot-post-install
-    rm -rvf "${tmpdir}"
-)
-(
-    apk add --no-cache build-base git autoconf automake libtool dovecot-dev xapian-core-dev  icu-dev
-    mkdir /tmp/build
-    cd /tmp/build
-    git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
-    cd dovecot-fts-flatcurve/
-    ash autogen.sh
-    ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
-    make
-    make install
-    # clean what we installed
-    rm -rf /tmp/build
-    apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
-)
+apt update
+ export DEBIAN_FRONTEND=noninteractive && apt install -y dovecot-core dovecot-imapd dovecot-ldap \
+    dovecot-sieve dovecot-managesieved  \
+    dovecot-pop3d dovecot-lmtpd \
+    poppler-utils gettext-base
+ export DEBIAN_FRONTEND=noninteractive && apt install --no-install-recommends -y rspamd
+ apt-get autoremove --purge -y && \
+    apt-get autoclean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/
+# (
+#     # Remove the self-signed certificate
+#     rm -vf /etc/ssl/dovecot/server.*
+#     tmpdir=$(mktemp -d)
+#     cd "${tmpdir}"
+#     apk fetch --no-cache dovecot
+#     tar xfv dovecot-*.apk .post-install
+#     # Copy the post-install script to generate a new certificate from entrypoint.sh
+#     mv -v .post-install /usr/local/bin/dovecot-post-install
+#     rm -rvf "${tmpdir}"
+# )
+# (
+#     apk add --no-cache build-base git autoconf automake libtool dovecot-dev xapian-core-dev  icu-dev # gettext xapian-core poppler-utils
+#     mkdir /tmp/build
+#     cd /tmp/build
+#     git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
+#     cd dovecot-fts-flatcurve/
+#     ash autogen.sh
+#     ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
+#     make
+#     make install
+#     # clean what we installed
+#     rm -rf /tmp/build
+#     apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
+# )
+mkdir -p /etc/dovecot/local.conf.d
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
 sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
@@ -114,7 +123,6 @@ buildah config \
     --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
     --env=DOVECOT_TRASH_FOLDER=Trash \
     --env=DOVECOT_MAX_USERIP_CONNECTIONS=20 \
-    --env=LD_PRELOAD=/usr/lib/libmimalloc.so.2 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
 images+=("${repobase}/${reponame}")
