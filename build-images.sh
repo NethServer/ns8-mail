@@ -66,7 +66,7 @@ apt update
  export DEBIAN_FRONTEND=noninteractive && apt install -y dovecot-core dovecot-imapd dovecot-ldap \
     dovecot-sieve dovecot-managesieved  \
     dovecot-pop3d dovecot-lmtpd \
-    poppler-utils gettext-base poppler-utils xapian-tools libxapian30
+    poppler-utils gettext-base poppler-utils xapian-tools libxapian30 ldap-utils
  export DEBIAN_FRONTEND=noninteractive && apt install --no-install-recommends -y rspamd
  apt-get autoremove --purge -y && \
     apt-get autoclean && \
