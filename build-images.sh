@@ -78,15 +78,14 @@ export DEBIAN_FRONTEND=noninteractive && apt install --no-install-recommends -y 
     ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
     make
     make install
-    rm -rf /tmp/build
-    apt purge  git autoconf automake libtool dovecot-dev libxapian-dev libicu-dev build-essential -y
 )
-(
-    # clean apt and purge orphan deb
-    apt-get autoremove --purge -y && \
-    apt-get autoclean -y && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/
-)
+# clean and purge orphan deb
+rm -rf /tmp/build
+apt purge  git autoconf automake libtool dovecot-dev libxapian-dev libicu-dev build-essential -y
+apt-get autoremove --purge -y && \
+apt-get autoclean -y && \
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/
+
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
 sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
