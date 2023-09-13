@@ -4,7 +4,7 @@
 set -e
 
 alpine_version=3.17.2
-debian_version=stable-20230904-slim
+debian_version=bookworm-20230904-slim
 
 # Prepare variables for later use
 images=()
