@@ -68,11 +68,7 @@ apt update
     dovecot-pop3d dovecot-lmtpd \
     poppler-utils gettext-base poppler-utils xapian-tools libxapian30 ldap-utils
  export DEBIAN_FRONTEND=noninteractive && apt install --no-install-recommends -y rspamd
- apt-get autoremove --purge -y && \
-    apt-get autoclean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/
  (
-    apt update 
     apt install -y --no-install-recommends git autoconf automake libtool dovecot-dev libxapian-dev libicu-dev build-essential
     mkdir -vp /tmp/build
     cd /tmp/build
@@ -84,8 +80,11 @@ apt update
     make install
     rm -rf /tmp/build
     apt purge  git autoconf automake libtool dovecot-dev libxapian-dev libicu-dev build-essential -y
+ )
+ (
+    # clean apt and purge orphan deb
     apt-get autoremove --purge -y && \
-    apt-get autoclean && \
+    apt-get autoclean -y && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/
  )
 mkdir -p /var/lib/dovecot/dict/uquota
