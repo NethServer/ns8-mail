@@ -10,42 +10,12 @@
 set -e
 
 if [ $# -eq 0 ]; then
-    if [ ! -f /etc/ssl/dovecot/dovecot.key ]; then
+    if [ ! -f /etc/ssl/dovecot/server.key ]; then
         mkdir -v /etc/dovecot/ssl
-        cat <<EOF >/etc/dovecot/dovecot-openssl.cnf
-[ req ]
-default_bits = 2048
-encrypt_key = yes
-distinguished_name = req_dn
-x509_extensions = cert_type
-prompt = no
-
-[ req_dn ]
-# country (2 letter code)
-#C=FI
-
-# State or Province Name (full name)
-#ST=
-
-# Locality Name (eg. city)
-#L=Helsinki
-
-# Organization (eg. company)
-#O=Dovecot
-
-# Organizational Unit Name (eg. section)
-OU=IMAP server
-
-# Common Name (*.example.com is also possible)
-CN=imap.example.com
-
-# E-mail contact
-emailAddress=postmaster@example.com
-
-[ cert_type ]
-nsCertType = server
-EOF
         export OPENSSLCONFIG=/etc/dovecot/dovecot-openssl.cnf && /usr/share/dovecot/mkcert.sh
+        cp /etc/dovecot/ssl/dovecot.key /etc/ssl/dovecot/server.key
+        cp /etc/dovecot/ssl/dovecot.pem /etc/ssl/dovecot/server.pem
+        rm -rf /etc/dovecot/ssl/
     fi
     reload-config
     exec dovecot -F
