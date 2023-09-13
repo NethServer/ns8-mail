@@ -63,12 +63,12 @@ addgroup --system --gid 101 vmail
 adduser --system --uid 100 --group --home /var/lib/vmail vmail
 chmod -c 700 /var/lib/vmail
 apt update
- export DEBIAN_FRONTEND=noninteractive && apt install -y dovecot-core dovecot-imapd dovecot-ldap \
+export DEBIAN_FRONTEND=noninteractive && apt install -y dovecot-core dovecot-imapd dovecot-ldap \
     dovecot-sieve dovecot-managesieved  \
     dovecot-pop3d dovecot-lmtpd \
     poppler-utils gettext-base poppler-utils xapian-tools libxapian30 ldap-utils
- export DEBIAN_FRONTEND=noninteractive && apt install --no-install-recommends -y rspamd
- (
+export DEBIAN_FRONTEND=noninteractive && apt install --no-install-recommends -y rspamd
+(
     apt install -y --no-install-recommends git autoconf automake libtool dovecot-dev libxapian-dev libicu-dev build-essential
     mkdir -vp /tmp/build
     cd /tmp/build
@@ -80,13 +80,13 @@ apt update
     make install
     rm -rf /tmp/build
     apt purge  git autoconf automake libtool dovecot-dev libxapian-dev libicu-dev build-essential -y
- )
- (
+)
+(
     # clean apt and purge orphan deb
     apt-get autoremove --purge -y && \
     apt-get autoclean -y && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache/
- )
+)
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
 sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
