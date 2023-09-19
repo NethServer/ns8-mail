@@ -63,7 +63,7 @@ echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::" > /etc/dovecot/users
 
 if [ -n "${DOVECOT_DISABLED_USERS}" ]; then
     # Transform the CSV list in a LDAP filter NOT-ORs clause
-    ldap_users_search_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" -e '{
+    ldap_users_search_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" '{
         if (schema == "rfc2307") {
             attr_name = "uid"
         } else if (schema == "ad") {
