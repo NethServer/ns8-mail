@@ -82,7 +82,7 @@
         "apo_destination": "fehlendes Objekt",
         "advanced": "Erweitert",
         "enabled": "Aktiviert",
-        "user_destination": "Benuter"
+        "user_destination": "Benutzer"
     },
     "filter": {
         "third_party_signatures_rating_tooltip": "Eine höhere Bewertung bedeutet mehr blockierte Bedrohungen, aber auch eine höhere Wahrscheinlichkeit von Fehlalarmen. Empfohlene Bewertungen sind <strong>Niedrig</strong> und <strong>Mittel</strong>",
@@ -167,7 +167,15 @@
         "move_spam_to_junk_folder": "Spam in den Junk-Ordner verschieben",
         "junk_folder_name": "Name des Junk-Ordner",
         "unlimited": "Unbegrenzt",
-        "default_mail_quota": "Standard E-Mail-Kontingent"
+        "default_mail_quota": "Standard E-Mail-Kontingent",
+        "sharedseen_explanation_tooltips": "Wenn diese Option aktiviert ist, wird eine Nachricht vom ersten Benutzer, der sie öffnet, als für alle Nutzer des Postfach als gesehen (gelesen) markiert",
+        "quota": "Kontingent",
+        "shared_mailboxes": "geteiltes Postfach",
+        "sharedseen": "geteilte Gelesen-Markierung",
+        "specify_quota": "benutzerdefiniertes Kontingent",
+        "spam": "Spam",
+        "specify_retention": "benutzerdefinierte Aufbewahrung",
+        "move_spam_but_no_folder": "Wenn \"Spam in Junk-Ordner verschieben\" aktiviert ist, ist der Name des Junk-Ordners erforderlich"
     },
     "filter_bypass_rules": {
         "no_bypass_rule_description": "Es sind keine Ausnahme-Regeln konfiguriert",
@@ -251,7 +259,8 @@
         "installation_node": "Installations-Knoten",
         "rspamd_webapp_description": "Erweiterte Filterverwaltung und Nachrichtenverlauf",
         "node": "Knoten",
-        "no_volumes": "keine Volumen"
+        "no_volumes": "keine Volumen",
+        "mount": "Einbindepunkt"
     },
     "action": {
         "set-filter-configuration": "Filter-Einstellungen festlegen",
@@ -317,5 +326,48 @@
     "task": {
         "cannot_create_task": "Aufgabe {action} nicht erstellt",
         "task_aborted": "{action} abgebrochen"
+    },
+    "settings_master_users": {
+        "master_users_placeholder": "Master-Benutzer auswählen",
+        "page_description": "Master-Benutzer sind privilegierte Benutzer, die mit ein Postfach im Kontext eines anderen Benutzer interagieren können (impersonation)",
+        "title": "Master-Benutzer",
+        "master_users": "Master-Benutzer"
+    },
+    "queue": {
+        "confirm_delete_queued_message": "Die E-Mail wird gelöscht, sind Sie sicher?",
+        "delete": "löschen",
+        "queue_id": "Nachrichten-ID",
+        "search_queue": "suchen",
+        "delete_email_confirm": "E-Mail <strong>{name}</strong> löschen?",
+        "message_size": "Nachrichtengröße",
+        "queue_tooltip": "Dies sind die Nachrichten, die in der SMTP-Warteschlange darauf warten, weitergeleitet zu werden. Unter normalen Bedingungen sollte diese Warteschlange leer sein oder nur wenige Nachrichten enthalten.",
+        "col_queue_id": "Nachrichten-ID",
+        "delay_reason": "Grund für Verzögerung",
+        "sender": "Absender",
+        "delete_queue": "alle E-Mails löschen",
+        "delete_email": "E-Mail löschen",
+        "no_queue": "E-Mail-Warteschlange ist leer",
+        "col_arrival_time": "Ankunftszeit",
+        "no_queue_description": "Die E-Mail-Warteschlange ist leer.",
+        "reload_queue": "Neu laden",
+        "arrival_time": "Ankunftszeit",
+        "col_sender": "Absender",
+        "resend_all": "alle erneut senden",
+        "resend": "erneut senden",
+        "cancel": "Abbrechen",
+        "recipient": "Empfänger",
+        "close": "Schließen",
+        "delete_all": "alle löschen",
+        "title": "Warteschlange",
+        "deferred_queue_details": "Nachrichten-Details",
+        "col_recipients": "Empfänger",
+        "see_details": "Details anzeigen",
+        "confirm_delete_all_queued_message": "Alle E-Mails werden gelöscht, sind Sie sicher?",
+        "col_message_size": "Nachrichtengröße",
+        "recipients": "Empfänger"
+    },
+    "settings_general": {
+        "user_domain": "Benutzerdomäne",
+        "title": "Allgemeine Einstellungen"
     }
 }
