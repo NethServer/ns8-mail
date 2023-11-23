@@ -156,7 +156,9 @@
         "invalid_pattern": "Muster ungültig",
         "404": "Ressource nicht gefunden",
         "network_error": "Netzwerkfehler",
-        "validation_error": "Überprüfungsfehler"
+        "validation_error": "Überprüfungsfehler",
+        "cannot_retrieve_installed_modules": "Installierte Module nicht abrufbar",
+        "cannot_retrieve_module_info": "Informationen zum Modul nicht abrufbar"
     },
     "settings_mailboxes": {
         "forever": "immer",
