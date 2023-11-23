@@ -161,7 +161,7 @@
         "cannot_retrieve_module_info": "Informationen zum Modul nicht abrufbar"
     },
     "settings_mailboxes": {
-        "forever": "immer",
+        "forever": "Immer",
         "default_spam_retention": "Standard Spam-Aufbewahrung",
         "title": "Postfach-Einstellungen",
         "move_spam_to_junk_folder": "Spam in den Junk-Ordner verschieben",
