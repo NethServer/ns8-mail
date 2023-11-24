@@ -1,1 +1,5 @@
-{}
+{
+    "error": {
+        "403": "Operation not authorized"
+    }
+}
