@@ -1,5 +1,8 @@
 {
     "error": {
         "403": "Operation not authorized"
+    },
+    "common": {
+        "required": "Requerido"
     }
 }
