@@ -43,7 +43,9 @@
         "installation_node": "Nodo de instalación",
         "node": "Nodo",
         "no_volumes": "No hay volúmenes",
-        "not_configured": "No configurado"
+        "not_configured": "No configurado",
+        "status": "Estado",
+        "user_domain": "Dominio de usuario"
     },
     "about": {
         "title": "Acerca de"
@@ -57,16 +59,31 @@
         "configure-module": "Configurar el módulo",
         "get-configuration": "Obtener la configuración",
         "get-name": "Obtener el nombre",
-        "get-defaults": "Obtener valores predeterminados"
+        "get-defaults": "Obtener valores predeterminados",
+        "alter-domain": "Editar dominio"
     },
     "task": {
         "cannot_create_task": "No se puede crear la tarea {action}"
     },
     "settings": {
-        "title": "Ajustes"
+        "title": "Ajustes",
+        "general": "General"
     },
     "domains": {
         "delete_domain": "Eliminar dominio",
-        "create_domain": "Crear dominio"
+        "create_domain": "Crear dominio",
+        "domain_pattern": "Dominio no válido",
+        "edit_domain": "Editar dominio",
+        "description": "Descripción",
+        "title": "Dominios",
+        "name": "Nombre"
+    },
+    "welcome": {
+        "mail_domain_pattern": "Dominio no válido",
+        "user_domain": "Dominio de usuario"
+    },
+    "addresses": {
+        "title": "Direcciones",
+        "show_all": "Mostrar todo"
     }
 }
