@@ -113,6 +113,10 @@
         "read": "Leer",
         "unlimited": "Ilimitado",
         "forever": "Siempre",
-        "col_mailbox": "Buzón"
+        "col_mailbox": "Buzón",
+        "days": "Días"
+    },
+    "filter": {
+        "title": "Filter"
     }
 }
