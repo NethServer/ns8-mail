@@ -94,6 +94,7 @@
         "internal": "Interno",
         "address": "Dirección",
         "destinations": "Destinos",
-        "type": "Tipo"
+        "type": "Tipo",
+        "public": "Público"
     }
 }
