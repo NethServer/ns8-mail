@@ -119,6 +119,9 @@
     "filter": {
         "title": "Filtro",
         "general": "General",
-        "enable_filter": "Activar filtro"
+        "enable_filter": "Activar filtro",
+        "signatures_low": "Baja",
+        "configure": "Configurar",
+        "prefix": "Prefijo"
     }
 }
