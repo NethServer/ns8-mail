@@ -117,6 +117,8 @@
         "days": "Días"
     },
     "filter": {
-        "title": "Filter"
+        "title": "Filter",
+        "general": "General",
+        "enable_filter": "Activar filtro"
     }
 }
