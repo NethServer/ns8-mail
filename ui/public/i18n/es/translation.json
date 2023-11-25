@@ -25,7 +25,8 @@
         "group_destination": "Grupo",
         "mail_hostname": "Nombre de host del servidor de correo",
         "apo_destination": "Objeto perdido",
-        "advanced": "Avanzado"
+        "advanced": "Avanzado",
+        "user_destination": "Usuario"
     },
     "status": {
         "created": "Creado",
