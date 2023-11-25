@@ -95,6 +95,24 @@
         "address": "Dirección",
         "destinations": "Destinos",
         "type": "Tipo",
-        "public": "Público"
+        "public": "Público",
+        "type_adduser": "Usuario",
+        "type_wildcard": "Comodín",
+        "wildcard_label": "Comodín",
+        "type_addgroup": "Grupo",
+        "type_domain": "Alias"
+    },
+    "mailboxes": {
+        "col_user": "Usuario",
+        "none": "Ninguno",
+        "quota": "Cuota",
+        "members": "Miembros",
+        "rtype_ro": "Leer",
+        "col_acls": "Miembros",
+        "settings": "Ajustes",
+        "read": "Leer",
+        "unlimited": "Ilimitado",
+        "forever": "Siempre",
+        "col_mailbox": "Buzón"
     }
 }
