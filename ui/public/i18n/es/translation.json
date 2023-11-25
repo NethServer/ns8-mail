@@ -119,7 +119,7 @@
     "filter": {
         "title": "Filtro",
         "general": "General",
-        "enable_filter": "Activar filtro",
+        "enable_filter": "Habilitar filtro",
         "signatures_low": "Baja",
         "configure": "Configurar",
         "prefix": "Prefijo"
