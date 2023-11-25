@@ -89,6 +89,11 @@
     "addresses": {
         "title": "Direcciones",
         "show_all": "Mostrar todo",
-        "search_address": "Buscar dirección"
+        "search_address": "Buscar dirección",
+        "visibility": "Visibilidad",
+        "internal": "Interno",
+        "address": "Dirección",
+        "destinations": "Destinos",
+        "type": "Tipo"
     }
 }
