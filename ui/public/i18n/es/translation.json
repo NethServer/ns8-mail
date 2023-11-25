@@ -88,6 +88,7 @@
     },
     "addresses": {
         "title": "Direcciones",
-        "show_all": "Mostrar todo"
+        "show_all": "Mostrar todo",
+        "search_address": "Buscar dirección"
     }
 }
