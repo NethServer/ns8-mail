@@ -163,9 +163,21 @@
         "signatures_low": "Bajo",
         "configure": "Configurar",
         "prefix": "Prefijo",
-        "signatures_medium": "Medio"
+        "signatures_medium": "Medio",
+        "signatures_high": "Alto"
     },
     "settings_mailboxes": {
-        "forever": "Para siempre"
+        "forever": "Para siempre",
+        "quota": "Cuota",
+        "unlimited": "Ilimitado",
+        "spam": "Spam"
+    },
+    "filter_bypass_rules": {
+        "type_email": "Correo electrónico",
+        "type_ip_l": "Dirección IP",
+        "type_ip": "Dirección IP",
+        "type_domain": "Dominio",
+        "col_value": "Valor",
+        "col_type": "Tipo"
     }
 }
