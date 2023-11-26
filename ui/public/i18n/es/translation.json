@@ -250,7 +250,11 @@
         "rtype_rw": "Leer y escribir",
         "forward_enabled_but_no_destination": "Si \"Reenviar mensajes\" está habilitado, se requiere al menos una dirección de reenvío",
         "read_and_write": "Leer y escribir",
-        "create_public_mailbox_mailbox": "Crear buzón público {mailbox}"
+        "create_public_mailbox_mailbox": "Crear buzón público {mailbox}",
+        "wildcard_address_info_title": "Se creará automáticamente una nueva dirección comodín",
+        "wildcard_address_info_description": "Por ejemplo, si crea un buzón público <strong>marketing</strong>, se creará una dirección comodín <strong>marketing@</strong>.",
+        "create_mailbox": "Crear un buzón",
+        "public_mailbox_name": "Nombre del buzón público"
     },
     "filter": {
         "title": "Filtro",
