@@ -10,7 +10,8 @@
         "404": "Recurso no encontrado",
         "network_error": "Error de red",
         "validation_error": "Error de validación",
-        "invalid_pattern": "Patrón no válido"
+        "invalid_pattern": "Patrón no válido",
+        "cannot_retrieve_filter_configuration": "No se puede recuperar la configuración del filtro"
     },
     "common": {
         "required": "Obligatorio",
@@ -27,7 +28,9 @@
         "mail_hostname": "Nombre de host del servidor de correo",
         "apo_destination": "Objeto perdido",
         "advanced": "Avanzado",
-        "user_destination": "Usuario"
+        "user_destination": "Usuario",
+        "rspamd_credentials_tooltip": "Utilice sus credenciales de inicio de sesión para acceder a Rspamd",
+        "mail_hostname_tooltip": "Introduzca el registro MX configurado en su proveedor de servicios DNS"
     },
     "status": {
         "created": "Creado",
@@ -46,7 +49,11 @@
         "no_volumes": "No hay volúmenes",
         "not_configured": "No configurado",
         "status": "Estado",
-        "user_domain": "Dominio de usuario"
+        "user_domain": "Dominio de usuario",
+        "open_rspamd": "Abrir Rspamd",
+        "go_to_filter": "Ir al filtro",
+        "rspamd_webapp": "Rspamd",
+        "rspamd_webapp_description": "Gestión avanzada de filtros e historial de mensajes"
     },
     "about": {
         "title": "Acerca de"
@@ -63,14 +70,42 @@
         "get-defaults": "Obtener valores predeterminados",
         "alter-domain": "Editar dominio",
         "remove-address": "Eliminar dirección",
-        "remove-domain": "Eliminar dominio"
+        "remove-domain": "Eliminar dominio",
+        "set-filter-configuration": "Configurar el filtro",
+        "add-address": "Crear una dirección",
+        "add-public-mailbox": "Crear un buzón público",
+        "alter-user-mailbox": "Editar el buzón del usuario",
+        "list-addresses": "Lista de direcciones",
+        "list-domains": "Lista de dominios",
+        "report-queue-status": "Enumerar los mensajes diferidos en la cola postfix",
+        "flush-postfix-queue": "Vaciar la cola Postfix",
+        "get-master-users": "Obtener los usuarios principales",
+        "list-acl-subjects": "Lista de temas ACL",
+        "list-user-mailboxes": "Mostrar los buzones de usuario",
+        "alter-public-mailbox": "Editar el buzón público",
+        "add-domain": "Crear un dominio",
+        "get-domain-dkim": "Obtener DKIM del dominio",
+        "set-mailbox-enabled": "Activar el buzón",
+        "set-master-users": "Establecer los usuarios principales",
+        "get-filter-configuration": "Obtener la configuración del filtro",
+        "set-mailbox-settings": "Configurar el buzón",
+        "list-public-mailboxes": "Enumerar los buzones de correo públicos",
+        "list-bypass-rules": "Enumerar las reglas de exclusión",
+        "alter-address": "Editar una dirección",
+        "add-bypass-rule": "Crear una regla de derivación",
+        "list-destinations": "Lista de destinos",
+        "set-domain-dkim": "Establecer el dominio DKIM",
+        "remove-public-mailbox": "Eliminar el buzón público",
+        "get-mailbox-settings": "Obtener la configuración del buzón"
     },
     "task": {
-        "cannot_create_task": "No se puede crear la tarea {action}"
+        "cannot_create_task": "No se puede crear la tarea {action}",
+        "task_aborted": "{action} cancelada"
     },
     "settings": {
         "title": "Ajustes",
-        "general": "General"
+        "general": "General",
+        "mailboxes": "Buzones de correo"
     },
     "domains": {
         "delete_domain": "Eliminar dominio",
@@ -84,7 +119,12 @@
     },
     "welcome": {
         "mail_domain_pattern": "Dominio no válido",
-        "user_domain": "Dominio de usuario"
+        "user_domain": "Dominio de usuario",
+        "select_domain_description": "Seleccione un dominio de usuario para el servidor de correo. Se creará una dirección de correo electrónico para cada usuario de este dominio",
+        "title": "Bienvenido al correo",
+        "primary_mail_domain": "Dominio principal del correo",
+        "create_domain": "Crear un dominio",
+        "welcome_message": "Introduzca la siguiente información para empezar el utilizar correo"
     },
     "addresses": {
         "title": "Direcciones",
