@@ -353,6 +353,21 @@
         "see_details": "Ver detalles",
         "confirm_delete_all_queued_message": "Todos los correos serán borrados, ¿estás seguro?",
         "col_message_size": "Tamaño del mensaje",
-        "recipients": "destinatarios"
+        "recipients": "destinatarios",
+        "search_queue": "Buscar",
+        "sender": "Remitente",
+        "col_arrival_time": "Hora de llegada",
+        "reload_queue": "Recarga",
+        "arrival_time": "Hora de llegada",
+        "col_sender": "Remitente",
+        "resend": "Reenviar",
+        "cancel": "Cancelar",
+        "recipient": "Destinatario",
+        "close": "Cerrar",
+        "delete_all": "Borrar todo"
+    },
+    "settings_general": {
+        "user_domain": "Dominio de usuario",
+        "title": "Configuración general"
     }
 }
