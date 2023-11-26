@@ -164,5 +164,8 @@
         "configure": "Configurar",
         "prefix": "Prefijo",
         "signatures_medium": "Medio"
+    },
+    "settings_mailboxes": {
+        "forever": "Para siempre"
     }
 }
