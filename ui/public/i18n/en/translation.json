@@ -230,6 +230,7 @@
     "rtype_ro": "Read",
     "rtype_rw": "Read & write",
     "rtype_full": "Full control",
+    "rtype_custom": "Custom control",
     "create_public_mailbox_mailbox": "Create public mailbox {mailbox}",
     "col_mailbox": "Mailbox",
     "col_acls": "Members",
