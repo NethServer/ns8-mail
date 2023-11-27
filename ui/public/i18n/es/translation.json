@@ -14,7 +14,7 @@
         "cannot_retrieve_filter_configuration": "No se puede recuperar la configuración del filtro"
     },
     "common": {
-        "required": "Required",
+        "required": "Obligatorio",
         "work_in_progress": "Trabajo en curso",
         "processing": "Procesando...",
         "disabled": "Deshabilitado",
