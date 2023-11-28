@@ -63,7 +63,8 @@
         "read_and_write": "lesen & schreiben",
         "days": "Tage",
         "create_public_mailbox_mailbox": "öffentliches Postfach {mailbox} erstellen",
-        "col_mailbox": "Postfach"
+        "col_mailbox": "Postfach",
+        "rtype_custom": "benutzerdefinierter Zugriff"
     },
     "common": {
         "external_destination": "externe E-Mail-Adresse",
