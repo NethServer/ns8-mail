@@ -25,10 +25,14 @@ Collect the suite journal
     Execute Command    journalctl -S @${JOURNAL_SINCE} >journal-dump.log
     Get File    journal-dump.log    ${OUTPUT DIR}/journal-${SUITE NAME}.log
 
+Disable offending units
+    Execute Command    for unit in exim4 postfix ; do systemctl is-active -q \$unit && systemctl disable --now \$unit ; done
+
 *** Settings ***
 Suite Setup       Run Keywords
                   ...    Connect to the Node
                   ...    Wait until boot completes
+                  ...    Disable offending units
                   ...    Save the journal begin timestamp
 
 Suite Teardown    Run Keywords
