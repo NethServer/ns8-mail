@@ -12,10 +12,10 @@
         "test-module.sh"
       ],
       "matchStrings": [
-        "ghcr\\.io\/marketsquare\/robotframework-browser/rfbrowser-stable:(?currentValue[^\\s]+)"
+        "ghcr\\.io/marketsquare/robotframework-browser/rfbrowser-stable:(?<currentValue>[^\\s]+)"
       ],
-      "datasourceTemplate": "docker",
-      "depNameTemplate": "rfbrowser-stable"
+      "depNameTemplate": "MarketSquare/robotframework-browser",
+      "datasourceTemplate": "github-releases"
     },
     {
       "fileMatch": [
