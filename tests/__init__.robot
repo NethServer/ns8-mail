@@ -26,7 +26,7 @@ Collect the suite journal
     Get File    journal-dump.log    ${OUTPUT DIR}/journal-${SUITE NAME}.log
 
 Disable offending units
-    Execute Command    for unit in exim4 postfix ; do systemctl is-active -q \$unit && systemctl disable --now \$unit ; done
+    Execute Command    bash -x -c 'for unit in exim4 postfix ; do systemctl is-active -q \$unit && systemctl disable --now \$unit ; done'
 
 *** Settings ***
 Suite Setup       Run Keywords
