@@ -26,7 +26,7 @@ Collect the suite journal
     Get File    journal-dump.log    ${OUTPUT DIR}/journal-${SUITE NAME}.log
 
 Disable offending units
-    Execute Command    systemctl is-active exim4 && { systemctl disable --now exim4 2>&1 | logger }
+    Execute Command    systemctl disable --now exim4 || :
 
 *** Settings ***
 Suite Setup       Run Keywords
