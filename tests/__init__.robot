@@ -26,7 +26,10 @@ Collect the suite journal
     Get File    journal-dump.log    ${OUTPUT DIR}/journal-${SUITE NAME}.log
 
 Disable offending units
-    Execute Command    systemctl disable --now exim4 || :
+    Execute Command    [ -x /etc/init.d/exim4 ] && /etc/init.d/exim4 stop
+    ...    return_stdout=True
+    ...    return_stderr=True
+    ...    return_rc=True
 
 *** Settings ***
 Suite Setup       Run Keywords
