@@ -59,10 +59,10 @@
         "title": "Acerca de"
     },
     "action": {
-        "list-backup-repositories": "Lista de repositorios de la copia de seguridad",
+        "list-backup-repositories": "Mostrar repositorios de la copia de seguridad",
         "get-module-info": "Obtener información del módulo",
         "list-installed-modules": "Lista de módulos instalados",
-        "list-backups": "Lista de las copias de seguridad",
+        "list-backups": "Mostrar las copias de seguridad",
         "get-status": "Obtener el estado",
         "configure-module": "Configurar módulo",
         "get-configuration": "Obtener la configuración",
