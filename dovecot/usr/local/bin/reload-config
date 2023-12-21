@@ -15,7 +15,7 @@ ldap_schema=${DOVECOT_LDAP_SCHEMA:?}
 set -a
 S=\$
 ldap_host=${DOVECOT_LDAP_HOST:?}
-postfix_origin=${POSTFIX_ORIGIN:?}
+ldap_domain=${DOVECOT_LDAP_DOMAIN:?}
 ldap_port=${DOVECOT_LDAP_PORT:?}
 ldap_base_dn=${DOVECOT_LDAP_BASE:?}
 ldap_bind_dn=${DOVECOT_LDAP_USER}
@@ -106,12 +106,12 @@ fi
     # Add the user_domain to /etc/hosts to quiet dns queries
     if  ! grep  -qxF '#user_domain' /etc/hosts; then
         # user_domain is not present in /etc/hosts
-        echo -e "\n#user_domain\n${ldap_host} ${postfix_origin}" >> /etc/hosts
+        echo -e "\n#user_domain\n${ldap_host} ${ldap_domain}" >> /etc/hosts
     else
         # /etc/hosts is mounted in the container,
         # we cannot change its inode inplace
         cp -f /etc/hosts /tmp/hosts_tmp
-        sed -i "/#user_domain/{N;s/.*/#user_domain\n${ldap_host} ${postfix_origin}/;}" /tmp/hosts_tmp
+        sed -i "/#user_domain/{N;s/.*/#user_domain\n${ldap_host} ${ldap_domain}/;}" /tmp/hosts_tmp
         cat /tmp/hosts_tmp > /etc/hosts
     fi
 )
