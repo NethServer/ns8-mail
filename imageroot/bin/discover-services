@@ -17,6 +17,7 @@ import mail
 from agent.ldapproxy import Ldapproxy
 
 udomname = os.environ['POSTFIX_ORIGIN']
+agent.set_env('DOVECOT_LDAP_DOMAIN', udomname)
 
 try:
     odom = Ldapproxy().get_domain(udomname)

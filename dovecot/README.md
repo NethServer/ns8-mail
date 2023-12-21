@@ -29,6 +29,7 @@ Private TCP ports:
 ## Environment variables
 
 - `DOVECOT_LDAP_HOST`, eg `127.0.0.1`
+- `DOVECOT_LDAP_DOMAIN` User domain name, eg directory.nh
 - `DOVECOT_LDAP_PORT`, eg `389`
 - `DOVECOT_LDAP_USER`, bind DN, eg `uid=ldapservice,dc=directory,dc=nh`
 - `DOVECOT_LDAP_PASS`, bind password
