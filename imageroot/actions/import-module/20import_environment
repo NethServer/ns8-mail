@@ -16,6 +16,7 @@ jrspamd = json.load(open("rspamd.json"))
 jdovecot = json.load(open("dovecot.json"))
 
 agent.set_env('POSTFIX_ORIGIN', open('user_domain.txt').read().strip())
+agent.set_env('DOVECOT_LDAP_DOMAIN', open('user_domain.txt').read().strip())
 
 # Spam subject prefix migration
 if type(jrspamd) is dict and jrspamd['props'].get('SpamSubjectPrefixStatus') == 'enabled':
