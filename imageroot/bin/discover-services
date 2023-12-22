@@ -53,6 +53,7 @@ disabled_users = list(filter(str.strip, os.getenv('DOVECOT_DISABLED_USERS', '').
 with open(tmpfile, "w") as denv:
     print('DOVECOT_DISABLED_USERS=' + ",".join(disabled_users), file=denv)
     print('DOVECOT_LDAP_HOST=' + odom['host'], file=denv)
+    print('DOVECOT_LDAP_DOMAIN=' + udomname, file=denv)
     print('DOVECOT_LDAP_PORT=' + odom['port'], file=denv)
     print('DOVECOT_LDAP_USER=' + odom['bind_dn'], file=denv)
     print('DOVECOT_LDAP_PASS=' + odom['bind_password'], file=denv)
