@@ -32,6 +32,6 @@ for muser in $(doveadm user \*); do
     doveadm expunge -u "${muser}" \
         SENTBEFORE "${spam_retention}d" \
         MAILBOX "${DOVECOT_SPAM_FOLDER:-INBOX}" \
-        HEADER X-Spam-Flag YES 2>/dev/null \
+        HEADER X-Spam YES 2>/dev/null \
         || :
 done
