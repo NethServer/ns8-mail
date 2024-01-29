@@ -16,7 +16,7 @@
         "delete": "Elimina",
         "mail_hostname": "Nome host mail server",
         "mail_hostname_tooltip": "Inserire il record MX record configurato nel proprio provider DNS",
-        "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd"
+        "rspamd_credentials_tooltip": "Utilizzare le proprie credenziali di login per accedere a Rspamd"
     },
     "action": {
         "list-acl-subjects": "Elenco soggetti ACL",
@@ -25,7 +25,7 @@
         "get-name": "Visualizza nome",
         "set-master-users": "Imposta utenti master",
         "list-backup-repositories": "Elenca repository di backup",
-        "list-installed-modules": "Elenco moduli installati",
+        "list-installed-modules": "Elenca moduli installati",
         "get-defaults": "Visualizza valori predefiniti",
         "alter-address": "Modifica",
         "list-user-mailboxes": "Elenco delle caselle di posta utenti",
@@ -63,13 +63,13 @@
         "no_domain": "Nessun dominio",
         "edit_domain": "Modifica dominio",
         "required_if_accept_unknown_recipients": "Richiesto se è abilitata l'opzione \"Accetta destinatari sconosciuti\"",
-        "accept_unknown_recipients_tooltip": "Tutti i messaggi e-mail inviati a destinatari sconosciuti saranno accettati e consegnati alla destinazione specificata. Questa opzione non può essere attivata se <strong>Aggiungi indirizzi dal dominio utente</strong> è abilitato.",
+        "accept_unknown_recipients_tooltip": "Tutti i messaggi e-mail inviati a destinatari sconosciuti saranno accettati e consegnati alla destinazione specificata. Questa opzione non può essere attivata se <strong>Aggiungi indirizzi dal dominio utente</strong> è abilitato",
         "copy_inbound_messages": "Copiare i messaggi in entrata",
         "bccaddr_format": "Formato e-mail non valido",
         "add_user_addresses_from_user_domain": "Aggiungi gli indirizzi utente dal dominio utente <strong>{userDomain}</strong>",
         "add_group_addresses_from_user_domain": "Aggiungi indirizzi di gruppo dal dominio utente <strong>{userDomain}</strong>",
         "domain_pattern": "Dominio non valido",
-        "add_group_addresses_from_user_domain_tooltip": "Creare un indirizzo e-mail per ogni gruppo del dominio utenti.",
+        "add_group_addresses_from_user_domain_tooltip": "Creare un indirizzo e-mail per ogni gruppo del dominio utenti",
         "delete_domain_domain": "Cancellare il dominio {domain}",
         "delete_domain_explanation": "Anche tutti gli indirizzi e-mail associati saranno eliminati. Tuttavia, tutti i messaggi e-mail ricevuti e inviati da questo dominio saranno conservati.",
         "create_domain": "Crea dominio",
@@ -171,7 +171,7 @@
         "no_public_mailbox_description": "Nessuna casella di posta elettronica pubblica configurata",
         "search_user_mailbox": "Ricerca caselle utenti",
         "rtype_rw": "Lettura & scrittura",
-        "forward_enabled_but_no_destination": "Se l'opzione \"Inoltro messaggi\" è attivata, è necessario almeno un indirizzo di inoltro.",
+        "forward_enabled_but_no_destination": "Se l'opzione \"Inoltro messaggi\" è attivata, è necessario almeno un indirizzo di inoltro",
         "address_already_exists": "L'indirizzo esiste già",
         "create_public_mailbox": "Crea casella di posta pubblica",
         "no_user_mailbox": "Nessuna casella di posta elettronica",
@@ -193,7 +193,8 @@
         "delete_public_mailbox": "Cancella la casella di posta pubblica",
         "no_user_mailbox_description": "Non è stata configurata alcuna casella di posta elettronica utente",
         "member_not_found": "Membro <strong>{member}</strong> non trovato. Se si modifica la casella di posta verrà rimosso",
-        "col_user": "Utente"
+        "col_user": "Utente",
+        "rtype_custom": "Accesso personalizzato"
     },
     "settings_mailboxes": {
         "specify_quota": "Specificare la quota",
@@ -203,11 +204,14 @@
         "default_spam_retention": "Default eliminazione spam",
         "unlimited": "Illimitato",
         "default_mail_quota": "Quota di posta predefinita",
-        "move_spam_but_no_folder": "Se l'opzione \"Sposta lo spam nella cartella della posta indesiderata\" è attivata, il nome della cartella della posta indesiderata è obbligatorio.",
+        "move_spam_but_no_folder": "Se l'opzione \"Sposta lo spam nella cartella della posta indesiderata\" è attivata, il nome della cartella della posta indesiderata è obbligatorio",
         "title": "Impostazioni caselle di posta",
         "specify_retention": "Specificare il periodo",
         "quota": "Quota",
-        "spam": "Spam"
+        "spam": "Spam",
+        "shared_mailboxes": "Caselle di posta condivise",
+        "sharedseen": "Visto condiviso",
+        "sharedseen_explanation_tooltips": "Se abilitato, un messaggio è marcato come visto (letto) dal primo utente che lo apre, con l'effetto su tutti gli altri utenti che condividono la stessa casella di posta"
     },
     "settings_general": {
         "user_domain": "Dominio utenti",
@@ -223,7 +227,7 @@
         "primary_mail_domain": "Dominio di posta primario",
         "go_to_domains_and_users": "Andare su Domini e utenti",
         "title": "Benvenuti in Mail",
-        "select_domain_description": "Selezionare un dominio utente per il server di posta. Per ogni utente di questo dominio verrà creato un indirizzo e-mail.",
+        "select_domain_description": "Selezionare un dominio utente per il server di posta. Per ogni utente di questo dominio verrà creato un indirizzo e-mail",
         "no_domain_configured_description": "Configurare prima un dominio utente",
         "user_domain": "Dominio utenti"
     },
@@ -232,7 +236,7 @@
         "app_images": "Immagine app|Immagini app",
         "services": "Servizio | Servizi",
         "no_services": "Nessun servizio",
-        "installation_node": "Nodo",
+        "installation_node": "Nodo di installazione",
         "name": "Nome",
         "app_instance": "Istanza app",
         "size": "Dimensione",
@@ -311,7 +315,7 @@
         "third_party_signatures_rating_tooltip": "Una valutazione più alta blocca un maggior numero di pericoli, ma con una maggiore probabilità di falsi positivi. L'impostazione raccomandata è <strong>Basso</strong> o <strong>Medio</strong>",
         "signatures_medium": "Medio",
         "signatures_high": "Alto",
-        "signatures_memory_warning": "<strong>{installationNode}</strong> ha meno di {recommendedMemoryGb} GiB di RAM. Si consiglia vivamente di mantenere disattivate le firme ufficiali di ClamAV per evitare di riempire la memoria.",
+        "signatures_memory_warning": "<strong>{installationNode}</strong> ha meno di {recommendedMemoryGb} GiB di RAM. Si consiglia vivamente di mantenere disattivate le firme ufficiali di ClamAV per evitare di riempire la memoria",
         "save_filter_settings": "Salva le impostazioni del filtro"
     },
     "filter_bypass_rules": {
@@ -362,6 +366,15 @@
         "confirm_delete_queued_message": "Il messaggio e-mail verrà eliminato, procedere?",
         "cancel": "Annulla",
         "queue_tooltip": "Questi sono i messaggi in attesa di essere consegnati nella coda di posta SMTP. In condizioni normali, questa coda dovrebbe essere vuota o contenere solo pochi messaggi.",
-        "delete_email_confirm": "Eliminare l'e-mail <strong>{name}</strong>?"
+        "delete_email_confirm": "Eliminare l'e-mail <strong>{name}</strong>?",
+        "col_sender": "Mittente",
+        "col_recipients": "Destinatari",
+        "col_message_size": "Dimensione messaggio",
+        "recipients": "destinatari",
+        "see_details": "Vedi dettagli",
+        "resend": "Reinvia",
+        "delete": "Elimina",
+        "deferred_queue_details": "Dettagli messaggio",
+        "queue_id": "ID messaggio"
     }
 }
