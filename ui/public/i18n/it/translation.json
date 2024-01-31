@@ -131,7 +131,7 @@
     },
     "mailboxes": {
         "title": "Caselle postali",
-        "public_mailboxes": "Cadelle postali pubbliche",
+        "public_mailboxes": "Caselle postali pubbliche",
         "edit_mailbox": "Modifica casella di posta elettronica",
         "keep_messages_on_server": "Conserva una copia dei messaggi su questo server",
         "quota": "Quota",
