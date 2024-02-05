@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import agent
+import os
+import sys
+import json
+
+if not hasattr(agent, 'get_bound_domain_list'):
+    sys.exit(0) # core version too old, skip and try on next update
+
+rdb = agent.redis_connect(use_replica=True)
+user_ldap_domain = rdb.hget(f"module/{os.getenv('MODULE_ID')}/srv/tcp/imap", "user_domain")
+if user_ldap_domain and not agent.get_bound_domain_list(rdb):
+    agent.bind_user_domains([user_ldap_domain])
