@@ -71,3 +71,5 @@ if not os.getenv('POSTFIX_TRUSTED_NETWORK'):
     agent.set_env('POSTFIX_TRUSTED_NETWORK', cluster_network)
 agent.set_env('POSTFIX_HOSTNAME', hostname)
 agent.set_env('POSTFIX_ORIGIN', udomname)
+# Bind the new domain, overriding previous values (unbind)
+agent.bind_user_domains([udomname])
