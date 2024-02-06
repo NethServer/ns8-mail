@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import psutil
+import sys
+
+# some ports can be still used by the previous mail module, 
+# we need to close them before starting the new mail module
+
+def find_process_by_port(port):
+    for conn in psutil.net_connections(kind='inet'):
+        if conn.laddr.port == port:
+            return conn.pid
+    return None
+
+def kill_process_by_port(port):
+    pid = find_process_by_port(port)
+    if pid:
+        try:
+            process = psutil.Process(pid)
+            process.terminate()
+            print(f"Process with PID {pid} terminated.",file=sys.stderr)
+        except psutil.NoSuchProcess as e:
+            print(f"Error: {e}", file=sys.stderr)
+    else:
+        print(f"No process found using port {port}.", file=sys.stderr)
+
+# we list all ports used by the previous mail module
+for port in [25,587,465,10587,11330,143,110,993,995,9288,9289,4190,2000,4367,11332,11333,11334,11335,11336]:
+    kill_process_by_port(port)
