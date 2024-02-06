@@ -44,7 +44,7 @@ buildah config --entrypoint=/ \
         rspamd \
         clamav \
     )" \
-    --label="org.nethserver.authorizations=node:fwadm traefik@node:fulladm" \
+    --label="org.nethserver.authorizations=node:fwadm traefik@node:fulladm cluster:accountconsumer" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
