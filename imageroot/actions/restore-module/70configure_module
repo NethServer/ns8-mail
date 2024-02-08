@@ -54,10 +54,3 @@ filter_retval =  agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-fi
     # - antispam state and greylist switches state are in the environment from 06copyenv
 })
 agent.assert_exp(filter_retval['exit_code'] == 0, "The set-filter-configuration subtask failed!")
-
-masters_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-master-users', data={
-    "master_users": list(filter(None, renv.get("DOVECOT_MASTER_USERS", "").split(",")))
-})
-agent.assert_exp(masters_retval['exit_code'] == 0, "The set-master-users subtask failed!")
-
-
