@@ -1,0 +1,1 @@
+{"$schema":"http://json-schema.org/draft-07/schema#","title":"list-destinations output","$id":"http://schema.nethserver.org/mail/list-destinations-output.json","description":"List of internal mail destinations: user/public mailboxes, user groups","type":"array","items":{"$ref":"http://schema.nethserver.org/mail.json#/$defs/mail-destination-internal"}}
