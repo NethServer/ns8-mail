@@ -32,8 +32,12 @@ As an example, the following command configures a mail server
 ### Dovecot custom configuration
 
 **Dovecot** custom configuration is saved in the `dovecot-custom` volume.
-To edit it, run this command while `dovecot.service` is running:
+To edit it, run the following commands while `dovecot.service` is running:
 
+    # print the config values that differ from Dovecot defaults
+    # WARNING! changing one of them may be dangerous!
+    podman exec -ti dovecot doveconf -n
+    # start the editor
     podman exec -ti dovecot vi /etc/dovecot/local.conf.d/myoverride.conf
     systemctl --user reload dovecot
 
@@ -48,6 +52,10 @@ properly:
 For **Postfix** the commands are similar. Custom configuration is saved in
 the `postfix-custom` volume. Edit it with:
 
+    # print the config values that differ from Postfix defaults
+    # WARNING! changing one of them may be dangerous!
+    podman exec -ti dovecot doveconf -n
+    # start the editor
     podman exec -ti postfix vi /etc/postfix/main.cf.d/myoverride.cf
     systemctl --user reload postfix
 
