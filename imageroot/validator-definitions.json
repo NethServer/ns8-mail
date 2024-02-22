@@ -303,7 +303,7 @@
                 "domain": {
                     "type": "string",
                     "title": "Address domain part",
-                    "format": "idn-hostname",
+                    "format": "hostname",
                     "pattern": "\\."
                 },
                 "local": {
