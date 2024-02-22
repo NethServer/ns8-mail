@@ -27,7 +27,7 @@
             "title": "Initial mail domain",
             "description": "Create the first mail domain with default values. Ignored if the module was already configured.",
             "minLength": 1,
-            "format": "idn-hostname",
+            "format": "hostname",
             "pattern": "\\."
         },
         "hostname": {
@@ -35,7 +35,8 @@
             "title": "Mail host name",
             "description": "Host name used as SMTP/HELO and for the TLS certificate",
             "minLength": 1,
-            "format": "idn-hostname"
+            "format": "hostname",
+            "pattern": "\\."
         }
     }
 }
