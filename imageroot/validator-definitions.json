@@ -124,7 +124,7 @@
                 "domain": {
                     "title": "Mail domain",
                     "description": "The standard-compliant domain name",
-                    "format": "idn-hostname",
+                    "format": "hostname",
                     "pattern": "\\."
                 },
                 "addusers": {
