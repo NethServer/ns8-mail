@@ -118,7 +118,10 @@
     "no_domain_configured": "No user domain configured",
     "no_domain_configured_description": "Please configure a user domain first",
     "go_to_domains_and_users": "Go to Domains and users",
-    "mail_domain_pattern": "Invalid domain"
+    "hostname_pattern": "Must be a valid fully qualified domain name",
+    "hostname_format": "Must be a valid fully qualified domain name",
+    "mail_domain_pattern": "Must be a valid fully qualified domain name",
+    "mail_domain_format": "Must be a valid fully qualified domain name"
   },
   "domains": {
     "title": "Domains",
