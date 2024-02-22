@@ -157,7 +157,9 @@
     "dkim_txt_record_raw_procedure": "Paste the full TXT record in raw form",
     "domain_pattern": "Must be a valid fully qualified domain name",
     "domain_format": "Must be a valid fully qualified domain name",
-    "mail_domain_already_exists": "Domain already exists"
+    "mail_domain_already_exists": "Domain already exists",
+    "catchall_mailbox_not_found": "Catchall mailbox not found",
+    "domain_not_found": "Domain not found"
   },
   "addresses": {
     "title": "Addresses",
