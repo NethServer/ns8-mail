@@ -68,7 +68,7 @@
         "bccaddr_format": "Formato e-mail non valido",
         "add_user_addresses_from_user_domain": "Aggiungi gli indirizzi utente dal dominio utente <strong>{userDomain}</strong>",
         "add_group_addresses_from_user_domain": "Aggiungi indirizzi di gruppo dal dominio utente <strong>{userDomain}</strong>",
-        "domain_pattern": "Dominio non valido",
+        "domain_pattern": "Deve essere un nome di dominio pienamente qualificato valido",
         "add_group_addresses_from_user_domain_tooltip": "Creare un indirizzo e-mail per ogni gruppo del dominio utenti",
         "delete_domain_domain": "Cancellare il dominio {domain}",
         "delete_domain_explanation": "Anche tutti gli indirizzi e-mail associati saranno eliminati. Tuttavia, tutti i messaggi e-mail ricevuti e inviati da questo dominio saranno conservati.",
@@ -91,7 +91,11 @@
         "dkim_txt_record_raw_procedure": "Incollare il record TXT completo in forma grezza",
         "dkim_txt_record_description": "Creare il record TXT richiesto da DKIM presso il proprio <strong>{domain}</strong> scegliendo <strong>una delle seguenti procedure</strong>",
         "configure_dkim": "Configura DKIM",
-        "configure_dkim_for_domain": "Configura DKIM per {domain}"
+        "configure_dkim_for_domain": "Configura DKIM per {domain}",
+        "mail_domain_already_exists": "Il dominio esiste già",
+        "domain_format": "Deve essere un nome di dominio pienamente qualificato valido",
+        "catchall_mailbox_not_found": "Mailbox Catchall non trovata",
+        "domain_not_found": "Dominio non trovato"
     },
     "addresses": {
         "address_already_exists": "L'indirizzo esiste già",
@@ -223,13 +227,16 @@
         "mail_hostname": "Mail server hostname",
         "create_domain": "Creare dominio",
         "welcome_message": "Inserisci le seguenti informazioni per iniziare a utilizzare Mail",
-        "mail_domain_pattern": "Dominio non valido",
+        "mail_domain_pattern": "Deve essere un nome di dominio pienamente qualificato valido",
         "primary_mail_domain": "Dominio di posta primario",
         "go_to_domains_and_users": "Andare su Domini e utenti",
         "title": "Benvenuti in Mail",
         "select_domain_description": "Selezionare un dominio utente per il server di posta. Per ogni utente di questo dominio verrà creato un indirizzo e-mail",
         "no_domain_configured_description": "Configurare prima un dominio utente",
-        "user_domain": "Dominio utenti"
+        "user_domain": "Dominio utenti",
+        "hostname_format": "Deve essere un nome di dominio pienamente qualificato valido",
+        "hostname_pattern": "Deve essere un nome di dominio pienamente qualificato valido",
+        "mail_domain_format": "Deve essere un nome di dominio pienamente qualificato valido"
     },
     "status": {
         "created": "Creato",

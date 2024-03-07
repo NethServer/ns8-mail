@@ -70,12 +70,12 @@
         "external_destination": "externe E-Mail-Adresse",
         "save_settings": "Einstellungen speichern",
         "public_destination": "öffentliches Postfach",
-        "required": "erforderlich",
+        "required": "Erforderlich",
         "rspamd_credentials_tooltip": "Nutzen Sie Ihre Anmeldedaten zum Zugriff auf Rspamd",
         "missing_object": "fehlendes Objekt",
-        "work_in_progress": "In Arbeit",
+        "work_in_progress": "in Arbeit",
         "delete": "Entfernen",
-        "processing": "Ausführung...",
+        "processing": "Verarbeite...",
         "disabled": "Deaktiviert",
         "group_destination": "Gruppe",
         "mail_hostname": "Mailserver Hostname",
@@ -119,7 +119,7 @@
         "copy_inbound_messages": "eingehende Nachrichten kopieren",
         "delete_domain_domain": "Domäne {domain} löschen",
         "dkim_tooltip": "Aktivieren Sie die DKIM-Signierung ausgehender E-Mail um Spoofing zu erschweren",
-        "domain_pattern": "ungültige Domäne",
+        "domain_pattern": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
         "add_group_addresses_from_user_domain": "Gruppen-Adressen aus Benutzerdomäne <strong>{userDomain}</strong> hinzufügen",
         "create_domain_domain": "Domäne {domain} erstellen",
         "deliver_to": "zustellen an",
@@ -145,21 +145,25 @@
         "required_if_accept_unknown_recipients": "Erforderlich wenn \"unbekannte Empfänger akzeptieren\" aktiviert ist",
         "add_group_addresses_from_user_domain_tooltip": "Erstellt eine E-Mail-Adresse für jede Gruppe in der Domäne",
         "delete_domain_explanation": "Alle zugeordneten E-Mail-Adressen werden ebenfalls gelöscht. Alle mit dieser Domäne empfangenen und gesendeten E-Mails bleiben jedoch erhalten.",
-        "dkim_txt_record_description": "</strong>Wählen Sie eines der folgenden Verfahren</strong>, um für die Domäne <strong>{domain}</strong> den für DKIM erforderlichen TXT-Eintrag bei Ihrem DNS-Anbieter zu hinterlegen."
+        "dkim_txt_record_description": "</strong>Wählen Sie eines der folgenden Verfahren</strong>, um für die Domäne <strong>{domain}</strong> den für DKIM erforderlichen TXT-Eintrag bei Ihrem DNS-Anbieter zu hinterlegen.",
+        "mail_domain_already_exists": "Domäne existiert bereits",
+        "catchall_mailbox_not_found": "Catchall-Postfach nicht gefunden",
+        "domain_format": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
+        "domain_not_found": "Domäne nicht gefunden"
     },
     "error": {
-        "403": "Operation nicht zugelassen",
-        "401": "fehlerhafte Anmeldung",
+        "403": "Operation nicht genehmigt",
+        "401": "Ungültige Authentifizierung",
         "cannot_retrieve_filter_configuration": "Filter-Konfiguration nicht abrufbar",
         "generic_error": "Etwas ist schief gegangen",
         "error": "Fehler",
-        "network_timeout": "Netzwerk Timeout",
+        "network_timeout": "Netzwerk-Zeitüberschreitung",
         "invalid_pattern": "Muster ungültig",
         "404": "Ressource nicht gefunden",
-        "network_error": "Netzwerkfehler",
-        "validation_error": "Fehlerhafte Prüfung",
-        "cannot_retrieve_installed_modules": "installierte Module nicht abrufbar",
-        "cannot_retrieve_module_info": "Modulinfo nicht abrufbar"
+        "network_error": "Netzwerk-Fehler",
+        "validation_error": "Überprüfungsfehler",
+        "cannot_retrieve_installed_modules": "Installierte Module können nicht abgerufen werden",
+        "cannot_retrieve_module_info": "Modul-Info kann nicht abgerufen werden"
     },
     "settings_mailboxes": {
         "forever": "Immer",
@@ -241,14 +245,14 @@
         "choose_domain": "Domäne wählen"
     },
     "status": {
-        "created": "erstellt",
+        "created": "Erstellt",
         "open_rspamd": "Rspamd öffnen",
         "size": "Größe",
         "name": "Name",
         "no_images": "Keine Abbilder",
         "app_volumes": "App Volumen | App Volumen",
         "services": "Dienst | Dienste",
-        "app_images": "App-Abbild | App-Abbilder",
+        "app_images": "App Abbild | App Abbilder",
         "go_to_filter": "Zu Filtern wechseln",
         "rspamd_webapp": "Rspamd",
         "no_services": "Keine Dienste",
@@ -257,11 +261,11 @@
         "user_domain": "Benutzer-Domäne",
         "title": "Status",
         "not_configured": "nicht konfiguriert",
-        "installation_node": "Knoten der Installation",
+        "installation_node": "Installations-Knoten",
         "rspamd_webapp_description": "Erweiterte Filterverwaltung und Nachrichtenverlauf",
         "node": "Knoten",
-        "no_volumes": "keine Volumen",
-        "mount": "Einbindepunkt"
+        "no_volumes": "Keine Volumen",
+        "mount": "Einhängepunkt"
     },
     "action": {
         "set-filter-configuration": "Filter-Einstellungen festlegen",
@@ -272,12 +276,12 @@
         "list-domains": "Domänen auflisten",
         "report-queue-status": "zurückgestellte Nachrichten in der Postfix-Warteschlange auflisten",
         "flush-postfix-queue": "Postfix-Warteschlange leeren",
-        "list-backup-repositories": "Liste der Datensicherungs-Speicherort",
+        "list-backup-repositories": "Datensicherungs-Ziele auflisten",
         "get-master-users": "Master-Benutzer abrufen",
-        "get-module-info": "Informationen zum Modul abrufen",
-        "list-installed-modules": "installierte Module auflisten",
+        "get-module-info": "Modul-Info abrufen",
+        "list-installed-modules": "installierte Modules auflisten",
         "list-backups": "Datensicherungen auflisten",
-        "get-status": "Status abfragen",
+        "get-status": "Status abrufen",
         "remove-address": "Adresse löschen",
         "list-acl-subjects": "AccessControlLists auflisten",
         "list-user-mailboxes": "Benutzerpostfächer auflisten",
@@ -300,12 +304,12 @@
         "list-destinations": "Ziele auflisten",
         "set-domain-dkim": "DKIM festlegen",
         "get-configuration": "Konfiguration abrufen",
-        "get-name": "Name abrufen",
+        "get-name": "Namen abrufen",
         "remove-public-mailbox": "öffentliches Postfach löschen",
         "get-mailbox-settings": "Postfach-Einstellungen abrufen"
     },
     "welcome": {
-        "mail_domain_pattern": "ungültige Domäne",
+        "mail_domain_pattern": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
         "go_to_domains_and_users": "Zu Domänen und Benutzer wechseln",
         "select_domain_description": "Wählen Sie eine Benutzerdomäne für den Mailserver. Für jeden Benutzer in dieser Domäne wird eine E-Mail-Adresse erstellt",
         "title": "Willkommen bei Mail",
@@ -314,7 +318,10 @@
         "no_domain_configured_description": "Bitte zuerst eine Benutzerdomäne konfigurieren",
         "no_domain_configured": "keine Benutzerdomäne konfiguriert",
         "welcome_message": "Füllen Sie bitte die folgenden Felder aus, um Mail zu verwenden",
-        "user_domain": "Benutzerdomäne"
+        "user_domain": "Benutzerdomäne",
+        "hostname_pattern": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
+        "hostname_format": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
+        "mail_domain_format": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich"
     },
     "about": {
         "title": "Über"
@@ -325,7 +332,7 @@
         "general": "Allgemein"
     },
     "task": {
-        "cannot_create_task": "{task} kann nicht erstellt werden",
+        "cannot_create_task": "Aufgabe {action} kann nicht erstellt werden",
         "task_aborted": "{action} abgebrochen"
     },
     "settings_master_users": {
