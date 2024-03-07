@@ -2,14 +2,14 @@
     "error": {
         "403": "Operación no autorizada",
         "cannot_retrieve_installed_modules": "No se pueden recuperar los módulos instalados",
-        "401": "Autenticación no válida",
+        "401": "Autentificación no válida",
         "cannot_retrieve_module_info": "No se puede recuperar la información del módulo",
         "generic_error": "Algo salió mal",
         "error": "Error",
         "network_timeout": "Tiempo de espera de red agotado",
         "404": "Recurso no encontrado",
         "network_error": "Fallo de red",
-        "validation_error": "Error de validación",
+        "validation_error": "Fallo en la validación",
         "invalid_pattern": "Patrón no válido",
         "cannot_retrieve_filter_configuration": "No se puede recuperar la configuración del filtro"
     },
@@ -59,10 +59,10 @@
         "title": "Acerca de"
     },
     "action": {
-        "list-backup-repositories": "Lista de repositorios de copia de seguridad",
+        "list-backup-repositories": "Lista de repositorios de la copia de seguridad",
         "get-module-info": "Obtener información del módulo",
         "list-installed-modules": "Listado de módulos instalados",
-        "list-backups": "Listado de copias de seguridad",
+        "list-backups": "Lista de las copias de seguridad",
         "get-status": "Obtener el estado",
         "configure-module": "Configurar el módulo",
         "get-configuration": "Obtener la configuración",
@@ -111,7 +111,7 @@
     "domains": {
         "delete_domain": "Eliminar dominio",
         "create_domain": "Crear dominio",
-        "domain_pattern": "Dominio no válido",
+        "domain_pattern": "Debe ser un nombre de dominio válido y completo",
         "edit_domain": "Editar dominio",
         "description": "Descripción",
         "title": "Dominios",
@@ -140,10 +140,14 @@
         "required_if_accept_unknown_recipients": "Obigatorio si \"Aceptar destinatarios desconocidos\" está habilitado",
         "add_group_addresses_from_user_domain_tooltip": "Crea una dirección de correo electrónico para cada grupo en el dominio de usuario",
         "delete_domain_explanation": "Todas las direcciones de correo electrónico asociadas también se eliminarán. Sin embargo, se conservarán todos los mensajes de correo electrónico recibidos y enviados por este dominio.",
-        "dkim_txt_record_description": "Crea el registro TXT requerido por DKIM en tu proveedor de servicios DNS de <strong>{domain}</strong> eligiendo <strong>uno de los siguientes procedimientos</strong>"
+        "dkim_txt_record_description": "Crea el registro TXT requerido por DKIM en tu proveedor de servicios DNS de <strong>{domain}</strong> eligiendo <strong>uno de los siguientes procedimientos</strong>",
+        "domain_format": "Debe ser un nombre de dominio válido y completo",
+        "catchall_mailbox_not_found": "Buzón general no encontrado",
+        "mail_domain_already_exists": "El dominio ya existe",
+        "domain_not_found": "Dominio no encontrado"
     },
     "welcome": {
-        "mail_domain_pattern": "Dominio no válido",
+        "mail_domain_pattern": "Debe ser un nombre de dominio válido y completo",
         "user_domain": "Dominio de usuario",
         "select_domain_description": "Seleccione un dominio de usuario para el servidor de correo. Se creará una dirección de correo electrónico para cada usuario de este dominio",
         "title": "Bienvenido al correo",
@@ -152,7 +156,10 @@
         "welcome_message": "Introduzca la siguiente información para empezar el utilizar correo",
         "go_to_domains_and_users": "Ir a Dominios y usuarios",
         "no_domain_configured_description": "Configura primero un dominio de usuario, por favor",
-        "no_domain_configured": "No hay ningún dominio de usuario configurado"
+        "no_domain_configured": "No hay ningún dominio de usuario configurado",
+        "mail_domain_format": "Debe ser un nombre de dominio válido y completo",
+        "hostname_pattern": "Debe ser un nombre de dominio válido y completo",
+        "hostname_format": "Debe ser un nombre de dominio válido y completo"
     },
     "addresses": {
         "title": "Direcciones",
