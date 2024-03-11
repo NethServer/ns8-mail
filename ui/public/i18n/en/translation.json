@@ -92,7 +92,9 @@
     "get-filter-configuration": "Get filter configuration",
     "set-filter-configuration": "Set filter configuration",
     "report-queue-status": "List deferred messages in postfix queue",
-    "flush-postfix-queue": "Flush postfix queue"
+    "flush-postfix-queue": "Flush postfix queue",
+    "get-queue-settings": "Get queue settings",
+    "set-queue-settings": "Set queue settings"
   },
   "error": {
     "error": "Error",
@@ -340,6 +342,13 @@
     "page_description": "Master users are privileged users that can impersonate another user while interacting with their mailbox",
     "master_users": "Master users",
     "master_users_placeholder": "Choose master users"
+  },
+  "settings_queue": {
+    "title": "Queue settings",
+    "maximal_queue_lifetime": "Maximal queue lifetime",
+    "hours": "Hours",
+    "maximal_queue_lifetime_tooltip": "Consider a message as undeliverable, when the time in the queue has reached the maximal queue lifetime limit in hours.",
+    "maximal_queue_lifetime_helper": "Timespan expressed in hours(default 120 hours)."
   },
   "settings_general": {
     "title": "General settings",
