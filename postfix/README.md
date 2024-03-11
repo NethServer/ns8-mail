@@ -38,6 +38,7 @@ Standard public TCP ports
 - `POSTFIX_LDAP_SCHEMA`, eg `rfc2307`
 - `POSTFIX_LDAP_BASE`, eg `dc=directory,dc=nh`
 - `POSTFIX_MILTERS`, value for Postfix [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters)
+- `POSTFIX_MAXIMAL_QUEUE_LIFETIME`, value for the maximum amount of hours that a message is allowed to stay in a queue
 
 ## Volumes
 
