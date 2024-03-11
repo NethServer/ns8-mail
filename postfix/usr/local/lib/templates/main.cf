@@ -22,7 +22,7 @@ sendmail_path = /usr/sbin/sendmail
 setgid_group = postdrop
 shlib_directory = /usr/lib/postfix
 unknown_local_recipient_reject_code = 550
-
+maximal_queue_lifetime = ${tmpl_maximal_queue_lifetime}h
 #
 # Debug config flags
 #
