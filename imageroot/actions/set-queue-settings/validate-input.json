@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "set-mailbox-settings input",
+    "$id": "http://schema.nethserver.org/mail/set-queue-settings.json",
+    "description": "Set queue default configuration values",
+    "examples": [
+        {
+            "maximal_queue_lifetime": 5
+        }
+    ],
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "maximal_queue_lifetime": {
+            "type": "integer",
+            "title": "maximal_queue_lifetime",
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Maximum hours a message can stay in the queue before being returned to the sender"
+        }
+    }
+}
