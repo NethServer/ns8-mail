@@ -21,6 +21,18 @@
             </cv-interactive-tooltip>
           </h2>
         </cv-column>
+        <cv-column :md="4" :xlg="6">
+          <div class="page-toolbar">
+            <NsButton
+              kind="tertiary"
+              size="field"
+              :icon="Settings20"
+              @click="goToQueueSettings()"
+              class="page-toolbar-item"
+              >{{ $t("mailboxes.settings") }}</NsButton
+            >
+          </div>
+        </cv-column>
       </cv-row>
       <cv-row>
         <cv-column>
@@ -329,6 +341,9 @@ export default {
     this.listDeferredQueue();
   },
   methods: {
+    goToQueueSettings() {
+      this.goToAppPage(this.instanceName, "settingsQueue");
+    },
     showQueueDetailModal(queue) {
       this.currentMessage = queue;
       this.isShownQueueDetailModal = true;
