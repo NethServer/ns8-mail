@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+import os
+
+postfix_maximal_queue_lifetime = os.getenv("POSTFIX_MAXIMAL_QUEUE_LIFETIME", '120')
+
+json.dump({"maximal_queue_lifetime": postfix_maximal_queue_lifetime,}, fp=sys.stdout)
