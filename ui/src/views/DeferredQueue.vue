@@ -51,7 +51,11 @@
               kind="secondary"
               :icon="Restart20"
               @click="listDeferredQueue"
-              :disabled="loading.listDeferredQueue || loading.setDeleteQueue"
+              :disabled="
+                loading.listDeferredQueue ||
+                loading.setDeleteQueue ||
+                loading.getQueueSettings
+              "
               >{{ $t("queue.reload_queue") }}
             </NsButton>
           </template>
@@ -61,7 +65,11 @@
               :icon="Email20"
               class="mg-left"
               @click="setResendQueueAll"
-              :disabled="loading.listDeferredQueue || loading.setDeleteQueue"
+              :disabled="
+                loading.listDeferredQueue ||
+                loading.setDeleteQueue ||
+                loading.getQueueSettings
+              "
               >{{ $t("queue.resend_all") }}
             </NsButton>
             <NsButton
@@ -69,10 +77,25 @@
               class="mg-left"
               :icon="TrashCan20"
               @click="toggleDeleteQueueAll"
-              :disabled="loading.listDeferredQueue || loading.setDeleteQueue"
+              :disabled="
+                loading.listDeferredQueue ||
+                loading.setDeleteQueue ||
+                loading.getQueueSettings
+              "
               >{{ $t("queue.delete_all") }}
             </NsButton>
           </template>
+        </cv-column>
+      </cv-row>
+      <cv-row>
+        <cv-column>
+          <div class="mg-top-sm mg-bottom-lg">
+            <NsSvg :svg="InformationFilled16" class="icon ns-info" />
+            <span>
+              {{ $t("settings_queue.maximal_queue_lifetime") }}
+            </span>
+            {{ maximal_queue_lifetime + " " + $t("settings_queue.hours") }}
+          </div>
         </cv-column>
       </cv-row>
       <cv-row>
@@ -92,7 +115,11 @@
               :noSearchResultsDescription="
                 core.$t('common.no_search_results_description')
               "
-              :isLoading="loading.listDeferredQueue || loading.setDeleteQueue"
+              :isLoading="
+                loading.listDeferredQueue ||
+                loading.setDeleteQueue ||
+                loading.getQueueSettings
+              "
               :skeletonRows="5"
               :isErrorShown="!!error.listDeferredQueue"
               :errorTitle="$t('action.report-queue-status')"
@@ -291,6 +318,7 @@ export default {
       ],
       queue: [],
       check_queue: false,
+      maximal_queue_lifetime: "120",
       isShownConfirmDeleteQueue: false,
       isShownConfirmDeleteQueueAll: false,
       isShownQueueDetailModal: false,
@@ -309,6 +337,7 @@ export default {
         setResendQueue: false,
         setResendQueueAll: false,
         setDeleteQueueAll: false,
+        getQueueSettings: false,
       },
       error: {
         listDeferredQueue: "",
@@ -338,6 +367,7 @@ export default {
     next();
   },
   created() {
+    this.getQueueSettings();
     this.listDeferredQueue();
   },
   methods: {
@@ -350,6 +380,52 @@ export default {
     },
     hideQueueDetailModal() {
       this.isShownQueueDetailModal = false;
+    },
+    async getQueueSettings() {
+      this.loading.getQueueSettings = true;
+      this.error.getQueueSettings = "";
+      const taskAction = "get-queue-settings";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getQueueSettingsAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getQueueSettingsCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getQueueSettings = this.getErrorMessage(err);
+        this.loading.getQueueSettings = false;
+        return;
+      }
+    },
+    getQueueSettingsAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getQueueSettings = this.$t("error.generic_error");
+      this.loading.getQueueSettings = false;
+    },
+    getQueueSettingsCompleted(taskContext, taskResult) {
+      this.loading.getQueueSettings = false;
+      this.maximal_queue_lifetime = taskResult.output.maximal_queue_lifetime;
     },
     async listDeferredQueue() {
       this.queue = [];
