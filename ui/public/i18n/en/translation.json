@@ -346,9 +346,9 @@
   "settings_queue": {
     "title": "Queue settings",
     "maximal_queue_lifetime": "Maximal queue lifetime",
-    "hours": "Hours",
-    "maximal_queue_lifetime_tooltip": "Consider a message as undeliverable, when the time in the queue has reached the maximal queue lifetime limit in hours.",
-    "maximal_queue_lifetime_helper": "Timespan expressed in hours(default 120 hours)."
+    "hours": "hours",
+    "maximal_queue_lifetime_tooltip": "Set the duration, in hours, after which undelivered messages should be returned to the sender.",
+    "maximal_queue_lifetime_helper": "Timespan expressed in hours"
   },
   "settings_general": {
     "title": "General settings",
