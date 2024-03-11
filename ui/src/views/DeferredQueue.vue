@@ -92,9 +92,8 @@
           <div class="mg-top-sm mg-bottom-lg">
             <NsSvg :svg="InformationFilled16" class="icon ns-info" />
             <span>
-              {{ $t("settings_queue.maximal_queue_lifetime") }}
+              {{ $t("queue.maximal_queue_lifetime_info", {maximal_queue_lifetime: maximal_queue_lifetime}) }}
             </span>
-            {{ maximal_queue_lifetime + " " + $t("settings_queue.hours") }}
           </div>
         </cv-column>
       </cv-row>
