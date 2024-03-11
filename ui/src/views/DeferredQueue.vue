@@ -89,10 +89,17 @@
       </cv-row>
       <cv-row>
         <cv-column>
-          <div class="mg-top-sm mg-bottom-lg">
+          <div
+            v-if="!loading.getQueueSettings && !loading.listDeferredQueue"
+            class="mg-top-sm mg-bottom-lg"
+          >
             <NsSvg :svg="InformationFilled16" class="icon ns-info" />
             <span>
-              {{ $t("queue.maximal_queue_lifetime_info", {maximal_queue_lifetime: maximal_queue_lifetime}) }}
+              {{
+                $t("queue.maximal_queue_lifetime_info", {
+                  maximal_queue_lifetime: maximal_queue_lifetime,
+                })
+              }}
             </span>
           </div>
         </cv-column>
