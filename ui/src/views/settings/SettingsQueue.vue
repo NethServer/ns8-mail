@@ -314,8 +314,4 @@ export default {
 .cv-form .bx--form-item {
   margin-bottom: $spacing-07;
 }
-
-.toggle-dependent {
-  margin-bottom: $spacing-07;
-}
 </style>
