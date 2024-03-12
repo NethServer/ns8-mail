@@ -90,7 +90,7 @@ const routes = [
     name: "SettingsQueue",
     component: () =>
       import(
-        /* webpackChunkName: "settings-master-users" */ "../views/settings/SettingsQueue.vue"
+        /* webpackChunkName: "settings-queue" */ "../views/settings/SettingsQueue.vue"
       ),
   },
   {
