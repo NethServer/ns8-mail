@@ -346,6 +346,8 @@
   "settings_queue": {
     "title": "Queue settings",
     "maximal_queue_lifetime": "Maximal queue lifetime",
+    "must_be_inferior_or_equal_to_200": "Must be inferior or equal to 200",
+    "must_be_superior_or_equal_to_1": "Must be superior or equal to 1",
     "hours": "hours",
     "maximal_queue_lifetime_tooltip": "Set the duration, in hours, after which undelivered messages should be returned to the sender.",
     "maximal_queue_lifetime_helper": "Timespan expressed in hours"

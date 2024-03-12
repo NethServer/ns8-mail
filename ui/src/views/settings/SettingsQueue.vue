@@ -64,8 +64,6 @@
                     ref="maximal_queue_lifetime"
                     :invalid-message="$t(error.maximal_queue_lifetime)"
                     type="number"
-                    min="1"
-                    max="200"
                     placeholder="120"
                     :label="$t('settings_queue.maximal_queue_lifetime')"
                     :helper-text="
@@ -215,7 +213,28 @@ export default {
 
       if (!this.maximal_queue_lifetime) {
         this.error.maximal_queue_lifetime = this.$t("common.required");
-
+        if (isValidationOk) {
+          this.focusElement("maximal_queue_lifetime");
+          isValidationOk = false;
+        }
+      } else if (
+        this.maximal_queue_lifetime &&
+        parseInt(this.maximal_queue_lifetime) < 1
+      ) {
+        this.error.maximal_queue_lifetime = this.$t(
+          "settings_queue.must_be_superior_or_equal_to_1"
+        );
+        if (isValidationOk) {
+          this.focusElement("maximal_queue_lifetime");
+          isValidationOk = false;
+        }
+      } else if (
+        this.maximal_queue_lifetime &&
+        parseInt(this.maximal_queue_lifetime) > 200
+      ) {
+        this.error.maximal_queue_lifetime = this.$t(
+          "settings_queue.must_be_inferior_or_equal_to_200"
+        );
         if (isValidationOk) {
           this.focusElement("maximal_queue_lifetime");
           isValidationOk = false;
