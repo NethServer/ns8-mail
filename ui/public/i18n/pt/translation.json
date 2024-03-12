@@ -97,7 +97,9 @@
         "add-domain": "Create domain",
         "get-domain-dkim": "Get domain DKIM",
         "set-mailbox-enabled": "Set mailbox enabled",
-        "set-master-users": "Set master users"
+        "set-master-users": "Set master users",
+        "set-queue-settings": "Set queue settings",
+        "get-queue-settings": "Get queue settings"
     },
     "task": {
         "cannot_create_task": "Cannot create task {action}",
@@ -313,7 +315,8 @@
         "arrival_time": "Arrival time",
         "col_sender": "Sender",
         "resend_all": "Resend all",
-        "recipients": "recipients"
+        "recipients": "recipients",
+        "maximal_queue_lifetime_info": "The maximal queue lifetime is set to {maximal_queue_lifetime} hour. | The maximal queue lifetime is set to {maximal_queue_lifetime} hours."
     },
     "settings_master_users": {
         "master_users_placeholder": "Choose master users",
@@ -377,5 +380,14 @@
     "settings_general": {
         "user_domain": "User domain",
         "title": "General settings"
+    },
+    "settings_queue": {
+        "must_be_inferior_or_equal_to_200": "Must be less than or equal to 200",
+        "hours": "hours",
+        "maximal_queue_lifetime": "Maximal queue lifetime",
+        "maximal_queue_lifetime_helper": "Time interval expressed in hours",
+        "title": "Queue settings",
+        "must_be_superior_or_equal_to_1": "Must be greater than or equal to 1",
+        "maximal_queue_lifetime_tooltip": "Consider a message as not deliverable if it remains in the queue for the maximum queue lifetime."
     }
 }
