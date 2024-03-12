@@ -388,6 +388,6 @@
     "cancel": "Cancel",
     "queue_tooltip": "These are the messages that are waiting to be relayed in the SMTP mail queue. In normal conditions, this queue should be empty or contain just a few messages.",
     "delete_email_confirm": "Delete email <strong>{name}</strong>?",
-    "maximal_queue_lifetime_info": "The maximal queue lifetime is set to {maximal_queue_lifetime} hours."
+    "maximal_queue_lifetime_info": "The maximal queue lifetime is set to {maximal_queue_lifetime} hour.|The maximal queue lifetime is set to {maximal_queue_lifetime} hours."
   }
 }

@@ -96,7 +96,7 @@
             <NsSvg :svg="InformationFilled16" class="icon ns-info" />
             <span>
               {{
-                $t("queue.maximal_queue_lifetime_info", {
+                $tc("queue.maximal_queue_lifetime_info", parseInt(maximal_queue_lifetime), {
                   maximal_queue_lifetime: maximal_queue_lifetime,
                 })
               }}
