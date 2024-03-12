@@ -16,7 +16,7 @@
     "properties": {
         "maximal_queue_lifetime": {
             "type": "string",
-            "title": "maximal_queue_lifetime",
+            "title": "Maximal queue lifetime",
             "description": "Maximum hours a message can stay in the queue before being returned to the sender"
         }
     }
