@@ -92,7 +92,7 @@
     "get-filter-configuration": "Get filter configuration",
     "set-filter-configuration": "Set filter configuration",
     "report-queue-status": "List deferred messages in postfix queue",
-    "flush-postfix-queue": "Flush postfix queue",
+    "flush-postfix-queue": "Flush Postfix queue",
     "get-queue-settings": "Get queue settings",
     "set-queue-settings": "Set queue settings"
   },
@@ -346,11 +346,11 @@
   "settings_queue": {
     "title": "Queue settings",
     "maximal_queue_lifetime": "Maximal queue lifetime",
-    "must_be_inferior_or_equal_to_200": "Must be inferior or equal to 200",
-    "must_be_superior_or_equal_to_1": "Must be superior or equal to 1",
+    "must_be_inferior_or_equal_to_200": "Must be less than or equal to 200",
+    "must_be_superior_or_equal_to_1": "Must be greater than or equal to 1",
     "hours": "hours",
     "maximal_queue_lifetime_tooltip": "Consider a message as not deliverable if it remains in the queue for the maximum queue lifetime.",
-    "maximal_queue_lifetime_helper": "Time interval expressed in hours (default value is 120 hours)."
+    "maximal_queue_lifetime_helper": "Time interval expressed in hours"
   },
   "settings_general": {
     "title": "General settings",
