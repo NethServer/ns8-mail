@@ -306,7 +306,9 @@
         "get-configuration": "Konfiguration abrufen",
         "get-name": "Namen abrufen",
         "remove-public-mailbox": "öffentliches Postfach löschen",
-        "get-mailbox-settings": "Postfach-Einstellungen abrufen"
+        "get-mailbox-settings": "Postfach-Einstellungen abrufen",
+        "set-queue-settings": "Set queue settings",
+        "get-queue-settings": "Get queue settings"
     },
     "welcome": {
         "mail_domain_pattern": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
@@ -372,10 +374,20 @@
         "see_details": "Details anzeigen",
         "confirm_delete_all_queued_message": "Alle E-Mails werden gelöscht, sind Sie sicher?",
         "col_message_size": "Nachrichtengröße",
-        "recipients": "Empfänger"
+        "recipients": "Empfänger",
+        "maximal_queue_lifetime_info": "The maximal queue lifetime is set to {maximal_queue_lifetime} hour. | The maximal queue lifetime is set to {maximal_queue_lifetime} hours."
     },
     "settings_general": {
         "user_domain": "Benutzerdomäne",
         "title": "Allgemeine Einstellungen"
+    },
+    "settings_queue": {
+        "hours": "hours",
+        "must_be_inferior_or_equal_to_200": "Must be less than or equal to 200",
+        "maximal_queue_lifetime": "Maximal queue lifetime",
+        "maximal_queue_lifetime_helper": "Time interval expressed in hours",
+        "title": "Queue settings",
+        "must_be_superior_or_equal_to_1": "Must be greater than or equal to 1",
+        "maximal_queue_lifetime_tooltip": "Consider a message as not deliverable if it remains in the queue for the maximum queue lifetime."
     }
 }

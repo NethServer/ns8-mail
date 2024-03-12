@@ -57,7 +57,9 @@
         "set-filter-configuration": "Impostare la configurazione del filtro",
         "get-filter-configuration": "Ottieni la configurazione del filtro",
         "report-queue-status": "Elenco dei messaggi differiti nella coda di postfix",
-        "flush-postfix-queue": "Svuota la coda di postfix"
+        "flush-postfix-queue": "Svuota la coda di postfix",
+        "set-queue-settings": "Set queue settings",
+        "get-queue-settings": "Get queue settings"
     },
     "domains": {
         "no_domain": "Nessun dominio",
@@ -382,6 +384,16 @@
         "resend": "Reinvia",
         "delete": "Elimina",
         "deferred_queue_details": "Dettagli messaggio",
-        "queue_id": "ID messaggio"
+        "queue_id": "ID messaggio",
+        "maximal_queue_lifetime_info": "The maximal queue lifetime is set to {maximal_queue_lifetime} hour. | The maximal queue lifetime is set to {maximal_queue_lifetime} hours."
+    },
+    "settings_queue": {
+        "must_be_inferior_or_equal_to_200": "Must be less than or equal to 200",
+        "hours": "hours",
+        "maximal_queue_lifetime": "Maximal queue lifetime",
+        "maximal_queue_lifetime_helper": "Time interval expressed in hours",
+        "title": "Queue settings",
+        "must_be_superior_or_equal_to_1": "Must be greater than or equal to 1",
+        "maximal_queue_lifetime_tooltip": "Consider a message as not deliverable if it remains in the queue for the maximum queue lifetime."
     }
 }
