@@ -40,6 +40,16 @@
           <h6>{{ $t("settings_master_users.title") }}</h6>
         </NsTile>
       </cv-column>
+      <cv-column :md="4" :xlg="4">
+        <NsTile
+          :light="true"
+          kind="clickable"
+          @click="goToAppPage(instanceName, 'settingsQueue')"
+          :icon="MailAll32"
+        >
+          <h6>{{ $t("settings_queue.title") }}</h6>
+        </NsTile>
+      </cv-column>
     </cv-row>
   </cv-grid>
 </template>

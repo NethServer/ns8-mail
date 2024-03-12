@@ -86,6 +86,14 @@ const routes = [
       ),
   },
   {
+    path: "/settingsQueue",
+    name: "SettingsQueue",
+    component: () =>
+      import(
+        /* webpackChunkName: "settings-queue" */ "../views/settings/SettingsQueue.vue"
+      ),
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting

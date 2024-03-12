@@ -74,6 +74,7 @@ tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
 tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
 tmpl_ldap_port="${POSTFIX_LDAP_PORT}"
 tmpl_ldap_base="${POSTFIX_LDAP_BASE}"
+tmpl_maximal_queue_lifetime="${POSTFIX_MAXIMAL_QUEUE_LIFETIME:-120}"
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"

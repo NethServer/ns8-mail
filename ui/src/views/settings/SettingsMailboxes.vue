@@ -85,7 +85,7 @@
                     @byteUnit="quota.byteUnit = $event"
                   />
                   <NsButton
-                    kind="primary"
+                    kind="secondary"
                     :icon="Save20"
                     :loading="loading.setMailboxSettings"
                     :disabled="
@@ -136,7 +136,7 @@
                     }}</template>
                   </NsToggle>
                   <NsButton
-                    kind="primary"
+                    kind="secondary"
                     :icon="Save20"
                     :loading="loading.setMailboxSettings"
                     :disabled="
@@ -242,7 +242,7 @@
                     ref="spamSubjectPrefix"
                   />
                   <NsButton
-                    kind="primary"
+                    kind="secondary"
                     :icon="Save20"
                     :loading="loading.setMailboxSettings"
                     :disabled="
