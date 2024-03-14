@@ -75,10 +75,16 @@ address_verify_negative_refresh_time = 15m
 address_verify_cache_cleanup_interval = 4h
 
 #
+# Sender login mismatch check
+#
+smtpd_sender_login_maps = sqlite:${S}meta_directory/senderlogin.cf,
+
+#
 # Restrictions
 #
 smtpd_sender_restrictions =
   reject_non_fqdn_sender,
+  ${tmpl_reject_authenticated_sender_login_mismatch},
 
 smtpd_relay_restrictions =
   permit_mynetworks,

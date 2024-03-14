@@ -1,0 +1,16 @@
+#
+# senderlogin -- valid login names for the given address
+# Sqlite backend configuration
+#
+
+dbpath = /srv/pcdb.sqlite
+query = SELECT dest
+  FROM destmap
+  WHERE alocal = '%u'
+  AND domain IN ('%d', '*')
+  AND '%d' IN (SELECT domain FROM domains)
+  UNION
+  SELECT '%u' AS dest
+  FROM domains
+  WHERE domain = '%d'
+  AND addusers = 1;
