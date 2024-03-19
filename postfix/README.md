@@ -92,3 +92,5 @@ its contents for the exact SQL schema. This is a summary of the available tables
 - `userforwards` Forward address map for LDAP users
 - `mynetworks` Records are added to Postfix
   [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks) setting
+- `relayrules` Relay host configuration matching a sender or a destination
+  pattern

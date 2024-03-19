@@ -54,7 +54,7 @@ virtual_alias_maps =
   ${tmpl_domain_map},
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 relay_domains = ${tmpl_relay_domains}
-transport_maps = ${tmpl_transport_maps}
+transport_maps = ${tmpl_transport_maps}, sqlite:${S}meta_directory/relaydest.cf,
 recipient_delimiter = +
 myorigin = ${tmpl_myorigin}
 
@@ -78,6 +78,9 @@ address_verify_cache_cleanup_interval = 4h
 # Sender login mismatch check
 #
 smtpd_sender_login_maps = sqlite:${S}meta_directory/senderlogin.cf,
+smtp_sasl_password_maps = sqlite:${S}meta_directory/relaycredentials.cf,
+sender_dependent_relayhost_maps = sqlite:${S}meta_directory/relaysender.cf,
+smtp_sender_dependent_authentication = ${tmpl_smtp_sender_dependent_authentication}
 
 #
 # Restrictions
