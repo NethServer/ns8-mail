@@ -39,6 +39,10 @@ Standard public TCP ports
 - `POSTFIX_LDAP_BASE`, eg `dc=directory,dc=nh`
 - `POSTFIX_MILTERS`, value for Postfix [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters)
 - `POSTFIX_MAXIMAL_QUEUE_LIFETIME`, value for the maximum amount of hours that a message is allowed to stay in a queue (5 days is assumed if value is empty)
+- `POSTFIX_RESTRICTED_SENDER` Empty or `1`. If set, the SMTP/AUTH user
+  name can use a restricted set of sender addresses. The set is given by
+  the union of matching `destmap` records, and address of a domain with
+  the `addusers` flag set.
 
 ## Volumes
 
@@ -88,3 +92,5 @@ its contents for the exact SQL schema. This is a summary of the available tables
 - `userforwards` Forward address map for LDAP users
 - `mynetworks` Records are added to Postfix
   [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks) setting
+- `relayrules` Relay host configuration matching a sender or a destination
+  pattern

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2
+
+# Apply updates to the pcdb SQLite database schema
+podman exec -i --workdir /srv postfix sqlite3 pcdb.sqlite <<'EOF'
+.read /etc/postfix/pcdb-relayrules.sql
+EOF
