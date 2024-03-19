@@ -92,3 +92,14 @@ its contents for the exact SQL schema. This is a summary of the available tables
 - `userforwards` Forward address map for LDAP users
 - `mynetworks` Records are added to Postfix
   [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks) setting
+
+The orginal SQL schema includes additional files that introduce new
+features and patches. Each inclusion is implemented with a SQLite `.read`
+command. Inclusion must occur both in `pcdb-init.sql` and in the
+`update-module.d/50update_pcdb_schema` script. This is a summary of tables
+defined with this method:
+
+- `relayrules` Relay host configuration matching a sender or a destination
+  pattern. Implementation of sender/recipient based relay rules.
+  Default/fallback "relayhost" (smarthost) is implemented as a wildcard
+  rule.

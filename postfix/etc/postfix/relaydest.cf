@@ -1,0 +1,10 @@
+#
+# relaydest -- retrieve the relay host for the given destination
+# Sqlite backend configuration
+#
+
+dbpath = /srv/pcdb.sqlite
+query = SELECT FORMAT('smtp:[%%s]:%%s', host, port) AS transport
+  FROM relayrules
+  WHERE dest = '%s'
+  AND enabled = 1
