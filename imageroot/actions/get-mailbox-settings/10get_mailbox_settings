@@ -33,6 +33,11 @@ ospam_folder = {
     "enabled": False,
 }
 
+ospam_prefix = {
+    "enabled": False,
+    "prefix": "***SPAM***",
+}
+
 if os.getenv("DOVECOT_SPAM_FOLDER"):
     ospam_folder = {
         "enabled": True,
@@ -43,9 +48,16 @@ osharedseen = {
     "enabled": os.getenv("DOVECOT_SHAREDSEEN", '') != ""
 }
 
+if os.getenv("DOVECOT_SPAM_SUBJECT_PREFIX"):
+    ospam_prefix = {
+        "enabled": True,
+        "prefix": os.getenv("DOVECOT_SPAM_SUBJECT_PREFIX"),
+    }
+
 json.dump({
     "quota": oquota,
     "spam_retention": ospam_retention,
     "spam_folder": ospam_folder,
     "sharedseen": osharedseen,
+    "spam_prefix": ospam_prefix
 }, fp=sys.stdout)
