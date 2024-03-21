@@ -441,6 +441,48 @@
                 }
             }
         },
+        "spam-prefix": {
+            "type": "object",
+            "title": "Spam prefix",
+            "description": "Decide if and how to prefix the subject of messages marked as spam",
+            "oneOf": [
+                {
+                    "title": "Spam prefix enabled",
+                    "required": [
+                        "enabled",
+                        "prefix"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "const": true
+                        }
+                    }
+                },
+                {
+                    "title": "Spam prefix disabled",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "const": false
+                        }
+                    }
+                }
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "title": "Enable folder"
+                },
+                "prefix": {
+                    "type": "string",
+                    "title": "Folder prefix",
+                    "minLength": 1
+                }
+            }
+        },
         "spam-retention": {
             "type": "object",
             "title": "Spam retention",
