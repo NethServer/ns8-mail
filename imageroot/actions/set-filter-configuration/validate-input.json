@@ -26,10 +26,6 @@
         "deny_message_threshold": 20,
         "greylist": {
           "enabled": false
-        },
-        "prefix_email_subject": {
-          "enabled": true,
-          "prefix": "***SPAM***"
         }
       }
     }
