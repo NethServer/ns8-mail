@@ -868,25 +868,6 @@
                             "type": "number"
                         }
                     }
-                },
-                "prefix_email_subject": {
-                    "type": "object",
-                    "title": "Prefix email subject",
-                    "description": "Configure if the subject of spam messages are prefixed with a string",
-                    "required": [
-                        "enabled"
-                    ],
-                    "properties": {
-                        "enabled": {
-                            "description": "Defines if email subject prefixing",
-                            "type": "boolean"
-                        },
-                        "prefix": {
-                            "description": "Prefix for the subject of spam messages",
-                            "type": "string",
-                            "minLength": 1
-                        }
-                    }
                 }
             }
         },
