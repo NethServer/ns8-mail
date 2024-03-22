@@ -23,7 +23,7 @@
         "save_settings": "Guardar ajustes",
         "public_destination": "Buzón de correo público",
         "missing_object": "Objeto perdido",
-        "delete": "Borrar",
+        "delete": "Eliminar",
         "group_destination": "Grupo",
         "mail_hostname": "Nombre de host del servidor de correo",
         "apo_destination": "Objeto perdido",
@@ -98,8 +98,8 @@
         "remove-public-mailbox": "Eliminar el buzón público",
         "get-mailbox-settings": "Obtener la configuración del buzón",
         "remove-bypass-rule": "Eliminar regla de derivación",
-        "set-queue-settings": "Set queue settings",
-        "get-queue-settings": "Get queue settings"
+        "set-queue-settings": "Establecer ajustes de la cola",
+        "get-queue-settings": "Obtener ajustes de la cola"
     },
     "task": {
         "cannot_create_task": "No se puede crear la tarea {action}",
@@ -375,19 +375,19 @@
         "recipient": "Destinatario",
         "close": "Cerrar",
         "delete_all": "Borrar todo",
-        "maximal_queue_lifetime_info": "The maximal queue lifetime is set to {maximal_queue_lifetime} hour. | The maximal queue lifetime is set to {maximal_queue_lifetime} hours."
+        "maximal_queue_lifetime_info": "La duración máxima de la cola está establecida en {maximal_queue_lifetime} horas. | La duración máxima de la cola está establecida en {maximal_queue_lifetime} horas."
     },
     "settings_general": {
         "user_domain": "Dominio de usuario",
         "title": "Configuración general"
     },
     "settings_queue": {
-        "must_be_inferior_or_equal_to_200": "Must be less than or equal to 200",
-        "hours": "hours",
-        "maximal_queue_lifetime": "Maximal queue lifetime",
-        "maximal_queue_lifetime_helper": "Time interval expressed in hours",
-        "title": "Queue settings",
-        "must_be_superior_or_equal_to_1": "Must be greater than or equal to 1",
-        "maximal_queue_lifetime_tooltip": "Consider a message as not deliverable if it remains in the queue for the maximum queue lifetime."
+        "must_be_inferior_or_equal_to_200": "Debe ser menor o igual a 200",
+        "hours": "horas",
+        "maximal_queue_lifetime": "Vida útil máxima de la cola",
+        "maximal_queue_lifetime_helper": "Intervalo de tiempo expresado en horas",
+        "title": "Ajustes de cola",
+        "must_be_superior_or_equal_to_1": "Debe ser mayor o igual a 1",
+        "maximal_queue_lifetime_tooltip": "Una vez transcurrido el plazo, no enviar el mensaje y devolver al remitente."
     }
 }

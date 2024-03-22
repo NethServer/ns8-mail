@@ -74,7 +74,7 @@
         "rspamd_credentials_tooltip": "Nutzen Sie Ihre Anmeldedaten zum Zugriff auf Rspamd",
         "missing_object": "fehlendes Objekt",
         "work_in_progress": "in Arbeit",
-        "delete": "Entfernen",
+        "delete": "Löschen",
         "processing": "Verarbeite...",
         "disabled": "Deaktiviert",
         "group_destination": "Gruppe",
