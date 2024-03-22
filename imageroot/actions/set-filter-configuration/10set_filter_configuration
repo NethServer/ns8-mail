@@ -58,10 +58,5 @@ if 'antispam' in request:
 
         mail.rspamd_api_set_thresholds(thm)
 
-        if 'prefix_email_subject' in ras:
-            if ras['prefix_email_subject']['enabled'] and 'prefix' in ras['prefix_email_subject']:
-                agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', ras['prefix_email_subject']['prefix'])
-            else:
-                agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '')
     else: # ras['enabled'] is false
         agent.set_env('RSPAMD_antispam_checks_enabled', '')

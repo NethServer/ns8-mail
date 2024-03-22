@@ -49,13 +49,5 @@ odata["antispam"]["greylist"] = {
     "enabled": bool(os.getenv('RSPAMD_greylist_enabled')),
     "threshold": thm.get("greylist", greylist_fallback_threshold),
 }
-# NOTE: subject prefix for suspect messages is handled by Dovecot with a global Sieve rule:
-if os.getenv("DOVECOT_SPAM_SUBJECT_PREFIX"):
-    odata["antispam"]["prefix_email_subject"] = {
-        "enabled": True,
-        "prefix": os.environ["DOVECOT_SPAM_SUBJECT_PREFIX"],
-    }
-else:
-    odata["antispam"]["prefix_email_subject"] = {"enabled": False, "prefix": "***SPAM***"}
 
 json.dump(odata, fp=sys.stdout)
