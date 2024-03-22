@@ -349,7 +349,7 @@
     "must_be_inferior_or_equal_to_200": "Must be less than or equal to 200",
     "must_be_superior_or_equal_to_1": "Must be greater than or equal to 1",
     "hours": "hours",
-    "maximal_queue_lifetime_tooltip": "Consider a message as not deliverable if it remains in the queue for the maximum queue lifetime.",
+    "maximal_queue_lifetime_tooltip": "Once the time period has elapsed, abandon sending the message and return it to the sender.",
     "maximal_queue_lifetime_helper": "Time interval expressed in hours"
   },
   "settings_general": {
