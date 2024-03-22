@@ -242,42 +242,6 @@
                       @unlimited="antispam.greylist.enabled = !$event"
                       class="mg-bottom-xlg"
                     />
-                    <!-- add a prefix to spam messages subject (the same component is in Settings/Mailboxes) -->
-                    <NsToggle
-                      value="prefixSpamValue"
-                      :form-item="true"
-                      v-model="antispam.prefix_email_subject.enabled"
-                      :disabled="
-                        loading.getFilterConfiguration ||
-                        loading.setFilterConfiguration
-                      "
-                      :class="[
-                        'toggle-without-label',
-                        {
-                          'mg-bottom-md': antispam.prefix_email_subject.enabled,
-                        },
-                      ]"
-                      ref="isAddPrefixToSpamSubject"
-                    >
-                      <template slot="text-left">{{
-                        $t("filter.add_prefix_to_spam_subject")
-                      }}</template>
-                      <template slot="text-right">{{
-                        $t("filter.add_prefix_to_spam_subject")
-                      }}</template>
-                    </NsToggle>
-                    <NsTextInput
-                      v-if="antispam.prefix_email_subject.enabled"
-                      v-model.trim="antispam.prefix_email_subject.prefix"
-                      :label="$t('filter.prefix')"
-                      :invalid-message="error.prefix_email_subject"
-                      :disabled="
-                        loading.getFilterConfiguration ||
-                        loading.setFilterConfiguration
-                      "
-                      class="toggle-dependent"
-                      ref="prefix_email_subject"
-                    />
                   </template>
                 </cv-accordion-item>
               </cv-accordion>
@@ -462,10 +426,6 @@ export default {
           enabled: false,
           threshold: "1",
         },
-        prefix_email_subject: {
-          enabled: false,
-          prefix: "",
-        },
       },
       antivirus: {
         enabled: false,
@@ -497,7 +457,6 @@ export default {
         spam_flag_threshold: "",
         deny_message_threshold: "",
         greylist: "",
-        prefix_email_subject: "",
       },
     };
   },
@@ -513,15 +472,7 @@ export default {
       return this.antivirus.third_party_sigs_rating === "high";
     },
   },
-  watch: {
-    "antispam.prefix_email_subject.enabled": function () {
-      if (this.antispam.prefix_email_subject.enabled) {
-        this.$nextTick(() => {
-          this.focusElement("prefix_email_subject");
-        });
-      }
-    },
-  },
+  watch: {},
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.watchQueryData(vm);
@@ -771,17 +722,6 @@ export default {
       this.getFilterConfiguration();
     },
     saveAntispamSection() {
-      // validate spam prefix
-      this.error.prefix_email_subject = "";
-
-      if (
-        this.antispam.prefix_email_subject.enabled &&
-        !this.antispam.prefix_email_subject.prefix
-      ) {
-        this.focusElement("prefix_email_subject");
-        this.error.prefix_email_subject = this.$t("common.required");
-        return;
-      }
 
       const actionPayload = {
         antispam: {
@@ -792,16 +732,8 @@ export default {
             enabled: this.antispam.greylist.enabled,
             threshold: Number(this.antispam.greylist.threshold),
           },
-          prefix_email_subject: {
-            enabled: this.antispam.prefix_email_subject.enabled,
-          },
         },
       };
-
-      if (this.antispam.prefix_email_subject.enabled) {
-        actionPayload.antispam.prefix_email_subject.prefix =
-          this.antispam.prefix_email_subject.prefix;
-      }
       this.loading.saveAntispamSection = true;
       this.setFilterConfiguration(actionPayload, "antispam");
     },
