@@ -27,6 +27,10 @@ settings_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-m
         "enabled": bool(renv.get("DOVECOT_SPAM_FOLDER", "")),
         "name": renv.get("DOVECOT_SPAM_FOLDER", "Junk")
     },
+    "spam_prefix": {
+        "enabled": bool(renv.get("DOVECOT_SPAM_SUBJECT_PREFIX", "")),
+        "prefix": renv.get("DOVECOT_SPAM_SUBJECT_PREFIX", "***SPAM***")
+    },
     "quota": {
         "limit": int(renv.get("DOVECOT_QUOTA_MB", "0"))
     }
