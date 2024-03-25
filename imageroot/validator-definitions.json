@@ -478,8 +478,7 @@
                 },
                 "prefix": {
                     "type": "string",
-                    "title": "Folder prefix",
-                    "minLength": 1
+                    "title": "Folder prefix"
                 }
             }
         },

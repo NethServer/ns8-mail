@@ -19,7 +19,7 @@ agent.set_env('POSTFIX_ORIGIN', open('user_domain.txt').read().strip())
 
 # Spam subject prefix migration
 if type(jrspamd) is dict and jrspamd['props'].get('SpamSubjectPrefixStatus') == 'enabled':
-    agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', jrspamd['props'].get('SpamSubjectPrefixString', '***SPAM***'))
+    agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', jrspamd['props'].get('SpamSubjectPrefixString', ''))
 else:
     agent.set_env('DOVECOT_SPAM_SUBJECT_PREFIX', '')
 
