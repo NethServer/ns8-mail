@@ -430,6 +430,11 @@ export default {
         this.spamFolder.name = "";
       }
       this.sharedseen.enabled = settings.sharedseen.enabled;
+
+    // spam prefix
+     this.addPrefixToSpamSubject.enabled = settings.spam_prefix.enabled;
+     this.addPrefixToSpamSubject.prefix  = settings.spam_prefix.prefix;
+
     },
     validateSetMailboxSettings() {
       this.clearErrors();
@@ -444,6 +449,16 @@ export default {
 
         if (isValidationOk) {
           this.focusElement("spam_folder");
+          isValidationOk = false;
+        }
+      }
+      if (this.addPrefixToSpamSubject.enabled && !this.addPrefixToSpamSubject.prefix) {
+        this.error.spamSubjectPrefix = this.$t(
+          "common.required"
+        );
+
+        if (isValidationOk) {
+          this.focusElement("spamSubjectPrefix");
           isValidationOk = false;
         }
       }
@@ -517,6 +532,16 @@ export default {
         enabled: this.sharedseen.enabled,
       };
 
+      // spam prefix
+
+      let spamPrefix = {
+        enabled: this.addPrefixToSpamSubject.enabled,
+      };
+
+      if (this.addPrefixToSpamSubject.enabled) {
+        spamPrefix.prefix = this.addPrefixToSpamSubject.prefix;
+      }
+
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
@@ -525,6 +550,7 @@ export default {
             spam_folder: spamFolder,
             spam_retention: spamRetention,
             sharedseen: sharedseen,
+            spam_prefix: spamPrefix,
           },
           extra: {
             title: this.$t("action." + taskAction),

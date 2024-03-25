@@ -14,10 +14,6 @@
         "greylist": {
           "enabled": true,
           "threshold": 4
-        },
-        "prefix_email_subject": {
-          "enabled": true,
-          "prefix": "***SPAM***"
         }
       },
       "antivirus": {

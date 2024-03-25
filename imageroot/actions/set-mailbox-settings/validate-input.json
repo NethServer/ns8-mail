@@ -17,6 +17,10 @@
             },
             "sharedseen": {
                 "enabled": true
+            },
+            "spam_prefix": {
+                "enabled": true,
+                "prefix": "***SPAM***"
             }
         }
     ],
@@ -34,6 +38,9 @@
         },
         "sharedseen": {
             "$ref": "http://schema.nethserver.org/mail.json#/$defs/sharedseen-status"
+        },
+        "spam_prefix": {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/spam-prefix"
         }
     }
 }
