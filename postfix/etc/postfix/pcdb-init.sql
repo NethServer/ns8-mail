@@ -12,7 +12,7 @@ PRAGMA foreign_keys = ON;
 -- value. Messages for other domains are routed according to standard
 -- DNS-based rules.
 CREATE TABLE domains (
-    domain TEXT PRIMARY KEY,
+    domain TEXT PRIMARY KEY COLLATE NOCASE,
     -- domain name
     transport TEXT DEFAULT NULL,
     -- after applying rewrite rules (like catchall value and destmap
