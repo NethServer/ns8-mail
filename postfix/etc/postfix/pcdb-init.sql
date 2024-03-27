@@ -12,7 +12,7 @@ PRAGMA foreign_keys = ON;
 -- value. Messages for other domains are routed according to standard
 -- DNS-based rules.
 CREATE TABLE domains (
-    domain TEXT PRIMARY KEY,
+    domain TEXT PRIMARY KEY COLLATE NOCASE,
     -- domain name
     transport TEXT DEFAULT NULL,
     -- after applying rewrite rules (like catchall value and destmap
@@ -49,9 +49,9 @@ CREATE TABLE domains (
 -- (wildcard domain) value can be used in the "domain" column. It will
 -- match any domain in the "domains" table.
 CREATE TABLE destmap (
-    alocal TEXT NOT NULL,
+    alocal TEXT NOT NULL COLLATE NOCASE,
     -- local part of the address (e.g. "john" in "john@example.com")
-    domain TEXT NOT NULL,
+    domain TEXT NOT NULL COLLATE NOCASE,
     -- domain part of the address (e.g. "example.com" in "john@example.com")
     dest TEXT NOT NULL,
     -- destination (an external address or virtual mailbox name)
@@ -61,9 +61,9 @@ CREATE TABLE destmap (
 
 -- addresses -- address attributes
 CREATE TABLE addresses (
-    alocal TEXT NOT NULL,
+    alocal TEXT NOT NULL COLLATE NOCASE,
     -- local part of the address (e.g. "john" in "john@example.com")
-    domain TEXT NOT NULL,
+    domain TEXT NOT NULL COLLATE NOCASE,
     -- domain part of the address (e.g. "example.com" in "john@example.com")
     internal INT DEFAULT 0,
     -- if set to 1, external MTA and unauthenticated MUA cannot send
@@ -76,7 +76,7 @@ CREATE TABLE addresses (
 
 -- userattrs -- user attributes
 CREATE TABLE userattrs (
-    user TEXT NOT NULL,
+    user TEXT NOT NULL COLLATE NOCASE,
     -- the LDAP user identifier, (e.g. "first.user")
     internal INT DEFAULT 0,
     -- if set to 1, external MTA and unauthenticated MUA cannot send
@@ -88,7 +88,7 @@ CREATE TABLE userattrs (
 -- given user, a record with user == dest means a copy of each message is
 -- also stored on the local server
 CREATE TABLE userforwards (
-    user TEXT NOT NULL,
+    user TEXT NOT NULL COLLATE NOCASE,
     -- the LDAP user identifier, (e.g. "first.user")
     dest TEXT NOT NULL,
     -- destination (an external address or virtual mailbox name)
@@ -97,7 +97,7 @@ CREATE TABLE userforwards (
 
 -- groupattrs -- group attributes
 CREATE TABLE groupattrs (
-    "group" TEXT NOT NULL,
+    "group" TEXT NOT NULL COLLATE NOCASE,
     -- the LDAP group identifier, (e.g. "sales")
     internal INT DEFAULT 0,
     -- if set to 1, external MTA and unauthenticated MUA cannot send
