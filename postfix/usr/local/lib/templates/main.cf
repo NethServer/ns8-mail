@@ -75,12 +75,15 @@ address_verify_negative_refresh_time = 15m
 address_verify_cache_cleanup_interval = 4h
 
 #
-# Sender login mismatch check
+# Relay authentication rules, SMTP server passwords and TLS policy
 #
 smtpd_sender_login_maps = sqlite:${S}meta_directory/senderlogin.cf,
 smtp_sasl_password_maps = sqlite:${S}meta_directory/relaycredentials.cf,
 sender_dependent_relayhost_maps = sqlite:${S}meta_directory/relaysender.cf,
 smtp_sender_dependent_authentication = ${tmpl_smtp_sender_dependent_authentication}
+smtp_tls_policy_maps = sqlite:${S}meta_directory/tlspolicy.cf,
+smtp_sasl_security_options =
+smtp_sasl_auth_enable = yes
 
 #
 # Restrictions
