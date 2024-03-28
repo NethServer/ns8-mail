@@ -21,8 +21,11 @@ Standard public TCP ports
 
 ## Environment variables
 
-- `POSTFIX_DEBUG` Integer number. If great than 0 enable detailed log for
-  specific components. (1) address rewriting, (2) delivery
+- `POSTFIX_DEBUG` is an integer value. If it is greater than 0, it enables
+  detailed logging for specific components: (1) address rewriting, (2)
+  delivery, and (4) SMTP/relay. To enable detailed logging for multiple
+  components, sum the values, for example, `4 + 2 = 6` for delivery and
+  relay together.
 - `POSTFIX_DEBUG_PEERS`. CIDR network or IP addresses that produce detailed smtp/lmtp log. Add value 2 (delivery) to POSTFIX_DEBUG to enable the detailed log. Default is Postfix `mynetworks`.
 - `POSTFIX_TRUSTED_NETWORK`. Added to Postfix [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks)
 - `POSTFIX_HOSTNAME`. Value for Postfix

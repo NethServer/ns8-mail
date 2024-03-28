@@ -26,6 +26,10 @@ if [ "$(( POSTFIX_DEBUG & 2 ))" -eq 1 ] ; then
     tmpl_debug_delivery="-v"
 fi
 
+if [ "$(( POSTFIX_DEBUG & 4 ))" -eq 1 ] ; then
+    tmpl_debug_relay="-v"
+fi
+
 if [ ! -d /var/lib/umail ] ; then
     tmpl_sasl_commentout='#'
 fi
