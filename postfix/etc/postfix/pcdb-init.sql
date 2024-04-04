@@ -125,3 +125,6 @@ CREATE TABLE mynetworks (
     "network" TEXT NOT NULL,
     PRIMARY KEY ("network")
 );
+
+-- READ (INCLUDE) schema updates
+.read /etc/postfix/pcdb-relayrules.sql

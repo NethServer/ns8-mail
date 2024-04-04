@@ -21,8 +21,11 @@ Standard public TCP ports
 
 ## Environment variables
 
-- `POSTFIX_DEBUG` Integer number. If great than 0 enable detailed log for
-  specific components. (1) address rewriting, (2) delivery
+- `POSTFIX_DEBUG` is an integer value. If it is greater than 0, it enables
+  detailed logging for specific components: (1) address rewriting, (2)
+  delivery, and (4) SMTP/relay. To enable detailed logging for multiple
+  components, sum the values, for example, `4 + 2 = 6` for delivery and
+  relay together.
 - `POSTFIX_DEBUG_PEERS`. CIDR network or IP addresses that produce detailed smtp/lmtp log. Add value 2 (delivery) to POSTFIX_DEBUG to enable the detailed log. Default is Postfix `mynetworks`.
 - `POSTFIX_TRUSTED_NETWORK`. Added to Postfix [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks)
 - `POSTFIX_HOSTNAME`. Value for Postfix
@@ -39,6 +42,10 @@ Standard public TCP ports
 - `POSTFIX_LDAP_BASE`, eg `dc=directory,dc=nh`
 - `POSTFIX_MILTERS`, value for Postfix [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters)
 - `POSTFIX_MAXIMAL_QUEUE_LIFETIME`, value for the maximum amount of hours that a message is allowed to stay in a queue (5 days is assumed if value is empty)
+- `POSTFIX_RESTRICTED_SENDER` Empty or `1`. If set, the SMTP/AUTH user
+  name can use a restricted set of sender addresses. The set is given by
+  the union of matching `destmap` records, and address of a domain with
+  the `addusers` flag set.
 
 ## Volumes
 
@@ -88,3 +95,14 @@ its contents for the exact SQL schema. This is a summary of the available tables
 - `userforwards` Forward address map for LDAP users
 - `mynetworks` Records are added to Postfix
   [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks) setting
+
+The orginal SQL schema includes additional files that introduce new
+features and patches. Each inclusion is implemented with a SQLite `.read`
+command. Inclusion must occur both in `pcdb-init.sql` and in the
+`update-module.d/50update_pcdb_schema` script. This is a summary of tables
+defined with this method:
+
+- `relayrules` Relay host configuration matching a sender or a destination
+  pattern. Implementation of sender/recipient based relay rules.
+  Default/fallback "relayhost" (smarthost) is implemented as a wildcard
+  rule.

@@ -26,6 +26,10 @@ if [ "$(( POSTFIX_DEBUG & 2 ))" -eq 1 ] ; then
     tmpl_debug_delivery="-v"
 fi
 
+if [ "$(( POSTFIX_DEBUG & 4 ))" -eq 1 ] ; then
+    tmpl_debug_relay="-v"
+fi
+
 if [ ! -d /var/lib/umail ] ; then
     tmpl_sasl_commentout='#'
 fi
@@ -75,6 +79,13 @@ tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
 tmpl_ldap_port="${POSTFIX_LDAP_PORT}"
 tmpl_ldap_base="${POSTFIX_LDAP_BASE}"
 tmpl_maximal_queue_lifetime="${POSTFIX_MAXIMAL_QUEUE_LIFETIME:-120}"
+if [ -n "${POSTFIX_RESTRICTED_SENDER}" ]; then
+    tmpl_reject_authenticated_sender_login_mismatch='reject_authenticated_sender_login_mismatch'
+    tmpl_smtp_sender_dependent_authentication='yes'
+else
+    tmpl_reject_authenticated_sender_login_mismatch=''
+    tmpl_smtp_sender_dependent_authentication='no'
+fi
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
