@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+from sqlite3 import OperationalError
+
+mail.abort_with_json_if_not_configured([])
+
+sdb = mail.pcdb_connect(readonly=True)
+
+relays = {}
+
+try:
+    for row in sdb.execute("""SELECT sender, dest,  host, port, tls, username, enabled, rdesc FROM relayrules"""):
+        if row['sender'] is not None:
+            sender = row['sender']
+            relays[sender] = {
+                'sender': row['sender'],
+                'host': row['host'],
+                'port': row['port'],
+                'tls': row['tls'] == "encrypt",
+                'username': row['username'],
+                'enabled': row['enabled'] == "1",
+                'description': row['rdesc'],
+            }
+        elif row['dest'] is not None:
+            dest = row['dest']
+            relays[dest] = {
+                'dest': row['dest'],
+                'host': row['host'],
+                'port': row['port'],
+                'tls': row['tls'] == "encrypt",
+                'username': row['username'],
+                'enabled': row['enabled'] == "1",
+                'description': row['rdesc'],
+            }
+except OperationalError:
+    relays = {}
+
+json.dump(list(relays.values()), fp=sys.stdout)
