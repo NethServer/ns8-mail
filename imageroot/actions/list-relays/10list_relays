@@ -17,7 +17,7 @@ sdb = mail.pcdb_connect(readonly=True)
 relays = {}
 
 try:
-    for row in sdb.execute("""SELECT sender, dest,  host, port, tls, username, enabled, rdesc FROM relayrules"""):
+    for row in sdb.execute("""SELECT sender, dest,  host, port, tls, username, password, enabled, rdesc FROM relayrules"""):
         if row['sender'] is not None:
             sender = row['sender']
             relays[sender] = {
@@ -26,7 +26,8 @@ try:
                 'port': row['port'],
                 'tls': row['tls'] == "encrypt",
                 'username': row['username'],
-                'enabled': row['enabled'] == "1",
+                'password': row['password'],
+                'enabled': row['enabled'] == 1,
                 'description': row['rdesc'],
             }
         elif row['dest'] is not None:
@@ -37,7 +38,8 @@ try:
                 'port': row['port'],
                 'tls': row['tls'] == "encrypt",
                 'username': row['username'],
-                'enabled': row['enabled'] == "1",
+                'password': row['password'],
+                'enabled': row['enabled'] == 1,
                 'description': row['rdesc'],
             }
 except OperationalError:
