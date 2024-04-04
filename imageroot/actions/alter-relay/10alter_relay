@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+from sqlite3 import IntegrityError
+
+class RelayNotFoundError(Exception):
+    pass
+
+request = json.load(sys.stdin)
+
+sdb = mail.pcdb_connect()
+
+sender = request.get('sender')
+dest = request.get('dest')
+
+try:
+    cur = sdb.cursor()
+
+    if sender:
+        if 'host' in request:
+            cur.execute("""UPDATE relayrules SET host=? WHERE sender=?""", (request['host'], sender))
+
+        if 'port' in request:
+            cur.execute("""UPDATE relayrules SET port=? WHERE sender=?""", (request['port'], sender))
+
+        if 'tls' in request:
+            cur.execute("""UPDATE relayrules SET tls=? WHERE sender=?""", (request['tls'], sender))
+
+        if 'username' in request:
+            cur.execute("""UPDATE relayrules SET username=? WHERE sender=?""", (request['username'], sender))
+
+        if 'password' in request:
+            cur.execute("""UPDATE relayrules SET password=? WHERE sender=?""", (request['password'], sender))
+
+        if 'enabled' in request:
+            cur.execute("""UPDATE relayrules SET enabled=? WHERE sender=?""", (request['enabled'], sender))
+
+        if 'description' in request:
+            cur.execute("""UPDATE relayrules SET rdesc=? WHERE sender=?""", (request['description'], sender))
+
+    elif dest:
+        if 'host' in request:
+            cur.execute("""UPDATE relayrules SET host=? WHERE dest=?""", (request['host'], dest))
+
+        if 'port' in request:
+            cur.execute("""UPDATE relayrules SET port=? WHERE dest=?""", (request['port'], dest))
+
+        if 'tls' in request:
+            cur.execute("""UPDATE relayrules SET tls=? WHERE dest=?""", (request['tls'], dest))
+
+        if 'username' in request:
+            cur.execute("""UPDATE relayrules SET username=? WHERE dest=?""", (request['username'], dest))
+
+        if 'password' in request:
+            cur.execute("""UPDATE relayrules SET password=? WHERE dest=?""", (request['password'], dest))
+
+        if 'enabled' in request:
+            cur.execute("""UPDATE relayrules SET enabled=? WHERE dest=?""", (request['enabled'], dest))
+
+        if 'description' in request:
+            cur.execute("""UPDATE relayrules SET rdesc=? WHERE dest=?""", (request['description'], dest))
+
+    if cur.rowcount == 0:
+        raise RelayNotFoundError()
+
+except RelayNotFoundError:
+    sdb.rollback()
+    agent.set_status('validation-failed')
+
+    if sender:
+        json.dump([{'field': 'sender', 'parameter': 'sender', 'value': sender, 'error':'relay_not_found'}], fp=sys.stdout)
+    elif dest:
+        json.dump([{'field': 'dest', 'parameter': 'dest', 'value': dest, 'error':'relay_not_found'}], fp=sys.stdout)
+    sys.exit(2)
+
+else:
+    sdb.commit()
+
+finally:
+    sdb.close()
