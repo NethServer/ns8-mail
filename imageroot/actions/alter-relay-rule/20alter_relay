@@ -41,7 +41,7 @@ try:
             cur.execute("""UPDATE relayrules SET password=? WHERE sender=?""", (request['password'], sender))
 
         if 'enabled' in request:
-            cur.execute("""UPDATE relayrules SET enabled=? WHERE sender=?""", (request['enabled'], sender))
+            cur.execute("""UPDATE relayrules SET enabled=? WHERE sender=?""", (1 if request['enabled'] else 0, sender))
 
         if 'description' in request:
             cur.execute("""UPDATE relayrules SET rdesc=? WHERE sender=?""", (request['description'], sender))
@@ -63,7 +63,7 @@ try:
             cur.execute("""UPDATE relayrules SET password=? WHERE dest=?""", (request['password'], dest))
 
         if 'enabled' in request:
-            cur.execute("""UPDATE relayrules SET enabled=? WHERE dest=?""", (request['enabled'], dest))
+            cur.execute("""UPDATE relayrules SET enabled=? WHERE dest=?""", (1 if request['enabled'] else 0, dest))
 
         if 'description' in request:
             cur.execute("""UPDATE relayrules SET rdesc=? WHERE dest=?""", (request['description'], dest))
