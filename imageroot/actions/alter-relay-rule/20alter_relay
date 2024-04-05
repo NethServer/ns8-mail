@@ -31,8 +31,8 @@ try:
         if 'port' in request:
             cur.execute("""UPDATE relayrules SET port=? WHERE sender=?""", (request['port'], sender))
 
-        if 'tls' in request:
-            cur.execute("""UPDATE relayrules SET tls=? WHERE sender=?""", (request['tls'], sender))
+        if 'mandatory_tls' in request:
+            cur.execute("""UPDATE relayrules SET tls=? WHERE dest=?""", ('encrypt' if request['mandatory_tls'] else 'may', dest))
 
         if 'username' in request:
             cur.execute("""UPDATE relayrules SET username=? WHERE sender=?""", (request['username'], sender))
@@ -53,8 +53,8 @@ try:
         if 'port' in request:
             cur.execute("""UPDATE relayrules SET port=? WHERE dest=?""", (request['port'], dest))
 
-        if 'tls' in request:
-            cur.execute("""UPDATE relayrules SET tls=? WHERE dest=?""", (request['tls'], dest))
+        if 'mandatory_tls' in request:
+            cur.execute("""UPDATE relayrules SET tls=? WHERE dest=?""", ('encrypt' if request['mandatory_tls'] else 'may', dest))
 
         if 'username' in request:
             cur.execute("""UPDATE relayrules SET username=? WHERE dest=?""", (request['username'], dest))

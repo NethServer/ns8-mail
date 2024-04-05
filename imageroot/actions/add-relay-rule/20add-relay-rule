@@ -23,7 +23,7 @@ try:
         "dest": dest,
         "host": request['host'],
         "port": request['port'],
-        "tls": request.get("tls", 'may'),
+        "mandatory_tls": 'encrypt' if request.get("mandatory_tls", False) else 'may',
         "username": request.get("username", ""),
         "password": request.get("password", ""),
         "enabled": 1 if request.get("enabled", True) else 0,
