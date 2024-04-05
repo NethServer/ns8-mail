@@ -1136,6 +1136,10 @@
                     "type": "string",
                     "anyOf": [
                         {
+                            "type": "string",
+                            "pattern": "^$"
+                        },
+                        {
                             "format": "email"
                         },
                         {
@@ -1263,6 +1267,10 @@
                 "username": {
                     "type": "string",
                     "anyOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^$"
+                        },
                         {
                             "format": "email"
                         },
