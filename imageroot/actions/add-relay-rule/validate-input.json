@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "add-relay-rule input",
+    "$id": "http://schema.nethserver.org/mail/add-relay-rule-input.json",
+    "description": "Add the attributes of an existing relay rule",
+    "examples": [
+        {
+            "sender": "foo@foo.com",
+            "host": "smtp.domain.com",
+            "port": 587,
+            "mandatory_tls": true,
+            "username": "foo@domain.com",
+            "password": "password",
+            "enabled": true,
+            "description": "rule1"
+        },
+        {
+            "sender": "@foo.com",
+            "host": "smtp.domain.com",
+            "port": 587,
+            "mandatory_tls": false,
+            "username": "",
+            "password": "",
+            "enabled": false,
+            "description": "rule2"
+        },
+        {
+            "dest": "foo@foo.com",
+            "host": "smtp.domain.com",
+            "port": 587,
+            "mandatory_tls": true,
+            "username": "foo@domain.com",
+            "password": "password",
+            "enabled": true,
+            "description": "rule3"
+        },
+        {
+            "dest": "@foo.com",
+            "host": "smtp.domain.com",
+            "port": 587,
+            "mandatory_tls": false,
+            "username": "",
+            "password": "",
+            "enabled": false,
+            "description": "rule4"
+        }
+    ]
+}

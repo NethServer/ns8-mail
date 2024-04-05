@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "remove-relay-rule input",
+    "$id": "http://schema.nethserver.org/mail/remove-relay-rule-input.json",
+    "description": "Remove the attributes of an existing relay rule",
+    "examples": [
+        {
+            "sender": "foo@foo.com"
+        },
+        {
+            "dest": "@foo.com"
+        }
+    ]
+}
