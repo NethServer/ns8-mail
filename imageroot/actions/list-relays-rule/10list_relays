@@ -26,7 +26,7 @@ try:
                 'port': row['port'],
                 'tls': row['tls'] == "encrypt",
                 'username': row['username'],
-                'has_password': True if row['password'] is not None else False,
+                'has_password': True if row['password'] != '' else False,
                 'enabled': row['enabled'] == 1,
                 'description': row['rdesc'],
             }
@@ -38,7 +38,7 @@ try:
                 'port': row['port'],
                 'tls': row['tls'] == "encrypt",
                 'username': row['username'],
-                'has_password': True if row['password'] is not None else False,
+                'has_password': True if row['password'] != '' else False,
                 'enabled': row['enabled'] == 1,
                 'description': row['rdesc'],
             }
