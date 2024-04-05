@@ -44,5 +44,10 @@
             "enabled": false,
             "description": "rule4"
         }
+    ],
+    "allOf": [
+        {
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/alter-relay-rule"
+        }
     ]
 }

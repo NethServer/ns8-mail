@@ -1046,6 +1046,316 @@
                     }
                 ]
             }
+        },
+        "alter-relay-rule": {
+            "examples": [
+                {
+                    "sender": "foo@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": true,
+                    "username": "foo@domain.com",
+                    "password": "password",
+                    "enabled": true,
+                    "description": "rule1"
+                },
+                {
+                    "sender": "@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": false,
+                    "username": "",
+                    "password": "",
+                    "enabled": false,
+                    "description": "rule2"
+                },
+                {
+                    "dest": "foo@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": true,
+                    "username": "foo@domain.com",
+                    "password": "password",
+                    "enabled": true,
+                    "description": "rule3"
+                },
+                {
+                    "dest": "@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": false,
+                    "username": "",
+                    "password": "",
+                    "enabled": false,
+                    "description": "rule4"
+                }
+            ],
+            "title": "Alter relay rule",
+            "description": "Alter relay rule",
+            "type": "object",
+            "properties": {
+                "sender": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^@.*$"
+                        }
+                    ]
+                },
+                "dest": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^@.*$"
+                        },
+                        {
+                            "const": "*"
+                        }
+                    ]
+                },
+                "host": {
+                    "type": "string",
+                    "format": "hostname",
+                    "pattern": "\\."
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "mandatory_tls": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string",
+                    "anyOf": [
+                        {
+                            "format": "email"
+                        },
+                        {
+                            "pattern": "^[a-zA-Z0-9_-]{3,16}$"
+                        }
+                    ]
+                },
+                "password": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "host",
+                "port",
+                "mandatory_tls",
+                "username",
+                "password",
+                "enabled",
+                "description"
+            ],
+            "oneOf": [
+                {
+                    "required": [
+                        "sender"
+                    ]
+                },
+                {
+                    "required": [
+                        "dest"
+                    ]
+                }
+            ]
+        },
+        "add-relay-rule": {
+            "examples": [
+                {
+                    "sender": "foo@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": true,
+                    "username": "foo@domain.com",
+                    "password": "password",
+                    "enabled": true,
+                    "description": "rule1"
+                },
+                {
+                    "sender": "@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": false,
+                    "username": "",
+                    "password": "",
+                    "enabled": false,
+                    "description": "rule2"
+                },
+                {
+                    "dest": "foo@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": true,
+                    "username": "foo@domain.com",
+                    "password": "password",
+                    "enabled": true,
+                    "description": "rule3"
+                },
+                {
+                    "dest": "@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": false,
+                    "username": "",
+                    "password": "",
+                    "enabled": false,
+                    "description": "rule4"
+                }
+            ],
+            "title": "Add relay rule",
+            "description": "Add relay rule",
+            "type": "object",
+            "properties": {
+                "sender": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^@.*$"
+                        }
+                    ]
+                },
+                "dest": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^@.*$"
+                        },
+                        {
+                            "const": "*"
+                        }
+                    ]
+                },
+                "host": {
+                    "type": "string",
+                    "format": "hostname",
+                    "pattern": "\\."
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "mandatory_tls": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string",
+                    "anyOf": [
+                        {
+                            "format": "email"
+                        },
+                        {
+                            "pattern": "^[a-zA-Z0-9_-]{3,16}$"
+                        }
+                    ]
+                },
+                "password": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "host",
+                "port",
+                "mandatory_tls",
+                "username",
+                "password",
+                "enabled",
+                "description"
+            ],
+            "oneOf": [
+                {
+                    "required": [
+                        "sender"
+                    ]
+                },
+                {
+                    "required": [
+                        "dest"
+                    ]
+                }
+            ]
+        },
+        "remove-relay-rule": {
+            "examples": [
+                {
+                    "sender": "foo@foo.com"
+                },
+                {
+                    "dest": "foo@foo.com"
+                }
+            ],
+            "title": "Remove relay rule",
+            "description": "Remove relay rule",
+            "type": "object",
+            "properties": {
+                "sender": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^@.*$"
+                        }
+                    ]
+                },
+                "dest": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^@.*$"
+                        },
+                        {
+                            "const": "*"
+                        }
+                    ]
+                }
+            },
+            "oneOf": [
+                {
+                    "required": [
+                        "sender"
+                    ]
+                },
+                {
+                    "required": [
+                        "dest"
+                    ]
+                }
+            ]
         }
     }
 }
