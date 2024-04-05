@@ -914,6 +914,138 @@
                     }
                 }
             }
+        },
+        "list-relays-rule": {
+            "examples": [
+                {
+                    "sender": "foo@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": true,
+                    "username": "foo@domain.com",
+                    "has_password": true,
+                    "enabled": true,
+                    "description": "rule1"
+                },
+                {
+                    "sender": "@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": false,
+                    "username": "",
+                    "has_password": false,
+                    "enabled": false,
+                    "description": "rule2"
+                },
+                {
+                    "dest": "foo@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": true,
+                    "username": "foo@domain.com",
+                    "has_password": true,
+                    "enabled": true,
+                    "description": "rule3"
+                },
+                {
+                    "dest": "@foo.com",
+                    "host": "smtp.domain.com",
+                    "port": 587,
+                    "mandatory_tls": false,
+                    "username": "",
+                    "has_password": false,
+                    "enabled": false,
+                    "description": "rule4"
+                }
+            ],
+            "title": "List relays rule",
+            "description": "Describe how relays rule are  handled",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "sender": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "format": "email"
+                            },
+                            {
+                                "type": "string",
+                                "pattern": "^@.*$"
+                            },
+                            {
+                                "const": "*"
+                            }
+                        ]
+                    },
+                    "dest": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "format": "email"
+                            },
+                            {
+                                "type": "string",
+                                "pattern": "^@.*$"
+                            },
+                            {
+                                "const": "*"
+                            }
+                        ]
+                    },
+                    "host": {
+                        "type": "string",
+                        "format": "hostname",
+                        "pattern": "\\."
+                    },
+                    "port": {
+                        "type": "integer"
+                    },
+                    "mandatory_tls": {
+                        "type": "boolean"
+                    },
+                    "username": {
+                        "type": "string",
+                        "anyOf": [
+                            {
+                                "format": "email"
+                            },
+                            {
+                                "pattern": "^[a-zA-Z0-9_-]{3,16}$"
+                            }
+                        ]
+                    },
+                    "has_password": {
+                        "type": "boolean"
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "host",
+                    "port",
+                    "mandatory_tls",
+                    "has_password",
+                    "enabled",
+                    "description"
+                ],
+                "anyOf": [
+                    {
+                        "required": [
+                            "sender"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "dest"
+                        ]
+                    }
+                ]
+            }
         }
     }
 }
