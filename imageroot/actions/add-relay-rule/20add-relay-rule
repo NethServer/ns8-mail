@@ -40,7 +40,7 @@ try:
             json.dump([{'field':'sender', 'parameter':'sender','value': sender, 'error':'sender_already_exist'}], fp=sys.stdout)
             sys.exit(4)
 
-        cur.execute("""INSERT INTO relayrules (sender, host, port, tls, username, password, enabled, rdesc) VALUES (:sender, :host, :port, :tls, :username, :password, :enabled, :rdesc)""", values)
+        cur.execute("""INSERT INTO relayrules (sender, host, port, tls, username, password, enabled, rdesc) VALUES (:sender, :host, :port, :mandatory_tls, :username, :password, :enabled, :rdesc)""", values)
  
     elif dest:
         # ensure that the dest does not exist
@@ -51,7 +51,7 @@ try:
             json.dump([{'field':'dest', 'parameter':'dest','value': dest, 'error':'dest_already_exist'}], fp=sys.stdout)
             sys.exit(4)
 
-        cur.execute("""INSERT INTO relayrules (dest, host, port, tls, username, password, enabled, rdesc) VALUES (:dest, :host, :port, :tls, :username, :password, :enabled, :rdesc)""", values)
+        cur.execute("""INSERT INTO relayrules (dest, host, port, tls, username, password, enabled, rdesc) VALUES (:dest, :host, :port, :mandatory_tls, :username, :password, :enabled, :rdesc)""", values)
 
 except IntegrityError:
     sdb.rollback()
