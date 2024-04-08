@@ -20,6 +20,28 @@ sdb = mail.pcdb_connect()
 
 sender = request.get('sender')
 recipient = request.get('recipient')
+password = request['password']
+
+def get_password_from_database(sender_or_recipient):
+    # Function to query the database for the password based on sender or recipient
+    sdb = mail.pcdb_connect()
+    cur = sdb.cursor()
+    cur.execute("SELECT password FROM relayrules WHERE sender=? OR dest=?", (sender_or_recipient, sender_or_recipient))
+    result = cur.fetchone()
+    sdb.close()
+    if result:
+        return result[0]
+    else:
+        agent.set_status('validation-failed')
+        json.dump([{'field':'test_rule_credentials','parameter':'test_rule_credentials','value':'cannot_retrieve_password_user_from_sqlite','error':'cannot_retrieve_password_user_from_sqlite'}],fp=sys.stdout, default=str)
+        sys.exit(3)
+
+# password not changed, we need to retrieve it from the database
+if sender and password == '':
+    password = get_password_from_database(sender)
+
+elif recipient and password == '':
+    password = get_password_from_database(recipient)
 
 try:
     cur = sdb.cursor()
@@ -38,7 +60,7 @@ try:
             cur.execute("""UPDATE relayrules SET username=? WHERE sender=?""", (request['username'], sender))
 
         if 'password' in request:
-            cur.execute("""UPDATE relayrules SET password=? WHERE sender=?""", (request['password'], sender))
+            cur.execute("""UPDATE relayrules SET password=? WHERE sender=?""", (password, sender))
 
         if 'enabled' in request:
             cur.execute("""UPDATE relayrules SET enabled=? WHERE sender=?""", (1 if request['enabled'] else 0, sender))
@@ -60,7 +82,7 @@ try:
             cur.execute("""UPDATE relayrules SET username=? WHERE dest=?""", (request['username'], recipient))
 
         if 'password' in request:
-            cur.execute("""UPDATE relayrules SET password=? WHERE dest=?""", (request['password'], recipient))
+            cur.execute("""UPDATE relayrules SET password=? WHERE dest=?""", (password, recipient))
 
         if 'enabled' in request:
             cur.execute("""UPDATE relayrules SET enabled=? WHERE dest=?""", (1 if request['enabled'] else 0, recipient))
