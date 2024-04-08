@@ -44,5 +44,27 @@ try:
             })
 except OperationalError:
     relays = []
-output= {"has_wildcard": has_wildcard, "rules": relays}
+
+# we want to order rules by sender, recipient, wildcard
+def custom_sort(rule):
+    # If it's a sender rule
+    if 'sender' in rule:
+        # Sort by email first, then domain
+        if '@' in rule['sender']:
+            return (0, rule['sender'])
+        else:
+            return (1, rule['sender'])
+    # If it's a recipient rule
+    elif 'recipient' in rule:
+        # Sort by email first, then domain
+        if rule['recipient'] == '*':
+            return (4, '')
+        elif '@' in rule['recipient']:
+            return (2, rule['recipient'])
+        else:
+            return (3, rule['recipient'])
+sorted_rules = sorted(relays, key=custom_sort)
+
+output= {"has_wildcard": has_wildcard, "rules": sorted_rules}
+
 json.dump(output, fp=sys.stdout)
