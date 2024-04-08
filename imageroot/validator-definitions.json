@@ -931,9 +931,6 @@
                                 "type": "string",
                                 "format": "hostname",
                                 "pattern": "\\."
-                            },
-                            {
-                                "const": "*"
                             }
                         ]
                     },
