@@ -963,15 +963,7 @@
                         "type": "boolean"
                     },
                     "username": {
-                        "type": "string",
-                        "anyOf": [
-                            {
-                                "format": "email"
-                            },
-                            {
-                                "pattern": "^[a-zA-Z0-9_-]{3,16}$"
-                            }
-                        ]
+                        "type": "string"
                     },
                     "has_password": {
                         "type": "boolean"
@@ -1049,19 +1041,7 @@
                     "type": "boolean"
                 },
                 "username": {
-                    "type": "string",
-                    "anyOf": [
-                        {
-                            "type": "string",
-                            "pattern": "^$"
-                        },
-                        {
-                            "format": "email"
-                        },
-                        {
-                            "pattern": "^[a-zA-Z0-9_-]{3,16}$"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "password": {
                     "type": "string"
