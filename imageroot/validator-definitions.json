@@ -918,79 +918,90 @@
         "list-relay-rules": {
             "title": "List relays rule",
             "description": "Describe how relays rule are  handled",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "sender": {
-                        "oneOf": [
-                            {
-                                "type": "string",
-                                "format": "email"
-                            },
-                            {
-                                "type": "string",
-                                "format": "hostname",
-                                "pattern": "\\."
-                            }
-                        ]
-                    },
-                    "recipient": {
-                        "oneOf": [
-                            {
-                                "type": "string",
-                                "format": "email"
-                            },
-                            {
-                                "type": "string",
-                                "format": "hostname",
-                                "pattern": "\\."
-                            },
-                            {
-                                "const": "*"
-                            }
-                        ]
-                    },
-                    "host": {
-                        "type": "string",
-                        "format": "hostname",
-                        "pattern": "\\."
-                    },
-                    "port": {
-                        "type": "integer"
-                    },
-                    "mandatory_tls": {
-                        "type": "boolean"
-                    },
-                    "username": {
-                        "type": "string"
-                    },
-                    "has_password": {
-                        "type": "boolean"
-                    },
-                    "enabled": {
-                        "type": "boolean"
-                    }
+            "type": "object",
+            "properties": {
+                "has_wildcard": {
+                    "type": "boolean"
                 },
-                "required": [
-                    "host",
-                    "port",
-                    "mandatory_tls",
-                    "has_password",
-                    "enabled"
-                ],
-                "anyOf": [
-                    {
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "sender": {
+                                "oneOf": [
+                                    {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "format": "hostname",
+                                        "pattern": "\\."
+                                    }
+                                ]
+                            },
+                            "recipient": {
+                                "oneOf": [
+                                    {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    {
+                                        "type": "string",
+                                        "format": "hostname",
+                                        "pattern": "\\."
+                                    }
+                                ]
+                            },
+                            "host": {
+                                "type": "string",
+                                "format": "hostname",
+                                "pattern": "\\."
+                            },
+                            "port": {
+                                "type": "integer"
+                            },
+                            "tls": {
+                                "type": "boolean"
+                            },
+                            "username": {
+                                "type": "string"
+                            },
+                            "has_password": {
+                                "type": "boolean"
+                            },
+                            "enabled": {
+                                "type": "boolean"
+                            }
+                        },
                         "required": [
-                            "sender"
-                        ]
-                    },
-                    {
-                        "required": [
-                            "recipient"
+                            "host",
+                            "port",
+                            "tls",
+                            "username",
+                            "has_password",
+                            "enabled"
+                        ],
+                        "oneOf": [
+                            {
+                                "required": [
+                                    "sender"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "recipient"
+                                ]
+                            }
                         ]
                     }
-                ]
-            }
+                }
+            },
+            "required": [
+                "has_wildcard",
+                "rules"
+            ]
         },
         "commit-relay-rule": {
             "title": "Alter relay rule",

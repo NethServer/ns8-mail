@@ -43,7 +43,7 @@
             }
         ]
     ],
-    "type": "array",
+    "type": "object",
     "items": {
         "title": "List relay rules",
         "$ref": "http://schema.nethserver.org/mail.json#/$defs/list-relay-rules"

@@ -14,13 +14,13 @@ mail.abort_with_json_if_not_configured([])
 
 sdb = mail.pcdb_connect(readonly=True)
 
-relays = {}
-
+relays = []
+has_wildcard =  False
 try:
     for row in sdb.execute("""SELECT sender, dest,  host, port, tls, username, password, enabled, rdesc FROM relayrules"""):
         if row['sender'] is not None:
             sender = row['sender']
-            relays[sender] = {
+            relays.append({
                 'sender': row['sender'],
                 'host': row['host'],
                 'port': row['port'],
@@ -28,10 +28,12 @@ try:
                 'username': row['username'],
                 'has_password': True if row['password'] != '' else False,
                 'enabled': row['enabled'] == 1
-            }
+            })
         elif row['dest'] is not None:
             recipient = row['dest']
-            relays[recipient] = {
+            if recipient == '*':
+                has_wildcard = True
+            relays.append({
                 'recipient': row['dest'],
                 'host': row['host'],
                 'port': row['port'],
@@ -39,8 +41,8 @@ try:
                 'username': row['username'],
                 'has_password': True if row['password'] != '' else False,
                 'enabled': row['enabled'] == 1
-            }
+            })
 except OperationalError:
-    relays = {}
-
-json.dump(list(relays.values()), fp=sys.stdout)
+    relays = []
+output= {"has_wildcard": has_wildcard, "rules": relays}
+json.dump(output, fp=sys.stdout)
