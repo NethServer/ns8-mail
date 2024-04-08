@@ -915,7 +915,7 @@
                 }
             }
         },
-        "list-relays-rule": {
+        "list-relay-rules": {
             "examples": [
                 {
                     "sender": "foo@foo.com",
