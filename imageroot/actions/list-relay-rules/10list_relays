@@ -31,9 +31,9 @@ try:
                 'description': row['rdesc'],
             }
         elif row['dest'] is not None:
-            dest = row['dest']
-            relays[dest] = {
-                'dest': row['dest'],
+            recipient = row['dest']
+            relays[recipient] = {
+                'recipient': row['dest'],
                 'host': row['host'],
                 'port': row['port'],
                 'tls': row['tls'] == "encrypt",

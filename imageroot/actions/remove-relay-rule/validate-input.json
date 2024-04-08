@@ -8,7 +8,7 @@
             "sender": "foo@foo.com"
         },
         {
-            "dest": "@foo.com"
+            "recipient": "@foo.com"
         }
     ],
     "allOf": [

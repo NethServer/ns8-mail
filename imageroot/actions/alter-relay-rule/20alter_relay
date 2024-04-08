@@ -19,7 +19,7 @@ request = json.load(sys.stdin)
 sdb = mail.pcdb_connect()
 
 sender = request.get('sender')
-dest = request.get('dest')
+recipient = request.get('recipient')
 
 try:
     cur = sdb.cursor()
@@ -32,7 +32,7 @@ try:
             cur.execute("""UPDATE relayrules SET port=? WHERE sender=?""", (request['port'], sender))
 
         if 'mandatory_tls' in request:
-            cur.execute("""UPDATE relayrules SET tls=? WHERE dest=?""", ('encrypt' if request['mandatory_tls'] else 'may', dest))
+            cur.execute("""UPDATE relayrules SET tls=? WHERE sender=?""", ('encrypt' if request['mandatory_tls'] else 'may', sender))
 
         if 'username' in request:
             cur.execute("""UPDATE relayrules SET username=? WHERE sender=?""", (request['username'], sender))
@@ -46,27 +46,27 @@ try:
         if 'description' in request:
             cur.execute("""UPDATE relayrules SET rdesc=? WHERE sender=?""", (request['description'], sender))
 
-    elif dest:
+    elif recipient:
         if 'host' in request:
-            cur.execute("""UPDATE relayrules SET host=? WHERE dest=?""", (request['host'], dest))
+            cur.execute("""UPDATE relayrules SET host=? WHERE dest=?""", (request['host'], recipient))
 
         if 'port' in request:
-            cur.execute("""UPDATE relayrules SET port=? WHERE dest=?""", (request['port'], dest))
+            cur.execute("""UPDATE relayrules SET port=? WHERE dest=?""", (request['port'], recipient))
 
         if 'mandatory_tls' in request:
-            cur.execute("""UPDATE relayrules SET tls=? WHERE dest=?""", ('encrypt' if request['mandatory_tls'] else 'may', dest))
+            cur.execute("""UPDATE relayrules SET tls=? WHERE dest=?""", ('encrypt' if request['mandatory_tls'] else 'may', recipient))
 
         if 'username' in request:
-            cur.execute("""UPDATE relayrules SET username=? WHERE dest=?""", (request['username'], dest))
+            cur.execute("""UPDATE relayrules SET username=? WHERE dest=?""", (request['username'], recipient))
 
         if 'password' in request:
-            cur.execute("""UPDATE relayrules SET password=? WHERE dest=?""", (request['password'], dest))
+            cur.execute("""UPDATE relayrules SET password=? WHERE dest=?""", (request['password'], recipient))
 
         if 'enabled' in request:
-            cur.execute("""UPDATE relayrules SET enabled=? WHERE dest=?""", (1 if request['enabled'] else 0, dest))
+            cur.execute("""UPDATE relayrules SET enabled=? WHERE dest=?""", (1 if request['enabled'] else 0, recipient))
 
         if 'description' in request:
-            cur.execute("""UPDATE relayrules SET rdesc=? WHERE dest=?""", (request['description'], dest))
+            cur.execute("""UPDATE relayrules SET rdesc=? WHERE dest=?""", (request['description'], recipient))
 
     if cur.rowcount == 0:
         raise RelayNotFoundError()
@@ -77,8 +77,8 @@ except RelayNotFoundError:
 
     if sender:
         json.dump([{'field': 'sender', 'parameter': 'sender', 'value': sender, 'error':'relay_not_found'}], fp=sys.stdout)
-    elif dest:
-        json.dump([{'field': 'dest', 'parameter': 'dest', 'value': dest, 'error':'relay_not_found'}], fp=sys.stdout)
+    elif recipient:
+        json.dump([{'field': 'recipient', 'parameter': 'recipient', 'value': recipient, 'error':'relay_not_found'}], fp=sys.stdout)
     sys.exit(2)
 
 else:

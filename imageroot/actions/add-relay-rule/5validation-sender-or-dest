@@ -16,9 +16,9 @@ import json
 data = json.load(sys.stdin)
 
 sender = data.get('sender')
-dest = data.get('dest')
-# we cannot have both sender and dest at the time
-if dest and sender:
+recipient = data.get('recipient')
+# we cannot have both sender and recipient at the time
+if recipient and sender:
     agent.set_status('validation-failed')
-    json.dump([{'field':'sender','parameter':'sender','value':sender,'error':'cannot_be_sender_and_dest'}],fp=sys.stdout, default=str)
+    json.dump([{'field':'sender','parameter':'sender','value':sender,'error':'cannot_be_sender_and_recipient'}],fp=sys.stdout, default=str)
     sys.exit(3)

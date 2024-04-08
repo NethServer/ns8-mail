@@ -916,48 +916,6 @@
             }
         },
         "list-relay-rules": {
-            "examples": [
-                {
-                    "sender": "foo@foo.com",
-                    "host": "smtp.domain.com",
-                    "port": 587,
-                    "mandatory_tls": true,
-                    "username": "foo@domain.com",
-                    "has_password": true,
-                    "enabled": true,
-                    "description": "rule1"
-                },
-                {
-                    "sender": "@foo.com",
-                    "host": "smtp.domain.com",
-                    "port": 587,
-                    "mandatory_tls": false,
-                    "username": "",
-                    "has_password": false,
-                    "enabled": false,
-                    "description": "rule2"
-                },
-                {
-                    "dest": "foo@foo.com",
-                    "host": "smtp.domain.com",
-                    "port": 587,
-                    "mandatory_tls": true,
-                    "username": "foo@domain.com",
-                    "has_password": true,
-                    "enabled": true,
-                    "description": "rule3"
-                },
-                {
-                    "dest": "@foo.com",
-                    "host": "smtp.domain.com",
-                    "port": 587,
-                    "mandatory_tls": false,
-                    "username": "",
-                    "has_password": false,
-                    "enabled": false,
-                    "description": "rule4"
-                }
-            ],
             "title": "List relays rule",
             "description": "Describe how relays rule are  handled",
             "items": {
@@ -978,7 +936,7 @@
                             }
                         ]
                     },
-                    "dest": {
+                    "recipient": {
                         "oneOf": [
                             {
                                 "type": "string",
@@ -1041,7 +999,7 @@
                     },
                     {
                         "required": [
-                            "dest"
+                            "recipient"
                         ]
                     }
                 ]
@@ -1070,7 +1028,7 @@
                     "description": "rule2"
                 },
                 {
-                    "dest": "foo@foo.com",
+                    "recipient": "foo@foo.com",
                     "host": "smtp.domain.com",
                     "port": 587,
                     "mandatory_tls": true,
@@ -1080,7 +1038,7 @@
                     "description": "rule3"
                 },
                 {
-                    "dest": "@foo.com",
+                    "recipient": "@foo.com",
                     "host": "smtp.domain.com",
                     "port": 587,
                     "mandatory_tls": false,
@@ -1106,7 +1064,7 @@
                         }
                     ]
                 },
-                "dest": {
+                "recipient": {
                     "oneOf": [
                         {
                             "type": "string",
@@ -1174,7 +1132,7 @@
                 },
                 {
                     "required": [
-                        "dest"
+                        "recipient"
                     ]
                 }
             ]
@@ -1202,7 +1160,7 @@
                     "description": "rule2"
                 },
                 {
-                    "dest": "foo@foo.com",
+                    "recipient": "foo@foo.com",
                     "host": "smtp.domain.com",
                     "port": 587,
                     "mandatory_tls": true,
@@ -1212,7 +1170,7 @@
                     "description": "rule3"
                 },
                 {
-                    "dest": "@foo.com",
+                    "recipient": "@foo.com",
                     "host": "smtp.domain.com",
                     "port": 587,
                     "mandatory_tls": false,
@@ -1238,7 +1196,7 @@
                         }
                     ]
                 },
-                "dest": {
+                "recipient": {
                     "oneOf": [
                         {
                             "type": "string",
@@ -1306,7 +1264,7 @@
                 },
                 {
                     "required": [
-                        "dest"
+                        "recipient"
                     ]
                 }
             ]
@@ -1317,7 +1275,7 @@
                     "sender": "foo@foo.com"
                 },
                 {
-                    "dest": "foo@foo.com"
+                    "recipient": "foo@foo.com"
                 }
             ],
             "title": "Remove relay rule",
@@ -1336,7 +1294,7 @@
                         }
                     ]
                 },
-                "dest": {
+                "recipient": {
                     "oneOf": [
                         {
                             "type": "string",
@@ -1360,7 +1318,7 @@
                 },
                 {
                     "required": [
-                        "dest"
+                        "recipient"
                     ]
                 }
             ]
