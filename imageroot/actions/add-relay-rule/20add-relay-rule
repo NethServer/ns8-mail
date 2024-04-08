@@ -39,6 +39,13 @@ try:
             agent.set_status('validation-failed')
             json.dump([{'field':'sender', 'parameter':'sender','value': sender, 'error':'sender_already_exist'}], fp=sys.stdout)
             sys.exit(4)
+        # ensure that the sender does not exist as dest
+        cur.execute("SELECT * FROM relayrules WHERE dest = ?", (sender,))
+        row = cur.fetchone()
+        if row:
+            agent.set_status('validation-failed')
+            json.dump([{'field':'sender', 'parameter':'sender','value': sender, 'error':'dest_already_exist_cannot_be_sender'}], fp=sys.stdout)
+            sys.exit(5)
 
         cur.execute("""INSERT INTO relayrules (sender, host, port, tls, username, password, enabled, rdesc) VALUES (:sender, :host, :port, :mandatory_tls, :username, :password, :enabled, :rdesc)""", values)
  
@@ -50,6 +57,13 @@ try:
             agent.set_status('validation-failed')
             json.dump([{'field':'dest', 'parameter':'dest','value': dest, 'error':'dest_already_exist'}], fp=sys.stdout)
             sys.exit(4)
+        # ensure that the dest does not exist as sender
+        cur.execute("SELECT * FROM relayrules WHERE sender = ?", (dest,))
+        row = cur.fetchone()
+        if row:
+            agent.set_status('validation-failed')
+            json.dump([{'field':'dest', 'parameter':'dest','value': dest, 'error':'sender_already_exist_cannot_be_dest'}], fp=sys.stdout)
+            sys.exit(4) 
 
         cur.execute("""INSERT INTO relayrules (dest, host, port, tls, username, password, enabled, rdesc) VALUES (:dest, :host, :port, :mandatory_tls, :username, :password, :enabled, :rdesc)""", values)
 
