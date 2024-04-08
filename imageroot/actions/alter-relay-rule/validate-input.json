@@ -47,7 +47,7 @@
     ],
     "allOf": [
         {
-            "$ref": "http://schema.nethserver.org/mail.json#/$defs/alter-relay-rule"
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/commit-relay-rule"
         }
     ]
 }
