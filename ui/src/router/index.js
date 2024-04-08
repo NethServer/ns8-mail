@@ -54,6 +54,12 @@ const routes = [
       import(/* webpackChunkName: "addresses" */ "../views/DeferredQueue.vue"),
   },
   {
+    path: "/relay",
+    name: "Relay",
+    component: () =>
+      import(/* webpackChunkName: "addresses" */ "../views/Relay.vue"),
+  },
+  {
     path: "/settings",
     name: "Settings",
     component: () =>
@@ -91,6 +97,14 @@ const routes = [
     component: () =>
       import(
         /* webpackChunkName: "settings-queue" */ "../views/settings/SettingsQueue.vue"
+      ),
+  },
+  {
+    path: "/settingsRelay",
+    name: "SettingsRelay",
+    component: () =>
+      import(
+        /* webpackChunkName: "settings-queue" */ "../views/settings/SettingsRelay.vue"
       ),
   },
   {

@@ -356,6 +356,17 @@
     "title": "General settings",
     "user_domain": "User domain"
   },
+  "relay": {
+    "title": "Relay",
+    "settings": {
+      "ip_label": "Allow relay from IP address",
+      "ip_helper": "One address per line (IPv4/CIDR)",
+      "ip_tooltip": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "toggle_label": "Enforce sender/login match",
+      "toggle_tooltip": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "save": "Save"
+    }
+  },
   "queue": {
     "title": "Queue",
     "reload_queue": "Reload",
