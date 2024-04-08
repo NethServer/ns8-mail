@@ -16,7 +16,7 @@
                 "description": "rule1"
             },
             {
-                "sender": "@foo.com",
+                "sender": "foo.com",
                 "host": "smtp.domain.com",
                 "port": 587,
                 "mandatory_tls": false,
@@ -36,7 +36,7 @@
                 "description": "rule3"
             },
             {
-                "recipient": "@foo.com",
+                "recipient": "foo.com",
                 "host": "smtp.domain.com",
                 "port": 587,
                 "mandatory_tls": false,

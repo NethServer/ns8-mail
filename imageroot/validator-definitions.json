@@ -929,7 +929,8 @@
                             },
                             {
                                 "type": "string",
-                                "pattern": "^@.*$"
+                                "format": "hostname",
+                                "pattern": "\\."
                             },
                             {
                                 "const": "*"
@@ -944,7 +945,8 @@
                             },
                             {
                                 "type": "string",
-                                "pattern": "^@.*$"
+                                "format": "hostname",
+                                "pattern": "\\."
                             },
                             {
                                 "const": "*"
@@ -1010,7 +1012,8 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^@.*$"
+                            "format": "hostname",
+                            "pattern": "\\."
                         }
                     ]
                 },
@@ -1022,7 +1025,8 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^@.*$"
+                            "format": "hostname",
+                            "pattern": "\\."
                         },
                         {
                             "const": "*"
@@ -1096,7 +1100,8 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^@.*$"
+                            "format": "hostname",
+                            "pattern": "\\."
                         }
                     ]
                 },
@@ -1108,7 +1113,8 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^@.*$"
+                            "format": "hostname",
+                            "pattern": "\\."
                         },
                         {
                             "const": "*"
