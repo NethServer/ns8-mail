@@ -27,8 +27,7 @@ try:
                 'tls': row['tls'] == "encrypt",
                 'username': row['username'],
                 'has_password': True if row['password'] != '' else False,
-                'enabled': row['enabled'] == 1,
-                'description': row['rdesc'],
+                'enabled': row['enabled'] == 1
             }
         elif row['dest'] is not None:
             recipient = row['dest']
@@ -39,8 +38,7 @@ try:
                 'tls': row['tls'] == "encrypt",
                 'username': row['username'],
                 'has_password': True if row['password'] != '' else False,
-                'enabled': row['enabled'] == 1,
-                'description': row['rdesc'],
+                'enabled': row['enabled'] == 1
             }
 except OperationalError:
     relays = {}

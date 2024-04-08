@@ -972,9 +972,6 @@
                     },
                     "enabled": {
                         "type": "boolean"
-                    },
-                    "description": {
-                        "type": "string"
                     }
                 },
                 "required": [
@@ -982,8 +979,7 @@
                     "port",
                     "mandatory_tls",
                     "has_password",
-                    "enabled",
-                    "description"
+                    "enabled"
                 ],
                 "anyOf": [
                     {
@@ -1052,9 +1048,6 @@
                 },
                 "enabled": {
                     "type": "boolean"
-                },
-                "description": {
-                    "type": "string"
                 }
             },
             "required": [
@@ -1063,8 +1056,7 @@
                 "mandatory_tls",
                 "username",
                 "password",
-                "enabled",
-                "description"
+                "enabled"
             ],
             "oneOf": [
                 {

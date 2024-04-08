@@ -12,8 +12,7 @@
                 "mandatory_tls": true,
                 "username": "foo@domain.com",
                 "has_password": true,
-                "enabled": true,
-                "description": "rule1"
+                "enabled": true
             },
             {
                 "sender": "foo.com",
@@ -22,8 +21,7 @@
                 "mandatory_tls": false,
                 "username": "",
                 "has_password": false,
-                "enabled": false,
-                "description": "rule2"
+                "enabled": false
             },
             {
                 "recipient": "foo@foo.com",
@@ -32,8 +30,7 @@
                 "mandatory_tls": true,
                 "username": "foo@domain.com",
                 "has_password": true,
-                "enabled": true,
-                "description": "rule3"
+                "enabled": true
             },
             {
                 "recipient": "foo.com",
@@ -42,8 +39,7 @@
                 "mandatory_tls": false,
                 "username": "",
                 "has_password": false,
-                "enabled": false,
-                "description": "rule4"
+                "enabled": false
             }
         ]
     ],

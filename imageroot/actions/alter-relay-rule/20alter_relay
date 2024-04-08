@@ -44,7 +44,7 @@ try:
             cur.execute("""UPDATE relayrules SET enabled=? WHERE sender=?""", (1 if request['enabled'] else 0, sender))
 
         if 'description' in request:
-            cur.execute("""UPDATE relayrules SET rdesc=? WHERE sender=?""", (request['description'], sender))
+            cur.execute("""UPDATE relayrules SET rdesc=? WHERE sender=?""", (request.get('description',''), sender))
 
     elif recipient:
         if 'host' in request:
@@ -66,7 +66,7 @@ try:
             cur.execute("""UPDATE relayrules SET enabled=? WHERE dest=?""", (1 if request['enabled'] else 0, recipient))
 
         if 'description' in request:
-            cur.execute("""UPDATE relayrules SET rdesc=? WHERE dest=?""", (request['description'], recipient))
+            cur.execute("""UPDATE relayrules SET rdesc=? WHERE dest=?""", (request.get('description',''), recipient))
 
     if cur.rowcount == 0:
         raise RelayNotFoundError()
