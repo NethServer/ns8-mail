@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import mail
+import agent
+from sqlite3 import IntegrityError
+
+request = json.load(sys.stdin)
+
+sdb = mail.pcdb_connect()
+networks = request.get('networks')
+postfix_restricted_sender = request.get('postfix_restricted_sender')
+agent.set_env('POSTFIX_RESTRICTED_SENDER', postfix_restricted_sender)
+
+try:
+    sdb.execute("DELETE FROM mynetworks")
+    for network in networks:
+        sdb.execute("INSERT INTO mynetworks (network) VALUES (?)", (network,))
+    sdb.commit()
+    sdb.close()
+except Exception as err:
+    agent.set_status('validation-failed')
+    json.dump([{'field':'networks', 'parameter':'networks','value': err, 'error':'cannot_save_mynetworks_to_database'}], fp=sys.stdout)
+    sys.exit(5)
