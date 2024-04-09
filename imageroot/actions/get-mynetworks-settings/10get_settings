@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import json
+import sys
+import mail
+from sqlite3 import OperationalError
+import ipaddress
+
+mail.abort_with_json_if_not_configured([])
+
+sdb = mail.pcdb_connect(readonly=True)
+
+networks = []
+postfix_restricted_sender= os.environ.get('POSTFIX_RESTRICTED_SENDER', False) == 'True'
+try:
+    for row in sdb.execute("""SELECT network FROM mynetworks"""):
+        networks.append(row['network'])
+except OperationalError:
+    networks = []
+
+output= {"postfix_restricted_sender": postfix_restricted_sender, "networks": networks}
+
+json.dump(output, fp=sys.stdout)
