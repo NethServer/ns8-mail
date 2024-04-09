@@ -67,14 +67,14 @@ try:
 
         cur.execute("""INSERT INTO relayrules (dest, host, port, tls, username, password, enabled, rdesc) VALUES (:recipient, :host, :port, :mandatory_tls, :username, :password, :enabled, :rdesc)""", values)
 
-except IntegrityError:
+except Exception as err:
     sdb.rollback()
     # The domain already exists
     agent.set_status('validation-failed')
     if sender:
-        json.dump([{'field':'sender', 'parameter':'sender','value': sender, 'error':'sender_already_exist'}], fp=sys.stdout)
+        json.dump([{'field':'sender', 'parameter':'sender','value': err, 'error':'sender_data_cannot_be_saved_in_db'}], fp=sys.stdout)
     elif recipient:
-        json.dump([{'field':'recipient', 'parameter':'recipient','value': recipient, 'error':'recipient_already_exist'}], fp=sys.stdout)
+        json.dump([{'field':'recipient', 'parameter':'recipient','value': err, 'error':'recipient_data_cannot_be_saved_in_db'}], fp=sys.stdout)
     sys.exit(3)
 
 else:
