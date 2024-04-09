@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "set-mynetworks-settings output",
+    "$id": "http://schema.nethserver.org/mail/get-mynetworks-settings-output.json",
+    "description": "Set mynetworks settings and postfix_restricted_sender",
+    "examples": [
+        {
+            "postfix_restricted_sender": true,
+            "networks": [
+                "192.168.1.0/24",
+                "1.2.3.4",
+                "2002:0000:0000:1234:ffff:ffff:ffff:ffff",
+                "2002::1234:abcd:ffff:c0a8:101/64"
+            ]
+        }
+    ],
+    "type": "object",
+    "properties": {
+        "postfix_restricted_sender": {
+            "type": "boolean"
+        },
+        "networks": {
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "type": "string",
+                        "maxLength": 0
+                    },
+                    {
+                        "format": "ipv4"
+                    },
+                    {
+                        "pattern": "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\/(3[0-2]|[12]?[0-9])$"
+                    },
+                    {
+                        "pattern": "^[0-9a-fA-F:]+(/[0-9]+)?$"
+                    }
+                ]
+            }
+        }
+    }
+}
