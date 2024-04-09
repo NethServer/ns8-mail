@@ -6,5 +6,9 @@
 dbpath = /srv/pcdb.sqlite
 query = SELECT FORMAT('[%%s]:%%s', host, port) AS relayhost
   FROM relayrules
-  WHERE sender = '%s'
-  AND enabled = 1
+  WHERE enabled = 1 AND
+  rule_type = 'sender' AND
+  CASE INSTR('%s', '@')
+    WHEN 1 THEN ('@' || rule_subject) = '%s'
+    ELSE rule_subject = '%s'
+  END

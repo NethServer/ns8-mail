@@ -1,16 +1,14 @@
 -- relayrules -- relay host configuration matching a sender or a
 -- destination pattern. Stored attributes are host, port, auth
--- credentials, rule description and the "enabled" flag
+-- credentials, and the "enabled" flag
 CREATE TABLE IF NOT EXISTS relayrules (
-    sender TEXT COLLATE NOCASE,
-    dest TEXT COLLATE NOCASE,
+    rule_type TEXT,
+    rule_subject TEXT COLLATE NOCASE,
     host TEXT NOT NULL COLLATE NOCASE,
     port INT DEFAULT 25,
     tls TEXT DEFAULT 'may',
     username TEXT,
     "password" TEXT,
-    rdesc TEXT,
     "enabled" INT DEFAULT 1,
-    UNIQUE (sender, dest, host, port)
+    UNIQUE (rule_type, rule_subject, host, port)
 );
-

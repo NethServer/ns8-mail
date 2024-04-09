@@ -6,5 +6,7 @@
 dbpath = /srv/pcdb.sqlite
 query = SELECT FORMAT('smtp:[%%s]:%%s', host, port) AS transport
   FROM relayrules
-  WHERE dest = '%s'
-  AND enabled = 1
+  WHERE enabled = 1 AND (
+    (rule_subject = '%s' AND rule_type = 'recipient')
+    OR (rule_subject = '*' AND rule_type = 'wildcard')
+  )
