@@ -6,8 +6,20 @@
   <div>
     <cv-grid fullWidth>
       <cv-row>
-        <cv-column class="page-title">
-          <h2>{{ $t("addresses.title") }}</h2>
+        <cv-column :md="4" :xlg="10" class="page-title">
+          <h2>{{ $t("relay.title") }}</h2>
+        </cv-column>
+        <cv-column :md="4" :xlg="6">
+          <div class="page-toolbar">
+            <NsButton
+              kind="tertiary"
+              size="field"
+              :icon="Settings20"
+              @click="goToRelaySettings()"
+              class="page-toolbar-item"
+              >{{ $t("relay.settings_button") }}</NsButton
+            >
+          </div>
         </cv-column>
       </cv-row>
       <cv-row>
@@ -22,86 +34,60 @@
       </cv-row>
       <cv-row>
         <cv-column>
-          <NsInlineNotification
-            v-if="
-              q.selectedDomainId &&
-              q.selectedDomainId !== 'all' &&
-              selectedDomainLabel
-            "
-            kind="info"
-            :title="$t('addresses.addresses_filtered')"
-            :description="
-              $t('addresses.addresses_filtered_description', {
-                domain: selectedDomainLabel,
-              })
-            "
-            :actionLabel="$t('addresses.show_all')"
-            @action="showAllDomains"
-            :showCloseButton="false"
-          />
-        </cv-column>
-      </cv-row>
-      <cv-row>
-        <cv-column>
           <cv-tile light>
             <cv-grid class="no-padding">
               <cv-row>
-                <cv-column :md="4">
-                  <cv-combo-box
-                    v-model="q.selectedDomainId"
-                    :label="core.$t('common.choose')"
-                    :title="core.$t('common.show')"
-                    :auto-filter="true"
-                    :auto-highlight="true"
-                    :options="addressesForFilter"
-                    :disabled="loading.listInstalledModules"
-                    class="mg-bottom-xlg"
-                  >
-                  </cv-combo-box>
-                </cv-column>
-              </cv-row>
-              <cv-row class="toolbar">
                 <cv-column>
+                  <NsButton
+                    kind="primary"
+                    :icon="Add20"
+                    @click="null"
+                    :disabled="
+                      loading.listRelayRules ||
+                      loading.editRelayRule ||
+                      loading.deleteRelayRule ||
+                      loading.addRelayRule
+                    "
+                    >{{ $t("relay.add_relay_rule") }}
+                  </NsButton>
                   <NsButton
                     kind="secondary"
                     :icon="Add20"
-                    @click="showCreateAddressModal"
-                    >{{ $t("addresses.create_address") }}
+                    @click="null"
+                    :disabled="
+                      hasWildcard ||
+                      loading.listRelayRules ||
+                      loading.editRelayRule ||
+                      loading.deleteRelayRule ||
+                      loading.addRelayRule
+                    "
+                    class="wildcard-button"
+                    >{{ $t("relay.add_wildcard_rule") }}
                   </NsButton>
                 </cv-column>
               </cv-row>
-              <cv-row>
-                <cv-column>
-                  <NsInlineNotification
-                    v-if="error.toggleVisibility"
-                    kind="error"
-                    :title="$t('action.alter-address')"
-                    :description="error.toggleVisibility"
-                    :showCloseButton="false"
-                  />
-                </cv-column>
-              </cv-row>
-              <cv-row>
+              <cv-row class="table-margin">
                 <cv-column>
                   <NsDataTable
-                    :allRows="filteredAddresses"
+                    :allRows="relayRules"
                     :columns="i18nTableColumns"
                     :rawColumns="tableColumns"
-                    :sortable="true"
                     :pageSizes="[10, 25, 50, 100]"
                     :overflow-menu="true"
                     isSearchable
-                    :searchPlaceholder="$t('addresses.search_address')"
+                    :searchPlaceholder="$t('common.search')"
                     :searchClearLabel="core.$t('common.clear_search')"
                     :noSearchResultsLabel="core.$t('common.no_search_results')"
                     :noSearchResultsDescription="
                       core.$t('common.no_search_results_description')
                     "
-                    :isLoading="loading.listAddresses"
+                    :isLoading="
+                      loading.listRelayRules || loading.setMailboxEnabled
+                    "
                     :skeletonRows="5"
-                    :isErrorShown="!!error.listAddresses"
-                    :errorTitle="$t('action.list-addresses')"
-                    :errorDescription="error.listAddresses"
+                    :isErrorShown="!!error.listRelayRules"
+                    :errorTitle="$t('relay.list_relay_rules')"
+                    :errorDescription="error.listRelayRules"
                     :itemsPerPageLabel="core.$t('pagination.items_per_page')"
                     :rangeOfTotalItemsLabel="
                       core.$t('pagination.range_of_total_items')
@@ -110,14 +96,13 @@
                     :backwardText="core.$t('pagination.previous_page')"
                     :forwardText="core.$t('pagination.next_page')"
                     :pageNumberLabel="core.$t('pagination.page_number')"
-                    :filterRowsCallback="filterTableRows"
                     @updatePage="tablePage = $event"
                   >
                     <template slot="empty-state">
-                      <NsEmptyState :title="$t('addresses.no_address')">
+                      <NsEmptyState :title="$t('relay.no_relay_rules')">
                         <template #description>
                           <div>
-                            {{ $t("addresses.no_address_description") }}
+                            {{ $t("relay.no_relay_rules_description") }}
                           </div>
                         </template>
                       </NsEmptyState>
@@ -127,176 +112,55 @@
                         v-for="(row, rowIndex) in tablePage"
                         :key="`${rowIndex}`"
                         :value="`${rowIndex}`"
+                        class="table-row"
                       >
-                        <cv-data-table-cell>
-                          <span>{{
-                            getFullAddressList(row).length == 1
-                              ? getFullAddressList(row)[0]
-                              : row.address
-                          }}</span>
-                          <cv-interactive-tooltip
-                            v-if="row.description"
-                            alignment="center"
-                            direction="top"
-                            class="tooltip-icon info"
-                          >
-                            <template slot="trigger">
-                              <Information16 />
-                            </template>
-                            <template slot="content">
-                              <div>
-                                {{ row.description }}
-                              </div>
-                            </template>
-                          </cv-interactive-tooltip>
-                        </cv-data-table-cell>
-                        <template
-                          v-if="getFullAddressList(row).length > 1"
-                          slot="expandedContent"
-                        >
-                          <div
-                            v-for="(fullAddress, index) in getFullAddressList(
-                              row
-                            )"
-                            :key="index"
-                            class="mg-bottom-sm"
-                          >
-                            {{ fullAddress }}
-                          </div>
-                        </template>
-                        <cv-data-table-cell>
-                          <span class="atype icon-and-text-inline">
-                            <span class="icon">
-                              <NsSvg
-                                v-if="row.atype == 'wildcard'"
-                                :svg="Asterisk16"
-                              />
-                              <NsSvg
-                                v-else-if="row.atype == 'domain'"
-                                :svg="Email16"
-                              />
-                              <NsSvg
-                                v-else-if="row.atype == 'adduser'"
-                                :svg="User16"
-                              />
-                              <NsSvg
-                                v-else-if="row.atype == 'addgroup'"
-                                :svg="Events16"
-                              />
-                            </span>
-                            <span>{{ row.type }}</span>
-                          </span>
+                        <cv-data-table-cell class="rule-subject-cell">
+                          <p class="rule_subject_text">
+                            {{ $t("relay." + row.rule_type) }}
+                          </p>
+                          <p class="rule_subject_text">
+                            {{
+                              row.rule_type == "wildcard"
+                                ? $t("relay.any_address")
+                                : row.rule_subject
+                            }}
+                          </p>
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          <div
-                            v-if="row.destinations && row.destinations.length"
-                          >
-                            <span
-                              v-for="dest in row.destinations"
-                              :key="dest.name"
-                              class="destination"
-                            >
-                              <cv-interactive-tooltip
-                                alignment="center"
-                                direction="top"
-                                class="tooltip-with-text-trigger info"
-                              >
-                                <template slot="trigger">
-                                  <span
-                                    class="icon-and-text-inline mg-right-md"
-                                  >
-                                    <span class="icon">
-                                      <NsSvg
-                                        v-if="dest.dtype == 'user'"
-                                        :svg="User16"
-                                      />
-                                      <NsSvg
-                                        v-else-if="dest.dtype == 'group'"
-                                        :svg="Events16"
-                                      />
-                                      <NsSvg
-                                        v-else-if="dest.dtype == 'apo'"
-                                        :svg="Unknown16"
-                                      />
-                                      <NsSvg
-                                        v-else-if="dest.dtype == 'public'"
-                                        :svg="Box16"
-                                      />
-                                      <NsSvg
-                                        v-else-if="dest.dtype == 'external'"
-                                        :svg="Email16"
-                                      />
-                                    </span>
-                                    <span>{{ dest.ui_name || dest.name }}</span>
-                                  </span>
-                                </template>
-                                <template slot="content">
-                                  <div>
-                                    {{ $t(`common.${dest.dtype}_destination`) }}
-                                  </div>
-                                </template>
-                              </cv-interactive-tooltip>
-                            </span>
-                          </div>
-                          <div v-else>
-                            <!-- adduser or addgroup address -->
-                            <span class="destination">
-                              <cv-interactive-tooltip
-                                alignment="center"
-                                direction="top"
-                                class="tooltip-with-text-trigger info"
-                              >
-                                <template slot="trigger">
-                                  <span class="icon-and-text-inline">
-                                    <span class="icon">
-                                      <NsSvg
-                                        v-if="row.atype === 'adduser'"
-                                        :svg="User16"
-                                      />
-                                      <NsSvg
-                                        v-else-if="row.atype === 'addgroup'"
-                                        :svg="Events16"
-                                      />
-                                    </span>
-                                    <span>{{
-                                      row.description || row.local
-                                    }}</span>
-                                  </span>
-                                </template>
-                                <template slot="content">
-                                  <div v-if="row.atype === 'adduser'">
-                                    {{ $t(`common.user_destination`) }}
-                                  </div>
-                                  <div v-else-if="row.atype === 'addgroup'">
-                                    {{ $t(`common.group_destination`) }}
-                                  </div>
-                                </template>
-                              </cv-interactive-tooltip>
-                            </span>
-                          </div>
+                          {{ row.host }}
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          <span class="icon-and-text-inline">
-                            <span class="icon">
-                              <NsSvg v-if="row.internal" :svg="Locked16" />
-                              <NsSvg v-else :svg="Wikis16" />
-                            </span>
-                            <span>{{ row.visibility }}</span>
-                          </span>
+                          {{
+                            row.has_password
+                              ? $t("common.enabled")
+                              : $t("common.disabled")
+                          }}
+                        </cv-data-table-cell>
+                        <cv-data-table-cell>
+                          <NsTag
+                            v-if="row.enabled"
+                            kind="green"
+                            :label="$t('common.enabled')"
+                          ></NsTag>
+                          <NsTag
+                            v-else
+                            kind="high-contrast"
+                            :label="$t('common.disabled')"
+                          ></NsTag>
                         </cv-data-table-cell>
                         <cv-data-table-cell class="table-overflow-menu-cell">
                           <cv-overflow-menu
-                            v-if="
-                              row.atype !== 'adduser' &&
-                              row.atype !== 'addgroup'
-                            "
                             flip-menu
                             class="table-overflow-menu"
-                            :data-test-id="row.address + '-menu'"
                           >
                             <cv-overflow-menu-item
-                              @click="showEditAddressModal(row)"
-                              :data-test-id="row.address + '-edit'"
+                              @click="toggleEditRule(row)"
+                              :disabled="
+                                loading.listRelayRules ||
+                                loading.editRelayRule ||
+                                loading.deleteRelayRule ||
+                                loading.addRelayRule
+                              "
                             >
                               <NsMenuItem
                                 :icon="Edit20"
@@ -304,37 +168,38 @@
                               />
                             </cv-overflow-menu-item>
                             <cv-overflow-menu-item
+                              @click="toggleEnableDisableRule(row)"
+                              :disabled="
+                                loading.listRelayRules ||
+                                loading.editRelayRule ||
+                                loading.deleteRelayRule ||
+                                loading.addRelayRule
+                              "
+                            >
+                              <NsMenuItem
+                                :icon="
+                                  row.enabled ? ViewOffFilled20 : ViewFilled20
+                                "
+                                :label="
+                                  row.enabled
+                                    ? $t('relay.disable_rule')
+                                    : $t('relay.enable_rule')
+                                "
+                              />
+                            </cv-overflow-menu-item>
+                            <cv-overflow-menu-item
+                              @click="toggleDeleteRule(row)"
+                              :disabled="
+                                loading.listRelayRules ||
+                                loading.editRelayRule ||
+                                loading.deleteRelayRule ||
+                                loading.addRelayRule
+                              "
                               danger
-                              @click="willDeleteAddress(row)"
-                              :disabled="row.delete_forbidden"
-                              :data-test-id="row.address + '-delete'"
                             >
                               <NsMenuItem
                                 :icon="TrashCan20"
-                                :label="core.$t('common.delete')"
-                              />
-                            </cv-overflow-menu-item>
-                          </cv-overflow-menu>
-                          <!-- overflow menu for adduser addresses -->
-                          <cv-overflow-menu
-                            v-else
-                            flip-menu
-                            class="table-overflow-menu"
-                            :data-test-id="row.address + '-menu'"
-                          >
-                            <cv-overflow-menu-item
-                              @click="toggleVisibility(row)"
-                              :data-test-id="row.address + '-toggle-visibility'"
-                            >
-                              <NsMenuItem
-                                v-if="!row.internal"
-                                :icon="Locked20"
-                                :label="$t('addresses.set_as_internal')"
-                              />
-                              <NsMenuItem
-                                v-else
-                                :icon="Wikis20"
-                                :label="$t('addresses.set_as_public')"
+                                :label="$t('common.delete')"
                               />
                             </cv-overflow-menu-item>
                           </cv-overflow-menu>
@@ -349,20 +214,10 @@
         </cv-column>
       </cv-row>
     </cv-grid>
-    <CreateOrEditAddressModal
-      :isShown="isShownCreateOrEditAddressModal"
-      :domains="internalDomains"
-      :defaultDomainId="q.selectedDomainId"
-      :address="currentAddress"
-      :isEditing="isEditingAddress"
-      @hide="hideCreateAddressModal"
-      @reloadAddresses="onReloadAddresses"
-    />
   </div>
 </template>
 
 <script>
-import to from "await-to-js";
 import {
   QueryParamService,
   UtilService,
@@ -371,13 +226,11 @@ import {
   PageTitleService,
 } from "@nethserver/ns8-ui-lib";
 import { mapState } from "vuex";
-import _cloneDeep from "lodash/cloneDeep";
-import CreateOrEditAddressModal from "@/components/CreateOrEditAddressModal";
-import Information16 from "@carbon/icons-vue/es/information/16";
+import to from "await-to-js";
+import { ViewOffFilled20, ViewFilled20 } from "@carbon/icons-vue";
 
 export default {
-  name: "Addresses",
-  components: { CreateOrEditAddressModal, Information16 },
+  name: "Relay",
   mixins: [
     TaskService,
     UtilService,
@@ -386,36 +239,34 @@ export default {
     PageTitleService,
   ],
   pageTitle() {
-    return this.$t("addresses.title") + " - " + this.appName;
+    return this.$t("relay.title") + " - " + this.appName;
   },
   data() {
     return {
       q: {
-        page: "addresses",
-        selectedDomainId: "",
+        page: "relay",
       },
-      urlCheckInterval: null,
+      ViewOffFilled20,
+      ViewFilled20,
+      hasWildcard: false,
       tablePage: [],
-      tableColumns: ["address", "type", "destinations", "visibility"],
-      addresses: [],
-      internalDomains: [],
-      isShownCreateOrEditAddressModal: false,
-      currentAddress: null,
-      isEditingAddress: false,
-      deleteAddressTimeout: [],
-      addUserDomains: [],
-      addGroupDomains: [],
+      tableColumns: ["rule_subject", "host", "has_password", "enabled"],
+      relayRules: [],
+      ruleToEdit: {},
+      ruleToDelete: {},
+      isEditDialogShow: false,
+      isDeleteDialogShow: false,
       loading: {
-        listAddresses: false,
-        removeAddress: false,
-        listDomains: false,
-        toggleVisibility: false,
+        listRelayRules: false,
+        editRelayRule: false,
+        deleteRelayRule: false,
+        addRelayRule: false,
       },
       error: {
-        listAddresses: "",
-        removeAddress: "",
-        listDomains: "",
-        toggleVisibility: "",
+        listRelayRules: "",
+        editRelayRule: "",
+        deleteRelayRule: "",
+        addRelayRule: "",
       },
     };
   },
@@ -423,59 +274,8 @@ export default {
     ...mapState(["instanceName", "core", "appName"]),
     i18nTableColumns() {
       return this.tableColumns.map((column) => {
-        return this.$t("addresses." + column);
+        return this.$t("relay." + column);
       });
-    },
-    filteredAddresses() {
-      if (this.q.selectedDomainId === "all" || !this.q.selectedDomainId) {
-        return this.addresses;
-      }
-
-      if (this.q.selectedDomainId === "wildcard") {
-        return this.addresses.filter((address) => {
-          return address.atype === "wildcard";
-        });
-      }
-
-      const filteredAddresses = this.addresses.filter((address) => {
-        return (
-          address.domain === this.q.selectedDomainId ||
-          (this.addUserDomains.includes(this.q.selectedDomainId) &&
-            address.atype === "adduser") ||
-          (this.addGroupDomains.includes(this.q.selectedDomainId) &&
-            address.atype === "addgroup")
-        );
-      });
-      return filteredAddresses;
-    },
-    selectedDomainLabel() {
-      if (this.q.selectedDomainId === "all" || !this.q.selectedDomainId) {
-        return "";
-      }
-
-      const domain = this.internalDomains.find(
-        (d) => d.value === this.q.selectedDomainId
-      );
-
-      if (domain) {
-        return domain.label;
-      }
-      return "";
-    },
-    addressesForFilter() {
-      if (!this.internalDomains.length) {
-        return [];
-      }
-
-      // add "All domains" at the beginning of internalDomains array
-      const domains = _cloneDeep(this.internalDomains);
-
-      domains.unshift({
-        name: "all",
-        label: this.$t("addresses.all_domains"),
-        value: "all",
-      });
-      return domains;
     },
   },
   beforeRouteEnter(to, from, next) {
@@ -489,39 +289,26 @@ export default {
     next();
   },
   created() {
-    this.listDomains();
-    this.listAddresses();
+    this.listRelayRules();
   },
   methods: {
-    showCreateAddressModal() {
-      this.isEditingAddress = false;
-      this.isShownCreateOrEditAddressModal = true;
+    goToRelaySettings() {
+      this.goToAppPage(this.instanceName, "settingsRelay");
     },
-    showEditAddressModal(address) {
-      this.isEditingAddress = true;
-      this.currentAddress = address;
-      this.isShownCreateOrEditAddressModal = true;
-    },
-    hideCreateAddressModal() {
-      this.isShownCreateOrEditAddressModal = false;
-    },
-    async listAddresses() {
-      this.addresses = [];
-
-      const taskAction = "list-addresses";
+    async listRelayRules() {
+      this.relayRules = [];
+      const taskAction = "list-relay-rules";
       const eventId = this.getUuid();
-      this.loading.listAddresses = true;
-
-      // register to task events
+      this.loading.listRelayRules = true;
 
       this.core.$root.$once(
         `${taskAction}-aborted-${eventId}`,
-        this.listAddressesAborted
+        this.listRelayRulesAborted
       );
 
       this.core.$root.$once(
         `${taskAction}-completed-${eventId}`,
-        this.listAddressesCompleted
+        this.listRelayRulesCompleted
       );
 
       const res = await to(
@@ -539,373 +326,82 @@ export default {
       if (err) {
         console.error(`error creating task ${taskAction}`, err);
         const errMessage = this.getErrorMessage(err);
-        this.error.listAddresses = errMessage;
-        this.loading.listAddresses = false;
+        this.error.listRelayRules = errMessage;
+        this.loading.listRelayRules = false;
       }
     },
-    listAddressesAborted(taskResult, taskContext) {
+    listRelayRulesAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.listAddresses = this.$t("error.generic_error");
-      this.loading.listAddresses = false;
+      this.error.listRelayRules = this.$t("error.generic_error");
+      this.loading.listRelayRules = false;
     },
-    listAddressesCompleted(taskContext, taskResult) {
-      this.addUserDomains = taskResult.output.adduser_domains;
-      this.addGroupDomains = taskResult.output.addgroup_domains;
-      const addresses = taskResult.output.addresses.map((address) => {
-        const domain = address.domain ? address.domain : "";
-        const visibility = address.internal
-          ? this.$t("addresses.internal")
-          : this.$t("addresses.public");
-
-        return {
-          domain: address.domain,
-          address: `${address.local}@${domain}`,
-          local: address.local,
-          destinations: address.destinations,
-          internal: !!address.internal,
-          visibility: visibility,
-          atype: address.atype,
-          type: this.$t(`addresses.type_${address.atype}`),
-          delete_forbidden: address.delete_forbidden,
-          description: address.description,
-        };
-      });
-
-      this.addresses = addresses.sort(this.sortByProperty("address"));
-      this.loading.listAddresses = false;
-    },
-    showAllDomains() {
-      this.q.selectedDomainId = "all";
-    },
-    onReloadAddresses() {
-      this.listAddresses();
-    },
-    async removeAddress(address) {
-      this.loading.removeAddress = true;
-      this.error.removeAddress = "";
-      const taskAction = "remove-address";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.removeAddressAborted
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.removeAddressCompleted
-      );
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          data: {
-            local: address.local,
-            atype: address.atype,
-            domain: address.domain,
-          },
-          extra: {
-            title: this.$t("addresses.delete_address_address", {
-              address: address.address,
-            }),
-            description: this.core.$t("common.processing"),
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.removeAddress = this.getErrorMessage(err);
-        this.loading.removeAddress = false;
-        return;
-      }
-    },
-    removeAddressAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.loading.removeAddress = false;
-    },
-    removeAddressCompleted() {
-      this.loading.removeAddress = false;
-
-      // reload addresses
-      this.listAddresses();
-    },
-    async listDomains() {
-      this.loading.listDomains = true;
-      this.error.listDomains = "";
-      const taskAction = "list-domains";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.listDomainsAborted
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.listDomainsCompleted
-      );
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          extra: {
-            title: this.$t("action." + taskAction),
-            isNotificationHidden: true,
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.listDomains = this.getErrorMessage(err);
-        this.loading.listDomains = false;
-        return;
-      }
-    },
-    listDomainsAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.listDomains = this.$t("error.generic_error");
-      this.loading.listDomains = false;
-    },
-    listDomainsCompleted(taskContext, taskResult) {
-      this.loading.listDomains = false;
-      this.domains = taskResult.output;
-
-      this.internalDomains = this.domains.map((d) => {
-        return {
-          name: d.domain,
-          label: d.domain,
-          value: d.domain,
-        };
-      });
-
-      // add wildcard domain
-      this.internalDomains.push({
-        name: "wildcard",
-        label: this.$t("addresses.wildcard_label"),
-        value: "wildcard",
-      });
-
-      this.$nextTick(() => {
-        if (!this.q.selectedDomainId) {
-          // initially show all domains
-          this.q.selectedDomainId = "all";
-        } else {
-          const domainId = this.q.selectedDomainId;
-
-          // workaround to update combo box
-          this.q.selectedDomainId = "";
-          this.$nextTick(() => {
-            this.q.selectedDomainId = domainId;
-          });
-        }
-      });
-    },
-    filterTableRows(searchFilter) {
-      // remove domain part from search filter
-      searchFilter = searchFilter.split("@")[0];
-
-      if (!searchFilter) {
-        return this.filteredAddresses;
-      } else {
-        // clean query
-        const cleanRegex = /[^a-zA-Z0-9]/g;
-        const queryText = searchFilter.replace(cleanRegex, "");
-
-        const searchResults = this.filteredAddresses.filter((option) => {
-          // compare query text with attributes option
-          return this.tableColumns.some((searchField) => {
-            const searchValue = option[searchField];
-
-            if (searchValue) {
-              if (Array.isArray(searchValue)) {
-                // search field is an array (e.g. destinations)
-                return searchValue.some((elem) => {
-                  let el = elem;
-
-                  if (typeof elem == "object") {
-                    el = elem.ui_name || elem.name;
-                  }
-
-                  return new RegExp(queryText, "i").test(
-                    el.replace(cleanRegex, "")
-                  );
-                });
-              } else {
-                // search field is a simple string
-                return new RegExp(queryText, "i").test(
-                  searchValue.replace(cleanRegex, "")
-                );
-              }
-            } else {
-              return false;
-            }
-          });
-        }, this);
-        return searchResults;
-      }
-    },
-    async toggleVisibility(address) {
-      this.loading.toggleVisibility = true;
-      this.error.toggleVisibility = "";
-      const taskAction = "alter-address";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.toggleVisibilityAborted
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.toggleVisibilityCompleted
-      );
-
-      const addAddressData = {
-        local: address.local,
-        internal: !address.internal,
-        description: address.description,
-        destinations: address.destinations,
-        atype: address.atype,
-        domain: address.domain,
-      };
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          data: addAddressData,
-          extra: {
-            title: this.$t("action." + taskAction),
-            isNotificationHidden: true,
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.toggleVisibility = this.getErrorMessage(err);
-        this.loading.toggleVisibility = false;
-        return;
-      }
-    },
-    toggleVisibilityAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.toggleVisibility = this.$t("error.generic_error");
-      this.loading.toggleVisibility = false;
-    },
-    toggleVisibilityCompleted() {
-      this.loading.toggleVisibility = false;
-      this.listAddresses();
-    },
-    willDeleteAddress(address) {
-      const notification = {
-        id: this.getUuid(),
-        title: this.$t("addresses.address_address_is_going_to_be_deleted", {
-          address: address.address,
-        }),
-        type: "info",
-        toastTimeout: this.DELETE_DELAY - 1000,
-        actionLabel: this.core.$t("common.cancel"),
-        action: {
-          type: "callback",
-          callback: this.cancelDeleteAddress.bind(null, address),
+    listRelayRulesCompleted(taskContext, taskResult) {
+      this.hasWildcard = taskResult.output.has_wildcard;
+      this.relayRules = taskResult.output.rules;
+      this.relayRules = [
+        {
+          rule_type: "sender",
+          rule_subject: "titi@azerty2.com",
+          host: "smtp2.domain.com",
+          port: 587,
+          tls: false,
+          username: "",
+          has_password: false,
+          enabled: true,
         },
-      };
-      this.createNotificationForApp(notification);
-
-      const timeout = setTimeout(() => {
-        // remove notification from drawer
-        this.deleteNotificationForApp(notification.id);
-
-        // delete timeout
-        this.deleteAddressTimeout = this.deleteAddressTimeout.filter(
-          (el) => el.name !== address.address
-        );
-
-        // call api to remove address
-        this.removeAddress(address);
-      }, this.DELETE_DELAY);
-
-      this.deleteAddressTimeout.push({
-        name: address.address,
-        timeout,
-        notification,
-      });
-
-      // remove address from table
-      this.addresses = this.addresses.filter(
-        (a) => a.address !== address.address
-      );
+        {
+          rule_type: "sender",
+          rule_subject: "fii.com",
+          host: "smtp2.domain.com",
+          port: 587,
+          tls: false,
+          username: "",
+          has_password: false,
+          enabled: false,
+        },
+        {
+          rule_type: "recipient",
+          rule_subject: "toto@azerty2.com",
+          host: "ciao.domain.com",
+          port: 587,
+          tls: false,
+          username: "",
+          has_password: false,
+          enabled: true,
+        },
+        {
+          rule_type: "recipient",
+          rule_subject: "azerty2.com",
+          host: "smtp2.domain.com",
+          port: 587,
+          tls: false,
+          username: "stephane",
+          has_password: true,
+          enabled: false,
+        },
+        {
+          rule_type: "wildcard",
+          rule_subject: "*",
+          host: "smtp.domain.com",
+          port: 587,
+          tls: true,
+          username: "helene",
+          has_password: true,
+          enabled: true,
+        },
+      ];
+      this.loading.listRelayRules = false;
     },
-    cancelDeleteAddress(address) {
-      const timeoutFound = this.deleteAddressTimeout.find(
-        (el) => el.name === address.address
-      );
-
-      if (timeoutFound) {
-        clearTimeout(timeoutFound.timeout);
-
-        // remove notification from drawer
-        this.deleteNotificationForApp(timeoutFound.notification.id);
-
-        // delete timeout
-        this.deleteAddressTimeout = this.deleteAddressTimeout.filter(
-          (el) => el.name !== address.address
-        );
-      }
-
-      // reload addresses
-      this.listAddresses();
+    toggleEditRule(row) {
+      this.isEditDialogShow = true;
+      this.ruleToEdit = row;
     },
-    getFullAddressList(address) {
-      switch (address.atype) {
-        case "domain":
-          return [address.address];
-        case "wildcard": {
-          if (this.internalDomains.length && this.internalDomains.length <= 2) {
-            // only one domain (plus "Wildcard")
-            return [`${address.address}${this.internalDomains[0].value}`];
-          } else {
-            const fullAddressList = [];
-
-            for (const domain of this.internalDomains) {
-              if (domain.value !== "wildcard") {
-                fullAddressList.push(`${address.address}${domain.value}`);
-              }
-            }
-            return fullAddressList;
-          }
-        }
-        case "adduser": {
-          const fullAddressList = [];
-
-          for (const domain of this.addUserDomains) {
-            fullAddressList.push(`${address.address}${domain}`);
-          }
-          return fullAddressList;
-        }
-        case "addgroup": {
-          const fullAddressList = [];
-
-          for (const domain of this.addGroupDomains) {
-            fullAddressList.push(`${address.address}${domain}`);
-          }
-          return fullAddressList;
-        }
-      }
+    toggleDeleteRule(row) {
+      this.isDeleteDialogShow = true;
+      this.ruleToDelete = row;
+    },
+    toggleEnableDisableRule(row) {
+      this.ruleToEdit = row;
     },
   },
 };
@@ -914,7 +410,24 @@ export default {
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
 
-.tooltip-icon {
-  margin-left: $spacing-02;
+.wildcard-button {
+  margin-left: 1rem;
+}
+
+.table-margin {
+  margin-top: 2rem;
+}
+
+.rule-subject-cell {
+  flex-direction: column;
+  align-items: start;
+}
+
+.rule_subject_text {
+  font-size: 14px;
+}
+
+.table-row {
+  height: 60px;
 }
 </style>
