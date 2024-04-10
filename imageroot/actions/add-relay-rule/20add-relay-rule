@@ -9,74 +9,44 @@ import json
 import sys
 import mail
 import agent
-from sqlite3 import IntegrityError
 
 request = json.load(sys.stdin)
 
 sdb = mail.pcdb_connect()
-sender = request.get('sender')
-recipient = request.get('recipient')
+rule_type = request['rule_type']
+rule_subject = request['rule_subject']
 
 try:
     values = {
-        "sender": sender,
-        "recipient": recipient,
+        "rule_type": rule_type,
+        "rule_subject": rule_subject,
         "host": request['host'],
         "port": request['port'],
         "mandatory_tls": 'encrypt' if request.get("mandatory_tls", False) else 'may',
         "username": request.get("username", ""),
         "password": request.get("password", ""),
-        "enabled": 1 if request.get("enabled", True) else 0,
-        "rdesc": request.get("description", ""),
+        "enabled": 1 if request.get("enabled", True) else 0
     }
 
     cur = sdb.cursor()
-    if sender:
-        # ensure that the sender does not exist
-        cur.execute("SELECT * FROM relayrules WHERE sender = ?", (sender,))
-        row = cur.fetchone()
-        if row:
-            agent.set_status('validation-failed')
-            json.dump([{'field':'sender', 'parameter':'sender','value': sender, 'error':'sender_already_exist'}], fp=sys.stdout)
-            sys.exit(4)
-        # ensure that the sender does not exist as recipient
-        cur.execute("SELECT * FROM relayrules WHERE dest = ?", (sender,))
-        row = cur.fetchone()
-        if row:
-            agent.set_status('validation-failed')
-            json.dump([{'field':'sender', 'parameter':'sender','value': sender, 'error':'recipient_already_exist_cannot_be_sender'}], fp=sys.stdout)
-            sys.exit(5)
-
-        cur.execute("""INSERT INTO relayrules (sender, host, port, tls, username, password, enabled, rdesc) VALUES (:sender, :host, :port, :mandatory_tls, :username, :password, :enabled, :rdesc)""", values)
- 
-    elif recipient:
-        # ensure that the recipient does not exist
-        cur.execute("SELECT * FROM relayrules WHERE dest = ?", (recipient,))
-        row = cur.fetchone()
-        if row:
-            agent.set_status('validation-failed')
-            json.dump([{'field':'recipient', 'parameter':'recipient','value': recipient, 'error':'recipient_already_exist'}], fp=sys.stdout)
-            sys.exit(4)
-        # ensure that the recipient does not exist as sender
-        cur.execute("SELECT * FROM relayrules WHERE sender = ?", (recipient,))
-        row = cur.fetchone()
-        if row:
-            agent.set_status('validation-failed')
-            json.dump([{'field':'recipient', 'parameter':'recipient','value': recipient, 'error':'sender_already_exist_cannot_be_recipient'}], fp=sys.stdout)
-            sys.exit(4) 
-
-        cur.execute("""INSERT INTO relayrules (dest, host, port, tls, username, password, enabled, rdesc) VALUES (:recipient, :host, :port, :mandatory_tls, :username, :password, :enabled, :rdesc)""", values)
+    # ensure that the rule_subject does not exist
+    cur.execute("SELECT * FROM relayrules WHERE rule_subject = ?", (rule_subject,))
+    row = cur.fetchone()
+    if row:
+        agent.set_status('validation-failed')
+        json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': rule_subject, 'error':'rule_subject_already_exist_cannot_be_used_more'}], fp=sys.stdout)
+        sys.exit(4)
+    if rule_subject == '*' and rule_type != 'wildcard':
+        agent.set_status('validation-failed')
+        json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': rule_subject, 'error':'rule_type_must_be_wildcard'}], fp=sys.stdout)
+        sys.exit(5)
+    cur.execute("""INSERT INTO relayrules (rule_type, rule_subject , host, port, tls, username, password, enabled) VALUES (:rule_type, :rule_subject, :host, :port, :mandatory_tls, :username, :password, :enabled)""", values)
 
 except Exception as err:
     sdb.rollback()
-    # The domain already exists
     agent.set_status('validation-failed')
-    if sender:
-        json.dump([{'field':'sender', 'parameter':'sender','value': err, 'error':'sender_data_cannot_be_saved_in_db'}], fp=sys.stdout)
-    elif recipient:
-        json.dump([{'field':'recipient', 'parameter':'recipient','value': err, 'error':'recipient_data_cannot_be_saved_in_db'}], fp=sys.stdout)
+    json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': err, 'error':'sender_data_cannot_be_saved_in_db'}], fp=sys.stdout)
     sys.exit(3)
-
 else:
     sdb.commit()
 
