@@ -5,10 +5,13 @@
     "description": "Remove the attributes of an existing relay rule",
     "examples": [
         {
-            "sender": "foo@foo.com"
+            "rule_subject": "foo@foo.com"
         },
         {
-            "recipient": "foo.com"
+            "rule_subject": "foo.com"
+        },
+        {
+            "rule_subject": "*"
         }
     ],
     "allOf": [
