@@ -12,8 +12,7 @@ import agent
 
 request = json.load(sys.stdin)
 
-sender=request.get('sender')
-recipient=request.get('recipient')
+rule_subject = request['rule_subject']
 
 class RelayNotFoundError(Exception):
     pass
@@ -21,20 +20,14 @@ class RelayNotFoundError(Exception):
 sdb = mail.pcdb_connect()
 try:
     cur = sdb.cursor()
-    if sender:
-        cur.execute("""DELETE FROM relayrules WHERE sender=?""", (sender,))
-    elif recipient:
-        cur.execute("""DELETE FROM relayrules WHERE dest=?""", (recipient,))
+    cur.execute("""DELETE FROM relayrules WHERE rule_subject=?""", (rule_subject,))
     if cur.rowcount == 0:
         raise RelayNotFoundError()
 
 except RelayNotFoundError:
     sdb.rollback()
     agent.set_status('validation-failed')
-    if sender:
-        json.dump([{'field': 'sender', 'parameter': 'sender', 'value': sender, 'error':'sender_not_found'}], fp=sys.stdout)
-    elif recipient:
-        json.dump([{'field': 'recipient', 'parameter': 'recipient', 'value': recipient, 'error':'recipient_not_found'}], fp=sys.stdout)
+    json.dump([{'field': 'rule_subject', 'parameter': 'rule_subject', 'value': rule_subject, 'error':'rule_subject_not_found'}], fp=sys.stdout)
     sys.exit(2)
 
 else:
