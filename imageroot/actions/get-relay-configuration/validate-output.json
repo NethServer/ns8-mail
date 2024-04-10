@@ -1,8 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "get-mynetworks-settings output",
-    "$id": "http://schema.nethserver.org/mail/get-mynetworks-settings-output.json",
-    "description": "Return values that suit the set-mynetwork-settings action input",
+    "title": "get-relay-configuration output",
+    "$id": "http://schema.nethserver.org/mail/get-relay-configuration-output.json",
+    "description": "Return values that suit the set-relay-configuration action input",
     "examples": [
         {
             "postfix_restricted_sender": true,
