@@ -36,7 +36,7 @@ def get_password_from_database(rule_subject):
         sys.exit(3)
 
 # password not changed, we need to retrieve it from the database
-if password == '':
+if request['username'] and password == '':
     password = get_password_from_database(rule_subject)
 
 try:
