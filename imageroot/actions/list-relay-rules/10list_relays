@@ -14,56 +14,42 @@ mail.abort_with_json_if_not_configured([])
 
 sdb = mail.pcdb_connect(readonly=True)
 
-relays = []
+rules = []
 has_wildcard =  False
 try:
-    for row in sdb.execute("""SELECT sender, dest,  host, port, tls, username, password, enabled, rdesc FROM relayrules"""):
-        if row['sender'] is not None:
-            sender = row['sender']
-            relays.append({
-                'sender': row['sender'],
-                'host': row['host'],
-                'port': row['port'],
-                'tls': row['tls'] == "encrypt",
-                'username': row['username'],
-                'has_password': True if row['password'] != '' else False,
-                'enabled': row['enabled'] == 1
-            })
-        elif row['dest'] is not None:
-            recipient = row['dest']
-            if recipient == '*':
-                has_wildcard = True
-            relays.append({
-                'recipient': row['dest'],
-                'host': row['host'],
-                'port': row['port'],
-                'tls': row['tls'] == "encrypt",
-                'username': row['username'],
-                'has_password': True if row['password'] != '' else False,
-                'enabled': row['enabled'] == 1
-            })
+    for row in sdb.execute("""SELECT rule_type, rule_subject, host, port, tls, username, password, enabled FROM relayrules"""):
+        if row['rule_subject'] == '*':
+            has_wildcard = True
+        rules.append({
+            'rule_type': row['rule_type'],
+            'rule_subject': row['rule_subject'],
+            'host': row['host'],
+            'port': row['port'],
+            'tls': row['tls'] == "encrypt",
+            'username': row['username'],
+            'has_password': True if row['password'] != '' else False,
+            'enabled': row['enabled'] == 1
+        })
 except OperationalError:
-    relays = []
+    rules = []
 
 # we want to order rules by sender, recipient, wildcard
 def custom_sort(rule):
     # If it's a sender rule
-    if 'sender' in rule:
-        # Sort by email first, then domain
-        if '@' in rule['sender']:
-            return (0, rule['sender'])
-        else:
-            return (1, rule['sender'])
+    if rule['rule_type'] == 'sender' and '@' in rule['rule_subject']:
+        return (0, rule['rule_subject'])
+    elif rule['rule_type'] == 'sender' and '@' not in rule['rule_subject']:
+        return (1, rule['rule_subject'])
     # If it's a recipient rule
-    elif 'recipient' in rule:
-        # Sort by email first, then domain
-        if rule['recipient'] == '*':
-            return (4, '')
-        elif '@' in rule['recipient']:
-            return (2, rule['recipient'])
-        else:
-            return (3, rule['recipient'])
-sorted_rules = sorted(relays, key=custom_sort)
+    elif rule['rule_type'] == 'recipient' and '@' in rule['rule_subject']:
+        return (2, rule['rule_subject'])
+    elif rule['rule_type'] == 'recipient' and '@' not in rule['rule_subject']:
+        return (3, rule['rule_subject'])
+    # If it's a wildcard rule
+    elif rule['rule_type'] == 'wildcard' and rule['rule_subject'] == '*':
+        return (4, '')
+
+sorted_rules = sorted(rules, key=custom_sort)
 
 output= {"has_wildcard": has_wildcard, "rules": sorted_rules}
 
