@@ -41,7 +41,7 @@
                   <NsButton
                     kind="primary"
                     :icon="Add20"
-                    @click="null"
+                    @click="toggleAddRule()"
                     :disabled="
                       loading.listRelayRules ||
                       loading.editRelayRule ||
@@ -53,7 +53,7 @@
                   <NsButton
                     kind="secondary"
                     :icon="Add20"
-                    @click="null"
+                    @click="toggleAddWildcardRule()"
                     :disabled="
                       hasWildcard ||
                       loading.listRelayRules ||
@@ -214,6 +214,140 @@
         </cv-column>
       </cv-row>
     </cv-grid>
+    <NsModal
+      size="default"
+      :visible="isAddDialogShow || isEditDialogShow || isAddWildcardDialogShow"
+      :primary-button-disabled="loading.editRelayRule || loading.addRelayRule"
+      :isLoading="loading.editRelayRule || loading.addRelayRule"
+      @modal-hidden="onModalHidden"
+      @primary-click="onModalConfirm"
+    >
+      <template slot="title">{{ modalTitle }}</template>
+      <template slot="content">
+        <cv-form @submit.prevent="onModalConfirm">
+          <p class="radio-menu-label" v-if="isAddDialogShow">
+            {{ $t("relay.rule_type") }}
+          </p>
+          <cv-radio-group vertical v-if="isAddDialogShow">
+            <cv-radio-button
+              v-model="form.rule_type"
+              value="sender"
+              :label="$t('relay.sender')"
+              ref="form.rule_type"
+              checked
+            ></cv-radio-button>
+            <cv-radio-button
+              v-model="form.rule_type"
+              value="recipient"
+              :label="$t('relay.recipient')"
+              ref="form.rule_type"
+            ></cv-radio-button>
+          </cv-radio-group>
+          <p
+            class="radio-menu-label radio-menu-error"
+            v-if="error.form.rule_type"
+          >
+            {{ $t("common.required_field") }}
+          </p>
+          <NsTextInput
+            v-if="!isAddWildcardDialogShow || !form.rule_type == 'wildcard'"
+            :disabled="isEditDialogShow"
+            v-model.trim="form.rule_subject"
+            :label="
+              form.rule_type == 'sender'
+                ? $t('relay.sender')
+                : $t('relay.recipient')
+            "
+            :helper-text="$t('relay.rule_subject_helper')"
+            :invalid-message="error.form.rule_subject"
+            ref="form.rule_subject"
+          />
+          <NsTextInput
+            v-model.trim="form.host"
+            :label="$t('relay.host')"
+            :invalid-message="error.form.host"
+            ref="form.host"
+            data-modal-primary-focus
+          />
+          <NsTextInput
+            v-model="form.port"
+            :label="$t('relay.port')"
+            :invalid-message="error.form.port"
+            ref="form.port"
+          />
+          <NsToggle
+            :label="$t('relay.authentication')"
+            :form-item="true"
+            v-model="authentication"
+            ref="authentication"
+            value="toggleValue"
+          >
+            <template slot="text-left">{{ $t("common.disabled") }}</template>
+            <template slot="text-right">{{ $t("common.enabled") }}</template>
+          </NsToggle>
+          <NsTextInput
+            v-if="authentication"
+            v-model="form.username"
+            :label="$t('relay.username')"
+            :invalid-message="error.form.username"
+            ref="form.username"
+          />
+          <NsTextInput
+            v-if="authentication"
+            v-model="form.password"
+            :label="$t('relay.password')"
+            :invalid-message="error.form.password"
+            ref="form.password"
+            type="password"
+          />
+          <NsToggle
+            :label="$t('relay.mandatory_tls')"
+            :form-item="true"
+            v-model="form.mandatory_tls"
+            ref="form.mandatory_tls"
+            value="toggleValue"
+          >
+            <template slot="tooltip">
+              <span v-html="$t('relay.mandatory_tls_tooltip')"></span>
+            </template>
+            <template slot="text-left">{{ $t("common.disabled") }}</template>
+            <template slot="text-right">{{ $t("common.enabled") }}</template>
+          </NsToggle>
+        </cv-form>
+      </template>
+      <template slot="secondary-button">{{ $t("common.cancel") }}</template>
+      <template slot="primary-button">{{
+        isAddDialogShow
+          ? $t("relay.add_rule")
+          : isEditDialogShow
+          ? $t("relay.edit_rule")
+          : $t("relay.add_wildcard_rule")
+      }}</template>
+    </NsModal>
+    <NsModal
+      size="default"
+      kind="danger"
+      :visible="isDeleteDialogShow"
+      :primary-button-disabled="loading.deleteRelayRule"
+      :isLoading="loading.deleteRelayRule"
+      @modal-hidden="onDeleteModalHidden"
+      @primary-click="onDeleteModalConfirm"
+    >
+      <template slot="title">{{ $t("relay.delete_relay_rule") }}</template>
+      <template slot="content">
+        <span
+          v-html="
+            $tc('relay.delete_rule_description', form.rule_subject, {
+              ruleType: ruleTypeTranslation,
+              ruleSubject:
+                form.rule_type == 'wildcard' ? '' : ' ' + form.rule_subject,
+            })
+          "
+        ></span>
+      </template>
+      <template slot="secondary-button">{{ $t("common.cancel") }}</template>
+      <template slot="primary-button">{{ $t("relay.delete_rule") }}</template>
+    </NsModal>
   </div>
 </template>
 
@@ -252,10 +386,21 @@ export default {
       tablePage: [],
       tableColumns: ["rule_subject", "host", "has_password", "enabled"],
       relayRules: [],
-      ruleToEdit: {},
-      ruleToDelete: {},
+      isAddDialogShow: false,
       isEditDialogShow: false,
+      isAddWildcardDialogShow: false,
       isDeleteDialogShow: false,
+      form: {
+        rule_type: "",
+        rule_subject: "",
+        host: "",
+        port: "",
+        username: "",
+        password: "",
+        mandatory_tls: false,
+        enabled: true,
+      },
+      authentication: false,
       loading: {
         listRelayRules: false,
         editRelayRule: false,
@@ -267,6 +412,15 @@ export default {
         editRelayRule: "",
         deleteRelayRule: "",
         addRelayRule: "",
+        form: {
+          rule_type: "",
+          rule_subject: "",
+          host: "",
+          port: "",
+          username: "",
+          password: "",
+          mandatory_tls: "",
+        },
       },
     };
   },
@@ -274,8 +428,22 @@ export default {
     ...mapState(["instanceName", "core", "appName"]),
     i18nTableColumns() {
       return this.tableColumns.map((column) => {
-        return this.$t("relay." + column);
+        return this.$t("relay.col_" + column);
       });
+    },
+    modalTitle: function () {
+      if (this.isAddDialogShow) {
+        return this.$t("relay.add_relay_rule");
+      } else if (this.isEditDialogShow) {
+        return this.form.rule_type == "wildcard"
+          ? this.$t("relay.edit_wildcard_rule")
+          : this.$t("relay.edit_relay_rule");
+      } else {
+        return this.$t("relay.add_wildcard_rule");
+      }
+    },
+    ruleTypeTranslation: function () {
+      return this.$t("relay." + this.form.rule_type);
     },
   },
   beforeRouteEnter(to, from, next) {
@@ -294,6 +462,17 @@ export default {
   methods: {
     goToRelaySettings() {
       this.goToAppPage(this.instanceName, "settingsRelay");
+    },
+    resetForm(rule) {
+      this.form.rule_type = rule ? rule.rule_type : "";
+      this.form.rule_subject = rule ? rule.rule_subject : "";
+      this.form.host = rule ? rule.host : "";
+      this.form.port = rule ? rule.port : "";
+      this.form.username = rule ? rule.username : "";
+      this.form.password = "";
+      this.form.mandatory_tls = rule ? rule.mandatory_tls : false;
+      this.form.enabled = rule ? rule.enabled : true;
+      this.authentication = rule ? rule.has_password : false;
     },
     async listRelayRules() {
       this.relayRules = [];
@@ -338,70 +517,344 @@ export default {
     listRelayRulesCompleted(taskContext, taskResult) {
       this.hasWildcard = taskResult.output.has_wildcard;
       this.relayRules = taskResult.output.rules;
-      this.relayRules = [
-        {
-          rule_type: "sender",
-          rule_subject: "titi@azerty2.com",
-          host: "smtp2.domain.com",
-          port: 587,
-          tls: false,
-          username: "",
-          has_password: false,
-          enabled: true,
-        },
-        {
-          rule_type: "sender",
-          rule_subject: "fii.com",
-          host: "smtp2.domain.com",
-          port: 587,
-          tls: false,
-          username: "",
-          has_password: false,
-          enabled: false,
-        },
-        {
-          rule_type: "recipient",
-          rule_subject: "toto@azerty2.com",
-          host: "ciao.domain.com",
-          port: 587,
-          tls: false,
-          username: "",
-          has_password: false,
-          enabled: true,
-        },
-        {
-          rule_type: "recipient",
-          rule_subject: "azerty2.com",
-          host: "smtp2.domain.com",
-          port: 587,
-          tls: false,
-          username: "stephane",
-          has_password: true,
-          enabled: false,
-        },
-        {
-          rule_type: "wildcard",
-          rule_subject: "*",
-          host: "smtp.domain.com",
-          port: 587,
-          tls: true,
-          username: "helene",
-          has_password: true,
-          enabled: true,
-        },
-      ];
       this.loading.listRelayRules = false;
     },
-    toggleEditRule(row) {
-      this.isEditDialogShow = true;
-      this.ruleToEdit = row;
+    validateForm() {
+      this.clearErrors();
+      let isValidationOk = true;
+
+      if (
+        !this.isAddDialogShow &&
+        !this.isAddWildcardDialogShow &&
+        !this.isEditDialogShow
+      ) {
+        return isValidationOk;
+      }
+
+      if (!this.form.host) {
+        this.error.form.host = this.$t("common.required_field");
+
+        if (isValidationOk) {
+          this.focusElement("form.host");
+          isValidationOk = false;
+        }
+      }
+
+      if (!this.form.port) {
+        this.error.form.port = this.$t("common.required_field");
+
+        if (isValidationOk) {
+          this.focusElement("form.port");
+          isValidationOk = false;
+        }
+      }
+
+      if (this.form.port && isNaN(this.form.port)) {
+        this.error.form.port = this.$t("relay.port_must_be_a_number");
+
+        if (isValidationOk) {
+          this.focusElement("form.port");
+          isValidationOk = false;
+        }
+      }
+
+      if (this.authentication && !this.form.username) {
+        this.error.form.username = this.$t("common.required_field");
+
+        if (isValidationOk) {
+          this.focusElement("form.username");
+          isValidationOk = false;
+        }
+      }
+
+      if (
+        this.authentication &&
+        (this.isAddDialogShow || this.isAddWildcardDialogShow) &&
+        !this.form.password
+      ) {
+        this.error.form.password = this.$t("common.required_field");
+
+        if (isValidationOk) {
+          this.focusElement("form.password");
+          isValidationOk = false;
+        }
+      }
+
+      if (this.isAddDialogShow) {
+        if (!this.form.rule_type) {
+          this.error.form.rule_type = this.$t("common.required_field");
+
+          if (isValidationOk) {
+            this.focusElement("form.rule_type");
+            isValidationOk = false;
+          }
+        }
+
+        if (!this.form.rule_subject) {
+          this.error.form.rule_subject = this.$t("common.required_field");
+
+          if (isValidationOk) {
+            this.focusElement("form.rule_subject");
+            isValidationOk = false;
+          }
+        }
+      }
+
+      return isValidationOk;
     },
-    toggleDeleteRule(row) {
-      this.isDeleteDialogShow = true;
-      this.ruleToDelete = row;
+    async addRelayRule() {
+      if (!this.validateForm()) {
+        return;
+      }
+
+      this.loading.addRelayRule = true;
+      this.error.addRelayRule = "";
+      const taskAction = "add-relay-rule";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.addRelayRuleAborted
+      );
+
+      // register to task validation
+      this.core.$root.$once(
+        `${taskAction}-validation-ok-${eventId}`,
+        this.addRelayRuleValidationOk
+      );
+      this.core.$root.$once(
+        `${taskAction}-validation-failed-${eventId}`,
+        this.addRelayRuleValidationFailed
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.addRelayRuleCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: { ...this.form, port: parseInt(this.form.port) },
+          extra: {
+            title: this.$t("action." + taskAction),
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.addRelayRule = this.getErrorMessage(err);
+        this.loading.addRelayRule = false;
+        return;
+      }
+    },
+    addRelayRuleAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.loading.addRelayRule = false;
+
+      // hide modal so that user can see error notification
+      this.onModalHidden();
+    },
+    addRelayRuleValidationOk() {
+      this.loading.addRelayRule = false;
+
+      // hide modal after validation
+      this.onModalHidden();
+    },
+    addRelayRuleValidationFailed(validationErrors) {
+      this.loading.addRelayRule = false;
+
+      for (const validationError of validationErrors) {
+        console.log(validationError);
+      }
+    },
+    addRelayRuleCompleted() {
+      this.loading.addRelayRule = false;
+      console.log("coaoodsods");
+      // reload rules
+      this.onModalHidden();
+      this.listRelayRules();
+    },
+    async editRelayRule() {
+      if (!this.validateForm()) {
+        return;
+      }
+
+      this.loading.editRelayRule = true;
+      this.error.editRelayRule = "";
+      const taskAction = "alter-relay-rule";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.editRelayRuleAborted
+      );
+
+      // register to task validation
+      this.core.$root.$once(
+        `${taskAction}-validation-ok-${eventId}`,
+        this.editRelayRuleValidationOk
+      );
+      this.core.$root.$once(
+        `${taskAction}-validation-failed-${eventId}`,
+        this.editRelayRuleValidationFailed
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.editRelayRuleCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: { ...this.form, port: parseInt(this.form.port) },
+          extra: {
+            title: this.$t("action." + taskAction),
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.editRelayRule = this.getErrorMessage(err);
+        this.loading.editRelayRule = false;
+        return;
+      }
+    },
+    editRelayRuleAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.loading.editRelayRule = false;
+
+      // hide modal so that user can see error notification
+      this.onModalHidden();
+    },
+    editRelayRuleValidationOk() {
+      this.loading.editRelayRule = false;
+
+      // hide modal after validation
+      this.onModalHidden();
+    },
+    editRelayRuleValidationFailed(validationErrors) {
+      this.loading.editRelayRule = false;
+
+      for (const validationError of validationErrors) {
+        console.log(validationError);
+      }
+    },
+    editRelayRuleCompleted() {
+      this.loading.editRelayRule = false;
+
+      // reload rules
+      this.listRelayRules();
+    },
+    async deleteRelayRule() {
+      this.loading.deleteRelayRule = true;
+      this.error.deleteRelayRule = "";
+      const taskAction = "remove-relay-rule";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.deleteRelayRuleAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.deleteRelayRuleCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: { rule_subject: this.form.rule_subject },
+          extra: {
+            title: this.$t("action." + taskAction),
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.deleteRelayRule = this.getErrorMessage(err);
+        this.loading.deleteRelayRule = false;
+        return;
+      }
+
+      this.onModalHidden();
+    },
+    deleteRelayRuleAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.loading.deleteRelayRule = false;
+    },
+    deleteRelayRuleCompleted() {
+      this.loading.deleteRelayRule = false;
+
+      // reload rules
+      this.listRelayRules();
+    },
+    toggleAddRule() {
+      this.resetForm();
+      this.isAddDialogShow = true;
+    },
+    toggleAddWildcardRule() {
+      this.resetForm({
+        rule_type: "wildcard",
+        rule_subject: "*",
+        host: "",
+        port: 0,
+        username: "",
+        password: "",
+        mandatory_tls: false,
+        enabled: true,
+      });
+      this.authentication = false;
+      this.isAddWildcardDialogShow = true;
+    },
+    toggleEditRule(row) {
+      this.resetForm(row);
+      this.isEditDialogShow = true;
     },
     toggleEnableDisableRule(row) {
-      this.ruleToEdit = row;
+      this.resetForm({ ...row, enabled: !row.enabled });
+      this.editRelayRule();
+    },
+    onModalHidden() {
+      this.isAddDialogShow = false;
+      this.isEditDialogShow = false;
+      this.isAddWildcardDialogShow = false;
+      this.resetForm();
+    },
+    onModalConfirm() {
+      if (this.isAddDialogShow || this.isAddWildcardDialogShow) {
+        this.addRelayRule();
+      } else if (this.isEditDialogShow) {
+        this.editRelayRule();
+      }
+    },
+    toggleDeleteRule(row) {
+      this.resetForm(row);
+      this.isDeleteDialogShow = true;
+    },
+    onDeleteModalHidden() {
+      this.isDeleteDialogShow = false;
+      this.resetForm();
+    },
+    onDeleteModalConfirm() {
+      this.deleteRelayRule();
     },
   },
 };
@@ -429,5 +882,18 @@ export default {
 
 .table-row {
   height: 60px;
+}
+
+.radio-menu-label {
+  font-size: 12px;
+  color: #525252;
+  margin-top: 2px;
+  margin-bottom: 8px;
+}
+
+.radio-menu-error {
+  color: #da1e28;
+  margin-top: -18px;
+  margin-bottom: 12px;
 }
 </style>
