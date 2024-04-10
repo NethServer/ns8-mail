@@ -36,9 +36,13 @@ try:
         agent.set_status('validation-failed')
         json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': rule_subject, 'error':'rule_subject_already_exist_cannot_be_used_more'}], fp=sys.stdout)
         sys.exit(4)
-    if rule_subject == '*' and rule_type != 'wildcard':
+    elif rule_subject == '*' and rule_type != 'wildcard':
         agent.set_status('validation-failed')
         json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': rule_subject, 'error':'rule_type_must_be_wildcard'}], fp=sys.stdout)
+        sys.exit(5)
+    elif rule_subject != '*' and rule_type == 'wildcard':
+        agent.set_status('validation-failed')
+        json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': rule_subject, 'error':'rule_subject_must_be_*'}], fp=sys.stdout)
         sys.exit(5)
     cur.execute("""INSERT INTO relayrules (rule_type, rule_subject , host, port, tls, username, password, enabled) VALUES (:rule_type, :rule_subject, :host, :port, :mandatory_tls, :username, :password, :enabled)""", values)
 
