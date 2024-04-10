@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "list-relay-rules output",
+    "$id": "http://schema.nethserver.org/mail/list-relay-rules-output.json",
+    "description": "List of relays rule",
+    "examples": [
+        [
+            {
+                "sender": "foo@foo.com",
+                "host": "smtp.domain.com",
+                "port": 587,
+                "mandatory_tls": true,
+                "username": "foo@domain.com",
+                "has_password": true,
+                "enabled": true
+            },
+            {
+                "sender": "foo.com",
+                "host": "smtp.domain.com",
+                "port": 587,
+                "mandatory_tls": false,
+                "username": "",
+                "has_password": false,
+                "enabled": false
+            },
+            {
+                "recipient": "foo@foo.com",
+                "host": "smtp.domain.com",
+                "port": 587,
+                "mandatory_tls": true,
+                "username": "foo@domain.com",
+                "has_password": true,
+                "enabled": true
+            },
+            {
+                "recipient": "foo.com",
+                "host": "smtp.domain.com",
+                "port": 587,
+                "mandatory_tls": false,
+                "username": "",
+                "has_password": false,
+                "enabled": false
+            }
+        ]
+    ],
+    "type": "object",
+    "items": {
+        "title": "List relay rules",
+        "$ref": "http://schema.nethserver.org/mail.json#/$defs/list-relay-rules"
+    }
+}

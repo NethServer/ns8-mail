@@ -914,6 +914,169 @@
                     }
                 }
             }
+        },
+        "list-relay-rules": {
+            "title": "List relays rule",
+            "description": "Describe how relays rule are  handled",
+            "type": "object",
+            "properties": {
+                "has_wildcard": {
+                    "type": "boolean"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "rule_type": {
+                                "type": "string",
+                                "enum": [
+                                    "sender",
+                                    "recipient",
+                                    "wildcard"
+                                ]
+                            },
+                            "rule_subject": {
+                                "type": "string",
+                                "anyOf": [
+                                    {
+                                        "format": "idn-email"
+                                    },
+                                    {
+                                        "format": "hostname",
+                                        "pattern": "\\."
+                                    },
+                                    {
+                                        "const": "*"
+                                    }
+                                ]
+                            },
+                            "host": {
+                                "type": "string",
+                                "format": "hostname",
+                                "pattern": "\\."
+                            },
+                            "port": {
+                                "type": "integer"
+                            },
+                            "tls": {
+                                "type": "boolean"
+                            },
+                            "username": {
+                                "type": "string"
+                            },
+                            "has_password": {
+                                "type": "boolean"
+                            },
+                            "enabled": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "rule_type",
+                            "rule_subject",
+                            "host",
+                            "port",
+                            "tls",
+                            "username",
+                            "has_password",
+                            "enabled"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "has_wildcard",
+                "rules"
+            ]
+        },
+        "commit-relay-rule": {
+            "title": "Alter relay rule",
+            "description": "Alter relay rule",
+            "type": "object",
+            "properties": {
+                "rule_type": {
+                    "type": "string",
+                    "enum": [
+                        "sender",
+                        "recipient",
+                        "wildcard"
+                    ]
+                },
+                "rule_subject": {
+                    "type": "string",
+                    "anyOf": [
+                        {
+                            "format": "idn-email"
+                        },
+                        {
+                            "format": "hostname",
+                            "pattern": "\\."
+                        },
+                        {
+                            "const": "*"
+                        },
+                        {
+                            "const": "piler"
+                        }
+                    ]
+                },
+                "host": {
+                    "type": "string",
+                    "format": "hostname",
+                    "pattern": "\\."
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "mandatory_tls": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "rule_type",
+                "rule_subject",
+                "host",
+                "port",
+                "mandatory_tls",
+                "username",
+                "password",
+                "enabled"
+            ]
+        },
+        "remove-relay-rule": {
+            "title": "Remove relay rule",
+            "description": "Remove relay rule",
+            "type": "object",
+            "properties": {
+                "rule_subject": {
+                    "type": "string",
+                    "anyOf": [
+                        {
+                            "format": "idn-email"
+                        },
+                        {
+                            "format": "hostname",
+                            "pattern": "\\."
+                        },
+                        {
+                            "const": "*"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "rule_subject"
+            ]
         }
     }
 }
