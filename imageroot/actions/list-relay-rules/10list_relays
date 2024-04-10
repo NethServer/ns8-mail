@@ -17,7 +17,7 @@ sdb = mail.pcdb_connect(readonly=True)
 rules = []
 has_wildcard =  False
 try:
-    for row in sdb.execute("""SELECT rule_type, rule_subject, host, port, tls, username, password, enabled FROM relayrules"""):
+    for row in sdb.execute("""SELECT rule_type, rule_subject, host, port, tls, username, password, enabled FROM relayrules where rule_type in ('sender', 'recipient', 'wildcard')"""):
         if row['rule_subject'] == '*':
             has_wildcard = True
         rules.append({
