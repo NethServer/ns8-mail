@@ -17,16 +17,15 @@ class RelayNotFoundError(Exception):
 request = json.load(sys.stdin)
 
 sdb = mail.pcdb_connect()
-
-sender = request.get('sender')
-recipient = request.get('recipient')
+rule_type = request['rule_type']
+rule_subject = request['rule_subject']
 password = request['password']
 
-def get_password_from_database(sender_or_recipient):
+def get_password_from_database(rule_subject):
     # Function to query the database for the password based on sender or recipient
     sdb = mail.pcdb_connect()
     cur = sdb.cursor()
-    cur.execute("SELECT password FROM relayrules WHERE sender=? OR dest=?", (sender_or_recipient, sender_or_recipient))
+    cur.execute("SELECT password FROM relayrules WHERE rule_subject=?", (rule_subject,))
     result = cur.fetchone()
     sdb.close()
     if result:
@@ -37,58 +36,29 @@ def get_password_from_database(sender_or_recipient):
         sys.exit(3)
 
 # password not changed, we need to retrieve it from the database
-if sender and password == '':
-    password = get_password_from_database(sender)
-
-elif recipient and password == '':
-    password = get_password_from_database(recipient)
+if password == '':
+    password = get_password_from_database(rule_subject)
 
 try:
     cur = sdb.cursor()
 
-    if sender:
-        if 'host' in request:
-            cur.execute("""UPDATE relayrules SET host=? WHERE sender=?""", (request['host'], sender))
+    if 'host' in request:
+        cur.execute("""UPDATE relayrules SET host=? WHERE rule_subject=?""", (request['host'], rule_subject))
 
-        if 'port' in request:
-            cur.execute("""UPDATE relayrules SET port=? WHERE sender=?""", (request['port'], sender))
+    if 'port' in request:
+        cur.execute("""UPDATE relayrules SET port=? WHERE rule_subject=?""", (request['port'], rule_subject))
 
-        if 'mandatory_tls' in request:
-            cur.execute("""UPDATE relayrules SET tls=? WHERE sender=?""", ('encrypt' if request['mandatory_tls'] else 'may', sender))
+    if 'mandatory_tls' in request:
+        cur.execute("""UPDATE relayrules SET tls=? WHERE rule_subject=?""", ('encrypt' if request['mandatory_tls'] else 'may', rule_subject))
 
-        if 'username' in request:
-            cur.execute("""UPDATE relayrules SET username=? WHERE sender=?""", (request['username'], sender))
+    if 'username' in request:
+        cur.execute("""UPDATE relayrules SET username=? WHERE rule_subject=?""", (request['username'], rule_subject))
 
-        if 'password' in request:
-            cur.execute("""UPDATE relayrules SET password=? WHERE sender=?""", (password, sender))
+    if 'password' in request:
+        cur.execute("""UPDATE relayrules SET password=? WHERE rule_subject=?""", (password, rule_subject))
 
-        if 'enabled' in request:
-            cur.execute("""UPDATE relayrules SET enabled=? WHERE sender=?""", (1 if request['enabled'] else 0, sender))
-
-        if 'description' in request:
-            cur.execute("""UPDATE relayrules SET rdesc=? WHERE sender=?""", (request.get('description',''), sender))
-
-    elif recipient:
-        if 'host' in request:
-            cur.execute("""UPDATE relayrules SET host=? WHERE dest=?""", (request['host'], recipient))
-
-        if 'port' in request:
-            cur.execute("""UPDATE relayrules SET port=? WHERE dest=?""", (request['port'], recipient))
-
-        if 'mandatory_tls' in request:
-            cur.execute("""UPDATE relayrules SET tls=? WHERE dest=?""", ('encrypt' if request['mandatory_tls'] else 'may', recipient))
-
-        if 'username' in request:
-            cur.execute("""UPDATE relayrules SET username=? WHERE dest=?""", (request['username'], recipient))
-
-        if 'password' in request:
-            cur.execute("""UPDATE relayrules SET password=? WHERE dest=?""", (password, recipient))
-
-        if 'enabled' in request:
-            cur.execute("""UPDATE relayrules SET enabled=? WHERE dest=?""", (1 if request['enabled'] else 0, recipient))
-
-        if 'description' in request:
-            cur.execute("""UPDATE relayrules SET rdesc=? WHERE dest=?""", (request.get('description',''), recipient))
+    if 'enabled' in request:
+        cur.execute("""UPDATE relayrules SET enabled=? WHERE rule_subject=?""", (1 if request['enabled'] else 0, rule_subject))
 
     if cur.rowcount == 0:
         raise RelayNotFoundError()
@@ -96,11 +66,7 @@ try:
 except RelayNotFoundError:
     sdb.rollback()
     agent.set_status('validation-failed')
-
-    if sender:
-        json.dump([{'field': 'sender', 'parameter': 'sender', 'value': sender, 'error':'relay_not_found'}], fp=sys.stdout)
-    elif recipient:
-        json.dump([{'field': 'recipient', 'parameter': 'recipient', 'value': recipient, 'error':'relay_not_found'}], fp=sys.stdout)
+    json.dump([{'field': 'rule_subject', 'parameter': 'subject', 'value': rule_subject, 'error':'relay_not_found'}], fp=sys.stdout)
     sys.exit(2)
 
 else:
