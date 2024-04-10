@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS relayrules (
     username TEXT,
     "password" TEXT,
     "enabled" INT DEFAULT 1,
-    UNIQUE (rule_type, rule_subject, host, port)
+    PRIMARY KEY (rule_subject)
 );
