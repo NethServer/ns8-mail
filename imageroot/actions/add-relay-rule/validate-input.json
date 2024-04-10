@@ -5,7 +5,8 @@
     "description": "Add the attributes of an existing relay rule",
     "examples": [
         {
-            "sender": "foo@foo.com",
+            "rule_type": "sender",
+            "rule_subject": "foo.com",
             "host": "smtp.domain.com",
             "port": 587,
             "mandatory_tls": true,
@@ -14,7 +15,8 @@
             "enabled": true
         },
         {
-            "sender": "foo.com",
+            "rule_type": "sender",
+            "rule_subject": "john@foo.com",
             "host": "smtp.domain.com",
             "port": 587,
             "mandatory_tls": false,
@@ -23,7 +25,8 @@
             "enabled": false
         },
         {
-            "recipient": "foo@foo.com",
+            "rule_type": "wildcard",
+            "rule_subject": "*",
             "host": "smtp.domain.com",
             "port": 587,
             "mandatory_tls": true,
@@ -32,7 +35,8 @@
             "enabled": true
         },
         {
-            "recipient": "foo.com",
+            "rule_type": "recipient",
+            "rule_subject": "foo2.com",
             "host": "smtp.domain.com",
             "port": 587,
             "mandatory_tls": false,
