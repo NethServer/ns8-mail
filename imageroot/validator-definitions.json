@@ -928,29 +928,26 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "sender": {
-                                "oneOf": [
-                                    {
-                                        "type": "string",
-                                        "format": "email"
-                                    },
-                                    {
-                                        "type": "string",
-                                        "format": "hostname",
-                                        "pattern": "\\."
-                                    }
+                            "rule_type": {
+                                "type": "string",
+                                "enum": [
+                                    "sender",
+                                    "recipient",
+                                    "wildcard"
                                 ]
                             },
-                            "recipient": {
-                                "oneOf": [
+                            "rule_subject": {
+                                "type": "string",
+                                "anyOf": [
                                     {
-                                        "type": "string",
-                                        "format": "email"
+                                        "format": "idn-email"
                                     },
                                     {
-                                        "type": "string",
                                         "format": "hostname",
                                         "pattern": "\\."
+                                    },
+                                    {
+                                        "const": "*"
                                     }
                                 ]
                             },
@@ -976,24 +973,14 @@
                             }
                         },
                         "required": [
+                            "rule_type",
+                            "rule_subject",
                             "host",
                             "port",
                             "tls",
                             "username",
                             "has_password",
                             "enabled"
-                        ],
-                        "oneOf": [
-                            {
-                                "required": [
-                                    "sender"
-                                ]
-                            },
-                            {
-                                "required": [
-                                    "recipient"
-                                ]
-                            }
                         ]
                     }
                 }
@@ -1008,27 +995,21 @@
             "description": "Alter relay rule",
             "type": "object",
             "properties": {
-                "sender": {
-                    "oneOf": [
-                        {
-                            "type": "string",
-                            "format": "email"
-                        },
-                        {
-                            "type": "string",
-                            "format": "hostname",
-                            "pattern": "\\."
-                        }
+                "rule_type": {
+                    "type": "string",
+                    "enum": [
+                        "sender",
+                        "recipient",
+                        "wildcard"
                     ]
                 },
-                "recipient": {
-                    "oneOf": [
+                "rule_subject": {
+                    "type": "string",
+                    "anyOf": [
                         {
-                            "type": "string",
-                            "format": "email"
+                            "format": "idn-email"
                         },
                         {
-                            "type": "string",
                             "format": "hostname",
                             "pattern": "\\."
                         },
@@ -1059,60 +1040,28 @@
                 }
             },
             "required": [
+                "rule_type",
+                "rule_subject",
                 "host",
                 "port",
                 "mandatory_tls",
                 "username",
                 "password",
                 "enabled"
-            ],
-            "oneOf": [
-                {
-                    "required": [
-                        "sender"
-                    ]
-                },
-                {
-                    "required": [
-                        "recipient"
-                    ]
-                }
             ]
         },
         "remove-relay-rule": {
-            "examples": [
-                {
-                    "sender": "foo@foo.com"
-                },
-                {
-                    "recipient": "foo@foo.com"
-                }
-            ],
             "title": "Remove relay rule",
             "description": "Remove relay rule",
             "type": "object",
             "properties": {
-                "sender": {
-                    "oneOf": [
+                "rule_subject": {
+                    "type": "string",
+                    "anyOf": [
                         {
-                            "type": "string",
-                            "format": "email"
+                            "format": "idn-email"
                         },
                         {
-                            "type": "string",
-                            "format": "hostname",
-                            "pattern": "\\."
-                        }
-                    ]
-                },
-                "recipient": {
-                    "oneOf": [
-                        {
-                            "type": "string",
-                            "format": "email"
-                        },
-                        {
-                            "type": "string",
                             "format": "hostname",
                             "pattern": "\\."
                         },
@@ -1122,17 +1071,8 @@
                     ]
                 }
             },
-            "oneOf": [
-                {
-                    "required": [
-                        "sender"
-                    ]
-                },
-                {
-                    "required": [
-                        "recipient"
-                    ]
-                }
+            "required": [
+                "rule_subject"
             ]
         }
     }
