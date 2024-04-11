@@ -832,7 +832,7 @@ export default {
         rule_type: "wildcard",
         rule_subject: "*",
         host: "",
-        port: 0,
+        port: "",
         username: "",
         password: "",
         tls: false,
