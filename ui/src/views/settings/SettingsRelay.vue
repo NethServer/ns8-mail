@@ -62,7 +62,7 @@
                   <cv-text-area
                     v-model="networks"
                     ref="networks"
-                    :invalid-message="$t(error.networks)"
+                    :invalid-message="error.networks"
                     type="text"
                     :helper-text="$t('relay.settings.ip_helper')"
                     class="text-area-size"

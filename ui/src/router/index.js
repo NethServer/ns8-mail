@@ -57,7 +57,7 @@ const routes = [
     path: "/relay",
     name: "Relay",
     component: () =>
-      import(/* webpackChunkName: "addresses" */ "../views/Relay.vue"),
+      import(/* webpackChunkName: "relay" */ "../views/Relay.vue"),
   },
   {
     path: "/settings",
@@ -104,7 +104,7 @@ const routes = [
     name: "SettingsRelay",
     component: () =>
       import(
-        /* webpackChunkName: "settings-queue" */ "../views/settings/SettingsRelay.vue"
+        /* webpackChunkName: "settings-relay" */ "../views/settings/SettingsRelay.vue"
       ),
   },
   {

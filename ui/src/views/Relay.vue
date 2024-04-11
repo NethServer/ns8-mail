@@ -909,4 +909,3 @@ export default {
   margin-bottom: 12px;
 }
 </style>
-add-module ghcr.io/nethserver/mail:1.3.7-dev.1
