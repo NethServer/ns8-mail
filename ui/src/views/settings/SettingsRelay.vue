@@ -98,6 +98,7 @@
                     :disabled="
                       loading.getRelaySettings || loading.setRelaySettings
                     "
+                    value="toggleValue"
                     ><template slot="tooltip">
                       <span v-html="$t('relay.settings.toggle_tooltip')"></span>
                     </template>

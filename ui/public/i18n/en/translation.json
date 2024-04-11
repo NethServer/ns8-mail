@@ -57,6 +57,10 @@
     "task_aborted": "{action} aborted"
   },
   "action": {
+    "list-relay-rules": "List relay rules",
+    "add-relay-rule": "Add relay rule",
+    "alter-relay-rule": "Edit relay rule",
+    "remove-relay-rule": "Remove relay rule",
     "get-status": "Get status",
     "get-configuration": "Get configuration",
     "configure-module": "Configure module",
@@ -395,8 +399,6 @@
     "col_rule_subject": "Rule subject",
     "col_host": "Hostname",
     "col_enabled": "Status",
-    "incorrect_username_or_password": "Incorrect username or password",
-    "port_must_be_a_number": "Port field must be a number",
     "settings": {
       "ip_label": "Allow relay from IP address",
       "ip_helper": "One address per line (IPv4/CIDR)",
@@ -404,6 +406,14 @@
       "toggle_label": "Enforce sender/login match",
       "toggle_tooltip": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
       "save": "Save"
+    },
+    "error": {
+      "incorrect_username_or_password": "Incorrect username or password",
+      "port_must_be_a_number": "Port field must be a number",
+      "host_pattern": "Incorrect host pattern",
+      "rule_subject_number_any_of": "",
+      "rule_subject_format": "Incorrect format, must be 'example@email.com' or 'mydomain.com'",
+      "connection_timeout_error": "Connection timeout error"
     }
   },
   "queue": {

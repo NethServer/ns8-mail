@@ -281,6 +281,11 @@
             v-model="authentication"
             ref="authentication"
             value="toggleValue"
+            @change="
+              if (!authentication) {
+                (form.username = ''), (form.password = '');
+              }
+            "
           >
             <template slot="text-left">{{ $t("common.disabled") }}</template>
             <template slot="text-right">{{ $t("common.enabled") }}</template>
@@ -467,10 +472,10 @@ export default {
       this.form.rule_type = rule ? rule.rule_type : "";
       this.form.rule_subject = rule ? rule.rule_subject : "";
       this.form.host = rule ? rule.host : "";
-      this.form.port = rule ? rule.port : "";
+      this.form.port = rule ? rule.port.toString() : "";
       this.form.username = rule ? rule.username : "";
       this.form.password = "";
-      this.form.mandatory_tls = rule ? rule.mandatory_tls : false;
+      this.form.mandatory_tls = rule ? rule.tls : false;
       this.form.enabled = rule ? rule.enabled : true;
       this.authentication = rule ? rule.has_password : false;
     },
@@ -550,7 +555,7 @@ export default {
       }
 
       if (this.form.port && isNaN(this.form.port)) {
-        this.error.form.port = this.$t("relay.port_must_be_a_number");
+        this.error.form.port = this.$t("relay.error.port_must_be_a_number");
 
         if (isValidationOk) {
           this.focusElement("form.port");
@@ -601,6 +606,22 @@ export default {
       }
 
       return isValidationOk;
+    },
+    validationFailedForm(validationErrors) {
+      for (const validationError of validationErrors) {
+        const field = validationError.field;
+        this.error.form[field] = this.$t(
+          "relay.error." + validationError.error
+        );
+        if (field == "test_rule_credentials") {
+          this.error.form.username = this.$t(
+            "relay.error." + validationError.error
+          );
+          this.error.form.password = this.$t(
+            "relay.error." + validationError.error
+          );
+        }
+      }
     },
     async addRelayRule() {
       if (!this.validateForm()) {
@@ -669,13 +690,11 @@ export default {
     addRelayRuleValidationFailed(validationErrors) {
       this.loading.addRelayRule = false;
 
-      for (const validationError of validationErrors) {
-        console.log(validationError);
-      }
+      this.validationFailedForm(validationErrors);
     },
     addRelayRuleCompleted() {
       this.loading.addRelayRule = false;
-      console.log("coaoodsods");
+
       // reload rules
       this.onModalHidden();
       this.listRelayRules();
@@ -747,9 +766,7 @@ export default {
     editRelayRuleValidationFailed(validationErrors) {
       this.loading.editRelayRule = false;
 
-      for (const validationError of validationErrors) {
-        console.log(validationError);
-      }
+      this.validationFailedForm(validationErrors);
     },
     editRelayRuleCompleted() {
       this.loading.editRelayRule = false;
@@ -794,7 +811,7 @@ export default {
         return;
       }
 
-      this.onModalHidden();
+      this.onDeleteModalHidden();
     },
     deleteRelayRuleAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
@@ -818,7 +835,7 @@ export default {
         port: 0,
         username: "",
         password: "",
-        mandatory_tls: false,
+        tls: false,
         enabled: true,
       });
       this.authentication = false;
