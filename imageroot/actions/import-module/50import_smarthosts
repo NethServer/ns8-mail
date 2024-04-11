@@ -28,7 +28,7 @@ with sdb:
             'rule_subject': smart['name'].removeprefix('@'),
             'host': smart['props'].get('Host'),
             'port': smart['props'].get('Port'),
-            'mandatory_tls': True if smart['props'].get('TlsStatus') == 'enabled' else False,
+            'mandatory_tls': 'encrypt' if smart['props'].get('TlsStatus') == 'enabled' else 'may',
             'username': smart['props'].get('Username'),
             'password': smart['props'].get('Password'),
             'enabled': True if smart['props'].get('status') == 'enabled' else False,
