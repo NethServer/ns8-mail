@@ -413,7 +413,10 @@
       "host_pattern": "Incorrect host pattern",
       "rule_subject_number_any_of": "",
       "rule_subject_format": "Incorrect format, must be 'example@email.com' or 'mydomain.com'",
-      "connection_timeout_error": "Connection timeout error"
+      "connection_timeout_error": "Connection timeout error",
+      "connection_not_supported_by_server": "Connection not supported by the server",
+      "cannot_authenticate_to_server": "Connection timeout error",
+      "rule_subject_already_exist_cannot_be_used_more": "This domain already exists and it cannot be used"
     }
   },
   "queue": {
