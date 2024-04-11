@@ -25,40 +25,21 @@
         <h2>{{ $t("relay.title") }}</h2>
       </cv-column>
     </cv-row>
-    <cv-row v-if="error.setRelaySettings">
-      <cv-column>
-        <NsInlineNotification
-          kind="error"
-          :title="$t('action.set-mailbox-settings')"
-          :description="error.setRelaySettings"
-          :showCloseButton="false"
-        />
-      </cv-column>
-    </cv-row>
-    <cv-row v-if="error.getRelaySettings">
-      <cv-column>
-        <NsInlineNotification
-          kind="error"
-          :title="$t('action.get-mailbox-settings')"
-          :description="error.getRelaySettings"
-          :showCloseButton="false"
-        />
-      </cv-column>
-    </cv-row>
-    <cv-row v-else>
+    <cv-row>
       <cv-column>
         <cv-tile light>
           <cv-grid fullWidth class="no-padding">
             <cv-row>
               <cv-column>
                 <cv-skeleton-text
-                  v-if="loading.getRelaySettings"
+                  v-if="loading.getRelayConfiguration"
                   heading
                   paragraph
-                  :line-count="8"
+                  :line-count="11"
                   width="80%"
-                ></cv-skeleton-text>
-                <cv-form v-else @submit.prevent="setRelaySettings">
+                >
+                </cv-skeleton-text>
+                <cv-form v-else @submit.prevent="setRelayConfiguration">
                   <div class="text-area-label-and-tooltip">
                     <span class="text-area-label">{{
                       $t("relay.settings.ip_label")
@@ -79,45 +60,42 @@
                     </cv-interactive-tooltip>
                   </div>
                   <cv-text-area
-                    v-model="ip_addresses"
-                    ref="ip_addresses"
-                    :invalid-message="$t(error.ip_addresses)"
+                    v-model="networks"
+                    ref="networks"
+                    :invalid-message="$t(error.networks)"
                     type="text"
                     :helper-text="$t('relay.settings.ip_helper')"
-                    :disabled="
-                      loading.getRelaySettings || loading.setRelaySettings
-                    "
                     class="text-area-size"
+                    rows="6"
                   >
                   </cv-text-area>
                   <NsToggle
-                    v-model="enforce"
-                    ref="enforce"
+                    v-model="postfix_restricted_sender"
+                    ref="postfix_restricted_sender"
                     :label="$t('relay.settings.toggle_label')"
                     :form-item="true"
-                    :disabled="
-                      loading.getRelaySettings || loading.setRelaySettings
-                    "
                     value="toggleValue"
-                    ><template slot="tooltip">
+                  >
+                    <template slot="tooltip">
                       <span v-html="$t('relay.settings.toggle_tooltip')"></span>
                     </template>
-                    <template slot="text-left">{{
-                      $t("common.disabled")
-                    }}</template>
-                    <template slot="text-right">{{
-                      $t("common.enabled")
-                    }}</template>
+                    <template slot="text-left"
+                      >{{ $t("common.disabled") }}
+                    </template>
+                    <template slot="text-right"
+                      >{{ $t("common.enabled") }}
+                    </template>
                   </NsToggle>
                   <NsButton
                     kind="primary"
                     :icon="Save20"
-                    :loading="loading.setRelaySettings"
+                    :loading="loading.setRelayConfiguration"
                     :disabled="
-                      loading.getRelaySettings || loading.setRelaySettings
+                      loading.getRelayConfiguration ||
+                      loading.setRelayConfiguration
                     "
-                    >{{ $t("relay.settings.save") }}</NsButton
-                  >
+                    >{{ $t("relay.settings.save") }}
+                  </NsButton>
                 </cv-form>
               </cv-column>
             </cv-row>
@@ -160,23 +138,22 @@ export default {
       q: {
         page: "settingsRelay",
       },
-      ip_addresses: "",
-      enforce: false,
+      networks: "",
+      postfix_restricted_sender: false,
       loading: {
-        getRelaySettings: false,
-        setRelaySettings: false,
+        getRelayConfiguration: false,
+        setRelayConfiguration: false,
       },
       error: {
-        getRelaySettings: "",
-        setRelaySettings: "",
-        ip_addresses: "",
+        getRelayConfiguration: "",
+        setRelayConfiguration: "",
+        networks: "",
       },
     };
   },
   computed: {
     ...mapState(["core", "appName", "instanceName"]),
   },
-  watch: {},
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.watchQueryData(vm);
@@ -188,28 +165,42 @@ export default {
     next();
   },
   created() {
-    this.getRelaySettings();
+    this.getRelayConfiguration();
   },
   methods: {
     goToSettings() {
       this.goToAppPage(this.instanceName, "settings");
     },
-    async getRelaySettings() {
-      this.loading.getRelaySettings = true;
-      this.error.getRelaySettings = "";
-      const taskAction = "get-queue-settings"; // TODO put correct task
+    arrayToString(networks) {
+      return networks.join("\n");
+    },
+    stringToArray(networks) {
+      const lines = networks.split("\n");
+      const array = [];
+
+      for (const line of lines) {
+        if (line != "") {
+          array.push(line);
+        }
+      }
+      return array;
+    },
+    async getRelayConfiguration() {
+      this.loading.getRelayConfiguration = true;
+      this.error.getRelayConfiguration = "";
+      const taskAction = "get-relay-configuration";
       const eventId = this.getUuid();
 
       // register to task error
       this.core.$root.$once(
         `${taskAction}-aborted-${eventId}`,
-        this.getRelaySettingsAborted
+        this.getRelayConfigurationAborted
       );
 
       // register to task completion
       this.core.$root.$once(
         `${taskAction}-completed-${eventId}`,
-        this.getRelaySettingsCompleted
+        this.getRelayConfigurationCompleted
       );
 
       const res = await to(
@@ -226,87 +217,73 @@ export default {
 
       if (err) {
         console.error(`error creating task ${taskAction}`, err);
-        this.error.getRelaySettings = this.getErrorMessage(err);
-        this.loading.getRelaySettings = false;
+        this.error.getRelayConfiguration = this.getErrorMessage(err);
+        this.loading.getRelayConfiguration = false;
         return;
       }
     },
-    getRelaySettingsAborted(taskResult, taskContext) {
+    getRelayConfigurationAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.getRelaySettings = this.$t("error.generic_error");
-      this.loading.getRelaySettings = false;
+      this.loading.getRelayConfiguration = false;
     },
-    getRelaySettingsCompleted(taskContext, taskResult) {
-      this.loading.getRelaySettings = false;
-      this.ip_addresses = taskResult.output.ip_addresses;
-      this.enforce = taskResult.output.enforce;
+    getRelayConfigurationCompleted(taskContext, taskResult) {
+      this.loading.getRelayConfiguration = false;
+      this.networks = this.arrayToString(taskResult.output.networks);
+      this.postfix_restricted_sender =
+        taskResult.output.postfix_restricted_sender;
     },
-    validatesetRelaySettings() {
+    validateSetRelayConfiguration() {
       this.clearErrors();
       let isValidationOk = true;
 
-      if (!this.ip_addresses) {
-        this.error.ip_addresses = this.$t("common.required");
+      if (!this.networks) {
+        this.error.networks = this.$t("common.required_field");
+
         if (isValidationOk) {
-          this.focusElement("ip_addresses");
-          isValidationOk = false;
-        }
-      } else if (this.ip_addresses && parseInt(this.ip_addresses) < 1) {
-        this.error.ip_addresses = this.$t(
-          "settings_queue.must_be_superior_or_equal_to_1"
-        );
-        if (isValidationOk) {
-          this.focusElement("ip_addresses");
-          isValidationOk = false;
-        }
-      } else if (this.ip_addresses && parseInt(this.ip_addresses) > 200) {
-        this.error.ip_addresses = this.$t(
-          "settings_queue.must_be_inferior_or_equal_to_200"
-        );
-        if (isValidationOk) {
-          this.focusElement("ip_addresses");
+          this.focusElement("networks");
           isValidationOk = false;
         }
       }
+
       return isValidationOk;
     },
-    async setRelaySettings() {
-      if (!this.validatesetRelaySettings()) {
+    async setRelayConfiguration() {
+      if (!this.validateSetRelayConfiguration()) {
         return;
       }
-      this.loading.setRelaySettings = true;
-      this.error.setRelaySettings = "";
-      this.error.ip_addresses = "";
-      const taskAction = "set-queue-settings"; // TODO put correct task
+
+      this.loading.setRelayConfiguration = true;
+      this.error.setRelayConfiguration = "";
+      const taskAction = "set-relay-configuration";
       const eventId = this.getUuid();
 
       // register to task error
       this.core.$root.$once(
         `${taskAction}-aborted-${eventId}`,
-        this.setRelaySettingsAborted
+        this.setRelayConfigurationAborted
       );
 
       // register to task validation
       this.core.$root.$once(
         `${taskAction}-validation-failed-${eventId}`,
-        this.setRelaySettingsValidationFailed
+        this.setRelayConfigurationValidationFailed
       );
 
       // register to task completion
       this.core.$root.$once(
         `${taskAction}-completed-${eventId}`,
-        this.setRelaySettingsCompleted
+        this.setRelayConfigurationCompleted
       );
 
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            ip_addresses: parseInt(this.ip_addresses),
+            networks: this.stringToArray(this.networks),
+            postfix_restricted_sender: this.postfix_restricted_sender,
           },
           extra: {
             title: this.$t("action." + taskAction),
-            description: this.$t("common.processing"),
             eventId,
           },
         })
@@ -315,41 +292,39 @@ export default {
 
       if (err) {
         console.error(`error creating task ${taskAction}`, err);
-        this.error.setRelaySettings = this.getErrorMessage(err);
-        this.loading.setRelaySettings = false;
+        this.error.setRelayConfiguration = this.getErrorMessage(err);
+        this.loading.setRelayConfiguration = false;
         return;
       }
     },
-    setRelaySettingsAborted(taskResult, taskContext) {
+    setRelayConfigurationAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.setRelaySettings = this.$t("error.generic_error");
-      this.loading.setRelaySettings = false;
+      this.loading.setRelayConfiguration = false;
     },
-    setRelaySettingsValidationFailed(validationErrors) {
-      this.loading.setRelaySettings = false;
-      let focusAlreadySet = false;
+    setRelayConfigurationValidationFailed(validationErrors) {
+      this.loading.setRelayConfiguration = false;
 
+      const errorLines = [];
       for (const validationError of validationErrors) {
-        const param = validationError.parameter;
-
-        // set i18n error message
-        this.error[param] = this.getI18nStringWithFallback(
-          "settings_mailboxes." + validationError.error,
-          "error." + validationError.error,
-          this.core
-        );
-
-        if (!focusAlreadySet && param != "(root)") {
-          this.focusElement(param);
-          focusAlreadySet = true;
+        const line = parseInt(validationError.field.split(".")[1]);
+        if (!errorLines.find((x) => x == line + 1)) {
+          errorLines.push(line + 1);
         }
       }
+
+      this.error.networks = this.$tc(
+        "relay.error.networks_format_error",
+        errorLines.length,
+        {
+          lines: errorLines.join(", "),
+        }
+      );
     },
-    setRelaySettingsCompleted() {
-      this.loading.setRelaySettings = false;
+    setRelayConfigurationCompleted() {
+      this.loading.setRelayConfiguration = false;
 
       // reload settings
-      this.getRelaySettings();
+      this.getRelayConfiguration();
     },
   },
 };

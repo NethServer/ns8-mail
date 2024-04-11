@@ -677,9 +677,6 @@ export default {
     addRelayRuleAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
       this.loading.addRelayRule = false;
-
-      // hide modal so that user can see error notification
-      this.onModalHidden();
     },
     addRelayRuleValidationOk() {
       this.loading.addRelayRule = false;
@@ -753,9 +750,6 @@ export default {
     editRelayRuleAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
       this.loading.editRelayRule = false;
-
-      // hide modal so that user can see error notification
-      this.onModalHidden();
     },
     editRelayRuleValidationOk() {
       this.loading.editRelayRule = false;

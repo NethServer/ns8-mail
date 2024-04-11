@@ -61,6 +61,8 @@
     "add-relay-rule": "Add relay rule",
     "alter-relay-rule": "Edit relay rule",
     "remove-relay-rule": "Remove relay rule",
+    "get-relay-configuration": "Get relay configuration",
+    "set-relay-configuration": "Set relay configuration",
     "get-status": "Get status",
     "get-configuration": "Get configuration",
     "configure-module": "Configure module",
@@ -416,7 +418,8 @@
       "connection_timeout_error": "Connection timeout error",
       "connection_not_supported_by_server": "Connection not supported by the server",
       "cannot_authenticate_to_server": "Connection timeout error",
-      "rule_subject_already_exist_cannot_be_used_more": "This domain already exists and it cannot be used"
+      "rule_subject_already_exist_cannot_be_used_more": "This domain already exists and it cannot be used",
+      "networks_format_error": "Invalid format at line: {lines} | Invalid format at lines: {lines}"
     }
   },
   "queue": {
