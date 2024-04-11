@@ -20,7 +20,7 @@ sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
 with sdb:
     cur = sdb.cursor()
 
-    print(agent.SD_INFO + "Importing smarthosts...")
+    print(agent.SD_INFO + "Importing smarthosts...", file=sys.stderr)
     for smart in json.load(open('smarthosts.json')):
 
         vals = {
