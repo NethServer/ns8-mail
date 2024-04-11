@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import json
+import agent
+import mail
+
+# Global stdout redirection:
+sys.stdout = sys.stderr
+
+sdb = mail.pcdb_connect()
+sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
+
+# import the Esmith smarthosts database
+with sdb:
+    cur = sdb.cursor()
+
+    print(agent.SD_INFO + "Importing smarthosts...")
+    for smart in json.load(open('smarthosts.json')):
+
+        vals = {
+            'rule_type':smart['type'],
+            'rule_subject': smart['name'].removeprefix('@'),
+            'host': smart['props'].get('Host'),
+            'port': smart['props'].get('Port'),
+            'mandatory_tls': True if smart['props'].get('TlsStatus') == 'enabled' else False,
+            'username': smart['props'].get('Username'),
+            'password': smart['props'].get('Password'),
+            'enabled': True if smart['props'].get('status') == 'enabled' else False,
+        }
+        cur.execute("""INSERT INTO relayrules (rule_type, rule_subject , host, port, tls, username, password, enabled) 
+                    VALUES (:rule_type, :rule_subject, :host, :port, :mandatory_tls, :username, :password, :enabled)""", vals)
