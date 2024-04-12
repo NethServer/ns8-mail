@@ -62,7 +62,7 @@
                       loading.addRelayRule
                     "
                     class="wildcard-button"
-                    >{{ $t("relay.add_wildcard_rule") }}
+                    >{{ $t("relay.set_default_rule") }}
                   </NsButton>
                 </cv-column>
               </cv-row>
@@ -248,7 +248,7 @@
             {{ $t("common.required") }}
           </p>
           <NsTextInput
-            v-if="!isAddWildcardDialogShow || !form.rule_type == 'wildcard'"
+            v-if="!isAddWildcardDialogShow && form.rule_type != 'wildcard'"
             :disabled="isEditDialogShow"
             v-model.trim="form.rule_subject"
             :label="
@@ -327,7 +327,7 @@
           ? $t("relay.add_rule")
           : isEditDialogShow
           ? $t("relay.edit_rule")
-          : $t("relay.add_wildcard_rule")
+          : $t("relay.set_default_rule")
       }}</template>
     </NsModal>
     <NsModal
@@ -344,7 +344,7 @@
         <span
           v-html="
             form.rule_type == 'wildcard'
-              ? $t('relay.delete_rule_wildcard')
+              ? $t('relay.delete_default_rule')
               : $tc('relay.delete_rule_description', form.rule_subject, {
                   ruleType: ruleTypeTranslation,
                   ruleSubject: form.rule_subject,
@@ -442,10 +442,10 @@ export default {
         return this.$t("relay.add_relay_rule");
       } else if (this.isEditDialogShow) {
         return this.form.rule_type == "wildcard"
-          ? this.$t("relay.edit_wildcard_rule")
+          ? this.$t("relay.edit_default_rule")
           : this.$t("relay.edit_relay_rule");
       } else {
-        return this.$t("relay.add_wildcard_rule");
+        return this.$t("relay.set_default_rule");
       }
     },
     ruleTypeTranslation: function () {
