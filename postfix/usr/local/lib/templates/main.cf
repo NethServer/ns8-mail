@@ -37,7 +37,7 @@ inet_protocols = all
 myhostname = ${tmpl_myhostname}
 alias_maps =
 alias_database =
-mynetworks = ${tmpl_mynetworks} sqlite:${S}meta_directory/mynetworks.cf
+mynetworks = ${tmpl_mynetworks} cidr:${S}meta_directory/mynetworks.cidr
 debug_peer_list = ${S}{debug_delivery?{${tmpl_debug_peer_list}}:{}}
 message_size_limit = 100000000
 
