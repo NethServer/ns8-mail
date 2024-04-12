@@ -22,11 +22,11 @@ if [ "$(( POSTFIX_DEBUG & 1 ))" -eq 1 ] ; then
     tmpl_debug_rewrite="-v"
 fi
 
-if [ "$(( POSTFIX_DEBUG & 2 ))" -eq 1 ] ; then
+if [ "$(( POSTFIX_DEBUG & 2 ))" -eq 2 ] ; then
     tmpl_debug_delivery="-v"
 fi
 
-if [ "$(( POSTFIX_DEBUG & 4 ))" -eq 1 ] ; then
+if [ "$(( POSTFIX_DEBUG & 4 ))" -eq 4 ] ; then
     tmpl_debug_relay="-v"
 fi
 

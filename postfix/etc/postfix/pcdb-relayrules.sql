@@ -4,6 +4,7 @@
 CREATE TABLE IF NOT EXISTS relayrules (
     rule_type TEXT,
     rule_subject TEXT COLLATE NOCASE,
+    transport TEXT DEFAULT 'smtp',
     host TEXT NOT NULL COLLATE NOCASE,
     port INT DEFAULT 25,
     tls TEXT DEFAULT 'may',

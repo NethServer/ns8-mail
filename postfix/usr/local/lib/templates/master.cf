@@ -39,3 +39,5 @@ ${tmpl_sasl_commentout}        -o smtpd_sasl_auth_enable=yes
 :10587      inet n      -       n       -       -       smtpd
 ${tmpl_sasl_commentout}        -o smtpd_sasl_auth_enable=yes
         -o smtpd_tls_auth_only=no
+smtps     unix  -       -       n       -       -       smtp ${tmpl_debug_relay}
+        -o smtp_tls_security_level=encrypt -o smtp_tls_wrappermode=yes

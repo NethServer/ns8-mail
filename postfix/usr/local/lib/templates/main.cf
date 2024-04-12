@@ -79,7 +79,8 @@ address_verify_cache_cleanup_interval = 4h
 #
 smtpd_sender_login_maps = sqlite:${S}meta_directory/senderlogin.cf,
 smtp_sasl_password_maps = sqlite:${S}meta_directory/relaycredentials.cf,
-sender_dependent_relayhost_maps = sqlite:${S}meta_directory/relaysender.cf,
+sender_dependent_relayhost_maps = sqlite:${S}meta_directory/relaysender_nexthop.cf,
+sender_dependent_default_transport_maps = sqlite:${S}meta_directory/relaysender_transport.cf,
 smtp_sender_dependent_authentication = ${tmpl_smtp_sender_dependent_authentication}
 smtp_tls_policy_maps = sqlite:${S}meta_directory/tlspolicy.cf,
 smtp_sasl_security_options =
