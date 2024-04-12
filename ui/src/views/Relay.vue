@@ -177,9 +177,7 @@
                               "
                             >
                               <NsMenuItem
-                                :icon="
-                                  row.enabled ? ViewOffFilled20 : ViewFilled20
-                                "
+                                :icon="Power20"
                                 :label="
                                   row.enabled
                                     ? $t('relay.disable_rule')
@@ -370,7 +368,7 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import { mapState } from "vuex";
 import to from "await-to-js";
-import { ViewOffFilled20, ViewFilled20 } from "@carbon/icons-vue";
+import { Power20 } from "@carbon/icons-vue";
 
 export default {
   name: "Relay",
@@ -389,8 +387,7 @@ export default {
       q: {
         page: "relay",
       },
-      ViewOffFilled20,
-      ViewFilled20,
+      Power20,
       hasWildcard: false,
       tablePage: [],
       tableColumns: ["rule_subject", "host", "has_password", "enabled"],

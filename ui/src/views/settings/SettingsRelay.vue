@@ -42,7 +42,10 @@
                 <cv-form v-else @submit.prevent="setRelayConfiguration">
                   <div class="text-area-label-and-tooltip">
                     <span class="text-area-label">{{
-                      $t("relay.settings.ip_label")
+                      $t("relay.settings.ip_label") +
+                      " (" +
+                      $t("common.optional") +
+                      ")"
                     }}</span>
                     <cv-interactive-tooltip
                       alignment="start"

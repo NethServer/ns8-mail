@@ -16,6 +16,7 @@
     "delete": "Delete",
     "search": "Search",
     "cancel": "Cancel",
+    "optional": "Optional",
     "mail_hostname": "Mail server hostname",
     "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
     "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd"
@@ -402,7 +403,7 @@
     "col_host": "Hostname",
     "col_enabled": "Status",
     "settings": {
-      "ip_label": "Allow relay from IP address (Optional)",
+      "ip_label": "Allow relay from IP address",
       "ip_helper": "One address per line (IPv4/CIDR)",
       "ip_tooltip": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
       "toggle_label": "Enforce sender/login match",
