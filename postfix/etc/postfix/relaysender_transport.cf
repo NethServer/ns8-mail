@@ -4,7 +4,7 @@
 #
 
 dbpath = /srv/pcdb.sqlite
-query = SELECT FORMAT('[%%s]:%%s', host, port) AS relayhost
+query = SELECT transport
   FROM relayrules
   WHERE enabled = 1 AND
   rule_type = 'sender' AND

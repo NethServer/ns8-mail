@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS relayrules (
     port INT DEFAULT 25,
     tls TEXT DEFAULT 'may',
     username TEXT,
+    transport TEXT DEFAULT 'smtp',
     "password" TEXT,
     "enabled" INT DEFAULT 1,
     PRIMARY KEY (rule_subject)
