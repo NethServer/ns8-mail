@@ -1,7 +1,6 @@
 {
   "common": {
     "required": "Required",
-    "required_field": "This field is required",
     "work_in_progress": "Work in progress",
     "processing": "Processing...",
     "external_destination": "External email address",
@@ -378,7 +377,8 @@
     "enable_rule": "Enable rule",
     "delete_relay_rule": "Delete relay rule",
     "delete_rule": "Delete rule",
-    "delete_rule_description": "Delete rule for {ruleType}<strong>{ruleSubject}</strong>? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    "delete_rule_description": "Delete rule for {ruleType} <strong>{ruleSubject}</strong>? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    "delete_rule_wildcard": "Delete Wildcard rule? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     "sender": "Sender",
     "recipient": "Recipient",
     "wildcard": "Wildcard",
@@ -402,7 +402,7 @@
     "col_host": "Hostname",
     "col_enabled": "Status",
     "settings": {
-      "ip_label": "Allow relay from IP address",
+      "ip_label": "Allow relay from IP address (Optional)",
       "ip_helper": "One address per line (IPv4/CIDR)",
       "ip_tooltip": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
       "toggle_label": "Enforce sender/login match",
@@ -412,6 +412,7 @@
     "error": {
       "incorrect_username_or_password": "Incorrect username or password",
       "port_must_be_a_number": "Port field must be a number",
+      "port_must_be_positive": "Port field must be positive",
       "host_pattern": "Incorrect host pattern",
       "rule_subject_number_any_of": "",
       "rule_subject_format": "Incorrect format, must be 'example@email.com' or 'mydomain.com'",
@@ -419,7 +420,7 @@
       "connection_not_supported_by_server": "Connection not supported by the server",
       "cannot_authenticate_to_server": "Connection timeout error",
       "rule_subject_already_exist_cannot_be_used_more": "This domain already exists and it cannot be used",
-      "networks_format_error": "Invalid format at line: {lines} | Invalid format at lines: {lines}"
+      "networks_format_error": "Invalid value format: {values}"
     }
   },
   "queue": {

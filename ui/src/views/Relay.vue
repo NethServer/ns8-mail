@@ -247,7 +247,7 @@
             class="radio-menu-label radio-menu-error"
             v-if="error.form.rule_type"
           >
-            {{ $t("common.required_field") }}
+            {{ $t("common.required") }}
           </p>
           <NsTextInput
             v-if="!isAddWildcardDialogShow || !form.rule_type == 'wildcard'"
@@ -261,6 +261,7 @@
             :helper-text="$t('relay.rule_subject_helper')"
             :invalid-message="error.form.rule_subject"
             ref="form.rule_subject"
+            data-modal-primary-focus
           />
           <NsTextInput
             v-model.trim="form.host"
@@ -311,6 +312,8 @@
             v-model="form.mandatory_tls"
             ref="form.mandatory_tls"
             value="toggleValue"
+            tooltipAlignment="center"
+            tooltipDirection="right"
           >
             <template slot="tooltip">
               <span v-html="$t('relay.mandatory_tls_tooltip')"></span>
@@ -342,11 +345,12 @@
       <template slot="content">
         <span
           v-html="
-            $tc('relay.delete_rule_description', form.rule_subject, {
-              ruleType: ruleTypeTranslation,
-              ruleSubject:
-                form.rule_type == 'wildcard' ? '' : ' ' + form.rule_subject,
-            })
+            form.rule_type == 'wildcard'
+              ? $t('relay.delete_rule_wildcard')
+              : $tc('relay.delete_rule_description', form.rule_subject, {
+                  ruleType: ruleTypeTranslation,
+                  ruleSubject: form.rule_subject,
+                })
           "
         ></span>
       </template>
@@ -396,7 +400,7 @@ export default {
       isAddWildcardDialogShow: false,
       isDeleteDialogShow: false,
       form: {
-        rule_type: "",
+        rule_type: "sender",
         rule_subject: "",
         host: "",
         port: "",
@@ -469,7 +473,7 @@ export default {
       this.goToAppPage(this.instanceName, "settingsRelay");
     },
     resetForm(rule) {
-      this.form.rule_type = rule ? rule.rule_type : "";
+      this.form.rule_type = rule ? rule.rule_type : "sender";
       this.form.rule_subject = rule ? rule.rule_subject : "";
       this.form.host = rule ? rule.host : "";
       this.form.port = rule ? rule.port.toString() : "";
@@ -537,7 +541,7 @@ export default {
       }
 
       if (!this.form.host) {
-        this.error.form.host = this.$t("common.required_field");
+        this.error.form.host = this.$t("common.required");
 
         if (isValidationOk) {
           this.focusElement("form.host");
@@ -546,7 +550,7 @@ export default {
       }
 
       if (!this.form.port) {
-        this.error.form.port = this.$t("common.required_field");
+        this.error.form.port = this.$t("common.required");
 
         if (isValidationOk) {
           this.focusElement("form.port");
@@ -563,8 +567,17 @@ export default {
         }
       }
 
+      if (this.form.port && isNaN(this.form.port) && this.form.port < 0) {
+        this.error.form.port = this.$t("relay.error.port_must_be_positive");
+
+        if (isValidationOk) {
+          this.focusElement("form.port");
+          isValidationOk = false;
+        }
+      }
+
       if (this.authentication && !this.form.username) {
-        this.error.form.username = this.$t("common.required_field");
+        this.error.form.username = this.$t("common.required");
 
         if (isValidationOk) {
           this.focusElement("form.username");
@@ -577,7 +590,7 @@ export default {
         (this.isAddDialogShow || this.isAddWildcardDialogShow) &&
         !this.form.password
       ) {
-        this.error.form.password = this.$t("common.required_field");
+        this.error.form.password = this.$t("common.required");
 
         if (isValidationOk) {
           this.focusElement("form.password");
@@ -587,7 +600,7 @@ export default {
 
       if (this.isAddDialogShow) {
         if (!this.form.rule_type) {
-          this.error.form.rule_type = this.$t("common.required_field");
+          this.error.form.rule_type = this.$t("common.required");
 
           if (isValidationOk) {
             this.focusElement("form.rule_type");
@@ -596,12 +609,10 @@ export default {
         }
 
         if (!this.form.rule_subject) {
-          this.error.form.rule_subject = this.$t("common.required_field");
+          this.error.form.rule_subject = this.$t("common.required");
 
-          if (isValidationOk) {
-            this.focusElement("form.rule_subject");
-            isValidationOk = false;
-          }
+          this.focusElement("form.rule_subject");
+          isValidationOk = false;
         }
       }
 
@@ -848,6 +859,7 @@ export default {
       this.isAddDialogShow = false;
       this.isEditDialogShow = false;
       this.isAddWildcardDialogShow = false;
+      this.clearErrors();
       this.resetForm();
     },
     onModalConfirm() {

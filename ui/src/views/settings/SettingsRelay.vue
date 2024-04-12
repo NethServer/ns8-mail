@@ -45,7 +45,7 @@
                       $t("relay.settings.ip_label")
                     }}</span>
                     <cv-interactive-tooltip
-                      alignment="center"
+                      alignment="start"
                       direction="bottom"
                       class="tooltip-icon info"
                     >
@@ -232,26 +232,8 @@ export default {
       this.postfix_restricted_sender =
         taskResult.output.postfix_restricted_sender;
     },
-    validateSetRelayConfiguration() {
-      this.clearErrors();
-      let isValidationOk = true;
-
-      if (!this.networks) {
-        this.error.networks = this.$t("common.required_field");
-
-        if (isValidationOk) {
-          this.focusElement("networks");
-          isValidationOk = false;
-        }
-      }
-
-      return isValidationOk;
-    },
     async setRelayConfiguration() {
-      if (!this.validateSetRelayConfiguration()) {
-        return;
-      }
-
+      this.clearErrors();
       this.loading.setRelayConfiguration = true;
       this.error.setRelayConfiguration = "";
       const taskAction = "set-relay-configuration";
@@ -304,19 +286,19 @@ export default {
     setRelayConfigurationValidationFailed(validationErrors) {
       this.loading.setRelayConfiguration = false;
 
-      const errorLines = [];
+      console.log(validationErrors);
+      const errorValues = [];
       for (const validationError of validationErrors) {
-        const line = parseInt(validationError.field.split(".")[1]);
-        if (!errorLines.find((x) => x == line + 1)) {
-          errorLines.push(line + 1);
+        if (!errorValues.find((x) => x == validationError.value)) {
+          errorValues.push(validationError.value);
         }
       }
 
       this.error.networks = this.$tc(
         "relay.error.networks_format_error",
-        errorLines.length,
+        errorValues,
         {
-          lines: errorLines.join(", "),
+          values: errorValues.join(", "),
         }
       );
     },
