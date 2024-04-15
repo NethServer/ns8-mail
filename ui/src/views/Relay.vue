@@ -529,6 +529,7 @@ export default {
       this.clearErrors();
       let isValidationOk = true;
 
+      // This specific case is related to enable/disable rule function because we send the same data except for the enabled field
       if (
         !this.isAddDialogShow &&
         !this.isAddWildcardDialogShow &&

@@ -42,7 +42,7 @@
                 <cv-form v-else @submit.prevent="setRelayConfiguration">
                   <div class="text-area-label-and-tooltip">
                     <span class="text-area-label">{{
-                      $t("relay.settings.ip_label") +
+                      $t("relay.settings.networks_label") +
                       " (" +
                       $t("common.optional") +
                       ")"
@@ -57,7 +57,7 @@
                       </template>
                       <template slot="content">
                         <div>
-                          {{ $t("relay.settings.ip_tooltip") }}
+                          {{ $t("relay.settings.networks_tooltip") }}
                         </div>
                       </template>
                     </cv-interactive-tooltip>
@@ -67,7 +67,7 @@
                     ref="networks"
                     :invalid-message="error.networks"
                     type="text"
-                    :helper-text="$t('relay.settings.ip_helper')"
+                    :helper-text="$t('relay.settings.networks_helper')"
                     class="text-area-size"
                     rows="6"
                   >
@@ -75,12 +75,18 @@
                   <NsToggle
                     v-model="postfix_restricted_sender"
                     ref="postfix_restricted_sender"
-                    :label="$t('relay.settings.toggle_label')"
+                    :label="$t('relay.settings.enforce_sender_login_match')"
                     :form-item="true"
                     value="toggleValue"
                   >
                     <template slot="tooltip">
-                      <span v-html="$t('relay.settings.toggle_tooltip')"></span>
+                      <span
+                        v-html="
+                          $t(
+                            'relay.settings.enforce_sender_login_match_tooltip'
+                          )
+                        "
+                      ></span>
                     </template>
                     <template slot="text-left"
                       >{{ $t("common.disabled") }}
@@ -174,10 +180,10 @@ export default {
     goToSettings() {
       this.goToAppPage(this.instanceName, "settings");
     },
-    arrayToString(networks) {
+    convertNetworksArrayToString(networks) {
       return networks.join("\n");
     },
-    stringToArray(networks) {
+    convertNetworksStringToArray(networks) {
       const lines = networks.split("\n");
       const array = [];
 
@@ -231,7 +237,9 @@ export default {
     },
     getRelayConfigurationCompleted(taskContext, taskResult) {
       this.loading.getRelayConfiguration = false;
-      this.networks = this.arrayToString(taskResult.output.networks);
+      this.networks = this.convertNetworksArrayToString(
+        taskResult.output.networks
+      );
       this.postfix_restricted_sender =
         taskResult.output.postfix_restricted_sender;
     },
@@ -264,7 +272,7 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            networks: this.stringToArray(this.networks),
+            networks: this.convertNetworksStringToArray(this.networks),
             postfix_restricted_sender: this.postfix_restricted_sender,
           },
           extra: {
