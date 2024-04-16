@@ -256,7 +256,7 @@
                 ? $t('relay.sender')
                 : $t('relay.recipient')
             "
-            :helper-text="$t('relay.rule_subject_helper')"
+            :placeholder="$t('relay.rule_subject_helper')"
             :invalid-message="error.form.rule_subject"
             ref="form.rule_subject"
             data-modal-primary-focus
