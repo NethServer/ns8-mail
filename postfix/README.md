@@ -46,6 +46,9 @@ Standard public TCP ports
   name can use a restricted set of sender addresses. The set is given by
   the union of matching `destmap` records, and address of a domain with
   the `addusers` flag set.
+- `POSTFIX_ALWAYS_BCC`. If set to non-empty string, the value must be a
+  valid email recipient for Postfix [always_bcc
+  option](http://www.postfix.org/postconf.5.html#always_bcc).
 
 ## Volumes
 

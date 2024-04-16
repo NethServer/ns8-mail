@@ -87,6 +87,11 @@ smtp_sasl_security_options =
 smtp_sasl_auth_enable = yes
 
 #
+# Mail archive (spy)
+#
+always_bcc = ${tmpl_always_bcc}
+
+#
 # Restrictions
 #
 smtpd_sender_restrictions =

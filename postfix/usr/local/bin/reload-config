@@ -86,6 +86,7 @@ else
     tmpl_reject_authenticated_sender_login_mismatch=''
     tmpl_smtp_sender_dependent_authentication='no'
 fi
+tmpl_always_bcc="${POSTFIX_ALWAYS_BCC}"
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
