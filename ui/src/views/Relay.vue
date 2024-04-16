@@ -303,6 +303,9 @@
             :invalid-message="error.form.password"
             ref="form.password"
             type="password"
+            :placeholder="
+              isEditDialogShow && form.username ? $t('relay.unchanged') : ''
+            "
           />
           <NsToggle
             :label="$t('relay.mandatory_tls')"
@@ -403,7 +406,7 @@ export default {
         port: "",
         username: "",
         password: "",
-        mandatory_tls: false,
+        mandatory_tls: true,
         enabled: true,
       },
       authentication: false,
@@ -476,7 +479,7 @@ export default {
       this.form.port = rule ? rule.port.toString() : "";
       this.form.username = rule ? rule.username : "";
       this.form.password = "";
-      this.form.mandatory_tls = rule ? rule.tls : false;
+      this.form.mandatory_tls = rule ? rule.tls : true;
       this.form.enabled = rule ? rule.enabled : true;
       this.authentication = rule ? rule.has_password : false;
     },
