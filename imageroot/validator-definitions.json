@@ -1027,7 +1027,9 @@
                     "pattern": "\\."
                 },
                 "port": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
                 },
                 "mandatory_tls": {
                     "type": "boolean"
