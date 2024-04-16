@@ -21,6 +21,7 @@ for evar in [
         "POSTFIX_TRUSTED_NETWORK",
         "DOVECOT_MASTER_USERS",
         "DOVECOT_SHAREDSEEN",
+        "POSTFIX_RESTRICTED_SENDER",
     ]:
     if evar in original_environment:
         agent.set_env(evar, original_environment[evar])

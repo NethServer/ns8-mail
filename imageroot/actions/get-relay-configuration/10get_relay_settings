@@ -12,17 +12,12 @@ import mail
 from sqlite3 import OperationalError
 import ipaddress
 
-mail.abort_with_json_if_not_configured([])
-
-sdb = mail.pcdb_connect(readonly=True)
+postfix_restricted_sender = os.environ.get('POSTFIX_RESTRICTED_SENDER') != ""
 
 networks = []
-postfix_restricted_sender= os.environ.get('POSTFIX_RESTRICTED_SENDER', False) == 'True'
-try:
-    for row in sdb.execute("""SELECT network FROM mynetworks"""):
-        networks.append(row['network'])
-except OperationalError:
-    networks = []
+sdb = mail.pcdb_connect(readonly=True)
+for row in sdb.execute("""SELECT network FROM mynetworks"""):
+    networks.append(row['network'])
 
 output= {"postfix_restricted_sender": postfix_restricted_sender, "networks": networks}
 

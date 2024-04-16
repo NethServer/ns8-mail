@@ -22,10 +22,10 @@
         "networks": {
             "type": "array",
             "items": {
+                "type": "string",
                 "anyOf": [
                     {
                         "description": "textarea empty",
-                        "type": "string",
                         "maxLength": 0
                     },
                     {

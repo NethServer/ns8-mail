@@ -13,18 +13,23 @@ from sqlite3 import IntegrityError
 
 request = json.load(sys.stdin)
 
-sdb = mail.pcdb_connect()
-networks = request.get('networks')
-postfix_restricted_sender = request.get('postfix_restricted_sender')
-agent.set_env('POSTFIX_RESTRICTED_SENDER', postfix_restricted_sender)
+if 'postfix_restricted_sender' in request:
+    postfix_restricted_sender = '1' if request['postfix_restricted_sender'] else ''
+    agent.set_env('POSTFIX_RESTRICTED_SENDER', postfix_restricted_sender)
 
-try:
-    sdb.execute("DELETE FROM mynetworks")
-    for network in networks:
-        sdb.execute("INSERT INTO mynetworks (network) VALUES (?)", (network,))
-    sdb.commit()
-    sdb.close()
-except Exception as err:
-    agent.set_status('validation-failed')
-    json.dump([{'field':'networks', 'parameter':'networks','value': err, 'error':'cannot_save_mynetworks_to_database'}], fp=sys.stdout)
-    sys.exit(5)
+if 'networks' in request:
+    sdb = mail.pcdb_connect()
+    networks = request['networks']
+    try:
+        sdb.execute("DELETE FROM mynetworks")
+        for network in filter(bool, networks):
+            sdb.execute("INSERT INTO mynetworks (network) VALUES (?)", (network,))
+    except IntegrityError as err:
+        sdb.rollback()
+        agent.set_status('validation-failed')
+        json.dump([{'field':'networks', 'parameter':'networks','value': f'{network} ({err})', 'error':'cannot_save_mynetworks_to_database'}], fp=sys.stdout)
+        sys.exit(5)
+    else:
+        sdb.commit()
+    finally:
+        sdb.close()
