@@ -50,6 +50,16 @@
           <h6>{{ $t("settings_queue.title") }}</h6>
         </NsTile>
       </cv-column>
+      <cv-column :md="4" :xlg="4">
+        <NsTile
+          :light="true"
+          kind="clickable"
+          @click="goToAppPage(instanceName, 'settingsRelay')"
+          :icon="SendAlt32"
+        >
+          <h6>{{ $t("relay.title") }}</h6>
+        </NsTile>
+      </cv-column>
     </cv-row>
   </cv-grid>
 </template>
@@ -61,6 +71,7 @@ import {
   IconService,
   PageTitleService,
 } from "@nethserver/ns8-ui-lib";
+import SendAlt32 from "@carbon/icons-vue/es/send--alt/32";
 import { mapState } from "vuex";
 
 export default {
@@ -71,6 +82,7 @@ export default {
   },
   data() {
     return {
+      SendAlt32,
       q: {
         page: "settings",
       },

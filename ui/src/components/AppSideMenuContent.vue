@@ -57,6 +57,13 @@
         <span>{{ $t("queue.title") }}</span>
       </cv-side-nav-link>
       <cv-side-nav-link
+        @click="goToAppPage(instanceName, 'relay')"
+        :class="{ 'current-page': isLinkActive('relay') }"
+      >
+        <template v-slot:nav-icon><SendAlt20 /></template>
+        <span>{{ $t("relay.title") }}</span>
+      </cv-side-nav-link>
+      <cv-side-nav-link
         @click="goToAppPage(instanceName, 'settings')"
         :class="{ 'current-page': isSettingsActive() }"
       >
@@ -83,6 +90,7 @@ import Box20 from "@carbon/icons-vue/es/box/20";
 import At20 from "@carbon/icons-vue/es/at/20";
 import Filter20 from "@carbon/icons-vue/es/filter/20";
 import MailAll20 from "@carbon/icons-vue/es/mail--all/20";
+import SendAlt20 from "@carbon/icons-vue/es/send--alt/20";
 import { mapState } from "vuex";
 import { QueryParamService, UtilService } from "@nethserver/ns8-ui-lib";
 
@@ -97,6 +105,7 @@ export default {
     Box20,
     Filter20,
     MailAll20,
+    SendAlt20,
   },
   mixins: [QueryParamService, UtilService],
   data() {
