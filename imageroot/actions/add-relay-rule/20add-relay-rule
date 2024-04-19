@@ -49,7 +49,7 @@ try:
 except Exception as err:
     sdb.rollback()
     agent.set_status('validation-failed')
-    json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': err, 'error':'sender_data_cannot_be_saved_in_db'}], fp=sys.stdout)
+    json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': str(err), 'error':'sender_data_cannot_be_saved_in_db'}], fp=sys.stdout)
     sys.exit(3)
 else:
     sdb.commit()
