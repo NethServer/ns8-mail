@@ -12,7 +12,7 @@ import mail
 from sqlite3 import OperationalError
 import ipaddress
 
-postfix_restricted_sender = os.environ.get('POSTFIX_RESTRICTED_SENDER') != ""
+postfix_restricted_sender = os.environ.get('POSTFIX_RESTRICTED_SENDER', "") != ""
 
 networks = []
 sdb = mail.pcdb_connect(readonly=True)
