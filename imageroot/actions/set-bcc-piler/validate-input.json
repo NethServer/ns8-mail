@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "set-bcc-piler input",
+    "$id": "http://schema.nethserver.org/mail/set-bcc-piler.json",
+    "description": "Set the bcc for piler archive email address, you need to be mailadm to use this action",
+    "examples": [
+        {
+            "bcc_archive": "archive@foo.domain.com"
+        }
+    ],
+    "type": "object",
+    "required": [],
+    "additionalProperties": false,
+    "properties": {
+        "bcc_archive": {
+            "title": "bcc for the piler archive",
+            "type": "string",
+            "oneOf": [
+                {
+                    "pattern": "^$"
+                },
+                {
+                    "format": "email"
+                }
+            ]
+        }
+    }
+}

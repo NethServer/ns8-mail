@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import agent
+import os
+
+
+request = json.load(sys.stdin)
+
+bcc_archive = request['bcc_archive']
+
+agent.set_env('POSTFIX_ALWAYS_BCC', bcc_archive)
