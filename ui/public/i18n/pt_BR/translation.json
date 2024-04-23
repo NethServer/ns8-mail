@@ -53,7 +53,10 @@
         "user_destination": "User",
         "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
         "apo_destination": "Missing object",
-        "advanced": "Advanced"
+        "advanced": "Advanced",
+        "optional": "Optional",
+        "cancel": "Cancel",
+        "search": "Search"
     },
     "about": {
         "title": "About"
@@ -99,7 +102,13 @@
         "remove-public-mailbox": "Delete public mailbox",
         "get-mailbox-settings": "Get mailbox settings",
         "set-queue-settings": "Set queue settings",
-        "get-queue-settings": "Get queue settings"
+        "get-queue-settings": "Get queue settings",
+        "list-relay-rules": "List relay rules",
+        "add-relay-rule": "Add relay rule",
+        "alter-relay-rule": "Edit relay rule",
+        "remove-relay-rule": "Delete relay rule",
+        "set-relay-configuration": "Set relay configuration",
+        "get-relay-configuration": "Get relay configuration"
     },
     "task": {
         "cannot_create_task": "Cannot create task {action}",
@@ -389,5 +398,67 @@
         "maximal_queue_lifetime_helper": "Time interval expressed in hours",
         "must_be_superior_or_equal_to_1": "Must be greater than or equal to 1",
         "maximal_queue_lifetime_tooltip": "Consider a message as not deliverable if it remains in the queue for the maximum queue lifetime."
+    },
+    "relay": {
+        "add_rule": "Add rule",
+        "edit_relay_rule": "Edit relay rule",
+        "edit_rule": "Edit rule",
+        "settings_button": "Settings",
+        "add_relay_rule": "Add relay rule",
+        "enable_rule": "Enable rule",
+        "recipient": "Recipient",
+        "sender": "Sender",
+        "wildcard": "Default rule",
+        "delete_rule": "Delete rule",
+        "delete_relay_rule": "Delete relay rule",
+        "delete_rule_description": "Delete rule for {ruleType} <strong>{ruleSubject}</strong>? Messages will be routed according to remaining rules and DNS-based SMTP rules.",
+        "rule_subject_helper": "e.g. example@email.com or mydomain.com",
+        "username": "Username",
+        "port": "Port",
+        "rule_subject": "Rule subject",
+        "host": "Hostname",
+        "authentication": "Authentication",
+        "rule_type": "Rule type",
+        "enabled": "Status",
+        "no_relay_rules": "No relay rules",
+        "list_relay_rules": "List relay rules",
+        "col_has_password": "Authentication",
+        "no_relay_rules_description": "There is no relay rules configured",
+        "col_rule_subject": "Rule subject",
+        "settings": {
+            "networks_helper": "One address per line, in IPv4/6 CIDR format",
+            "enforce_sender_login_match": "Enforce sender/login match",
+            "networks_label": "Allow relay from these IP addresses",
+            "networks_tooltip": "Enter the IP addresses of legacy devices that need to send email messages without SMTP authentication. IPs listed here are exempt from authentication requirements.",
+            "save": "Save",
+            "enforce_sender_login_match_tooltip": "The mail sender address must match the SMTP/AUTH login name. Enable this check to avoid the unauthorized use of email addresses and the sender address spoofing."
+        },
+        "edit_default_rule": "Edit default rule",
+        "disable_rule": "Disable rule",
+        "any_address": "Any address",
+        "password": "Password",
+        "mandatory_tls_tooltip": "Activate TLS for secure authentication and message encryption.",
+        "mandatory_tls": "TLS",
+        "error": {
+            "port_must_be_a_number": "Port must be a number",
+            "cannot_authenticate_to_server": "Authentication failed",
+            "port_number_lte": "Port number too high",
+            "port_number_gte": "Port must be positive",
+            "networks_format_error": "Invalid format: {values}",
+            "address_error": "Name resolution error",
+            "incorrect_username_or_password": "Incorrect username or password",
+            "connection_not_supported_by_server": "Connection not supported by the server",
+            "connection_timeout_error": "Connection timeout",
+            "port_must_be_positive": "Port must be positive",
+            "host_pattern": "Invalid host",
+            "rule_subject_already_exist_cannot_be_used_more": "This domain already exists and cannot be used",
+            "rule_subject_format": "Invalid format, must be 'example@email.com' or 'mydomain.com'"
+        },
+        "unchanged": "Unchanged",
+        "col_enabled": "Status",
+        "col_host": "Hostname",
+        "set_default_rule": "Set default rule",
+        "delete_default_rule": "Delete default rule? Messages will be routed according to remaining rules and DNS-based SMTP rules.",
+        "title": "Relay"
     }
 }
