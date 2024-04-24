@@ -13,6 +13,6 @@ import os
 
 request = json.load(sys.stdin)
 
-bcc_archive = request['bcc_archive']
+bcc = request['bcc']
 
-agent.set_env('POSTFIX_ALWAYS_BCC', bcc_archive)
+agent.set_env('POSTFIX_ALWAYS_BCC', bcc)
