@@ -230,12 +230,10 @@
     },
     "settings_general": {
         "user_domain": "Dominio utenti",
-        "mail_hostname": "Mail server hostname",
         "title": "Impostazioni generali"
     },
     "welcome": {
         "no_domain_configured": "Nessun dominio utente configurato",
-        "mail_hostname": "Mail server hostname",
         "create_domain": "Creare dominio",
         "welcome_message": "Inserisci le seguenti informazioni per iniziare a utilizzare Mail",
         "mail_domain_pattern": "Deve essere un nome di dominio pienamente qualificato valido",
@@ -265,7 +263,6 @@
         "title": "Stato",
         "app_volumes": "Volume app|Volumi app",
         "no_volumes": "Nessun volume",
-        "mail_hostname": "Mail server hostname",
         "rspamd_webapp": "Rspamd",
         "not_configured": "Non configurato",
         "open_rspamd": "Apri Rspamd",
@@ -298,9 +295,6 @@
         "cannot_retrieve_filter_configuration": "Impossibile recuperare la configurazione del filtro"
     },
     "settings": {
-        "configure_instance": "Configura {instance}",
-        "save": "Salva",
-        "test_filed": "Test field",
         "title": "Impostazioni",
         "general": "Generale",
         "mailboxes": "Caselle di posta"
