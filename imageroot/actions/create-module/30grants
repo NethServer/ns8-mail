@@ -13,8 +13,8 @@ exec 1>&2 # ensure any output is sent to stderr
 # module configuration
 #
 redis-exec SADD "${AGENT_ID}/roles/mailadm" "reveal-master-credentials" "get-*" "list-*"
-# Piler must be able to make a relay remotely
-redis-exec SADD "${AGENT_ID}/roles/mailadm" "set-bcc-piler" "add-relay-rule" "alter-relay-rule" "remove-relay-rule"
+# this action could be invocated remotely
+redis-exec SADD "${AGENT_ID}/roles/mailadm" "set-always-bcc" "add-relay-rule" "alter-relay-rule" "remove-relay-rule"
 
 #
 # Allow the instance itself to run some subtasks during restore and clone actions

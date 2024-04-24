@@ -8,6 +8,6 @@ query = SELECT FORMAT('%%s:[%%s]:%%s', transport, host, port) AS route
   FROM relayrules
   WHERE enabled = 1 AND (
     (rule_subject = '%s' AND rule_type = 'recipient')
-    OR (rule_subject = '%s' AND rule_type = 'piler')
+    OR (rule_subject = '%s' AND rule_type = 'always-bcc')
     OR (rule_subject = '*' AND rule_type = 'wildcard')
   )
