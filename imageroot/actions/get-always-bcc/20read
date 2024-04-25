@@ -11,6 +11,6 @@ import os
 
 config = {}
 
-config['bcc'] = os.environ.get('POSTFIX_ALWAYS_BCC')
+config['bcc'] = os.environ.get('POSTFIX_ALWAYS_BCC','')
 
 json.dump(config, fp=sys.stdout)
