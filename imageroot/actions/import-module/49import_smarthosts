@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import json
+import agent
+import mail
+from sqlite3 import IntegrityError
+import ipaddress
+
+# Global stdout redirection:
+sys.stdout = sys.stderr
+
+sdb = mail.pcdb_connect()
+sdb.set_trace_callback(lambda m: print(agent.SD_DEBUG + m))
+
+# import the Esmith smarthosts database
+with sdb:
+    cur = sdb.cursor()
+
+    print(agent.SD_INFO + "Importing smarthosts...", file=sys.stderr)
+    for smart in json.load(open('smarthosts.json')):
+
+        vals = {
+            'rule_type':smart['type'],
+            'rule_subject': smart['name'].removeprefix('@'),
+            'host': smart['props'].get('Host'),
+            'port': smart['props'].get('Port'),
+            'mandatory_tls': 'encrypt' if smart['props'].get('TlsStatus') == 'enabled' else 'may',
+            'username': smart['props'].get('Username'),
+            'password': smart['props'].get('Password'),
+            'enabled': True if smart['props'].get('status') == 'enabled' else False,
+        }
+        cur.execute("""INSERT INTO relayrules (rule_type, rule_subject , host, port, tls, username, password, enabled) 
+                    VALUES (:rule_type, :rule_subject, :host, :port, :mandatory_tls, :username, :password, :enabled)""", vals)
+
+
+    # Import config printjson postfix output:
+    print(agent.SD_INFO + "Importing sender validation...", file=sys.stderr)
+    jpostfix = json.load(open('postfix.json'))
+
+    # Set the POSTFIX_RESTRICTED_SENDER env variable
+    SenderValidation = jpostfix['props'].get('SenderValidation') == 'enabled'
+    postfix_restricted_sender = '1' if SenderValidation else ''
+    agent.set_env('POSTFIX_RESTRICTED_SENDER', postfix_restricted_sender)
+
+    # Set the network table (AccessBypassList)
+    print(agent.SD_INFO + "Importing network table...", file=sys.stderr)
+    networks = jpostfix['props'].get('AccessBypassList').split(',')
+
+    # add trusted networks to the mynetworks table if set to trustednetworks
+    AccessPolicies = jpostfix['props'].get('AccessPolicies') == 'trustednetworks'
+
+    if AccessPolicies:
+        jnetworks = json.load(open('networks.json'))
+        for item in jnetworks:
+            if item["type"] == "network":
+                mask = item["props"]["Mask"]
+                # Convert mask to CIDR format
+                try:
+                    cidr_mask = str(ipaddress.IPv4Network("0.0.0.0/" + mask, strict=True).prefixlen)
+                    networks.append(item["name"]+'/'+cidr_mask)
+                except ValueError:
+                    # Handle invalid subnet masks
+                    print(f"Invalid subnet mask: {mask}", file=sys.stderr)
+                    continue
+
+    if networks:
+            cur.execute("DELETE FROM mynetworks")
+            for network in filter(bool, networks):
+                try:
+                    sdb.execute("INSERT INTO mynetworks (network) VALUES (?)", (network,))
+                except IntegrityError as err:
+                    # Handle invalid subnet masks
+                    print(f"Invalid IP or network {network}: {err}", file=sys.stderr)
+                    continue
