@@ -15,11 +15,21 @@ request = json.load(sys.stdin)
 sdb = mail.pcdb_connect()
 rule_type = request['rule_type']
 rule_subject = request['rule_subject']
+username = request.get("username", "")
+password = request.get("password", "")
+host = request['host']
+port = int(request['port'])
+mandatory_tls = request.get("mandatory_tls", False)
+
+# probe we could connect to the smtp server and retrieve if we use smtp or smtps
+probe_credentials = mail.probe_and_validate_smtp_credentials(username, password, host, port, mandatory_tls)
+transport_smtps_value = probe_credentials['transport_smtps']
 
 try:
     values = {
         "rule_type": rule_type,
         "rule_subject": rule_subject,
+        "transport": 'smtps' if transport_smtps_value else 'smtp',
         "host": request['host'],
         "port": request['port'],
         "mandatory_tls": 'encrypt' if request.get("mandatory_tls", False) else 'may',
@@ -44,7 +54,7 @@ try:
         agent.set_status('validation-failed')
         json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': rule_subject, 'error':'rule_subject_must_be_*'}], fp=sys.stdout)
         sys.exit(5)
-    cur.execute("""INSERT INTO relayrules (rule_type, rule_subject , host, port, tls, username, password, enabled) VALUES (:rule_type, :rule_subject, :host, :port, :mandatory_tls, :username, :password, :enabled)""", values)
+    cur.execute("""INSERT INTO relayrules (rule_type, rule_subject, transport, host, port, tls, username, password, enabled) VALUES (:rule_type, :rule_subject, :transport, :host, :port, :mandatory_tls, :username, :password, :enabled)""", values)
 
 except Exception as err:
     sdb.rollback()
