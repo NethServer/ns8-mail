@@ -19,7 +19,11 @@ request = json.load(sys.stdin)
 sdb = mail.pcdb_connect()
 rule_type = request['rule_type']
 rule_subject = request['rule_subject']
-password = request['password']
+username = request.get("username", "")
+password = request.get("password", "")
+host = request['host']
+port = request['port']
+mandatory_tls = request.get("mandatory_tls", False)
 
 def get_password_from_database(rule_subject):
     # Function to query the database for the password based on sender or recipient
@@ -39,6 +43,10 @@ def get_password_from_database(rule_subject):
 if request['username'] and password == '':
     password = get_password_from_database(rule_subject)
 
+# probe we could connect to the smtp server and retrieve if we use smtp or smtps
+probe_credentials = mail.probe_and_validate_smtp_credentials(username, password, host, port, mandatory_tls)
+transport_smtps_value = probe_credentials['transport_smtps']
+
 try:
     cur = sdb.cursor()
 
@@ -50,6 +58,7 @@ try:
 
     if 'mandatory_tls' in request:
         cur.execute("""UPDATE relayrules SET tls=? WHERE rule_subject=?""", ('encrypt' if request['mandatory_tls'] else 'may', rule_subject))
+        cur.execute("""UPDATE relayrules SET transport=? WHERE rule_subject=?""", ('smtps' if transport_smtps_value else 'smtp', rule_subject))
 
     if 'username' in request:
         cur.execute("""UPDATE relayrules SET username=? WHERE rule_subject=?""", (request['username'], rule_subject))
