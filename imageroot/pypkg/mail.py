@@ -14,6 +14,8 @@ import sqlite3
 import math
 from agent.ldapclient import Ldapclient, LdapclientEntryNotFound
 from agent.ldapproxy import Ldapproxy
+import smtplib
+import ssl
 
 RSPAMD_API_ENDPOINT = 'http://127.0.0.1:11334/'
 
@@ -475,3 +477,69 @@ def get_system_meminfo():
         print(agent.SD_DEBUG + "get_system_meminfo()", str(ex), file=sys.stderr)
 
     return meminfo
+
+def probe_and_validate_smtp_credentials(username, password, host, port, tls):
+    # do not verify the hostname and the certificate
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    transport_smtps = False
+    try :
+        if tls:
+            # first we try to connect with starttls if it fails we try with smtps
+            try:
+                smtp = smtplib.SMTP(host, port=port, timeout=10)
+                smtp.starttls(context=ctx)
+            except Exception as ex:
+                print(agent.SD_NOTICE + f"STARTTLS seems not supported ({ex}). Fall back to SMTPS.", file=sys.stderr)
+                smtp = smtplib.SMTP_SSL(host, port=port, timeout=10, context=ctx)
+                transport_smtps = True
+        else:
+            smtp = smtplib.SMTP(host, port=port, timeout=10)
+
+        # we have a login, we try to authenticate.
+        if username and password:
+            smtp.login(username, password)
+        # without authentication, we have now way to test except 
+        # to connect to the server. we quit
+        smtp.quit()
+        test = {
+            'status': 'success',
+            "message": "Connection successful",
+            "transport_smtps": transport_smtps
+        }
+        return test
+
+    except smtplib.SMTPAuthenticationError as err:
+        print(agent.SD_NOTICE + "smtplib validation:", err, file=sys.stderr)
+        agent.set_status('validation-failed')
+        # probably name or password failure
+        json.dump([{'field':'username','parameter':'username','value':err,'error':'cannot_authenticate_to_server'}],fp=sys.stdout, default=str)
+        sys.exit(2)
+
+    except smtplib.SMTPConnectError as err:
+        print(agent.SD_NOTICE + "smtplib validation:", err, file=sys.stderr)
+        agent.set_status('validation-failed')
+        # any connection error to the server
+        json.dump([{'field':'host','parameter':'host','value':err,'error':'cannot_connect_to_server'}],fp=sys.stdout, default=str)
+        sys.exit(3)
+
+    except smtplib.SMTPNotSupportedError as err:
+        print(agent.SD_NOTICE + "smtplib validation:", err, file=sys.stderr)
+        agent.set_status('validation-failed')
+        # probably need to use starttls
+        json.dump([{'field':'host','parameter':'host','value':err,'error':'connection_not_supported_by_server'}],fp=sys.stdout, default=str)
+        sys.exit(4)
+
+    except smtplib.socket.gaierror as err:
+        print(agent.SD_NOTICE + "smtplib validation:", err, file=sys.stderr)
+        agent.set_status('validation-failed')
+        json.dump([{'field':'host','parameter':'host','value': host,'error':'address_error'}],fp=sys.stdout, default=str)
+        sys.exit(6)
+
+    except smtplib.socket.error as err:
+        print(agent.SD_NOTICE + "smtplib validation:", err, file=sys.stderr)
+        agent.set_status('validation-failed')
+        # We have issued a timeout, the server is not responding or the URL is wrong
+        json.dump([{'field':'host','parameter':'host','value':err,'error':'connection_timeout_error'}],fp=sys.stdout, default=str)
+        sys.exit(5)
