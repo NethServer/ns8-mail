@@ -45,7 +45,7 @@ if request['username'] and password == '':
 
 # probe we could connect to the smtp server and retrieve if we use smtp or smtps
 probe_credentials = mail.probe_and_validate_smtp_credentials(username, password, host, port, mandatory_tls)
-transport_smtps_value = probe_credentials['transport_smtps']
+transport_is_smtps = probe_credentials['transport_smtps']
 
 try:
     cur = sdb.cursor()
@@ -58,7 +58,7 @@ try:
 
     if 'mandatory_tls' in request:
         cur.execute("""UPDATE relayrules SET tls=? WHERE rule_subject=?""", ('encrypt' if request['mandatory_tls'] else 'may', rule_subject))
-        cur.execute("""UPDATE relayrules SET transport=? WHERE rule_subject=?""", ('smtps' if transport_smtps_value else 'smtp', rule_subject))
+        cur.execute("""UPDATE relayrules SET transport=? WHERE rule_subject=?""", ('smtps' if transport_is_smtps else 'smtp', rule_subject))
 
     if 'username' in request:
         cur.execute("""UPDATE relayrules SET username=? WHERE rule_subject=?""", (request['username'], rule_subject))

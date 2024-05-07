@@ -23,13 +23,13 @@ mandatory_tls = request.get("mandatory_tls", False)
 
 # probe we could connect to the smtp server and retrieve if we use smtp or smtps
 probe_credentials = mail.probe_and_validate_smtp_credentials(username, password, host, port, mandatory_tls)
-transport_smtps_value = probe_credentials['transport_smtps']
+transport_is_smtps = probe_credentials['transport_smtps']
 
 try:
     values = {
         "rule_type": rule_type,
         "rule_subject": rule_subject,
-        "transport": 'smtps' if transport_smtps_value else 'smtp',
+        "transport": 'smtps' if transport_is_smtps else 'smtp',
         "host": request['host'],
         "port": request['port'],
         "mandatory_tls": 'encrypt' if request.get("mandatory_tls", False) else 'may',
