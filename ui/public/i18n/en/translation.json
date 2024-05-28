@@ -414,7 +414,7 @@
             "bcc": "Always BCC address",
             "bcc_string_lte": "Invalid email format",
             "is_bcc_enabled": "Always BCC",
-            "bcc_placeholder":  "Eg. user@example.com",
+            "bcc_placeholder":  "e.g. user@example.com",
             "is_bcc_enabled_tooltips": "Enable this option to receive a blind carbon copy of all messages sent through this server."
         },
         "error": {
