@@ -32,7 +32,7 @@
             <cv-row>
               <cv-column>
                 <cv-skeleton-text
-                  v-if="loading.getRelayConfiguration"
+                  v-if="loading.getRelayConfiguration || loading.getAlwaysBccConfiguration"
                   heading
                   paragraph
                   :line-count="11"
@@ -70,6 +70,11 @@
                     :helper-text="$t('relay.settings.networks_helper')"
                     class="text-area-size"
                     rows="6"
+                    :disabled="
+                      loading.getRelayConfiguration ||
+                      loading.setRelayConfiguration ||
+                      loading.getAlwaysBccConfiguration
+                    "
                   >
                   </cv-text-area>
                   <NsToggle
@@ -78,6 +83,11 @@
                     :label="$t('relay.settings.enforce_sender_login_match')"
                     :form-item="true"
                     value="toggleValue"
+                    :disabled="
+                      loading.getRelayConfiguration ||
+                      loading.setRelayConfiguration ||
+                      loading.getAlwaysBccConfiguration
+                    "
                   >
                     <template slot="tooltip">
                       <span
@@ -95,13 +105,52 @@
                       >{{ $t("common.enabled") }}
                     </template>
                   </NsToggle>
+                  <NsToggle
+                    v-model="isBccEnabled"
+                    ref="isBccEnabled"
+                    :label="$t('relay.settings.is_bcc_enabled')"
+                    :form-item="true"
+                    value="toggleValue"
+                    :disabled="
+                      loading.getRelayConfiguration ||
+                      loading.setRelayConfiguration ||
+                      loading.getAlwaysBccConfiguration
+                    "
+                  >
+                    <template slot="tooltip">
+                      <span
+                        v-html="$t('relay.settings.is_bcc_enabled_tooltips')"
+                      ></span>
+                    </template>
+                    <template slot="text-left"
+                      >{{ $t("common.disabled") }}
+                    </template>
+                    <template slot="text-right"
+                      >{{ $t("common.enabled") }}
+                    </template>
+                  </NsToggle>
+                  <NsTextInput
+                    v-if="isBccEnabled"
+                    :placeholder="$t('relay.settings.bcc_placeholder')"
+                    v-model.trim="bcc"
+                    :label="$t('relay.settings.bcc')"
+                    :invalid-message="error.bcc"
+                    :disabled="
+                      loading.getRelayConfiguration ||
+                      loading.setRelayConfiguration ||
+                      loading.getAlwaysBccConfiguration
+                    "
+                    ref="bcc"
+                  >
+                  </NsTextInput>
                   <NsButton
                     kind="primary"
                     :icon="Save20"
                     :loading="loading.setRelayConfiguration"
                     :disabled="
                       loading.getRelayConfiguration ||
-                      loading.setRelayConfiguration
+                      loading.setRelayConfiguration ||
+                      loading.getAlwaysBccConfiguration
                     "
                     >{{ $t("relay.settings.save") }}
                   </NsButton>
@@ -149,14 +198,18 @@ export default {
       },
       networks: "",
       postfix_restricted_sender: false,
+      isBccEnabled: false,
+      bcc: "",
       loading: {
         getRelayConfiguration: false,
         setRelayConfiguration: false,
+        getAlwaysBccConfiguration: false,
       },
       error: {
         getRelayConfiguration: "",
         setRelayConfiguration: "",
         networks: "",
+        bcc: "",
       },
     };
   },
@@ -175,6 +228,7 @@ export default {
   },
   created() {
     this.getRelayConfiguration();
+    this.getAlwaysBcc();
   },
   methods: {
     goToSettings() {
@@ -243,7 +297,57 @@ export default {
       this.postfix_restricted_sender =
         taskResult.output.postfix_restricted_sender;
     },
+    async getAlwaysBcc() {
+      this.loading.getAlwaysBccConfiguration = true;
+      this.error.bcc = "";
+      const taskAction = "get-always-bcc";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getAlwaysBccConfigurationAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getAlwaysBccConfigurationCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getAlwaysBccConfiguration = this.getErrorMessage(err);
+        this.loading.getAlwaysBccConfiguration = false;
+        return;
+      }
+    },
+    getAlwaysBccConfigurationAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.loading.getAlwaysBccConfiguration = false;
+    },
+    getAlwaysBccConfigurationCompleted(taskContext, taskResult) {
+      this.loading.getAlwaysBccConfiguration = false;
+      this.bcc = taskResult.output.bcc;
+      this.isBccEnabled = this.bcc != "";
+    },
     async setRelayConfiguration() {
+      const isValidationOk = this.validateSettingsRelay();
+      if (!isValidationOk) {
+        return;
+      }
       this.clearErrors();
       this.loading.setRelayConfiguration = true;
       this.error.setRelayConfiguration = "";
@@ -314,10 +418,98 @@ export default {
       );
     },
     setRelayConfigurationCompleted() {
-      this.loading.setRelayConfiguration = false;
+      // set always bcc
+      this.setAlwaysBcc();
+    },
+    async setAlwaysBcc() {
+      this.loading.setRelayConfiguration = true;
+      this.error.setRelayConfiguration = "";
+      this.error.bcc = "";
+      const taskAction = "set-always-bcc";
+      const eventId = this.getUuid();
 
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.setAlwaysBccConfigurationAborted
+      );
+
+      // register to task validation
+      this.core.$root.$once(
+        `${taskAction}-validation-failed-${eventId}`,
+        this.setAlwaysBccConfigurationValidationFailed
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.setAlwaysBccConfigurationCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: {
+            bcc: this.isBccEnabled ? this.bcc : "",
+          },
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.setRelayConfiguration = this.getErrorMessage(err);
+        this.loading.setRelayConfiguration = false;
+        return;
+      }
+    },
+    setAlwaysBccConfigurationAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.loading.setRelayConfiguration = false;
+    },
+    setAlwaysBccConfigurationValidationFailed(validationErrors) {
+      this.loading.setRelayConfiguration = false;
+      let focusAlreadySet = false;
+
+      for (const validationError of validationErrors) {
+        const param = validationError.parameter;
+
+        // set i18n error message
+        this.error[param] = this.getI18nStringWithFallback(
+          "relay.settings." + validationError.error,
+          "error." + validationError.error,
+          this.core
+        );
+
+        if (!focusAlreadySet && param != "(root)") {
+          this.focusElement(param);
+          focusAlreadySet = true;
+        }
+      }
+    },
+    setAlwaysBccConfigurationCompleted() {
+      this.loading.setRelayConfiguration = false;
+      this.bcc = this.isBccEnabled ? this.bcc : "";
       // reload settings
       this.getRelayConfiguration();
+    },
+    validateSettingsRelay() {
+      let isValidationOk = true;
+
+      if (!this.bcc && this.isBccEnabled) {
+        this.error.bcc = this.$t("common.required");
+
+        if (isValidationOk) {
+          this.focusElement("bcc");
+          isValidationOk = false;
+        }
+      }
+      return isValidationOk;
     },
   },
 };
@@ -331,7 +523,7 @@ export default {
 }
 
 .text-area-size {
-  width: 50%;
+  max-width: 38rem;
 }
 
 .tooltip-icon {
