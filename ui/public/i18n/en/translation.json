@@ -103,7 +103,8 @@
         "report-queue-status": "List deferred messages in postfix queue",
         "flush-postfix-queue": "Flush Postfix queue",
         "get-queue-settings": "Get queue settings",
-        "set-queue-settings": "Set queue settings"
+        "set-queue-settings": "Set queue settings",
+        "set-always-bcc": "Set always BCC"
     },
     "error": {
         "error": "Error",
@@ -409,7 +410,12 @@
             "networks_tooltip": "Enter the IP addresses of legacy devices that need to send email messages without SMTP authentication. IPs listed here are exempt from authentication requirements.",
             "enforce_sender_login_match": "Enforce sender/login match",
             "enforce_sender_login_match_tooltip": "The mail sender address must match the SMTP/AUTH login name. Enable this check to avoid the unauthorized use of email addresses and the sender address spoofing.",
-            "save": "Save"
+            "save": "Save",
+            "bcc": "Always BCC address",
+            "bcc_string_lte": "Invalid email format",
+            "is_bcc_enabled": "Always BCC",
+            "bcc_placeholder":  "Eg. user@example.com",
+            "is_bcc_enabled_tooltips": "Enable this option to receive a blind carbon copy of all messages sent through this server."
         },
         "error": {
             "address_error": "Name resolution error",
