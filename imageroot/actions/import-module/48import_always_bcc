@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import json
+import agent
+
+# Global stdout redirection:
+sys.stdout = sys.stderr
+
+# Import config printjson postfix output:
+print(agent.SD_INFO + "Importing Always BCC Address...", file=sys.stderr)
+jpostfix = json.load(open('postfix.json'))
+
+# Set the POSTFIX_ALWAYS_BCC env variable
+AlwaysBccStatus = jpostfix['props'].get('AlwaysBccStatus') == 'enabled'
+AlwaysBccAddress = jpostfix['props'].get('AlwaysBccAddress')
+if AlwaysBccStatus:
+    # Set the POSTFIX_ALWAYS_BCC env variable
+    # postfix will reloaded later in the import scripts
+    agent.set_env('POSTFIX_ALWAYS_BCC', AlwaysBccAddress)
