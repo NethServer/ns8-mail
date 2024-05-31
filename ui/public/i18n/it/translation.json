@@ -68,7 +68,8 @@
         "remove-relay-rule": "Elimina regola di relay",
         "get-relay-configuration": "Ottieni configurazione relay",
         "list-relay-rules": "Lista regole di relay",
-        "set-relay-configuration": "Imposta configurazione relay"
+        "set-relay-configuration": "Imposta configurazione relay",
+        "set-always-bcc": "Imposta Always BCC"
     },
     "domains": {
         "no_domain": "Nessun dominio",
@@ -411,7 +412,12 @@
             "enforce_sender_login_match_tooltip": "L'indirizzo del mittente deve corrispondere al nome di login SMTP/AUTH. Abilitare questo controllo per evitare l'uso non autorizzato degli indirizzi e-mail e lo spoofing dell'indirizzo del mittente.",
             "save": "Salva",
             "networks_label": "Consenti relay da questi indirizzi IP",
-            "networks_helper": "Un indirizzo per linea, in formato IPv4/6 CIDR"
+            "networks_helper": "Un indirizzo per linea, in formato IPv4/6 CIDR",
+            "bcc": "Indirizzo Always BCC",
+            "is_bcc_enabled_tooltips": "Quando abilitato, l'indirizzo specificato riceverà una copia di ogni messaggio inviato o ricevuto tramite questo server. Questa impostazione è utile per le soluzioni di archiviazione di posta.",
+            "is_bcc_enabled": "Always BCC",
+            "bcc_string_lte": "Formato e-mail non valido",
+            "bcc_placeholder": "es. utente@example.com"
         },
         "error": {
             "incorrect_username_or_password": "Nome utente o password errati",

@@ -108,7 +108,8 @@
         "alter-relay-rule": "Edit relay rule",
         "remove-relay-rule": "Delete relay rule",
         "set-relay-configuration": "Set relay configuration",
-        "get-relay-configuration": "Get relay configuration"
+        "get-relay-configuration": "Get relay configuration",
+        "set-always-bcc": "Set always BCC"
     },
     "task": {
         "cannot_create_task": "Cannot create task {action}",
@@ -431,7 +432,12 @@
             "networks_label": "Allow relay from these IP addresses",
             "networks_tooltip": "Enter the IP addresses of legacy devices that need to send email messages without SMTP authentication. IPs listed here are exempt from authentication requirements.",
             "save": "Save",
-            "enforce_sender_login_match_tooltip": "The mail sender address must match the SMTP/AUTH login name. Enable this check to avoid the unauthorized use of email addresses and the sender address spoofing."
+            "enforce_sender_login_match_tooltip": "The mail sender address must match the SMTP/AUTH login name. Enable this check to avoid the unauthorized use of email addresses and the sender address spoofing.",
+            "is_bcc_enabled": "Always BCC",
+            "bcc_placeholder": "e.g. user@example.com",
+            "is_bcc_enabled_tooltips": "When enabled, the specified address will receive a copy of every message sent or received through this server. This setting is useful for mail archiving solutions.",
+            "bcc_string_lte": "Invalid email format",
+            "bcc": "Always BCC address"
         },
         "edit_default_rule": "Edit default rule",
         "disable_rule": "Disable rule",

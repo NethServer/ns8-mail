@@ -108,7 +108,8 @@
         "add-relay-rule": "Añadir regla de retransmisión",
         "alter-relay-rule": "Editar regla de retransmisión",
         "get-relay-configuration": "Obtener configuración de relé",
-        "list-relay-rules": "Lista de normas de retransmisión"
+        "list-relay-rules": "Lista de normas de retransmisión",
+        "set-always-bcc": "Establecer siempre CCO"
     },
     "task": {
         "cannot_create_task": "No se puede crear la tarea {action}",
@@ -414,7 +415,12 @@
             "enforce_sender_login_match_tooltip": "La dirección del remitente del correo debe coincidir con el nombre de inicio de sesión SMTP/AUTH. Active esta comprobación para evitar el uso no autorizado de direcciones de correo electrónico y la suplantación de la dirección del remitente.",
             "networks_helper": "Una dirección por línea, en formato CIDR IPv4/6",
             "enforce_sender_login_match": "Hacer coincidir remitente/inicio de sesión",
-            "networks_label": "Permitir retransmisión desde estas direcciones IP"
+            "networks_label": "Permitir retransmisión desde estas direcciones IP",
+            "is_bcc_enabled_tooltips": "Cuando está habilitado, la dirección especificada recibirá una copia de cada mensaje enviado o recibido a través de este servidor. Esta configuración es útil para soluciones de archivado de correo.",
+            "is_bcc_enabled": "Siempre CCO",
+            "bcc_string_lte": "Formato de correo electrónico inválido",
+            "bcc": "Siempre la dirección CCO",
+            "bcc_placeholder": "Por ejemplo user@example.com"
         },
         "error": {
             "port_number_lte": "Número de puerto demasiado alto",

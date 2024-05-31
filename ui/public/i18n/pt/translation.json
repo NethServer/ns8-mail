@@ -108,7 +108,8 @@
         "alter-relay-rule": "Edit relay rule",
         "list-relay-rules": "List relay rules",
         "set-relay-configuration": "Set relay configuration",
-        "get-relay-configuration": "Get relay configuration"
+        "get-relay-configuration": "Get relay configuration",
+        "set-always-bcc": "Set always BCC"
     },
     "task": {
         "cannot_create_task": "Cannot create task {action}",
@@ -406,7 +407,12 @@
             "networks_tooltip": "Enter the IP addresses of legacy devices that need to send email messages without SMTP authentication. IPs listed here are exempt from authentication requirements.",
             "enforce_sender_login_match_tooltip": "The mail sender address must match the SMTP/AUTH login name. Enable this check to avoid the unauthorized use of email addresses and the sender address spoofing.",
             "networks_helper": "One address per line, in IPv4/6 CIDR format",
-            "enforce_sender_login_match": "Enforce sender/login match"
+            "enforce_sender_login_match": "Enforce sender/login match",
+            "bcc_placeholder": "e.g. user@example.com",
+            "is_bcc_enabled_tooltips": "When enabled, the specified address will receive a copy of every message sent or received through this server. This setting is useful for mail archiving solutions.",
+            "is_bcc_enabled": "Always BCC",
+            "bcc_string_lte": "Invalid email format",
+            "bcc": "Always BCC address"
         },
         "error": {
             "rule_subject_already_exist_cannot_be_used_more": "This domain already exists and cannot be used",
