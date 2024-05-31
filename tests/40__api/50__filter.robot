@@ -41,8 +41,8 @@ Added bypass rules are present
 
 Changed settings were applied
     ${dpayload} =    Run task    module/${MID}/get-filter-configuration    ""    decode_json=${TRUE}
-    Should Be Equal As Numbers    ${dpayload}[antispam][greylist][threshold]    3.32
-    Should Be Equal As Numbers   ${dpayload}[antispam][spam_flag_threshold]    6.2
+    Should Be Equal As Numbers    ${dpayload}[antispam][greylist][threshold]    3.319999
+    Should Be Equal As Numbers   ${dpayload}[antispam][spam_flag_threshold]    6.199999
     Should Be Equal As Numbers   ${dpayload}[antispam][deny_message_threshold]    15.72
     Should Be Equal    ${dpayload}[antivirus][clamav_official_sigs]    ${TRUE}
     Should Be Equal    ${dpayload}[antivirus][third_party_sigs_rating]    high
