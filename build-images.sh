@@ -3,8 +3,7 @@
 # Terminate on error
 set -e
 
-alpine_version=3.17.2
-rspamd_alpine_version=3.20.0
+alpine_version=3.20.0
 
 # Prepare variables for later use
 images=()
@@ -154,7 +153,7 @@ images+=("${repobase}/${reponame}")
 # Rspamd additional image
 #
 reponame="mail-rspamd"
-container=$(buildah from docker.io/library/alpine:${rspamd_alpine_version})
+container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<EOF
 set -e
 # Software installation order is important to preserve uid and gid allocation:
