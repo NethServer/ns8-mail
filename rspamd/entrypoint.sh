@@ -32,7 +32,7 @@ if [ $# -eq 0 ]; then
     # Start rspamd
     mkdir -v -m 0750 -p /run/rspamd
     chown -c rspamd:rspamd /run/rspamd
-    /usr/sbin/rspamd -u rspamd -g rspamd -f <&- &
+    /usr/bin/rspamd -u rspamd -g rspamd -f <&- &
 
     wait -n
     exit $?
