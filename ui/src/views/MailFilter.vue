@@ -722,7 +722,6 @@ export default {
       this.getFilterConfiguration();
     },
     saveAntispamSection() {
-
       const actionPayload = {
         antispam: {
           enabled: this.antispam.enabled,

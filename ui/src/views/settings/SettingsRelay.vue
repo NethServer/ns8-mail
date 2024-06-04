@@ -32,7 +32,10 @@
             <cv-row>
               <cv-column>
                 <cv-skeleton-text
-                  v-if="loading.getRelayConfiguration || loading.getAlwaysBccConfiguration"
+                  v-if="
+                    loading.getRelayConfiguration ||
+                    loading.getAlwaysBccConfiguration
+                  "
                   heading
                   paragraph
                   :line-count="11"

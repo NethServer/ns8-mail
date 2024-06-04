@@ -531,7 +531,7 @@ export default {
           value: `${d.name}_${d.dtype}`,
           label: d.name,
           type: this.$t(`common.${d.dtype}_destination`),
-          description: d.ui_name
+          description: d.ui_name,
         };
       });
 

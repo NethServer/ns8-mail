@@ -125,7 +125,11 @@
                   >
                     <template slot="tooltip">
                       <span
-                        v-html="$t('settings_mailboxes.sharedseen_explanation_tooltips')"
+                        v-html="
+                          $t(
+                            'settings_mailboxes.sharedseen_explanation_tooltips'
+                          )
+                        "
                       ></span>
                     </template>
                     <template slot="text-left">{{
@@ -431,10 +435,9 @@ export default {
       }
       this.sharedseen.enabled = settings.sharedseen.enabled;
 
-    // spam prefix
-     this.addPrefixToSpamSubject.enabled = settings.spam_prefix.enabled;
-     this.addPrefixToSpamSubject.prefix  = settings.spam_prefix.prefix;
-
+      // spam prefix
+      this.addPrefixToSpamSubject.enabled = settings.spam_prefix.enabled;
+      this.addPrefixToSpamSubject.prefix = settings.spam_prefix.prefix;
     },
     validateSetMailboxSettings() {
       this.clearErrors();
@@ -452,10 +455,11 @@ export default {
           isValidationOk = false;
         }
       }
-      if (this.addPrefixToSpamSubject.enabled && !this.addPrefixToSpamSubject.prefix) {
-        this.error.spamSubjectPrefix = this.$t(
-          "common.required"
-        );
+      if (
+        this.addPrefixToSpamSubject.enabled &&
+        !this.addPrefixToSpamSubject.prefix
+      ) {
+        this.error.spamSubjectPrefix = this.$t("common.required");
 
         if (isValidationOk) {
           this.focusElement("spamSubjectPrefix");

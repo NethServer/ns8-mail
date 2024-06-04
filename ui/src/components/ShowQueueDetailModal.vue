@@ -60,7 +60,7 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
-.mg-bottom{
+.mg-bottom {
   margin-bottom: 1rem;
 }
 </style>
