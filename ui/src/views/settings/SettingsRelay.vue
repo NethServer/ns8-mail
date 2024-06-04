@@ -93,13 +93,9 @@
                     "
                   >
                     <template slot="tooltip">
-                      <span
-                        v-html="
-                          $t(
-                            'relay.settings.enforce_sender_login_match_tooltip'
-                          )
-                        "
-                      ></span>
+                      <span>{{
+                        $t("relay.settings.enforce_sender_login_match_tooltip")
+                      }}</span>
                     </template>
                     <template slot="text-left"
                       >{{ $t("common.disabled") }}
@@ -121,9 +117,9 @@
                     "
                   >
                     <template slot="tooltip">
-                      <span
-                        v-html="$t('relay.settings.is_bcc_enabled_tooltips')"
-                      ></span>
+                      <span>{{
+                        $t("relay.settings.is_bcc_enabled_tooltips")
+                      }}</span>
                     </template>
                     <template slot="text-left"
                       >{{ $t("common.disabled") }}

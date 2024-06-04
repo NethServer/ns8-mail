@@ -20,7 +20,7 @@
       >
         <template slot="trigger"></template>
         <template slot="content">
-          <div v-html="$t('domains.dkim_tooltip')"></div>
+          <div>{{ $t("domains.dkim_tooltip") }}</div>
         </template>
       </cv-interactive-tooltip>
     </template>
@@ -44,22 +44,19 @@
             class="mg-bottom-lg"
           >
             <template slot="text-left">
-              <span
-                v-html="
-                  $t('domains.dkim_on_domain_domain', {
-                    domain: domain.domain,
-                  })
-                "
-              ></span>
+              <span>{{
+                $t("domains.dkim_on_domain_domain", {
+                  domain: domain.domain,
+                })
+              }}</span>
             </template>
-            <template slot="text-right"
-              ><span
-                v-html="
-                  $t('domains.dkim_on_domain_domain', {
+            <template slot="text-right">
+              <span>
+                {{
+                  $t("domains.dkim_on_domain_domain", {
                     domain: domain.domain,
                   })
-                "
-              >
+                }}
               </span>
             </template>
           </NsToggle>
@@ -78,11 +75,11 @@
                 />
                 <cv-accordion ref="accordion">
                   <cv-accordion-item :open="toggleAccordion[0]">
-                    <template slot="title"
-                      ><span
-                        v-html="$t('domains.dkim_txt_record_key_procedure')"
-                      ></span
-                    ></template>
+                    <template slot="title">
+                      <span>{{
+                        $t("domains.dkim_txt_record_key_procedure")
+                      }}</span>
+                    </template>
                     <template slot="content">
                       <NsCodeSnippet
                         light

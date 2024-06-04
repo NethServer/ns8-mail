@@ -174,14 +174,12 @@
       @confirmDelete="removePublicMailbox"
     >
       <template slot="explanation">
-        <p
-          class="mg-top-sm"
-          v-html="$t('mailboxes.delete_public_mailbox_explanation')"
-        ></p>
-        <p
-          class="mg-top-sm"
-          v-html="core.$t('common.this_action_is_not_reversible')"
-        ></p>
+        <p class="mg-top-sm">
+          {{ $t("mailboxes.delete_public_mailbox_explanation") }}
+        </p>
+        <p class="mg-top-sm">
+          {{ core.$t("common.this_action_is_not_reversible") }}
+        </p>
       </template>
     </NsDangerDeleteModal>
   </div>
