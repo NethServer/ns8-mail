@@ -47,9 +47,9 @@
           value="checkAddUserAddressesFromUserDomain"
         >
           <template slot="tooltip">
-            <div
-              v-html="$t('domains.add_user_addresses_from_user_domain_tooltip')"
-            ></div>
+            <div>
+              {{ $t("domains.add_user_addresses_from_user_domain_tooltip") }}
+            </div>
           </template>
         </NsCheckbox>
         <NsCheckbox
@@ -65,11 +65,9 @@
           value="checkAddGroupAddressesFromUserDomain"
         >
           <template slot="tooltip">
-            <div
-              v-html="
-                $t('domains.add_group_addresses_from_user_domain_tooltip')
-              "
-            ></div>
+            <div>
+              {{ $t("domains.add_group_addresses_from_user_domain_tooltip") }}
+            </div>
           </template>
         </NsCheckbox>
         <!-- advanced options -->
@@ -98,9 +96,9 @@
                 ref="acceptUnknownRecipients"
               >
                 <template slot="tooltip">
-                  <div
-                    v-html="$t('domains.accept_unknown_recipients_tooltip')"
-                  ></div>
+                  <div>
+                    {{ $t("domains.accept_unknown_recipients_tooltip") }}
+                  </div>
                 </template>
                 <template slot="text-left"
                   >{{ $t("domains.accept_unknown_recipients") }}
@@ -111,9 +109,9 @@
                   >
                     <template slot="trigger"></template>
                     <template slot="content">
-                      <div
-                        v-html="$t('domains.accept_unknown_recipients_tooltip')"
-                      ></div>
+                      <div>
+                        {{ $t("domains.accept_unknown_recipients_tooltip") }}
+                      </div>
                     </template>
                   </cv-interactive-tooltip>
                 </template>
@@ -126,11 +124,12 @@
                   >
                     <template slot="trigger"></template>
                     <template slot="content">
-                      <div
-                        v-html="$t('domains.accept_unknown_recipients_tooltip')"
-                      ></div>
-                    </template> </cv-interactive-tooltip
-                ></template>
+                      <div>
+                        {{ $t("domains.accept_unknown_recipients_tooltip") }}
+                      </div>
+                    </template>
+                  </cv-interactive-tooltip></template
+                >
               </NsToggle>
               <!-- accept unknown recipients destination -->
               <NsInlineNotification

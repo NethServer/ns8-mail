@@ -16,7 +16,7 @@
             >
               <template slot="trigger"></template>
               <template slot="content">
-                <div v-html="$t('queue.queue_tooltip')"></div>
+                <div>{{ $t("queue.queue_tooltip") }}</div>
               </template>
             </cv-interactive-tooltip>
           </h2>
@@ -96,9 +96,13 @@
             <NsSvg :svg="InformationFilled16" class="icon ns-info" />
             <span>
               {{
-                $tc("queue.maximal_queue_lifetime_info", parseInt(maximal_queue_lifetime), {
-                  maximal_queue_lifetime: maximal_queue_lifetime,
-                })
+                $tc(
+                  "queue.maximal_queue_lifetime_info",
+                  parseInt(maximal_queue_lifetime),
+                  {
+                    maximal_queue_lifetime: maximal_queue_lifetime,
+                  }
+                )
               }}
             </span>
           </div>
@@ -249,14 +253,10 @@
       @confirmDelete="setDeleteQueue(false)"
     >
       <template slot="explanation">
-        <p
-          class="mg-top-sm"
-          v-html="$t('queue.confirm_delete_queued_message')"
-        ></p>
-        <p
-          class="mg-top-sm"
-          v-html="core.$t('common.this_action_is_not_reversible')"
-        ></p>
+        <p class="mg-top-sm">{{ $t("queue.confirm_delete_queued_message") }}</p>
+        <p class="mg-top-sm">
+          {{ core.$t("common.this_action_is_not_reversible") }}
+        </p>
       </template>
     </NsDangerDeleteModal>
     <NsDangerDeleteModal
@@ -273,10 +273,9 @@
       @confirmDelete="setDeleteQueueAll(false)"
     >
       <template slot="explanation">
-        <p
-          class="mg-top-sm"
-          v-html="core.$t('common.this_action_is_not_reversible')"
-        ></p>
+        <p class="mg-top-sm">
+          {{ core.$t("common.this_action_is_not_reversible") }}
+        </p>
       </template>
     </NsDangerDeleteModal>
   </div>

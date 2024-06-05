@@ -67,7 +67,7 @@
               ref="hostname"
             >
               <template slot="tooltip">
-                <span v-html="$t('common.mail_hostname_tooltip')"></span>
+                <span>{{ $t("common.mail_hostname_tooltip") }}</span>
               </template>
             </NsTextInput>
             <NsTextInput

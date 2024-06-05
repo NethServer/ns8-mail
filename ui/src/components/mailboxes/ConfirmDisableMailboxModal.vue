@@ -11,14 +11,13 @@
   >
     <template slot="title">{{ $t("mailboxes.disable_mailbox") }}</template>
     <template slot="content">
-      <div
-        v-html="
-          $t('mailboxes.confirm_disable_mailbox', {
-            mailbox: mailbox ? mailbox.user : '',
+      <div class="mg-bottom-md">
+        {{
+          $t("mailboxes.confirm_disable_mailbox", {
+            mailbox: mailbox ? mailbox.user : "",
           })
-        "
-        class="mg-bottom-md"
-      ></div>
+        }}
+      </div>
       <div>{{ $t("mailboxes.confirm_disable_mailbox_2") }}</div>
     </template>
     <template slot="secondary-button">{{ core.$t("common.cancel") }}</template>

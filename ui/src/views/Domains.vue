@@ -142,14 +142,10 @@
       @confirmDelete="removeDomain"
     >
       <template slot="explanation">
-        <p
-          class="mg-top-sm"
-          v-html="$t('domains.delete_domain_explanation')"
-        ></p>
-        <p
-          class="mg-top-sm"
-          v-html="core.$t('common.this_action_is_not_reversible')"
-        ></p>
+        <p class="mg-top-sm">{{ $t("domains.delete_domain_explanation") }}</p>
+        <p class="mg-top-sm">
+          {{ core.$t("common.this_action_is_not_reversible") }}
+        </p>
       </template>
     </NsDangerDeleteModal>
     <DkimModal

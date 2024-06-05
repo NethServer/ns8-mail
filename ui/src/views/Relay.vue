@@ -317,7 +317,7 @@
             tooltipDirection="right"
           >
             <template slot="tooltip">
-              <span v-html="$t('relay.mandatory_tls_tooltip')"></span>
+              <span>{{ $t("relay.mandatory_tls_tooltip") }}</span>
             </template>
             <template slot="text-left">{{ $t("common.disabled") }}</template>
             <template slot="text-right">{{ $t("common.enabled") }}</template>
@@ -344,16 +344,14 @@
     >
       <template slot="title">{{ $t("relay.delete_relay_rule") }}</template>
       <template slot="content">
-        <span
-          v-html="
-            form.rule_type == 'wildcard'
-              ? $t('relay.delete_default_rule')
-              : $tc('relay.delete_rule_description', form.rule_subject, {
-                  ruleType: ruleTypeTranslation,
-                  ruleSubject: form.rule_subject,
-                })
-          "
-        ></span>
+        <span>{{
+          form.rule_type == "wildcard"
+            ? $t("relay.delete_default_rule")
+            : $tc("relay.delete_rule_description", form.rule_subject, {
+                ruleType: ruleTypeTranslation,
+                ruleSubject: form.rule_subject,
+              })
+        }}</span>
       </template>
       <template slot="secondary-button">{{ $t("common.cancel") }}</template>
       <template slot="primary-button">{{ $t("relay.delete_rule") }}</template>

@@ -313,9 +313,9 @@
                 class="mg-bottom-lg"
               >
                 <template slot="tooltip">
-                  <div
-                    v-html="$t('filter.clamav_official_signatures_tooltip')"
-                  ></div>
+                  <div>
+                    {{ $t("filter.clamav_official_signatures_tooltip") }}
+                  </div>
                 </template>
               </NsCheckbox>
               <label class="bx--label">
@@ -328,9 +328,9 @@
               >
                 <template slot="trigger"></template>
                 <template slot="content">
-                  <div
-                    v-html="$t('filter.third_party_signatures_rating_tooltip')"
-                  ></div>
+                  <div>
+                    {{ $t("filter.third_party_signatures_rating_tooltip") }}
+                  </div>
                 </template>
               </cv-interactive-tooltip>
               <cv-content-switcher
@@ -722,7 +722,6 @@ export default {
       this.getFilterConfiguration();
     },
     saveAntispamSection() {
-
       const actionPayload = {
         antispam: {
           enabled: this.antispam.enabled,
