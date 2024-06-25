@@ -54,7 +54,7 @@ the `postfix-custom` volume. Edit it with:
 
     # print the config values that differ from Postfix defaults
     # WARNING! changing one of them may be dangerous!
-    podman exec -ti dovecot doveconf -n
+    podman exec -ti postfix postconf -n
     # start the editor
     podman exec -ti postfix vi /etc/postfix/main.cf.d/myoverride.cf
     systemctl --user reload postfix
