@@ -10,7 +10,7 @@
         "missing_object": "Oggetto mancante",
         "user_destination": "Utente",
         "save_settings": "Salva impostazioni",
-        "advanced": "Avanzate",
+        "advanced": "Advanced",
         "enabled": "Abilitato",
         "disabled": "Disabilitato",
         "delete": "Elimina",
@@ -265,7 +265,7 @@
         "app_volumes": "Volume app|Volumi app",
         "no_volumes": "Nessun volume",
         "rspamd_webapp": "Rspamd",
-        "not_configured": "Non configurato",
+        "not_configured": "Not configured",
         "open_rspamd": "Apri Rspamd",
         "status": "Stato",
         "go_to_filter": "Vai al filtro",
@@ -278,7 +278,7 @@
         "page_description": "Gli utenti master sono utenti privilegiati che possono impersonare un altro utente mentre interagiscono con la loro casella di posta"
     },
     "task": {
-        "cannot_create_task": "Impossibile eseguire task {action}",
+        "cannot_create_task": "Impossibile eseguire il task {action}",
         "task_aborted": "{action} interrotta"
     },
     "error": {
