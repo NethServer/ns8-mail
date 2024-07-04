@@ -20,6 +20,7 @@ if [ $# -eq 0 ]; then
         echo "Generating DKIM signing key. Add the following TXT record to DNS domains:"
         rspamadm dkim_keygen -s "${RSPAMD_dkim_selector:?}" -b 2048 -k "${dkim_dir}/${RSPAMD_dkim_selector}.key" | tee "${dkim_dir}/${RSPAMD_dkim_selector}.txt"
         chgrp -cR rspamd "${dkim_dir}"
+        chmod -c g+r "${dkim_dir}"/*.key
     fi
 
     su -s /bin/ash - redis -c "exec /usr/bin/redis-server /etc/redis-persistent.conf" </dev/null &
