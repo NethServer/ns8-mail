@@ -66,12 +66,7 @@
                 ],
                 "properties": {
                     "queue_name": {
-                        "type": "string",
-                        "enum": [
-                            "deferred",
-                            "hold",
-                            "active"
-                        ]
+                        "type": "string"
                     },
                     "queue_id": {
                         "type": "string"
