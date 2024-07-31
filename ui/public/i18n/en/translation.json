@@ -328,7 +328,8 @@
         "create_bypass_rule_for": "Create bypass rule for {value}",
         "bypass_rule_is_going_to_be_deleted": "Bypass rule for {value} is going to be deleted...",
         "delete_bypass_rule_for": "Delete bypass rule for {value}",
-        "bypass_rule_already_exists": "This bypass rule already exists"
+        "bypass_rule_already_exists": "This bypass rule already exists",
+        "placeholder_bypass_rule": "E.g. {value}"
     },
     "settings_mailboxes": {
         "title": "Mailboxes settings",

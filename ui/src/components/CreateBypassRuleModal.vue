@@ -139,13 +139,21 @@ export default {
     valuePlaceholder() {
       switch (this.type) {
         case "email":
-          return "john.doe@example.org";
+          return this.$t("filter_bypass_rules.placeholder_bypass_rule", {
+            value: "john.doe@example.org",
+          });
         case "domain":
-          return "example.org";
+          return this.$t("filter_bypass_rules.placeholder_bypass_rule", {
+            value: "example.org",
+          });
         case "ip":
-          return "192.168.5.123";
+          return this.$t("filter_bypass_rules.placeholder_bypass_rule", {
+            value: "192.168.5.123",
+          });
         case "cidr":
-          return "192.168.5.0/24";
+          return this.$t("filter_bypass_rules.placeholder_bypass_rule", {
+            value: "192.168.5.0/24",
+          });
         default:
           return "";
       }
