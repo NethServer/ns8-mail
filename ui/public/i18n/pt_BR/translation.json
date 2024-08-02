@@ -328,7 +328,8 @@
         "type_cidr": "CIDR network",
         "create_bypass_rule": "Create bypass rule",
         "delete_rule": "Delete rule",
-        "search_rule": "Search rule"
+        "search_rule": "Search rule",
+        "placeholder_bypass_rule": "E.g. {value}"
     },
     "settings_mailboxes": {
         "title": "Mailboxes settings",

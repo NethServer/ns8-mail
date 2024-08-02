@@ -10,7 +10,7 @@
         "missing_object": "Oggetto mancante",
         "user_destination": "Utente",
         "save_settings": "Salva impostazioni",
-        "advanced": "Advanced",
+        "advanced": "Avanzato",
         "enabled": "Abilitato",
         "disabled": "Disabilitato",
         "delete": "Elimina",
@@ -265,7 +265,7 @@
         "app_volumes": "Volume app|Volumi app",
         "no_volumes": "Nessun volume",
         "rspamd_webapp": "Rspamd",
-        "not_configured": "Not configured",
+        "not_configured": "Non configurato",
         "open_rspamd": "Apri Rspamd",
         "status": "Stato",
         "go_to_filter": "Vai al filtro",
@@ -355,7 +355,8 @@
         "create_bypass_rule_for": "Crea regola di bypass per {value}",
         "bypass_rule_is_going_to_be_deleted": "La regola di bypass per {value} sta per essere eliminata...",
         "delete_bypass_rule_for": "Elimina regola di bypass per {value}",
-        "bypass_rule_already_exists": "Questa regola di bypass esiste già"
+        "bypass_rule_already_exists": "Questa regola di bypass esiste già",
+        "placeholder_bypass_rule": "Es. {value}"
     },
     "queue": {
         "title": "Coda",

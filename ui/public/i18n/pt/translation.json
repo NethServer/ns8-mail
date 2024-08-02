@@ -292,7 +292,8 @@
         "col_value": "Value",
         "delete_bypass_rule_for": "Delete bypass rule for {value}",
         "type_cidr_l": "CIDR network",
-        "col_type": "Type"
+        "col_type": "Type",
+        "placeholder_bypass_rule": "E.g. {value}"
     },
     "queue": {
         "delete": "Delete",
