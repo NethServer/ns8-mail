@@ -209,7 +209,8 @@
         "type_cidr": "Netzwerk (CIDR) 1",
         "create_bypass_rule": "Ausnahme erstellen",
         "delete_rule": "Ausnahme löschen",
-        "search_rule": "Regel suchen"
+        "search_rule": "Regel suchen",
+        "placeholder_bypass_rule": "E.g. {value}"
     },
     "addresses": {
         "edit_address_address": "Adresse {address} ändern",
