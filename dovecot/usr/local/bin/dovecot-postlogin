@@ -10,7 +10,13 @@
 set -e
 
 # Import LDAP connection settings
-. /etc/dovecot/ldapconf.sh
+# sourcing the file directly is broken with quotes
+while IFS= read -r line; do
+    if [[ -n "$line" && "$line" != \#* ]]; then
+        # export only if line is not empty and not a comment
+        export "$line"
+    fi
+done < /etc/dovecot/ldapconf.sh
 
 ldap_search () {
     filter="$1"
