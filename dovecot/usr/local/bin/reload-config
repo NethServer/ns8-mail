@@ -9,27 +9,27 @@
 
 set -e
 
-ldap_schema=${DOVECOT_LDAP_SCHEMA:?}
+ldap_schema="${DOVECOT_LDAP_SCHEMA:?}"
 
 # Export variables for templates
 set -a
 S=\$
-ldap_host=${DOVECOT_LDAP_HOST:?}
-ldap_domain=${DOVECOT_LDAP_DOMAIN:?}
-ldap_port=${DOVECOT_LDAP_PORT:?}
-ldap_base_dn=${DOVECOT_LDAP_BASE:?}
-ldap_bind_dn=${DOVECOT_LDAP_USER}
-ldap_bind_password=${DOVECOT_LDAP_PASS}
+ldap_host="${DOVECOT_LDAP_HOST:?}"
+ldap_domain="${DOVECOT_LDAP_DOMAIN:?}"
+ldap_port="${DOVECOT_LDAP_PORT:?}"
+ldap_base_dn="${DOVECOT_LDAP_BASE:?}"
+ldap_bind_dn="${DOVECOT_LDAP_USER}"
+ldap_bind_password="${DOVECOT_LDAP_PASS}"
 ldap_users_search_filter_clause=
-submission_host=${DOVECOT_SUBMISSION_HOST:?}
-submission_port=${DOVECOT_SUBMISSION_PORT:?}
-login_trusted_networks=${DOVECOT_TRUSTED_NETWORKS:-}
-doveadm_api_key=${DOVECOT_API_KEY:?}
-doveadm_api_port=${DOVECOT_API_PORT:?}
-stats_http_port=${DOVECOT_METRICS_PORT:?}
-tmpl_spam_folder=${DOVECOT_SPAM_FOLDER:-Junk}
-tmpl_spam_subject_prefix=${DOVECOT_SPAM_SUBJECT_PREFIX:-}
-tmpl_trash_folder=${DOVECOT_TRASH_FOLDER:?}
+submission_host="${DOVECOT_SUBMISSION_HOST:?}"
+submission_port="${DOVECOT_SUBMISSION_PORT:?}"
+login_trusted_networks="${DOVECOT_TRUSTED_NETWORKS:-}"
+doveadm_api_key="${DOVECOT_API_KEY:?}"
+doveadm_api_port="${DOVECOT_API_PORT:?}"
+stats_http_port="${DOVECOT_METRICS_PORT:?}"
+tmpl_spam_folder="${DOVECOT_SPAM_FOLDER:-Junk}"
+tmpl_spam_subject_prefix="${DOVECOT_SPAM_SUBJECT_PREFIX:-}"
+tmpl_trash_folder="${DOVECOT_TRASH_FOLDER:?}"
 tmpl_mail_plugins="acl listescape notify mail_log fts fts_flatcurve"
 tmpl_mail_max_userip_connections="${DOVECOT_MAX_USERIP_CONNECTIONS:-20}"
 # Note: value "0" means "unlimited default quota"; value "" (empty string)
@@ -57,7 +57,7 @@ else
     tmpl_sharedseen=":INDEXPVT=~/Maildir/shared/%%n"
 fi
 
-master_users=${DOVECOT_MASTER_USERS}
+master_users="${DOVECOT_MASTER_USERS}"
 set +a
 
 echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::" > /etc/dovecot/users
