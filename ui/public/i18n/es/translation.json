@@ -346,7 +346,7 @@
         "create_bypass_rule": "Crear regla de bypass",
         "delete_rule": "Borrar regla",
         "search_rule": "Buscar reglas",
-        "placeholder_bypass_rule": "E.g. {value}"
+        "placeholder_bypass_rule": "Por ejemplo, {value}"
     },
     "settings_master_users": {
         "master_users_placeholder": "Elegir usuarios maestros",
