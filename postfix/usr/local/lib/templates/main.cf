@@ -95,7 +95,6 @@ always_bcc = ${tmpl_always_bcc}
 # Restrictions
 #
 smtpd_sender_restrictions =
-  reject_non_fqdn_sender,
   ${tmpl_reject_authenticated_sender_login_mismatch},
 
 smtpd_relay_restrictions =
