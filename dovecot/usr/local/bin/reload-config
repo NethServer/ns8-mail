@@ -106,6 +106,7 @@ fi
     # Add the user_domain to /etc/hosts to quiet dns queries
     if  ! grep  -qxF '#user_domain' /etc/hosts; then
         # user_domain is not present in /etc/hosts
+        # shellcheck disable=SC3036
         echo -e "\n#user_domain\n${ldap_host} ${ldap_domain}" >> /etc/hosts
     else
         # /etc/hosts is mounted in the container,
@@ -114,6 +115,18 @@ fi
         sed -i "/#user_domain/{N;s/.*/#user_domain\n${ldap_host} ${ldap_domain}/;}" /tmp/hosts_tmp
         cat /tmp/hosts_tmp > /etc/hosts
     fi
+)
+
+(
+    exec >/etc/dovecot/trusted_networks.conf
+    echo "# Special settings for trusted networks"
+    # shellcheck disable=SC3060
+    for network in ${DOVECOT_TRUSTED_NETWORKS//,/ } ; do
+        echo "remote ${network} {"
+        echo "    mail_max_userip_connections =" $(( ${DOVECOT_MAX_USERIP_CONNECTIONS:-20} * 5 ))
+        echo "}"
+        echo ""
+    done
 )
 
 if [ -f /run/dovecot/master.pid ]; then
