@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import os
+import subprocess
+import agent
+
+request = json.load(sys.stdin)
+rdb = agent.redis_connect()
+podman_args = ["--workdir=/srv"] + agent.agent.get_state_volume_args()
+restic_args = [
+    "dump",
+    request["snapshot"],
+    "/state/maildir-dump.lst",
+]
+
+restic_cmd, restic_env = agent.prepare_restic_command(rdb, request["destination"], request["repopath"], podman_args, restic_args) 
+with subprocess.Popen(restic_cmd, stdout=subprocess.PIPE, stderr=sys.stderr, text=True, env=restic_env) as vproc:
+    folders = []
+    while True:
+        line = vproc.stdout.readline()
+        if not line:
+            break
+        fields = line.rstrip().split("\t")
+        if fields[0] == request["user"]:
+            folders.append(fields[1])
+if vproc.returncode != 0:
+    print(agent.SD_ERR + f"Restic dump command failed with exit code {vproc.returncode}.", file=sys.stderr)
+    sys.exit(1)
+
+folders.sort()
+json.dump({
+    "request": request,
+    "folders": folders,
+}, fp=sys.stdout)
