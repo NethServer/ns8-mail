@@ -90,6 +90,25 @@ preference is stored in the _dict_ database file
 `/var/lib/dovecot/dict/uspamret.db`. See the dedicated section below to
 modify it.
 
+### `restore-folder`
+
+Import subdirectories of a Maildir++ structure (restored from backup)
+under the user's "Restored folder." Command syntax:
+
+    restore-folder {USER} {BACKUP_DIR} {FOLDER_PATH} [ROOT_FOLDER]
+
+- **USER**: The destination IMAP user name.
+- **BACKUP_DIR**: The source directory where backup contents were
+  extracted. Any subdirectory beginning with a "." (per the Maildir++
+  format) is imported.
+- **FOLDER_PATH**: The IMAP path for the restored folder. Unused path
+  ancestors are pruned.
+- **ROOT_FOLDER** (Optional): Defaults to "Restored folder" if
+  unspecified, under which contents are imported.
+
+The command disables the USER's quota if necessary to avoid an over-quota
+state.
+
 ## Storage
 
 Volumes are:

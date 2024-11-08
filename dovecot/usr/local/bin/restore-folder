@@ -1,0 +1,56 @@
+#!/bin/ash
+# shellcheck shell=bash
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+set -o pipefail
+set -e
+
+user="${1:?missing user argument}"
+restoredir="${2:?missing source dir path}"
+destfolder="${3:?missing destination folder name}"
+rootfolder="${4:-Restored folder}"
+basefolder="$(basename "${destfolder}")"
+rootprefix=$(doveadm mailbox path -u "${user}" "${rootfolder}")
+
+chown -c vmail:vmail "${restoredir}"
+cd "${restoredir}"
+
+read -r curquotalimit curquotamb < <(doveadm -f tab quota get -u "${user}" | awk -F $'\t' 'NR==2 {print $4 "\t" int($4/1024)}')
+if [ "${curquotalimit}" != "-" ]; then
+    # Temporarly disable the user's quota
+    doveadm dict set -u "${user}" fs:posix:prefix=/var/lib/dovecot/dict/uquota/ shared/"${user}" 0
+fi
+
+doveadm mailbox create    -u "${user}" "${rootfolder}" &>/dev/null || :
+doveadm mailbox subscribe -u "${user}" "${rootfolder}"
+doveadm mailbox delete    -u "${user}" -r -s "${rootfolder}/${basefolder}" &>/dev/null || :
+for folder in .* ; do
+    [ "${folder}" == "." ] && continue
+    [ "${folder}" == ".." ] && continue
+    [ ! -d "${folder}" ] && continue
+    if [ -e "${rootprefix}${folder}" ]; then
+        echo "WARNING! Found already existing destination path ${rootprefix}${folder}. Forcing removal." 1>&2
+        rm -rf "${rootprefix}${folder}"
+    fi
+    mv -v "${folder}" "${rootprefix}${folder}"
+done
+# Prune destfolder ancestors:
+doveadm mailbox rename    -u "${user}" -s "${rootfolder}/${destfolder}" "${rootfolder}/${basefolder}" || :
+doveadm index             -u "${user}" "${rootfolder}/${basefolder}"
+doveadm quota recalc      -u "${user}"
+
+read -r newquotavalue < <(doveadm -f tab quota get -u "${user}" | awk -F $'\t' 'NR==2 {print $3}')
+
+if [ "${curquotalimit}" == "-" ]; then
+    echo "QUOTA_UNCHANGED. Quota usage ${newquotavalue} KB. Quota is not limited, nothing to do."
+elif [ "${newquotavalue}" -lt "${curquotalimit}" ]; then
+    # Restore previous user's quota
+    doveadm dict set -u "${user}" fs:posix:prefix=/var/lib/dovecot/dict/uquota/ shared/"${user}" "${curquotamb}"
+    echo "QUOTA_UNCHANGED. Quota restored to ${curquotamb}"
+else
+    echo "QUOTA_DISABLED_BY_RESTORE. Original quota was insufficient for the restore of ${destfolder}. User quota is disabled now."
+fi
