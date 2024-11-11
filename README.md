@@ -71,10 +71,15 @@ After applying a custom configuration, check the services are running properly:
 ### Rspamd custom configuration
 
 To customize the **Rspamd** configuration and to access advanced Rspamd
-settings use the Rspamd web admin UI. It is accessible from the local host
-on TCP port 11334. If a SSH port forward is not allowed, configure an
-HTTPS route to expose the web interface publicly, as the web UI is
-protected by a random password. Retrieve the UI password with
+settings use the Rspamd web admin UI. A route matching URL path `/rspamd`
+(e.g. ``https://<SERVER-FQDN/rspamd``, ``https://<SERVER-IP>/rspamd``) is
+configured on Mail installation, with HTTP-Basic authentication.
+Credentials valid for Cluster Admin are accepted also to access the Rspamd
+UI.
+
+As alternative, access Rspamd web UI from the local host on TCP port
+11334. The web UI is internally protected by a random token that can be
+obtained with
 
     podman exec rspamd ash -c 'echo $RSPAMD_adminpw'
 
