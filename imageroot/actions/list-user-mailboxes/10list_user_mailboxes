@@ -22,7 +22,7 @@ try:
     rquotas = mail.doveadm_query("quotaGet", {"allUsers":True})
 except mail.DoveadmError as ex:
     if ex.code == 75:
-        print(agent.SD_WARNING + "Quota information is temporarly unavailable. Try again later.", ex, file=sys.stderr)
+        print(agent.SD_WARNING + "Quota information is temporarily unavailable. Try again later.", ex, file=sys.stderr)
     else:
         print(agent.SD_ERROR + "quotaGet error", ex, file=sys.stderr)
 except Exception:

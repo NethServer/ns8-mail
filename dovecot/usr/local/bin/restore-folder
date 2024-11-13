@@ -21,7 +21,7 @@ cd "${restoredir}"
 
 read -r curquotalimit curquotamb < <(doveadm -f tab quota get -u "${user}" | awk -F $'\t' 'NR==2 {print $4 "\t" int($4/1024)}')
 if [ "${curquotalimit}" != "-" ]; then
-    # Temporarly disable the user's quota
+    # Temporarily disable the user's quota
     doveadm dict set -u "${user}" fs:posix:prefix=/var/lib/dovecot/dict/uquota/ shared/"${user}" 0
 fi
 

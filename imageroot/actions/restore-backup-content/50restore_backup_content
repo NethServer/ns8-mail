@@ -42,7 +42,7 @@ if proc_restore.returncode != 0:
     print(agent.SD_ERR + f"Restic restore command failed with exit code {proc_restore.returncode}.", file=sys.stderr)
     sys.exit(1)
 
-# 1. Disable the user quota temporarly.
+# 1. Disable the user quota temporarily.
 # 2. Move the restored content under "Restored content" IMAP folder.
 #    Remove the destination if already exists.
 # 3. Reindex the destination folder.
