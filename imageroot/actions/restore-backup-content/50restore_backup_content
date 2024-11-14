@@ -13,7 +13,12 @@ import agent
 import atexit
 
 request = json.load(sys.stdin)
-
+if request['user'] == 'vmail':
+    # Public folders belong to user Vmail. When one of them is restored, the
+    # destination folder is created under the Public folder itself.
+    destroot = request.get("destroot", f"{request['folder']}/Restored folder")
+else:
+    destroot = request.get("destroot", "Restored folder")
 # Temporary path for restore. It is relative to Dovecot's vmail dir, the
 # default working directory for the dovecot container:
 tmp_restore_path = ".restore-backup-content." + os.environ["AGENT_TASK_ID"]
@@ -62,7 +67,7 @@ if prestore.returncode != 0:
 quota_disabled = False
 
 proc_import = subprocess.run(["podman", "exec", "-i", "dovecot",
-    "restore-folder", request["user"], f"/var/lib/vmail/{tmp_restore_path}", request['folder']],
+    "restore-folder", request["user"], f"/var/lib/vmail/{tmp_restore_path}", request['folder'], destroot],
     stdout=subprocess.PIPE, text=True)
 if proc_import.returncode != 0:
     print(agent.SD_ERR + f"Import script failed with exit code {proc_import.returncode}.", file=sys.stderr)

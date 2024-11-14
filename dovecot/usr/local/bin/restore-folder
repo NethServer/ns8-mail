@@ -25,8 +25,11 @@ if [ "${curquotalimit}" != "-" ]; then
     doveadm dict set -u "${user}" fs:posix:prefix=/var/lib/dovecot/dict/uquota/ shared/"${user}" 0
 fi
 
-doveadm mailbox create    -u "${user}" "${rootfolder}" &>/dev/null || :
-doveadm mailbox subscribe -u "${user}" "${rootfolder}"
+echo "${rootfolder}" | tr / $'\n' | while read -r rootpart ; do
+    rootacc="${rootacc}${rootacc+/}${rootpart}"
+    doveadm mailbox create    -u "${user}" "${rootacc}" &>/dev/null || :
+    doveadm mailbox subscribe -u "${user}" "${rootacc}"
+done
 doveadm mailbox delete    -u "${user}" -r -s "${rootfolder}/${basefolder}" &>/dev/null || :
 for folder in .* ; do
     [ "${folder}" == "." ] && continue
@@ -39,7 +42,9 @@ for folder in .* ; do
     mv -v "${folder}" "${rootprefix}${folder}"
 done
 # Prune destfolder ancestors:
-doveadm mailbox rename    -u "${user}" -s "${rootfolder}/${destfolder}" "${rootfolder}/${basefolder}" || :
+if [ "${destfolder}" != "${basefolder}" ]; then
+    doveadm mailbox rename    -u "${user}" -s "${rootfolder}/${destfolder}" "${rootfolder}/${basefolder}" || :
+fi
 doveadm index             -u "${user}" "${rootfolder}/${basefolder}"
 doveadm quota recalc      -u "${user}"
 
