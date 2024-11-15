@@ -25,6 +25,10 @@
             "type": "boolean",
             "description": "If the restore has disabled the user's quota or not"
         },
+        "last_restic_message": {
+            "type": "object",
+            "description": "Last JSON message from Restic restore"
+        },
         "request": {
             "type": "object",
             "title": "Original request object"

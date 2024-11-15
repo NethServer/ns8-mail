@@ -41,20 +41,20 @@ restic_args = [
     f"--include={maildir_path_goescaped}*",
 ]
 podman_args = ["--workdir=/srv"] + agent.agent.get_state_volume_args()
-restic_cmd, restic_env = agent.prepare_restic_command(agent.redis_connect(), request["destination"], request["repopath"], podman_args, restic_args)
-with subprocess.Popen(restic_cmd, env=restic_env, stdout=subprocess.PIPE, text=True, errors='replace') as prestore:
-    set_restore_progress_value = agent.get_progress_callback(5, 95)
-    while True:
-        line = prestore.stdout.readline()
-        if not line:
-            break
-        try:
-            omessage = json.loads(line)
-            if omessage['message_type'] == 'status':
-                fpercent = float(omessage['percent_done'])
-                set_restore_progress_value(int(fpercent * 100))
-        except Exception as ex:
-            print(agent.SD_WARNING+"Error decoding Restic status message", ex, file=sys.stderr)
+
+# Prepare progress callback function that captures non-progress messages too:
+last_restic_message = {}
+def build_restore_progress_callback():
+    restore_progress = agent.get_progress_callback(5, 95)
+    def fprog(omessage):
+        global last_restic_message
+        last_restic_message = omessage
+        if omessage['message_type'] == 'status':
+            fpercent = float(omessage['percent_done'])
+            restore_progress(int(fpercent * 100))
+    return fprog
+# Run the restic restore command capturing the progress status:
+prestore = agent.run_restic(agent.redis_connect(), request["destination"], request["repopath"], podman_args, restic_args, progress_callback=build_restore_progress_callback())
 if prestore.returncode != 0:
     print(agent.SD_ERR + f"Restic restore command failed with exit code {prestore.returncode}.", file=sys.stderr)
     sys.exit(1)
@@ -79,4 +79,5 @@ if 'QUOTA_DISABLED_BY_RESTORE' in proc_import.stdout:
 json.dump({
     "request": request,
     "quota_disabled": quota_disabled,
+    "last_restic_message": last_restic_message,
 }, fp=sys.stdout)
