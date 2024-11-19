@@ -54,13 +54,14 @@ try:
         agent.set_status('validation-failed')
         json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': rule_subject, 'error':'rule_subject_must_be_*'}], fp=sys.stdout)
         sys.exit(5)
+    if rule_type != 'sender':
+        # Copy auth and transport settings to existing rules with the same host:port key
+        cur.execute("""UPDATE relayrules SET transport=:transport, tls=:mandatory_tls, username=:username, password=:password WHERE host=:host AND port=:port AND rule_type=:rule_type""", values)
     cur.execute("""INSERT INTO relayrules (rule_type, rule_subject, transport, host, port, tls, username, password, enabled) VALUES (:rule_type, :rule_subject, :transport, :host, :port, :mandatory_tls, :username, :password, :enabled)""", values)
 
 except Exception as err:
     sdb.rollback()
-    agent.set_status('validation-failed')
-    json.dump([{'field':'rule_subject', 'parameter':'rule_subject','value': str(err), 'error':'sender_data_cannot_be_saved_in_db'}], fp=sys.stdout)
-    sys.exit(3)
+    raise
 else:
     sdb.commit()
 
