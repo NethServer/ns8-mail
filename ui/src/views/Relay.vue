@@ -130,11 +130,16 @@
                           {{ row.host }}
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          {{
-                            row.has_password
-                              ? $t("common.enabled")
-                              : $t("common.disabled")
-                          }}
+                          <div
+                            v-if="row.has_password"
+                          >
+                            {{ row.username }}
+                          </div>
+                          <NsTag
+                            v-else
+                            kind="high-contrast"
+                            :label="$t('common.disabled')"
+                          ></NsTag>
                         </cv-data-table-cell>
                         <cv-data-table-cell>
                           <NsTag
