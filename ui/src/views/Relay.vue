@@ -25,6 +25,17 @@
       <cv-row>
         <cv-column>
           <NsInlineNotification
+            v-if="hasWildcard || hasRulesByRecipient()"
+            kind="info"
+            :title="$t('relay.shared_credentials_info_title')"
+            :description="$t('relay.shared_credentials_info_description')"
+            :showCloseButton="false"
+          />
+        </cv-column>
+      </cv-row>
+      <cv-row>
+        <cv-column>
+          <NsInlineNotification
             kind="warning"
             :title="core.$t('common.use_landscape_mode')"
             :description="core.$t('common.use_landscape_mode_description')"
@@ -127,7 +138,7 @@
                           </p>
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          {{ row.host }}
+                          {{ row.host }}:{{ row.port }}
                         </cv-data-table-cell>
                         <cv-data-table-cell>
                           <div
@@ -472,6 +483,14 @@ export default {
     this.listRelayRules();
   },
   methods: {
+    hasRulesByRecipient() {
+      for(const row of this.relayRules) {
+        if(row.rule_type == "recipient") {
+          return true;
+        }
+      }
+      return false;
+    },
     goToRelaySettings() {
       this.goToAppPage(this.instanceName, "settingsRelay");
     },

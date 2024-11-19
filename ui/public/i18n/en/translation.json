@@ -405,6 +405,8 @@
         "col_host": "Hostname",
         "col_enabled": "Status",
         "unchanged": "Unchanged",
+        "shared_credentials_info_title": "Shared host settings",
+        "shared_credentials_info_description": "Authentication and TLS settings for Default and Recipient rules are shared and applied collectively to all rules with the same Hostname.",
         "settings": {
             "networks_label": "Allow relay from these IP addresses",
             "networks_helper": "One address per line, in IPv4/6 CIDR format",
