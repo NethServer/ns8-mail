@@ -392,6 +392,7 @@
         "enabled": "Status",
         "host": "Hostname",
         "port": "Port",
+        "port_placeholder": "e.g. 25, 587 or 465",
         "authentication": "Authentication",
         "username": "Username",
         "password": "Password",

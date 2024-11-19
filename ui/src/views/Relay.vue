@@ -286,6 +286,7 @@
           />
           <NsTextInput
             v-model="form.port"
+            :placeholder="$t('relay.port_placeholder')"
             :label="$t('relay.port')"
             :invalid-message="error.form.port"
             ref="form.port"
