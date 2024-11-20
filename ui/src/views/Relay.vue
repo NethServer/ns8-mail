@@ -25,7 +25,7 @@
       <cv-row>
         <cv-column>
           <NsInlineNotification
-            v-if="hasWildcard || hasRulesByRecipient()"
+            v-if="hasWildcard || hasRulesByRecipient"
             kind="info"
             :title="$t('relay.shared_credentials_info_title')"
             :description="$t('relay.shared_credentials_info_description')"
@@ -469,6 +469,14 @@ export default {
     ruleTypeTranslation: function () {
       return this.$t("relay." + this.form.rule_type);
     },
+    hasRulesByRecipient: function() {
+      for(const row of this.relayRules) {
+        if(row.rule_type == "recipient") {
+          return true;
+        }
+      }
+      return false;
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -484,14 +492,6 @@ export default {
     this.listRelayRules();
   },
   methods: {
-    hasRulesByRecipient() {
-      for(const row of this.relayRules) {
-        if(row.rule_type == "recipient") {
-          return true;
-        }
-      }
-      return false;
-    },
     goToRelaySettings() {
       this.goToAppPage(this.instanceName, "settingsRelay");
     },
