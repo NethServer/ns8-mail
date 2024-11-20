@@ -392,6 +392,7 @@
         "enabled": "Status",
         "host": "Hostname",
         "port": "Port",
+        "port_placeholder": "e.g. 25, 587 or 465",
         "authentication": "Authentication",
         "username": "Username",
         "password": "Password",
@@ -402,9 +403,11 @@
         "no_relay_rules_description": "There is no relay rules configured",
         "col_has_password": "Authentication",
         "col_rule_subject": "Rule subject",
-        "col_host": "Hostname",
+        "col_host": "Hostname and port",
         "col_enabled": "Status",
         "unchanged": "Unchanged",
+        "shared_credentials_info_title": "Shared host settings",
+        "shared_credentials_info_description": "Authentication and TLS settings for Default and Recipient rules are shared and applied collectively to all rules with the same Hostname and port.",
         "settings": {
             "networks_label": "Allow relay from these IP addresses",
             "networks_helper": "One address per line, in IPv4/6 CIDR format",
@@ -415,7 +418,7 @@
             "bcc": "Always BCC address",
             "bcc_string_lte": "Invalid email format",
             "is_bcc_enabled": "Always BCC",
-            "bcc_placeholder":  "e.g. user@example.com",
+            "bcc_placeholder": "e.g. user@example.com",
             "is_bcc_enabled_tooltips": "When enabled, the specified address will receive a copy of every message sent or received through this server. This setting is useful for mail archiving solutions."
         },
         "error": {

@@ -34,6 +34,10 @@ def pcdb_connect(readonly=False):
     con = sqlite3.connect(uri, uri=True)
     con.row_factory = sqlite3.Row
     con.execute("""PRAGMA foreign_keys = ON""")
+    def dbg(statement):
+        print(agent.SD_DEBUG+statement, file=sys.stderr)
+    if os.getenv("DEBUG"):
+        con.set_trace_callback(dbg)
     return con
 
 def get_user_domains(rdb):

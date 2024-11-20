@@ -9,77 +9,43 @@ import json
 import sys
 import mail
 import agent
-from sqlite3 import IntegrityError
-
-class RelayNotFoundError(Exception):
-    pass
 
 request = json.load(sys.stdin)
+updatedict = request.copy() # values for SQL statements
+updatedict['tls'] = 'encrypt' if request['mandatory_tls'] else 'may'
+updatedict['enabled'] = 1 if request['enabled'] else 0
 
 sdb = mail.pcdb_connect()
-rule_type = request['rule_type']
-rule_subject = request['rule_subject']
-username = request.get("username", "")
-password = request.get("password", "")
-host = request['host']
-port = request['port']
-mandatory_tls = request.get("mandatory_tls", False)
-
-def get_password_from_database(rule_subject):
-    # Function to query the database for the password based on sender or recipient
-    sdb = mail.pcdb_connect()
-    cur = sdb.cursor()
-    cur.execute("SELECT password FROM relayrules WHERE rule_subject=?", (rule_subject,))
-    result = cur.fetchone()
-    sdb.close()
-    if result:
-        return result[0]
-    else:
-        agent.set_status('validation-failed')
-        json.dump([{'field':'test_rule_credentials','parameter':'test_rule_credentials','value':'cannot_retrieve_password_user_from_sqlite','error':'cannot_retrieve_password_user_from_sqlite'}],fp=sys.stdout, default=str)
-        sys.exit(3)
-
-# password not changed, we need to retrieve it from the database
-if request['username'] and password == '':
-    password = get_password_from_database(rule_subject)
-
-# probe we could connect to the smtp server and retrieve if we use smtp or smtps
-probe_credentials = mail.probe_and_validate_smtp_credentials(username, password, host, port, mandatory_tls)
-transport_is_smtps = probe_credentials['transport_smtps']
-
-try:
-    cur = sdb.cursor()
-
-    if 'host' in request:
-        cur.execute("""UPDATE relayrules SET host=? WHERE rule_subject=?""", (request['host'], rule_subject))
-
-    if 'port' in request:
-        cur.execute("""UPDATE relayrules SET port=? WHERE rule_subject=?""", (request['port'], rule_subject))
-
-    if 'mandatory_tls' in request:
-        cur.execute("""UPDATE relayrules SET tls=? WHERE rule_subject=?""", ('encrypt' if request['mandatory_tls'] else 'may', rule_subject))
-        cur.execute("""UPDATE relayrules SET transport=? WHERE rule_subject=?""", ('smtps' if transport_is_smtps else 'smtp', rule_subject))
-
-    if 'username' in request:
-        cur.execute("""UPDATE relayrules SET username=? WHERE rule_subject=?""", (request['username'], rule_subject))
-
-    if 'password' in request:
-        cur.execute("""UPDATE relayrules SET password=? WHERE rule_subject=?""", (password, rule_subject))
-
-    if 'enabled' in request:
-        cur.execute("""UPDATE relayrules SET enabled=? WHERE rule_subject=?""", (1 if request['enabled'] else 0, rule_subject))
-
-    if cur.rowcount == 0:
-        raise RelayNotFoundError()
-
-except RelayNotFoundError:
-    sdb.rollback()
+rulerecord = sdb.execute("SELECT * FROM relayrules WHERE rule_subject=? AND rule_type=?", (
+    request["rule_subject"],
+    request["rule_type"],
+)).fetchone()
+if rulerecord is None:
+    # Current rule was not found
     agent.set_status('validation-failed')
-    json.dump([{'field': 'rule_subject', 'parameter': 'subject', 'value': rule_subject, 'error':'relay_not_found'}], fp=sys.stdout)
+    json.dump([{'field': 'rule_subject', 'parameter': 'subject', 'value': request["rule_subject"], 'error':'relay_not_found'}], fp=sys.stdout)
     sys.exit(2)
 
+# Authentication is enabled but the password was not changed: retrieve it
+# from the database to retain the current value.
+if request["username"] and request["password"] == '':
+    updatedict["password"] = rulerecord['password']
+
+# validate and obtain the server transport:
+probe_credentials = mail.probe_and_validate_smtp_credentials(request["username"], updatedict["password"], request["host"], request["port"], request["mandatory_tls"])
+updatedict['transport'] = 'smtps' if probe_credentials['transport_smtps'] else 'smtp'
+
+try:
+    # Update the record with rule_subject key:
+    sdb.execute("""UPDATE relayrules SET host=:host, port=:port, tls=:tls, transport=:transport, username=:username, password=:password, enabled=:enabled WHERE rule_subject=:rule_subject""", updatedict)
+    # Copy auth and transport settings to existing rules with the same host:port key:
+    if rulerecord["rule_type"] != "sender":
+        sdb.execute("""UPDATE relayrules SET tls=:tls, transport=:transport, username=:username, password=:password WHERE (rule_type != 'sender' AND host=:host AND port=:port)""", updatedict)
+except Exception as ex:
+    print(agent.SD_ERR+"Failed to update relayrules table.", ex, file=sys.stderr)
+    sdb.rollback()
+    raise
 else:
     sdb.commit()
-
 finally:
     sdb.close()

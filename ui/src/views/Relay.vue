@@ -25,6 +25,17 @@
       <cv-row>
         <cv-column>
           <NsInlineNotification
+            v-if="hasWildcard || hasRulesByRecipient"
+            kind="info"
+            :title="$t('relay.shared_credentials_info_title')"
+            :description="$t('relay.shared_credentials_info_description')"
+            :showCloseButton="false"
+          />
+        </cv-column>
+      </cv-row>
+      <cv-row>
+        <cv-column>
+          <NsInlineNotification
             kind="warning"
             :title="core.$t('common.use_landscape_mode')"
             :description="core.$t('common.use_landscape_mode_description')"
@@ -127,14 +138,17 @@
                           </p>
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          {{ row.host }}
+                          {{ row.host }}:{{ row.port }}
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          {{
-                            row.has_password
-                              ? $t("common.enabled")
-                              : $t("common.disabled")
-                          }}
+                          <div v-if="row.has_password">
+                            {{ row.username }}
+                          </div>
+                          <NsTag
+                            v-else
+                            kind="high-contrast"
+                            :label="$t('common.disabled')"
+                          ></NsTag>
                         </cv-data-table-cell>
                         <cv-data-table-cell>
                           <NsTag
@@ -270,6 +284,7 @@
           />
           <NsTextInput
             v-model="form.port"
+            :placeholder="$t('relay.port_placeholder')"
             :label="$t('relay.port')"
             :invalid-message="error.form.port"
             ref="form.port"
@@ -451,6 +466,14 @@ export default {
     },
     ruleTypeTranslation: function () {
       return this.$t("relay." + this.form.rule_type);
+    },
+    hasRulesByRecipient: function () {
+      for (const row of this.relayRules) {
+        if (row.rule_type == "recipient") {
+          return true;
+        }
+      }
+      return false;
     },
   },
   beforeRouteEnter(to, from, next) {
