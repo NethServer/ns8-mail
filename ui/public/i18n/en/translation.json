@@ -403,11 +403,11 @@
         "no_relay_rules_description": "There is no relay rules configured",
         "col_has_password": "Authentication",
         "col_rule_subject": "Rule subject",
-        "col_host": "Hostname",
+        "col_host": "Hostname and port",
         "col_enabled": "Status",
         "unchanged": "Unchanged",
         "shared_credentials_info_title": "Shared host settings",
-        "shared_credentials_info_description": "Authentication and TLS settings for Default and Recipient rules are shared and applied collectively to all rules with the same Hostname.",
+        "shared_credentials_info_description": "Authentication and TLS settings for Default and Recipient rules are shared and applied collectively to all rules with the same Hostname and port.",
         "settings": {
             "networks_label": "Allow relay from these IP addresses",
             "networks_helper": "One address per line, in IPv4/6 CIDR format",
