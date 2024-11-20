@@ -418,7 +418,7 @@
             "bcc": "Always BCC address",
             "bcc_string_lte": "Invalid email format",
             "is_bcc_enabled": "Always BCC",
-            "bcc_placeholder":  "e.g. user@example.com",
+            "bcc_placeholder": "e.g. user@example.com",
             "is_bcc_enabled_tooltips": "When enabled, the specified address will receive a copy of every message sent or received through this server. This setting is useful for mail archiving solutions."
         },
         "error": {

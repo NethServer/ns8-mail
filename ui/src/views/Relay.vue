@@ -141,9 +141,7 @@
                           {{ row.host }}:{{ row.port }}
                         </cv-data-table-cell>
                         <cv-data-table-cell>
-                          <div
-                            v-if="row.has_password"
-                          >
+                          <div v-if="row.has_password">
                             {{ row.username }}
                           </div>
                           <NsTag
@@ -469,9 +467,9 @@ export default {
     ruleTypeTranslation: function () {
       return this.$t("relay." + this.form.rule_type);
     },
-    hasRulesByRecipient: function() {
-      for(const row of this.relayRules) {
-        if(row.rule_type == "recipient") {
+    hasRulesByRecipient: function () {
+      for (const row of this.relayRules) {
+        if (row.rule_type == "recipient") {
           return true;
         }
       }
