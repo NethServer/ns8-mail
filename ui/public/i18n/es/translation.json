@@ -466,6 +466,9 @@
         "delete_default_rule": "¿Borrar la regla por defecto? Los mensajes se enrutarán según las reglas restantes y las reglas SMTP basadas en DNS.",
         "rule_type": "Tipo de regla",
         "col_rule_subject": "Asunto de la norma",
-        "enabled": "Estado"
+        "enabled": "Estado",
+        "shared_credentials_info_description": "Authentication and TLS settings for Default and Recipient rules are shared and applied collectively to all rules with the same Hostname and port.",
+        "shared_credentials_info_title": "Shared host settings",
+        "port_placeholder": "e.g. 25, 587 or 465"
     }
 }

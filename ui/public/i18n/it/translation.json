@@ -466,6 +466,9 @@
         "list_relay_rules": "Lista regole di relay",
         "no_relay_rules": "Nessuna regola di relay",
         "col_rule_subject": "Soggetto regola",
-        "col_host": "Nome host"
+        "col_host": "Nome host e porta",
+        "shared_credentials_info_description": "Le impostazioni di autenticazione e TLS per le regole Default e Recipient sono condivise e applicate collettivamente a tutte le regole con lo stesso nome host e porta.",
+        "shared_credentials_info_title": "Impostazioni host condivise",
+        "port_placeholder": "es. 25, 587 o 465"
     }
 }
