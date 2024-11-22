@@ -77,6 +77,8 @@ address_verify_cache_cleanup_interval = 4h
 #
 # Relay authentication rules, SMTP server passwords and TLS policy
 #
+default_transport = ${tmpl_default_transport}
+relayhost = ${tmpl_relayhost}
 smtpd_sender_login_maps = sqlite:${S}meta_directory/senderlogin.cf,
 smtp_sasl_password_maps = sqlite:${S}meta_directory/relaycredentials.cf,
 sender_dependent_relayhost_maps = sqlite:${S}meta_directory/relaysender_nexthop.cf,

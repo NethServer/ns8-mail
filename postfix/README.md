@@ -107,5 +107,5 @@ defined with this method:
 
 - `relayrules` Relay host configuration matching a sender or a destination
   pattern. Implementation of sender/recipient based relay rules.
-  Default/fallback "relayhost" (smarthost) is implemented as a wildcard
-  rule.
+  Default/fallback "relayhost" (smarthost) is configured with
+  "default_transport" to support SMTPS too.
