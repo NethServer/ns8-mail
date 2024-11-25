@@ -87,11 +87,11 @@ else
     tmpl_smtp_sender_dependent_authentication='no'
 fi
 tmpl_always_bcc="${POSTFIX_ALWAYS_BCC}"
-tmpl_default_transport=$(pcdbquery "SELECT transport FROM relayrules WHERE rule_type='wildcard' AND rule_subject='*'")
+tmpl_default_transport=$(pcdbquery "SELECT transport FROM relayrules WHERE enabled=1 AND rule_type='wildcard' AND rule_subject='*'")
 if [ -z "${tmpl_default_transport}"]; then
     tmpl_default_transport=smtp
 fi
-tmpl_relayhost=$(pcdbquery "SELECT FORMAT('[%%s]:%%s', host, port) FROM relayrules WHERE rule_type='wildcard' AND rule_subject='*'")
+tmpl_relayhost=$(pcdbquery "SELECT FORMAT('[%%s]:%%s', host, port) FROM relayrules WHERE enabled=1 AND rule_type='wildcard' AND rule_subject='*'")
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
