@@ -37,14 +37,14 @@ except OperationalError:
 def custom_sort(rule):
     # If it's a sender rule
     if rule['rule_type'] == 'sender' and '@' in rule['rule_subject']:
-        return (0, rule['rule_subject'])
+        return (2, rule['rule_subject'])
     elif rule['rule_type'] == 'sender' and '@' not in rule['rule_subject']:
-        return (1, rule['rule_subject'])
+        return (3, rule['rule_subject'])
     # If it's a recipient rule
     elif rule['rule_type'] == 'recipient' and '@' in rule['rule_subject']:
-        return (2, rule['rule_subject'])
+        return (0, rule['rule_subject'])
     elif rule['rule_type'] == 'recipient' and '@' not in rule['rule_subject']:
-        return (3, rule['rule_subject'])
+        return (1, rule['rule_subject'])
     # If it's a wildcard rule
     elif rule['rule_type'] == 'wildcard' and rule['rule_subject'] == '*':
         return (4, '')
