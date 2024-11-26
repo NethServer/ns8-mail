@@ -56,7 +56,7 @@ try:
         sys.exit(5)
     if rule_type != 'sender':
         # Copy auth and transport settings to existing rules with the same host:port key
-        cur.execute("""UPDATE relayrules SET transport=:transport, tls=:mandatory_tls, username=:username, password=:password WHERE host=:host AND port=:port AND rule_type=:rule_type""", values)
+        cur.execute("""UPDATE relayrules SET transport=:transport, tls=:mandatory_tls, username=:username, password=:password WHERE (rule_type != 'sender' AND host=:host AND port=:port)""", values)
     cur.execute("""INSERT INTO relayrules (rule_type, rule_subject, transport, host, port, tls, username, password, enabled) VALUES (:rule_type, :rule_subject, :transport, :host, :port, :mandatory_tls, :username, :password, :enabled)""", values)
 
 except Exception as err:
