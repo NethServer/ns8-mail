@@ -7,6 +7,8 @@ clamav {
     servers = "{= env.clamav_endpoint =}";
 
     action = "reject";
+    # If `max_size` is set, messages > n bytes in size are not scanned
+    max_size = {= env.clamavscansize | default(20000000) =};
 
     scan_mime_parts = false;
 
