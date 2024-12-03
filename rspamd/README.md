@@ -35,10 +35,10 @@ Well-known ports
 - `RSPAMD_bypass_score` If undefined (default) bypass rules are applied as
   an accept prefilter. Set to a negative number to turn the rules to ham
   score and run antivirus checks (e.g. `RSPAMD_bypass_score=-5.000`)
-- `RSPAMD_clamavscansize` sets the maximum size (default 20 MB) for
+- `RSPAMD_clamavscansize` sets the maximum size (default 2 MB) for
   email attachments scanned by ClamAV in Rspamd.
   Attachments larger than this value are skipped to optimize performance.
-  
+
 ## Volumes
 
 - `/etc/rspamd/override.d` Rspamd custom configuration
