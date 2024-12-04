@@ -7,3 +7,4 @@ dns {
     retransmits = 5;
     nameserver = ["127.0.0.1:11336:1"]; # local unbound instance
 }
+max_message = 104857600;
