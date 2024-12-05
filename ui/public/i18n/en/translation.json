@@ -19,7 +19,9 @@
         "optional": "Optional",
         "mail_hostname": "Mail server hostname",
         "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
-        "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd"
+        "rspamd_credentials_tooltip": "Use your login credentials to access Rspamd",
+        "next": "Next",
+        "previous": "Previous"
     },
     "status": {
         "title": "Status",
@@ -104,7 +106,10 @@
         "flush-postfix-queue": "Flush Postfix queue",
         "get-queue-settings": "Get queue settings",
         "set-queue-settings": "Set queue settings",
-        "set-always-bcc": "Set always BCC"
+        "set-always-bcc": "Set always BCC",
+        "restore-backup-content": "Restore mail folder",
+        "seek-snapshot-contents": "Get snapshot folders",
+        "read-backup-snapshots": "Read backup snapshots"
     },
     "error": {
         "error": "Error",
@@ -274,7 +279,30 @@
         "disable_mailbox": "Disable mailbox",
         "confirm_disable_mailbox": "Do you really want to disable mailbox {mailbox}?",
         "confirm_disable_mailbox_2": "It will stop receiving messages and you won't be able to select it as address destination",
-        "address_already_exists": "Address already exists"
+        "address_already_exists": "Address already exists",
+        "restore_folder_for_user_name": "Restore folder for user {name}",
+        "restore_public_mailbox_name": "Restore public mailbox {name}",
+        "restore_folder": "Restore folder",
+        "restore": "Restore",
+        "select_backup_destination": "Select backup destination",
+        "select_backup_snapshot": "Select backup snapshot",
+        "select_folder_to_restore": "Select folder to restore",
+        "no_backup_found": "No backup found",
+        "no_backup_found_description": "Ensure that a backup destination has been configured and that a backup has been performed for {module}",
+        "from_node_name_of_this_cluster": "From node {name} of this cluster",
+        "from_node_name_of_different_cluster": "From node {name} of a different cluster",
+        "from_this_cluster": "From this cluster",
+        "from_different_cluster": "From a different cluster",
+        "from_node_name": "From node {name}",
+        "most_recent": "Most recent",
+        "no_snapshot_to_restore": "No snapshots to restore",
+        "search_folder": "Search folder",
+        "restore_folder_info": "The selected mail folder will be restored to '{restoredFolder}'. If it exceeds the available space in the user's mailbox, the quota setting for that user will be changed to '@:settings_mailboxes.unlimited'.",
+        "restoring_mail_folder_for_user": "Restoring mail folder for {name}",
+        "restoring_public_mailbox_name": "Restoring public mailbox {name}",
+        "mailbox_quota_changed": "Mailbox quota changed",
+        "mailbox_quota_changed_description": "Mailbox quota for {user} has been set to '@:settings_mailboxes.unlimited' due to insufficient space encountered during folder restoration",
+        "go_to_mailboxes": "Go to Mailboxes"
     },
     "filter": {
         "title": "Filter",

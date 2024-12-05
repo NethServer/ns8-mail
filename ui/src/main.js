@@ -28,7 +28,15 @@ Vue.use(VueDateFns);
 import LottieAnimation from "lottie-web-vue";
 Vue.use(LottieAnimation);
 
-import vueDebounce from "vue-debounce";
+import InfiniteLoading from "vue-infinite-loading";
+Vue.use(InfiniteLoading, {
+  slots: {
+    noResults: "",
+    noMore: "",
+  },
+});
+
+import vueDebounce from "vue2-debounce";
 Vue.use(vueDebounce);
 
 // filters

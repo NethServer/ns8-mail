@@ -124,6 +124,16 @@
                         :label="core.$t('common.edit')"
                       />
                     </cv-overflow-menu-item>
+                    <cv-overflow-menu-item
+                      @click="showRestoreFolderModal(row)"
+                      :data-test-id="row.user + '-restore'"
+                      :disabled="row.enabled == false"
+                    >
+                      <NsMenuItem
+                        :icon="RecentlyViewed20"
+                        :label="$t('mailboxes.restore_folder')"
+                      />
+                    </cv-overflow-menu-item>
                     <NsMenuDivider />
                     <cv-overflow-menu-item
                       danger
@@ -182,6 +192,13 @@
         </p>
       </template>
     </NsDangerDeleteModal>
+    <!-- restore folder modal -->
+    <RestoreFolderModal
+      :isShown="isShownRestoreFolderModal"
+      :mailbox="currentMailbox"
+      mailboxKind="public"
+      @hide="hideRestoreFolderModal"
+    />
   </div>
 </template>
 
@@ -195,10 +212,12 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import to from "await-to-js";
 import CreateOrEditPublicMailboxModal from "./CreateOrEditPublicMailboxModal";
+import RecentlyViewed20 from "@carbon/icons-vue/es/recently-viewed/20";
+import RestoreFolderModal from "./RestoreFolderModal";
 
 export default {
   name: "PublicMailboxes",
-  components: { CreateOrEditPublicMailboxModal },
+  components: { CreateOrEditPublicMailboxModal, RestoreFolderModal },
   mixins: [QueryParamService, UtilService, IconService, TaskService],
   data() {
     return {
@@ -209,6 +228,8 @@ export default {
       mailboxes: [],
       isShownCreateOrEditPublicMailboxModal: false,
       isShownDeleteMailboxModal: false,
+      RecentlyViewed20,
+      isShownRestoreFolderModal: false,
       loading: {
         listPublicMailboxes: false,
         alterPublicMailbox: false,
@@ -297,6 +318,13 @@ export default {
     },
     hideDeleteMailboxModal() {
       this.isShownDeleteMailboxModal = false;
+    },
+    showRestoreFolderModal(mailbox) {
+      this.currentMailbox = mailbox;
+      this.isShownRestoreFolderModal = true;
+    },
+    hideRestoreFolderModal() {
+      this.isShownRestoreFolderModal = false;
     },
     async removePublicMailbox() {
       this.loading.removePublicMailbox = true;
