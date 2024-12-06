@@ -56,7 +56,9 @@
         "advanced": "Advanced",
         "optional": "Optional",
         "cancel": "Cancel",
-        "search": "Search"
+        "search": "Search",
+        "previous": "Previous",
+        "next": "Next"
     },
     "about": {
         "title": "About"
@@ -109,7 +111,10 @@
         "remove-relay-rule": "Delete relay rule",
         "set-relay-configuration": "Set relay configuration",
         "get-relay-configuration": "Get relay configuration",
-        "set-always-bcc": "Set always BCC"
+        "set-always-bcc": "Set always BCC",
+        "restore-backup-content": "Restore mail folder",
+        "read-backup-snapshots": "Read backup snapshots",
+        "seek-snapshot-contents": "Get snapshot folders"
     },
     "task": {
         "cannot_create_task": "Cannot create task {action}",
@@ -274,7 +279,30 @@
         "read_and_write": "Read & write",
         "days": "Days",
         "create_public_mailbox_mailbox": "Create public mailbox {mailbox}",
-        "col_mailbox": "Mailbox"
+        "col_mailbox": "Mailbox",
+        "restore": "Restore",
+        "restore_folder_info": "The selected mail folder will be restored to '{restoredFolder}'. If it exceeds the available space in the user's mailbox, the quota setting for that user will be changed to '@:settings_mailboxes.unlimited'.",
+        "mailbox_quota_changed": "Mailbox quota changed",
+        "from_different_cluster": "From a different cluster",
+        "select_backup_snapshot": "Select backup snapshot",
+        "from_this_cluster": "From this cluster",
+        "restoring_public_mailbox_name": "Restoring public mailbox {name}",
+        "restore_public_mailbox_name": "Restore public mailbox {name}",
+        "search_folder": "Search folder",
+        "from_node_name_of_this_cluster": "From node {name} of this cluster",
+        "most_recent": "Most recent",
+        "restoring_mail_folder_for_user": "Restoring mail folder for {name}",
+        "no_backup_found": "No backup found",
+        "mailbox_quota_changed_description": "Mailbox quota for {user} has been set to '@:settings_mailboxes.unlimited' due to insufficient space encountered during folder restoration",
+        "select_backup_destination": "Select backup destination",
+        "from_node_name": "From node {name}",
+        "restore_folder": "Restore folder",
+        "no_snapshot_to_restore": "No snapshots to restore",
+        "restore_folder_for_user_name": "Restore folder for user {name}",
+        "no_backup_found_description": "Ensure that a backup destination has been configured and that a backup has been performed for {module}",
+        "select_folder_to_restore": "Select folder to restore",
+        "from_node_name_of_different_cluster": "From node {name} of a different cluster",
+        "go_to_mailboxes": "Go to Mailboxes"
     },
     "filter": {
         "enable_antispam": "Enable antispam",
