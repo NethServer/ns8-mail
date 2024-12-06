@@ -276,7 +276,7 @@ Migration notes:
    its contents by either configuring it as shared, or by creating a
    "root" user in the LDAP database with a new, secure password.
 
-1. Quota temporarly unavailable. The new "quota count" Dovecot backend is
+1. Quota temporarily unavailable. The new "quota count" Dovecot backend is
    used. Large mailboxes need a while to reindex the quota size. During
    reindexing, quota information is not available and the following
    message is logged:

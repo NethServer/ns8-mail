@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "seek-snapshot-content output",
+    "$id": "http://schema.nethserver.org/mail/seek-snapshot-content-output.json",
+    "description": "Extract the list of IMAP folders from a backup snapshot",
+    "examples": [
+        {
+            "request": {
+                "destination": "14030a59-a4e6-54cc-b8ea-cd5f97fe44c8",
+                "repopath": "mail/4372a5d5-0886-45d3-82e7-68d913716a4c",
+                "snapshot": "latest",
+                "user": "first.user"
+            },
+            "folders": [
+                "INBOX",
+                "INBOX/Liste",
+                "INBOX/Liste/CentOS",
+                "INBOX/Liste/Samba.org",
+                "INBOX/Liste/Samba.org/Fedora",
+                "INBOX/Liste/Samba.org/Fedora/Podman",
+                "Junk",
+                "Notifiche",
+                "Notifiche/GitHub NethServer",
+                "Notifiche/GitHub Nethesis",
+                "Trash"
+            ]
+        }
+    ],
+    "type": "object",
+    "required": [
+        "folders"
+    ],
+    "properties": {
+        "folders": {
+            "type": "array",
+            "description": "List of IMAP folders, prefixed by their absolute IMAP path",
+            "items": {
+                "type": "string"
+            }
+        },
+        "request": {
+            "type": "object",
+            "title": "Original request object"
+        }
+    }
+}

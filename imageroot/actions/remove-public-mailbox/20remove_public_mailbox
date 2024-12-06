@@ -27,7 +27,7 @@ try:
         {'alocal':mbxn, 'domain':"*"})
 
     # Destroy the mailbox and its contents
-    mail.doveadm_query("mailboxDelete", {"mailbox": [mbxn], "user": "vmail"})
+    mail.doveadm_query("mailboxDelete", {"mailbox": [mbxn], "user": "vmail", "recursive": True})
 
 except mail.DoveadmError as dex:
     if dex.code != 68:

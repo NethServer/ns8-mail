@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2024 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import os
+import subprocess
+import agent
+import atexit
+
+request = json.load(sys.stdin)
+if request['user'] == 'vmail':
+    # Public folders belong to user Vmail. When one of them is restored, the
+    # destination folder is created under the Public folder itself.
+    destroot = request.get("destroot", f"{request['folder']}/Restored folder")
+else:
+    destroot = request.get("destroot", "Restored folder")
+# Temporary path for restore. It is relative to Dovecot's vmail dir, the
+# default working directory for the dovecot container:
+tmp_restore_path = ".restore-backup-content." + os.environ["AGENT_TASK_ID"]
+def cleanup_tmp():
+    global tmp_restore_path
+    if tmp_restore_path:
+        agent.run_helper("podman", "exec", "dovecot", "rm", "-rf", tmp_restore_path)
+atexit.register(cleanup_tmp)
+# Transform the folder path into a filesystem directory name:
+_, maildir_path = subprocess.check_output([
+    'podman', 'exec', 'dovecot',
+    'doveadm', 'mailbox', 'path', '-u', request['user'], request['folder'],
+], text=True).strip().rsplit('/', 1)
+maildir_path_goescaped = maildir_path.replace("\\", "\\\\")
+restic_args = [
+    "restore",
+    "--json",
+    f"{request['snapshot']}:volumes/dovecot-data/{request['user']}/Maildir",
+    f"--target=/srv/volumes/dovecot-data/{tmp_restore_path}",
+    f"--include={maildir_path_goescaped}*",
+]
+podman_args = ["--workdir=/srv"] + agent.agent.get_state_volume_args()
+
+# Prepare progress callback function that captures non-progress messages too:
+last_restic_message = {}
+def build_restore_progress_callback():
+    restore_progress = agent.get_progress_callback(5, 95)
+    def fprog(omessage):
+        global last_restic_message
+        last_restic_message = omessage
+        if omessage['message_type'] == 'status':
+            fpercent = float(omessage['percent_done'])
+            restore_progress(int(fpercent * 100))
+    return fprog
+# Run the restic restore command capturing the progress status:
+prestore = agent.run_restic(agent.redis_connect(), request["destination"], request["repopath"], podman_args, restic_args, progress_callback=build_restore_progress_callback())
+if prestore.returncode != 0:
+    print(agent.SD_ERR + f"Restic restore command failed with exit code {prestore.returncode}.", file=sys.stderr)
+    sys.exit(1)
+
+# 1. Disable the user quota temporarily.
+# 2. Move the restored content under "Restored content" IMAP folder.
+#    Remove the destination if already exists.
+# 3. Reindex the destination folder.
+# 4. Restore the previous quota setting, if possible
+quota_disabled = False
+
+proc_import = subprocess.run(["podman", "exec", "-i", "dovecot",
+    "restore-folder", request["user"], f"/var/lib/vmail/{tmp_restore_path}", request['folder'], destroot],
+    stdout=subprocess.PIPE, text=True)
+if proc_import.returncode != 0:
+    print(agent.SD_ERR + f"Import script failed with exit code {proc_import.returncode}.", file=sys.stderr)
+    sys.exit(1)
+
+if 'QUOTA_DISABLED_BY_RESTORE' in proc_import.stdout:
+    quota_disabled = True
+
+json.dump({
+    "request": request,
+    "quota_disabled": quota_disabled,
+    "last_restic_message": last_restic_message,
+}, fp=sys.stdout)
