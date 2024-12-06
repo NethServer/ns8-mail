@@ -19,7 +19,9 @@
         "rspamd_credentials_tooltip": "Utilizzare le proprie credenziali di login per accedere a Rspamd",
         "search": "Ricerca",
         "cancel": "Annulla",
-        "optional": "Opzionale"
+        "optional": "Opzionale",
+        "next": "Next",
+        "previous": "Previous"
     },
     "action": {
         "list-acl-subjects": "Elenco soggetti ACL",
@@ -69,7 +71,10 @@
         "get-relay-configuration": "Ottieni configurazione relay",
         "list-relay-rules": "Lista regole di relay",
         "set-relay-configuration": "Imposta configurazione relay",
-        "set-always-bcc": "Imposta Always BCC"
+        "set-always-bcc": "Imposta Always BCC",
+        "restore-backup-content": "Ripristino cartella di posta",
+        "read-backup-snapshots": "Read backup snapshots",
+        "seek-snapshot-contents": "Ottieni cartelle dallo snapshot"
     },
     "domains": {
         "no_domain": "Nessun dominio",
@@ -210,7 +215,30 @@
         "no_user_mailbox_description": "Non è stata configurata alcuna casella di posta elettronica utente",
         "member_not_found": "Membro {member} non trovato. Se modifichi la casella di posta, verrà rimosso",
         "col_user": "Utente",
-        "rtype_custom": "Accesso personalizzato"
+        "rtype_custom": "Accesso personalizzato",
+        "from_different_cluster": "Da un altro cluster",
+        "restore": "Ripristino",
+        "restore_folder_info": "La cartella di posta selezionata verrà ripristinata in '{restoredFolder}. Se supera lo spazio disponibile nella casella di posta dell'utente, l'impostazione della quota per l'utente verrà modificata a '@:settings_mailboxes.unlimited'.",
+        "select_backup_snapshot": "Selezionare lo snapshot del backup",
+        "mailbox_quota_changed": "È cambiata la quota della casella di posta",
+        "from_this_cluster": "Da questo cluster",
+        "restoring_public_mailbox_name": "Ripristino della casella di posta pubblica {nome}",
+        "restore_public_mailbox_name": "Ripristino casella postale pubblica {name}",
+        "search_folder": "Cerca cartella",
+        "from_node_name_of_this_cluster": "Dal nodo {name} di questo cluster",
+        "most_recent": "Più recente",
+        "restoring_mail_folder_for_user": "Ripristino della cartella di posta di {name}",
+        "select_backup_destination": "Selezionare la destinazione del backup",
+        "from_node_name": "Dal nodo {name}",
+        "no_backup_found": "Nessun backup trovato",
+        "mailbox_quota_changed_description": "La quota della casella di posta di {utente} è stata impostata a '@:settings_mailboxes.unlimited' a causa di spazio insufficiente riscontrato durante il ripristino",
+        "restore_folder": "Ripristino cartella",
+        "no_snapshot_to_restore": "Nessuno snapshot da ripristinare",
+        "restore_folder_for_user_name": "Ripristino cartella per l'utente {name}",
+        "no_backup_found_description": "Assicurarsi che sia stata configurata una destinazione di backup e che sia stato eseguito il backup di {module}",
+        "select_folder_to_restore": "Selezionare la cartella da ripristinare",
+        "from_node_name_of_different_cluster": "Dal nodo {name} di un altro cluster",
+        "go_to_mailboxes": "Vai a Caselle di posta"
     },
     "settings_mailboxes": {
         "specify_quota": "Specificare la quota",
