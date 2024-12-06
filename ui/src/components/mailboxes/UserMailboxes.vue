@@ -164,6 +164,16 @@
                       />
                     </cv-overflow-menu-item>
                     <cv-overflow-menu-item
+                      @click="showRestoreFolderModal(row)"
+                      :data-test-id="row.user + '-restore'"
+                      :disabled="row.enabled == false"
+                    >
+                      <NsMenuItem
+                        :icon="RecentlyViewed20"
+                        :label="$t('mailboxes.restore_folder')"
+                      />
+                    </cv-overflow-menu-item>
+                    <cv-overflow-menu-item
                       @click="toggleMailboxEnabled(row)"
                       :data-test-id="row.user + '-set-enabled'"
                     >
@@ -200,6 +210,13 @@
       @hide="hideConfirmDisableMailbox"
       @confirm="setMailboxEnabled(false)"
     />
+    <!-- restore folder modal -->
+    <RestoreFolderModal
+      :isShown="isShownRestoreFolderModal"
+      :mailbox="currentMailbox"
+      mailboxKind="user"
+      @hide="hideRestoreFolderModal"
+    />
   </div>
 </template>
 
@@ -214,10 +231,16 @@ import {
 import to from "await-to-js";
 import EditUserMailboxModal from "./EditUserMailboxModal";
 import ConfirmDisableMailboxModal from "./ConfirmDisableMailboxModal";
+import RecentlyViewed20 from "@carbon/icons-vue/es/recently-viewed/20";
+import RestoreFolderModal from "./RestoreFolderModal";
 
 export default {
   name: "UserMailboxes",
-  components: { EditUserMailboxModal, ConfirmDisableMailboxModal },
+  components: {
+    EditUserMailboxModal,
+    ConfirmDisableMailboxModal,
+    RestoreFolderModal,
+  },
   mixins: [QueryParamService, UtilService, IconService, TaskService],
   data() {
     return {
@@ -228,6 +251,8 @@ export default {
       isShownEditUserMailboxModal: false,
       defaultSpamRetention: 0,
       isShownConfirmDisableMailbox: false,
+      RecentlyViewed20,
+      isShownRestoreFolderModal: false,
       loading: {
         listUserMailboxes: false,
         alterUserMailbox: false,
@@ -306,6 +331,13 @@ export default {
     },
     hideEditUserMailboxModal() {
       this.isShownEditUserMailboxModal = false;
+    },
+    showRestoreFolderModal(mailbox) {
+      this.currentMailbox = mailbox;
+      this.isShownRestoreFolderModal = true;
+    },
+    hideRestoreFolderModal() {
+      this.isShownRestoreFolderModal = false;
     },
     toggleMailboxEnabled(mailbox) {
       this.currentMailbox = mailbox;

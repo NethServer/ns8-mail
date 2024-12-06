@@ -1012,10 +1012,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@nethserver/ns8-ui-lib@^0.1.31":
-  version "0.1.31"
-  resolved "https://registry.yarnpkg.com/@nethserver/ns8-ui-lib/-/ns8-ui-lib-0.1.31.tgz#3dab2dde84441696e6a36b9e5d0e2dad913a691d"
-  integrity sha512-0r5Vcae6+rsOfOCYOgjCjr5JbIGZx4Qyq3biD3h66AoGBJSADfVDY3RWqlsu9yD0gHtC87Av0SJ18R9qq7ET0Q==
+"@nethserver/ns8-ui-lib@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@nethserver/ns8-ui-lib/-/ns8-ui-lib-1.2.1.tgz#1c44f886af63cb8bfbd4fb07ef72163cb3ac5ecf"
+  integrity sha512-vcAFwsDHpTU2jE1Rc9avl22gE7rokGf1nIPzqAynywfuyaa6djzSnP61lJSDHTKQ3oFAd5bzi68McPntLQNAHQ==
   dependencies:
     "@rollup/plugin-json" "^4.1.0"
     core-js "^3.15.2"
@@ -5741,6 +5741,11 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+mark.js@^8.11.1:
+  version "8.11.1"
+  resolved "https://registry.yarnpkg.com/mark.js/-/mark.js-8.11.1.tgz#180f1f9ebef8b0e638e4166ad52db879beb2ffc5"
+  integrity sha512-1I+1qpDt4idfgLQG+BNWmrqku+7/2bi5nLf4YwF8y8zXvmfiTBY3PV3ZibfrjBueCByROpuBjLLFCajqkgYoLQ==
+
 md5.js@^1.3.4:
   version "1.3.5"
   resolved "https://registry.npmmirror.com/md5.js/download/md5.js-1.3.5.tgz#b5d07b8e3216e3e27cd728d72f70d1e6a342005f"
@@ -8721,11 +8726,6 @@ vue-date-fns@^2.0.1:
   dependencies:
     date-fns "^2.0.0"
 
-vue-debounce@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/vue-debounce/-/vue-debounce-4.0.0.tgz#3f584dabc08a841a0182ab68d19f77f70a416fcc"
-  integrity sha512-+BrcKfLpyDpUJ58ZrAvI35irRCgYHFpnF3NJZwwaz8/kkKmEq6TWPXBIhLh2HQAsUZNwo52K/vQyiEFsJ/1RYA==
-
 vue-eslint-parser@^7.0.0:
   version "7.8.0"
   resolved "https://registry.npmmirror.com/vue-eslint-parser/download/vue-eslint-parser-7.8.0.tgz#43850bf856c9a69d62c0e12769609c338423684b"
@@ -8748,6 +8748,11 @@ vue-i18n@^8.24.4:
   version "8.24.5"
   resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.24.5.tgz#7127a666d5be2199be69be39e439a419a90ff931"
   integrity sha512-p8W5xOmniuZ8fj76VXe0vBL3bRWVU87jHuC/v8VwmhKVH2iMQsKnheB1U+umxDBqC/5g9K+NwzokepcLxnBAVQ==
+
+vue-infinite-loading@^2.4.5:
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/vue-infinite-loading/-/vue-infinite-loading-2.4.5.tgz#cc20fd40af7f20188006443c99b60470cf1de1b3"
+  integrity sha512-xhq95Mxun060bRnsOoLE2Be6BR7jYwuC89kDe18+GmCLVrRA/dU0jrGb12Xu6NjmKs+iTW0AA6saSEmEW4cR7g==
 
 "vue-loader-v16@npm:vue-loader@^16.1.0":
   version "16.3.0"
@@ -8794,6 +8799,11 @@ vue-template-es2015-compiler@^1.9.0:
   version "1.9.1"
   resolved "https://registry.npmmirror.com/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU=
+
+vue2-debounce@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vue2-debounce/-/vue2-debounce-1.0.1.tgz#2b4da2fe9d34f9c8be08ead9e8e68b988fd15f98"
+  integrity sha512-tZX6QltRUuGn9WUUVJDTWUmAqGugIUKcQN4praNAW4ZQPtBIyyZfvCLq7hKOOSdFhVRloXeFnCZvETibEgKNOw==
 
 vue@^2.6.11, vue@^2.6.12:
   version "2.6.14"
