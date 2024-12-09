@@ -31,6 +31,7 @@ echo "${rootfolder}" | tr / $'\n' | while read -r rootpart ; do
     doveadm mailbox subscribe -u "${user}" "${rootacc}"
 done
 doveadm mailbox delete    -u "${user}" -r -s "${rootfolder}/${basefolder}" &>/dev/null || :
+# Restore mailbox subfolders
 for folder in .* ; do
     [ "${folder}" == "." ] && continue
     [ "${folder}" == ".." ] && continue
@@ -41,6 +42,12 @@ for folder in .* ; do
     fi
     mv -v "${folder}" "${rootprefix}${folder}"
 done
+# Restore the INBOX contents
+if [ -d cur ] ; then
+    mkdir -v "${rootprefix}.INBOX"
+    chown -c vmail:vmail "${rootprefix}.INBOX"
+    mv -v cur "${rootprefix}.INBOX/"
+fi
 # Prune destfolder ancestors:
 if [ "${destfolder}" != "${basefolder}" ]; then
     doveadm mailbox rename    -u "${user}" -s "${rootfolder}/${destfolder}" "${rootfolder}/${basefolder}" || :

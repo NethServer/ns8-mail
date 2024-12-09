@@ -32,14 +32,17 @@ _, maildir_path = subprocess.check_output([
     'podman', 'exec', 'dovecot',
     'doveadm', 'mailbox', 'path', '-u', request['user'], request['folder'],
 ], text=True).strip().rsplit('/', 1)
-maildir_path_goescaped = maildir_path.replace("\\", "\\\\")
 restic_args = [
     "restore",
     "--json",
     f"{request['snapshot']}:volumes/dovecot-data/{request['user']}/Maildir",
     f"--target=/srv/volumes/dovecot-data/{tmp_restore_path}",
-    f"--include={maildir_path_goescaped}*",
 ]
+if request['folder'] == 'INBOX':
+    restic_args += [f"--include=/cur", f"--include=/.INBOX*"]
+else:
+    maildir_path_goescaped = maildir_path.replace("\\", "\\\\")
+    restic_args.append(f"--include=/{maildir_path_goescaped}*")
 podman_args = ["--workdir=/srv"] + agent.agent.get_state_volume_args()
 
 # Prepare progress callback function that captures non-progress messages too:
