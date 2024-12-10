@@ -191,6 +191,23 @@ To access the admin web UI of Rspamd point the browser to
 
     https://<mail host>/rspamd/
 
+## Rspamd bulk Bayesian filter training
+
+To quickly train the Rspamd Bayesian filter plugin, execute the `rspamc`
+wrapper command, which incorporates the Rspamd authentication header
+logic. For example, get `rspamc` help output with:
+
+    runagent -m mail1 podman exec -i dovecot rspamc-wrapper --help
+
+To read SPAM messages from stdin perform a shell redirection, like:
+
+    runagent -m mail1 podman exec -i dovecot rspamc-wrapper learn_spam < spamarchive.mbox
+
+To read HAM message from `first.user`'s mailbox, specify its path,
+relative to Dovecot's working directory:
+
+    runagent -m mail1 podman exec -i dovecot rspamc-wrapper learn_ham first.user/Maildir/cur
+
 ## Service discovery
 
 Another module can discover IMAP and SUBMISSION endpoints by looking up
