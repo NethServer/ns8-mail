@@ -218,7 +218,7 @@
         "rtype_custom": "Accesso personalizzato",
         "from_different_cluster": "Da un altro cluster",
         "restore": "Ripristino",
-        "restore_folder_info": "La cartella di posta selezionata verrà ripristinata in '{restoredFolder}'. Se supera lo spazio disponibile nella casella di posta dell'utente, l'impostazione della quota per l'utente verrà modificata a '@:settings_mailboxes.unlimited'.",
+        "restore_folder_info": "La cartella di posta selezionata verrà ripristinata in '{restoredFolder}'. Se supera lo spazio disponibile nella casella di posta dell'utente, l'impostazione della quota per quell'utente verrà modificata in '@:settings_mailboxes.unlimited'.",
         "select_backup_snapshot": "Selezionare lo snapshot del backup",
         "mailbox_quota_changed": "È cambiata la quota della casella di posta",
         "from_this_cluster": "Da questo cluster",
