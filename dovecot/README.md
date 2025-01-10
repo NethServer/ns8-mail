@@ -59,6 +59,7 @@ Private TCP ports:
   `default_process_limit` parameter. The value 400 is four times Dovecot's
   default (100). See also [Dovecot default_process_limit
   documentation](https://doc.dovecot.org/settings/core/#core_setting-default_process_limit).
+  The `default_client_limit` parameter is proportionally set to 10 times this value.
 - `DOVECOT_SHAREDSEEN`, default empty. If set, the SEEN flag of shared folders is stored in a `dovecot.pvt*` index file, for every user
 
 ## Logs
