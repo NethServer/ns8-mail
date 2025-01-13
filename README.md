@@ -191,6 +191,47 @@ To access the admin web UI of Rspamd point the browser to
 
     https://<mail host>/rspamd/
 
+## Rspamd bulk Bayesian filter training
+
+To efficiently train the Rspamd Bayesian filter plugin in an NS8
+environment, use the `rspamc` wrapper command, which incorporates Rspamd's
+authentication header logic.
+
+To display the help output for the `rspamc-wrapper` command, run:
+
+    # Display the help output for rspamc-wrapper
+    runagent -m mail1 podman exec -i dovecot rspamc-wrapper --help
+
+To train the filter with ham messages, specify the mailbox path relative
+to Dovecot's working directory. For example, to train with messages from
+`first.user`'s mailbox:
+
+    # Read ham messages from an existing Maildir in the container
+    runagent -m mail1 podman exec -i dovecot rspamc-wrapper learn_ham first.user/Maildir/cur
+
+For a single spam file (e.g., in mbox format), use shell redirection to
+pass the file through stdin. For example:
+
+    # Train filter with spam messages in a single mbox file
+    runagent -m mail1 podman exec -i dovecot rspamc-wrapper learn_spam < spamarchive.mbox
+
+If you have multiple spam files in a directory on the host, copy them into
+the container's filesystem using:
+
+    # Copy directory and its contents into Dovecot's container, under /srv
+    tar -c ./some-spamdir | runagent -m mail1 podman cp - dovecot:/srv
+
+Note that `/srv/some-spamdir` is not mounted to a persistent volume, so
+its contents are volatile and will be lost on the next container restart.
+To train with messages from the container directory, run:
+
+    # Train filter with spam messages in the volatile destination directory
+    runagent -m mail1 podman exec -i dovecot rspamc-wrapper learn_spam /srv/some-spamdir
+
+For best results, verify successful training by reviewing the Rspamd logs
+or using diagnostic commands. Consult the Rspamd documentation for further
+details.
+
 ## Service discovery
 
 Another module can discover IMAP and SUBMISSION endpoints by looking up
