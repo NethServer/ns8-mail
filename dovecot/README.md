@@ -55,6 +55,11 @@ Private TCP ports:
 - `DOVECOT_SPAMT_PASS`, password for Rspamd API, required for ham/spam training
 - `DOVECOT_TRASH_FOLDER`, default `Trash`. Mailbox folder name where messages are moved when they are deleted.
 - `DOVECOT_MAX_USERIP_CONNECTIONS`, default `20`. Set dovecot `mail_max_userip_connections` configuration parameter. This limit is raised 5 times for connections coming from trusted networks
+- `DOVECOT_DEFAULT_PROCESS_LIMIT`, default `400`. Set dovecot
+  `default_process_limit` parameter. The value 400 is four times Dovecot's
+  default (100). See also [Dovecot default_process_limit
+  documentation](https://doc.dovecot.org/settings/core/#core_setting-default_process_limit).
+  The `default_client_limit` parameter is proportionally set to 10 times this value.
 - `DOVECOT_SHAREDSEEN`, default empty. If set, the SEEN flag of shared folders is stored in a `dovecot.pvt*` index file, for every user
 
 ## Logs

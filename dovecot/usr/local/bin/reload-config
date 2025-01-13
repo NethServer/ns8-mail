@@ -32,6 +32,8 @@ tmpl_spam_subject_prefix="${DOVECOT_SPAM_SUBJECT_PREFIX:-}"
 tmpl_trash_folder="${DOVECOT_TRASH_FOLDER:?}"
 tmpl_mail_plugins="acl listescape notify mail_log fts fts_flatcurve"
 tmpl_mail_max_userip_connections="${DOVECOT_MAX_USERIP_CONNECTIONS:-20}"
+tmpl_default_process_limit="${DOVECOT_DEFAULT_PROCESS_LIMIT:-400}"
+tmpl_default_client_limit=$(( DOVECOT_DEFAULT_PROCESS_LIMIT * 10 ))
 # Note: value "0" means "unlimited default quota"; value "" (empty string)
 # means "quota plugin disabled".
 if [ -n "${DOVECOT_QUOTA_MB}" ]; then

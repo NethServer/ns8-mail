@@ -116,6 +116,7 @@ buildah config \
     --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
     --env=DOVECOT_TRASH_FOLDER=Trash \
     --env=DOVECOT_MAX_USERIP_CONNECTIONS=20 \
+    --env=DOVECOT_DEFAULT_PROCESS_LIMIT=400 \
     --env=LD_PRELOAD=/usr/lib/libmimalloc.so.2 \
     "${container}"
 buildah commit "${container}" "${repobase}/${reponame}"
