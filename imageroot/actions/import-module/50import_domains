@@ -59,11 +59,7 @@ with sdb:
             vals['addusers'] = 1
             vals['addgroups'] = 1 if dyngroups_is_enabled else 0
 
-        if xdom['props'].get('UnknownRecipientsActionType') == 'deliver':
-            catchall = xdom['props'].get('UnknownRecipientsActionDeliverMailbox')
-            if catchall == 'root':
-                catchall = 'vmail+postmaster'
-            vals['catchall'] = catchall
+        # the unknow recipients action (catchall) is not migratable to NS8 NethServer/dev#7257
 
         if xdom['props'].get('AlwaysBccStatus') == 'enabled':
             vals['bccaddr'] = xdom['props'].get('AlwaysBccAddress')
