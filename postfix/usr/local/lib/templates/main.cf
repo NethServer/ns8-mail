@@ -131,4 +131,9 @@ smtpd_tls_auth_only = yes
 #
 smtpd_milters = ${tmpl_milters}
 
+#
+# SMTPUTF8 support NethServer/dev#7264
+#
+smtputf8_enable = no
+
 ### end of main.cf ###
