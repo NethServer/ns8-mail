@@ -72,7 +72,7 @@ relevant:
 
 - `server.pem`, server TLS certificate
 - `server.key`, server certificate private key
-- `dh.pem`, Diffie-Hellman group
+- `dh.pem`, Diffie-Hellman group (deprecated with Postfix 3.9)
 
 ### `reload-config`
 
