@@ -199,7 +199,7 @@ export default {
 
       for (const selectedAclSubject of this.selectedAclSubjects) {
         const subjectFound = this.allAclSubjects.find(
-          (d) => selectedAclSubject === `${d.name}_${d.dtype}`
+          (d) => selectedAclSubject.toLowerCase() === `${d.name}_${d.dtype}`.toLowerCase()
         );
 
         if (subjectFound) {
@@ -208,7 +208,7 @@ export default {
           if (this.isEditing) {
             const aclFound = this.mailbox.acls.find(
               (a) =>
-                selectedAclSubject === `${a.subject.name}_${a.subject.dtype}`
+                selectedAclSubject.toLowerCase() === `${a.subject.name}_${a.subject.dtype}`.toLowerCase()
             );
 
             if (aclFound) {
