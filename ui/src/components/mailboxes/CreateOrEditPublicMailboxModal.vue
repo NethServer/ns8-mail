@@ -542,7 +542,7 @@ export default {
           const aclSubject = a.subject;
 
           const subjectFound = this.allAclSubjectsForUi.find((aui) => {
-            return aui.value === `${aclSubject.name}_${aclSubject.dtype}`;
+            return aui.value.toLowerCase() === `${aclSubject.name}_${aclSubject.dtype}`.toLowerCase();
           });
 
           if (subjectFound) {
