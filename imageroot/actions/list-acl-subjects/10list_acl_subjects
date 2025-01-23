@@ -24,14 +24,14 @@ try:
     for euser in ldapclient.list_users():
         hdest[euser['user']] = {
             'dtype': 'user',
-            'name': euser['user'],
+            'name': euser['user'].lower(),
             'ui_name': euser['display_name'],
         }
 
     for egroup in ldapclient.list_groups():
         hdest[egroup['group']] = {
             'dtype': 'group',
-            'name': egroup['group'],
+            'name': egroup['group'].lower(),
             'ui_name': egroup['description'],
         }
 
