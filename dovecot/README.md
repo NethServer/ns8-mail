@@ -61,7 +61,8 @@ Private TCP ports:
   documentation](https://doc.dovecot.org/settings/core/#core_setting-default_process_limit).
   The `default_client_limit` parameter is proportionally set to 10 times this value.
 - `DOVECOT_SHAREDSEEN`, default empty. If set, the SEEN flag of shared folders is stored in a `dovecot.pvt*` index file, for every user
-
+- `DOVECOT_FLATCURVE_SUBSTRING_SEARCH`, default `no` (`yes` to enable). If enabled, allows substring searches (RFC 3501 compliant). However, this requires significant additional storage space. Many users today expect "Google-like" behavior, which is prefix searching, so substring searching is arguably not the modern expected behavior anyway. Therefore, even though it is not strictly RFC compliant, prefix (non-substring) searching is enabled by default.
+  
 ## Logs
 
 The container sends log messages to `syslog`. Increase log verbosity by
