@@ -117,7 +117,7 @@ by `myselector`,
 3. add a DNS TXT record to `mydomain.example.com`, as described in
    `/var/lib/rspamd/dkim/myselector.txt`
 
-## Configuration override for ClamAV unofficial signatures 
+## Configuration override for ClamAV unofficial signatures
 
 Changes to `clamav-unofficial-sigs` configuration are volatile. When the
 `clamav` container is stopped, local configuration changes are lost.
@@ -330,10 +330,47 @@ Migration notes:
    `rspamd/RecipientWhiteList`.
 
 1. New Full Text Search (FTS) engine Flatcurve. Old FTS indexes are
-   excluded from the migration. To massively rebuild the search indexes
-   run the following command during system idle time:
+   excluded from the migration. Refer to **Full Text Searche (FTS)**
+   section below.
 
-       podman exec dovecot nice doveadm index -A -q '*'
+## Full Text Search (FTS)
+
+The default configuration enables full-text search over mail headers and
+body. To keep the FTS index size small, only exact-word tokens are indexed
+by default.
+
+To enable complete substring searches, the indexes must be rebuilt, which
+significantly increases disk space usage.
+
+### Enable FTS substring search
+
+It is advisable to run this procedure outside of working hours because
+mailbox reindexing has high system resource demands.
+
+Edit the module's `state/environment` file by adding the following line:
+
+    DOVECOT_FLATCURVE_SUBSTRING_SEARCH=yes
+
+Reload the Dovecot container:
+
+    systemctl --user reload dovecot
+
+Open a shell in the Dovecot container:
+
+    podman exec -ti dovecot ash -l
+
+Calculate the size of the current FTS indexes (in MB):
+
+    find . -type d -name fts-flatcurve -print0 | xargs -r -0 -- du -m | awk '{ tot += $1 } ; END { print tot }'
+
+Remove existing `fts-flatcurve` directories:
+
+    find . -type d -name fts-flatcurve -exec rm -rf '{}' \;
+
+To rebuild the search indexes in bulk, run the following command during
+system idle time:
+
+    nice doveadm index -A -q '*'
 
 ## UI translation
 
