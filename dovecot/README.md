@@ -66,12 +66,12 @@ Private TCP ports:
   searching, so substring searching is arguably not the modern expected
   behavior anyway. Therefore, even though it is not strictly RFC
   compliant, prefix (non-substring) searching is enabled by default.
-- `DOVECOT_FLATCURVE_ENABLED`, default `yes` (`no` to disable).
-  To disable the Dovecot FTS flatcurve indexer plugin (enabled by default), set it to no.
 
   If enabled, allows substring searches (RFC 3501 compliant). However,
   this requires rebuilding the existing fts-flatcurve indexes with
   significant additional storage space.
+- `DOVECOT_FLATCURVE_ENABLED`, default `yes` (`no` to disable).
+  To disable the Dovecot FTS flatcurve indexer plugin (enabled by default), set it to no.
 
 ## Logs
 
