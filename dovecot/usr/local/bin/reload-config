@@ -35,6 +35,8 @@ tmpl_mail_plugins="acl listescape notify mail_log"
 if [ "$flatcurve_enabled" == "yes" ]; then
   tmpl_mail_plugins="$tmpl_mail_plugins fts fts_flatcurve"
   tmpl_enabled_flatcurve='fts = flatcurve'
+else
+  tmpl_enabled_flatcurve='# FTS disabled by DOVECOT_FLATCURVE_ENABLED environment variable'
 fi
 tmpl_mail_max_userip_connections="${DOVECOT_MAX_USERIP_CONNECTIONS:-20}"
 tmpl_default_process_limit="${DOVECOT_DEFAULT_PROCESS_LIMIT:-400}"
