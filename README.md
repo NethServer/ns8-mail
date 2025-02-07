@@ -372,6 +372,18 @@ system idle time:
 
     nice doveadm index -A -q '*'
 
+### Disable FTS indexer
+
+To reduce the size of the user's mailbox, you may prefer to disable the Flatcurve Indexer plugin.
+
+Edit the module's `state/environment` file by adding the following line:
+
+    DOVECOT_FLATCURVE_ENABLED=no
+
+Reload the Dovecot container:
+
+    systemctl --user reload dovecot
+
 ## UI translation
 
 Translated with [Weblate](https://hosted.weblate.org/projects/ns8/).
