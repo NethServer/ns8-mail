@@ -377,6 +377,7 @@ system idle time:
 To reduce the size of the user's mailbox, you may prefer to disable the Flatcurve Indexer plugin.
 
 Edit the module's `state/environment` file by adding the following line:
+
     DOVECOT_FLATCURVE_ENABLED=no
 
 Reload the Dovecot container:
