@@ -125,7 +125,7 @@
                   <cv-data-table-cell>
                     <div class="justify-flex-end">
                       <NsButton
-                        kind="danger"
+                        kind="tertiary"
                         :icon="TrashCan20"
                         size="small"
                         @click="willDeleteBypassRule(row)"
