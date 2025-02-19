@@ -359,7 +359,6 @@
         "no_bypass_rule_description": "No hay ninguna regla de bypass configurada",
         "title": "Reglas de bypass",
         "allow_to": "Permitir a",
-        "bypass_rule_is_going_to_be_deleted": "Se va a borrar la regla para {value}...",
         "bypass_rules_tooltip": "El filtro de correo electrónico se omite si coincide alguna de estas reglas",
         "bypass_rule_already_exists": "Esta regla de bypass ya existe",
         "create_bypass_rule_for": "Crear regla de bypass para {valor}",
@@ -374,7 +373,9 @@
         "create_bypass_rule": "Crear regla de bypass",
         "delete_rule": "Borrar regla",
         "search_rule": "Buscar reglas",
-        "placeholder_bypass_rule": "Por ejemplo, {value}"
+        "placeholder_bypass_rule": "Por ejemplo, {value}",
+        "delete_filter_rule": "Delete bypass rule",
+        "delete_rule_confirm": "Delete rule {name}?"
     },
     "settings_master_users": {
         "master_users_placeholder": "Elegir usuarios maestros",
