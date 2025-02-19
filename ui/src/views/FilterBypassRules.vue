@@ -125,10 +125,10 @@
                   <cv-data-table-cell>
                     <div class="justify-flex-end">
                       <NsButton
-                        kind="danger"
+                        kind="tertiary"
                         :icon="TrashCan20"
                         size="small"
-                        @click="willDeleteBypassRule(row)"
+                        @click="showDeleteRuleModal(row)"
                         >{{ $t("common.delete") }}
                       </NsButton>
                     </div>
@@ -146,6 +146,34 @@
       @hide="hideCreateBypassRuleModal"
       @reloadBypassRules="listBypassRules"
     />
+    <!-- delete filter rule modal -->
+    <NsDangerDeleteModal
+      :isShown="isShownDeleteRuleModal"
+      :name="currentRule.value"
+      :title="$t('filter_bypass_rules.delete_filter_rule')"
+      :warning="core.$t('common.please_read_carefully')"
+      :description="
+        $t('filter_bypass_rules.delete_rule_confirm', {
+          name: currentRule ? currentRule.value : '',
+        })
+      "
+      :typeToConfirm="
+        core.$t('common.type_to_confirm', {
+          name: currentRule ? currentRule.value : '',
+        })
+      "
+      :isErrorShown="!!error.removeBypassRule"
+      :errorTitle="$t('action.remove-bypass-rule')"
+      :errorDescription="error.removeBypassRule"
+      @hide="hideDeleteRuleModal"
+      @confirmDelete="removeBypassRule(currentRule)"
+    >
+      <template slot="explanation">
+        <p class="mg-top-sm">
+          {{ core.$t("common.this_action_is_not_reversible") }}
+        </p>
+      </template>
+    </NsDangerDeleteModal>
   </div>
 </template>
 
@@ -179,6 +207,12 @@ export default {
     return {
       q: {
         page: "filterBypassRules",
+      },
+      isShownDeleteRuleModal: false,
+      currentRule: {
+        direction: "",
+        value: "",
+        type: "",
       },
       urlCheckInterval: null,
       tablePage: [],
@@ -217,6 +251,13 @@ export default {
     this.listBypassRules();
   },
   methods: {
+    showDeleteRuleModal(rule) {
+      this.currentRule = rule;
+      this.isShownDeleteRuleModal = true;
+    },
+    hideDeleteRuleModal() {
+      this.isShownDeleteRuleModal = false;
+    },
     goToFilter() {
       this.goToAppPage(this.instanceName, "filter");
     },
@@ -225,67 +266,6 @@ export default {
     },
     hideCreateBypassRuleModal() {
       this.isShownCreateBypassRuleModal = false;
-    },
-    willDeleteBypassRule(rule) {
-      const notification = {
-        id: this.getUuid(),
-        title: this.$t(
-          "filter_bypass_rules.bypass_rule_is_going_to_be_deleted",
-          {
-            value: rule.value,
-          }
-        ),
-        type: "info",
-        toastTimeout: this.DELETE_DELAY - 1000,
-        actionLabel: this.core.$t("common.cancel"),
-        action: {
-          type: "callback",
-          callback: this.cancelDeleteBypassRule.bind(null, rule),
-        },
-      };
-      this.createNotificationForApp(notification);
-
-      const timeout = setTimeout(() => {
-        // remove notification from drawer
-        this.deleteNotificationForApp(notification.id);
-
-        // delete timeout
-        this.deleteBypassRuleTimeout = this.deleteBypassRuleTimeout.filter(
-          (el) => el.name !== rule.value
-        );
-
-        // call api to remove address
-        this.removeBypassRule(rule);
-      }, this.DELETE_DELAY);
-
-      this.deleteBypassRuleTimeout.push({
-        name: rule.value,
-        timeout,
-        notification,
-      });
-
-      // remove bypass rule from table
-      this.rules = this.rules.filter((r) => r.value !== rule.value);
-    },
-    cancelDeleteBypassRule(rule) {
-      const timeoutFound = this.deleteBypassRuleTimeout.find(
-        (el) => el.name === rule.value
-      );
-
-      if (timeoutFound) {
-        clearTimeout(timeoutFound.timeout);
-
-        // remove notification from drawer
-        this.deleteNotificationForApp(timeoutFound.notification.id);
-
-        // delete timeout
-        this.deleteBypassRuleTimeout = this.deleteBypassRuleTimeout.filter(
-          (el) => el.name !== rule.value
-        );
-      }
-
-      // reload bypass rules
-      this.listBypassRules();
     },
     async listBypassRules() {
       this.loading.listBypassRules = true;
@@ -386,9 +366,8 @@ export default {
     },
     removeBypassRuleCompleted() {
       this.loading.removeBypassRule = false;
-
-      // reload addresses
-      this.$emit("reloadBypassRules");
+      this.hideDeleteRuleModal();
+      this.listBypassRules();
     },
   },
 };
