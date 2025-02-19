@@ -301,7 +301,6 @@
         "title": "Bypass rules",
         "type_email": "Email address",
         "allow_to": "Allow to",
-        "bypass_rule_is_going_to_be_deleted": "Bypass rule for {value} is going to be deleted...",
         "bypass_rules_tooltip": "Email filter is bypassed if any of these rules matches",
         "type_ip_l": "IP address",
         "bypass_rule_already_exists": "This bypass rule already exists",
@@ -321,7 +320,9 @@
         "delete_bypass_rule_for": "Delete bypass rule for {value}",
         "type_cidr_l": "CIDR network",
         "col_type": "Type",
-        "placeholder_bypass_rule": "E.g. {value}"
+        "placeholder_bypass_rule": "E.g. {value}",
+        "delete_filter_rule": "Delete bypass rule",
+        "delete_rule_confirm": "Delete rule {name}?"
     },
     "queue": {
         "delete": "Delete",

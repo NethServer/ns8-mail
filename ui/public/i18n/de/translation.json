@@ -215,7 +215,6 @@
         "title": "Ausnahmen",
         "type_email": "E-Mail-Adresse 1",
         "allow_to": "erlaube an",
-        "bypass_rule_is_going_to_be_deleted": "Ausnahme-Regel für {vaule} wird gelöscht...",
         "bypass_rules_tooltip": "Der E-Mail-Filter wird umgangen, wenn eine der folgenden Regeln zutrifft",
         "type_ip_l": "IP-Adresse 2",
         "bypass_rule_already_exists": "Eine identische Ausnahme-Regel existiert bereits",
@@ -235,7 +234,9 @@
         "create_bypass_rule": "Ausnahme erstellen",
         "delete_rule": "Ausnahme löschen",
         "search_rule": "Regel suchen",
-        "placeholder_bypass_rule": "z.B. {value}"
+        "placeholder_bypass_rule": "z.B. {value}",
+        "delete_filter_rule": "Delete bypass rule",
+        "delete_rule_confirm": "Delete rule {name}?"
     },
     "addresses": {
         "edit_address_address": "Adresse {address} ändern",

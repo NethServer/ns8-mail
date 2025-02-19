@@ -381,10 +381,11 @@
         "type_ip_l": "Indirizzo IP",
         "type_cidr_l": "Rete CIDR",
         "create_bypass_rule_for": "Crea regola di bypass per {value}",
-        "bypass_rule_is_going_to_be_deleted": "La regola di bypass per {value} sta per essere eliminata...",
         "delete_bypass_rule_for": "Elimina regola di bypass per {value}",
         "bypass_rule_already_exists": "Questa regola di bypass esiste già",
-        "placeholder_bypass_rule": "Es. {value}"
+        "placeholder_bypass_rule": "Es. {value}",
+        "delete_filter_rule": "Delete bypass rule",
+        "delete_rule_confirm": "Delete rule {name}?"
     },
     "queue": {
         "title": "Coda",
