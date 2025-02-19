@@ -170,9 +170,6 @@
     >
       <template slot="explanation">
         <p class="mg-top-sm">
-          {{ $t("filter_bypass_rules.delete_filter_rule_explanation") }}
-        </p>
-        <p class="mg-top-sm">
           {{ core.$t("common.this_action_is_not_reversible") }}
         </p>
       </template>
