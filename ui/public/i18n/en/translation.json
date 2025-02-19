@@ -357,9 +357,8 @@
         "delete_bypass_rule_for": "Delete bypass rule for {value}",
         "bypass_rule_already_exists": "This bypass rule already exists",
         "placeholder_bypass_rule": "E.g. {value}",
-        "delete_filter_rule": "Delete filter rule",
-        "delete_rule_confirm": "Confirm the deletion of rule {name} ?",
-        "delete_filter_rule_explanation": "The rule will be removed from the list of bypass rules"
+        "delete_filter_rule": "Delete bypass rule",
+        "delete_rule_confirm": "Delete rule {name}?",
     },
     "settings_mailboxes": {
         "title": "Mailboxes settings",
