@@ -456,7 +456,7 @@ def get_bypass_map_name(mtype, mdirection):
 
 def is_clamav_enabled():
     """Check if the clamav service is enabled or not, returning a boolean value"""
-    return agent.run_helper('systemctl', '--user', 'is-enabled', 'clamav.service').returncode == 0
+    return agent.run_helper('systemctl', '--user', '--quiet', 'is-enabled', 'clamav.service').returncode == 0
 
 def get_system_meminfo():
     """
