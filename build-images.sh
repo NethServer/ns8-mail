@@ -161,12 +161,9 @@ set -e
 apk add --no-cache redis
 apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
 apk add --no-cache unbound
-apk add --no-cache patch # for rspamd-nixspam.patch
 chown -c root:root /etc/rspamd/local.d/maps.d
 EOF
 buildah add "${container}" rspamd/ /
-printf "Patching rspamd configuration: rspamd-nixspam.patch...\n"
-buildah run --workingdir /etc/rspamd "${container}" patch -p2 <rspamd-nixspam.patch
 buildah config \
     --env=RSPAMD_dkim_selector=default \
     --volume=/var/lib/redis \
