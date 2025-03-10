@@ -253,7 +253,6 @@
         "col_type": "Type",
         "search_rule": "Search rule",
         "type_ip_l": "IP address",
-        "bypass_rule_is_going_to_be_deleted": "Bypass rule for {value} is going to be deleted...",
         "bypass_rule_already_exists": "This bypass rule already exists",
         "no_bypass_rule_description": "There is no bypass rule configured",
         "title": "Bypass rules",
@@ -268,7 +267,9 @@
         "delete_bypass_rule_for": "Delete bypass rule for {value}",
         "type_cidr_l": "CIDR network",
         "type_cidr": "CIDR network",
-        "create_bypass_rule": "Create bypass rule"
+        "create_bypass_rule": "Create bypass rule",
+        "delete_filter_rule": "Delete bypass rule",
+        "delete_rule_confirm": "Delete rule {name}?"
     },
     "relay": {
         "add_rule": "Add rule",

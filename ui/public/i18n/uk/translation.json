@@ -305,7 +305,6 @@
         "title": "Правила обходу",
         "type_email": "Адреса електронної пошти",
         "allow_to": "Дозволити",
-        "bypass_rule_is_going_to_be_deleted": "Правило обходу для {value} буде видалено...",
         "bypass_rules_tooltip": "Фільтр електронної пошти обходиться, якщо будь-яке з цих правил відповідає",
         "type_ip_l": "IP адреса",
         "bypass_rule_already_exists": "Це правило обходу вже існує",
@@ -324,7 +323,9 @@
         "type_cidr": "мережа CIDR",
         "create_bypass_rule": "Створити правило обходу",
         "delete_rule": "Видалити правило",
-        "search_rule": "Правило пошуку"
+        "search_rule": "Правило пошуку",
+        "delete_filter_rule": "Delete bypass rule",
+        "delete_rule_confirm": "Delete rule {name}?"
     },
     "settings_mailboxes": {
         "title": "Налаштування поштових скриньок",

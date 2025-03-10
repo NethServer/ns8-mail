@@ -344,7 +344,6 @@
         "title": "Bypass rules",
         "type_email": "Email address",
         "allow_to": "Allow to",
-        "bypass_rule_is_going_to_be_deleted": "Bypass rule for {value} is going to be deleted...",
         "bypass_rules_tooltip": "Email filter is bypassed if any of these rules matches",
         "type_ip_l": "IP address",
         "type_ip": "IP address",
@@ -357,7 +356,9 @@
         "create_bypass_rule": "Create bypass rule",
         "delete_rule": "Delete rule",
         "search_rule": "Search rule",
-        "placeholder_bypass_rule": "E.g. {value}"
+        "placeholder_bypass_rule": "E.g. {value}",
+        "delete_filter_rule": "Delete bypass rule",
+        "delete_rule_confirm": "Delete rule {name}?"
     },
     "settings_mailboxes": {
         "title": "Mailboxes settings",
