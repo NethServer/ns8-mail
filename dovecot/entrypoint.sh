@@ -15,6 +15,10 @@ if [ $# -eq 0 ]; then
         # generate a self-signed certificate
         dovecot-post-install
     fi
+    if [ ! -f /etc/ssl/dovecot/dh.pem ]; then
+        # copy the default DH number to the persistent volume
+        cat /usr/local/lib/templates/dh.pem > /etc/ssl/dovecot/dh.pem
+    fi
     reload-config
     exec dovecot -F
 else
