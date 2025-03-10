@@ -36,6 +36,7 @@ response = agent.tasks.run(
         'path': rspamd_path, # only one module instance per node
         'http2https': True,
         'strip_prefix': True,
+        'slash_redirect': True,
         "headers": {
             "request": {
                 "Password": rspamd_adminpw,
