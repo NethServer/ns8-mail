@@ -4,6 +4,5 @@ Description=Diffie-Hellman group generator
 [Service]
 Type=oneshot
 ExecStart=runagent generate-dhpem
-ExecStartPost=-runagent install-certificate dovecot
 WorkingDirectory=%S/state
 SyslogIdentifier=%N

@@ -7,7 +7,7 @@
 
 set -e
 
-dhtmp=$(mktemp dh.pem.XXXXXX)
-trap 'rm -f ${dhtmp}' EXIT
-openssl dhparam -out "${dhtmp}" 2048
-mv -v "${dhtmp}" dh.pem
+mkdir -vp tls-certs
+cd tls-certs
+openssl dhparam -out dh.pem.tmp 2048
+mv -v dh.pem.tmp dh.pem
