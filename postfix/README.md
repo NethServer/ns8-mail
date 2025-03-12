@@ -40,7 +40,10 @@ Standard public TCP ports
 - `POSTFIX_LDAP_PASS`, bind password
 - `POSTFIX_LDAP_SCHEMA`, eg `rfc2307`
 - `POSTFIX_LDAP_BASE`, eg `dc=directory,dc=nh`
-- `POSTFIX_MILTERS`, value for Postfix [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters)
+- `POSTFIX_MILTERS`, value for Postfix
+  [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters),
+  default is `inet:127.0.0.1:11332`. Set to empty string to completely
+  bypass Rspamd.
 - `POSTFIX_MAXIMAL_QUEUE_LIFETIME`, value for the maximum amount of hours that a message is allowed to stay in a queue (5 days is assumed if value is empty)
 - `POSTFIX_RESTRICTED_SENDER` Empty or `1`. If set, the SMTP/AUTH user
   name can use a restricted set of sender addresses. The set is given by
