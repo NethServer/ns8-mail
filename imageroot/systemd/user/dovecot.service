@@ -1,5 +1,7 @@
 [Unit]
 Description=Dovecot IMAP, POP3, Sieve server
+Wants=get-certificate.service
+After=get-certificate.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -7,7 +9,6 @@ EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/dovecot.pid %t/dovecot.ctr-id
-ExecStartPre=-runagent install-certificate dovecot
 ExecStartPre=runagent discover-services
 ExecStart=/usr/bin/podman run \
     --detach \
@@ -23,7 +24,7 @@ ExecStart=/usr/bin/podman run \
     --env-file=dovecot.env \
     --volume=/dev/log:/dev/log \
     --volume=dovecot-data:/var/lib/vmail:z \
-    --volume=dovecot-cert:/etc/ssl/dovecot:z \
+    --volume=./tls-certs:/etc/ssl/dovecot:z \
     --volume=dovecot-dict:/var/lib/dovecot/dict:z \
     --volume=dovecot-lmtp:/var/lib/umail:z \
     --volume=dovecot-custom:/etc/dovecot/local.conf.d:z \

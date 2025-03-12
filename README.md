@@ -184,6 +184,7 @@ command:
    then every 15 days. See also `dhgen.timer`.
 5. Freshclam signatures download -- `freshclam.service` (with timer)
 6. ClamAV unofficial signatures download -- `clamav-unofficial-sigs.service` (with timer)
+7. Obtain/Generate TLS certificates -- `get-certificate.service`
 
 ## Rspamd admin UI
 
@@ -262,11 +263,6 @@ When settings change, the `mail-settings-changed` event is published. Payload fo
 ```
 
 The event reason reflects the action name that raises the event.
-
-## Commands
-
-- `install-certificate` installs the TLS certificate and DH group in the
-  given service container.
 
 ## Uninstall
 

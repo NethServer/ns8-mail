@@ -80,15 +80,6 @@ running `DOVECOT_DEBUG=1 reload-config`.
 
 ## Commands
 
-### `import-certificate`
-
-Reads a Tar file from standard input. The following archive contents are
-relevant:
-
-- `server.pem`, server TLS certificate
-- `server.key`, server certificate private key
-- `dh.pem`, Diffie-Hellman group
-
 ### `reload-config`
 
 The command expands Dovecot configuration files, according to the values

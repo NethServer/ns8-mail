@@ -68,14 +68,6 @@ Standard public TCP ports
 
 ## Commands
 
-### `import-certificate`
-
-Reads a Tar file from standard input. The following archive contents are
-relevant:
-
-- `server.pem`, server TLS certificate
-- `server.key`, server certificate private key
-
 ### `reload-config`
 
 The command expands Postfix configuration files, according to the values

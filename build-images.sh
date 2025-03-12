@@ -37,7 +37,7 @@ buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
     --label="org.nethserver.max-per-node=1" \
-    --label="org.nethserver.min-core=3.3.0-0" \
+    --label="org.nethserver.min-core=3.6.0-0" \
     --label="org.nethserver.images=$(printf "${repobase}/mail-%s:${IMAGETAG:-latest} " \
         dovecot \
         postfix \
@@ -129,12 +129,6 @@ container=$(buildah from docker.io/library/alpine:3.21.3)
 buildah run "${container}" /bin/sh <<EOF
 set -e
 apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login
-(
-    mkdir -p /etc/ssl/postfix
-    cd /etc/ssl/postfix
-    touch server.pem server.key fullchain.pem
-    chmod 600 server.key fullchain.pem
-)
 EOF
 buildah add "${container}" postfix/ /
 buildah config \

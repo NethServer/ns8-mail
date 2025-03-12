@@ -1,0 +1,11 @@
+[Unit]
+Description=Get TLS certificate from Traefik
+
+[Service]
+Type=oneshot
+EnvironmentFile=%S/state/environment
+WorkingDirectory=%S/state
+SyslogIdentifier=%N
+ExecStart=-mkdir -vp tls-certs
+ExecStart=-runagent get-certificate --cert-file=tls-certs/server.pem --key-file=tls-certs/server.key $POSTFIX_HOSTNAME
+ExecStart=-bash -c 'cd tls-certs ; umask 177 ; cat server.key server.pem > fullchain.pem ; touch -r server.pem fullchain.pem'

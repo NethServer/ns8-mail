@@ -59,7 +59,6 @@ SMTP AUTH submissions good login
     ...    return_rc=True    return_stderr=True
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${err}    ESMTP Postfix
-    Should Contain    ${err}    subject: CN=nethserver.test
     Should Not Contain    ${err}    250-STARTTLS
     Should Contain    ${err}    235 2.7.0 Authentication successful
     Should Contain    ${out}    252 2.0.0 postmaster@domain.test
