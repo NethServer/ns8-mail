@@ -143,6 +143,7 @@ buildah config \
     --volume=/var/spool/postfix \
     --env=TEMPLATES_DIR="/usr/local/lib/templates" \
     --env=SCRIPTS_DIR="/usr/local/lib/scripts" \
+    --env=POSTFIX_MILTERS="inet:127.0.0.1:11332" \
     --entrypoint='["/entrypoint.sh"]' \
     --cmd='' \
     "${container}"

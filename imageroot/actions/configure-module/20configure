@@ -27,8 +27,6 @@ with agent.redis_connect() as rdb:
     cluster_network = rdb.get('cluster/network') or ""
 
 if not os.path.exists('rspamd.env'):
-    # First-time configuration defaults
-    agent.set_env('POSTFIX_MILTERS', 'inet:localhost:11332')
     oldmask = os.umask(0o77)
     rspamd_adminpw = genpw()
     with open('rspamd.env', 'w') as fenv:
