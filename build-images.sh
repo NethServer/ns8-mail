@@ -156,6 +156,8 @@ set -e
 apk add --no-cache redis
 apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
 apk add --no-cache unbound
+# for envsubst 
+apk add --no-cache gettext
 chown -c root:root /etc/rspamd/local.d/maps.d
 EOF
 buildah add "${container}" rspamd/ /
