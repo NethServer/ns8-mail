@@ -12,12 +12,14 @@ set -e
 # Export variables for templates
 set -a
 # the sysctl command is available inside the containers
-unbound_ipv6=$(sysctl -n net.ipv6.conf.all.disable_ipv6)
-if [ "${unbound_ipv6}" -eq 1 ]; then
+ipv6=$(sysctl -n net.ipv6.conf.all.disable_ipv6)
+if [ "${ipv6}" -eq 1 ]; then
     unbound_ipv6="no"
 else
     unbound_ipv6="yes"
 fi
+# stop exporting variables
+set +a
 
 cd /usr/local/templates
 
