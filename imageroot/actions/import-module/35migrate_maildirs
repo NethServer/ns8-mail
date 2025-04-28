@@ -66,7 +66,7 @@ for entry in *; do
     # Fix paths for shared namespace
     find "${ddest}" -type d -path "${ddest}/Maildir/shared/*@${1}" -print | (
         while read -r shared_entry ; do
-            mv -vf "${shared_entry}" "{shared_entry%%@${1}}" || :
+            mv -vf "${shared_entry}" "${shared_entry%%@${1}}" || :
         done
     )
 
