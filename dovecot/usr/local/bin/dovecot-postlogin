@@ -48,6 +48,8 @@ if [ -z "${ACL_GROUPS}" ]; then
 
     USERDB_KEYS="${USERDB_KEYS} ACL_GROUPS"
     ACL_GROUPS=$(ldap_search "${filter}" ${attr})
+    # Append the same list of groups in lowercase form for case-insensitive match:
+    ACL_GROUPS="${ACL_GROUPS}${ACL_GROUPS:+,}$(printf "%s\n" "${ACL_GROUPS}" | tr '[A-Z]' '[a-z]')"
     export USERDB_KEYS ACL_GROUPS
 fi
 
