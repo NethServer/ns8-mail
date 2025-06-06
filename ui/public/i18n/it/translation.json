@@ -267,7 +267,7 @@
         "welcome_message": "Inserisci le seguenti informazioni per iniziare a utilizzare Mail",
         "mail_domain_pattern": "Deve essere un nome di dominio pienamente qualificato valido",
         "primary_mail_domain": "Dominio di posta primario",
-        "go_to_domains_and_users": "Andare su Domini e utenti",
+        "go_to_domains_and_users": "Vai a Domini e utenti",
         "title": "Benvenuti in Mail",
         "select_domain_description": "Selezionare un dominio utente per il server di posta. Per ogni utente di questo dominio verrà creato un indirizzo e-mail",
         "no_domain_configured_description": "Configurare prima un dominio utente",
@@ -384,8 +384,8 @@
         "delete_bypass_rule_for": "Elimina regola di bypass per {value}",
         "bypass_rule_already_exists": "Questa regola di bypass esiste già",
         "placeholder_bypass_rule": "Es. {value}",
-        "delete_filter_rule": "Delete bypass rule",
-        "delete_rule_confirm": "Delete rule {name}?"
+        "delete_filter_rule": "Elimina regola di bypass",
+        "delete_rule_confirm": "Elimina regola {name}?"
     },
     "queue": {
         "title": "Coda",

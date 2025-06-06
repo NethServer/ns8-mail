@@ -110,8 +110,8 @@
         "optional": "Optional",
         "cancel": "abbrechen",
         "search": "Suche",
-        "next": "Next",
-        "previous": "Previous"
+        "next": "Nächste",
+        "previous": "Vorherige"
     },
     "filter": {
         "third_party_signatures_rating_tooltip": "Eine höhere Bewertung bedeutet mehr blockierte Bedrohungen, aber auch eine höhere Wahrscheinlichkeit von Fehlalarmen. Empfohlene Bewertungen sind 'Niedrig' und 'Mittel'",
