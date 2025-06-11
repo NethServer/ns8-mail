@@ -51,8 +51,10 @@ virtual_alias_maps =
   ${tmpl_laddgroups_table},
   ${tmpl_ldest_table},
   sqlite:${S}meta_directory/userforwards.cf,
+  ${tmpl_laddusers_table},
   ${tmpl_domain_map},
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
+virtual_mailbox_maps = ${tmpl_virtual_mailbox_maps}
 relay_domains = ${tmpl_relay_domains}
 transport_maps = ${tmpl_transport_maps}, sqlite:${S}meta_directory/relaydest.cf,
 recipient_delimiter = +
@@ -108,7 +110,6 @@ smtpd_relay_restrictions =
 
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
-  ${tmpl_verify_recipient_address},
 
 #
 # TLS configuration
