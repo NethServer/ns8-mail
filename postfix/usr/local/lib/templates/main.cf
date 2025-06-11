@@ -81,11 +81,15 @@ address_verify_cache_cleanup_interval = 4h
 #
 default_transport = ${tmpl_default_transport}
 relayhost = ${tmpl_relayhost}
-smtpd_sender_login_maps = sqlite:${S}meta_directory/senderlogin.cf,
+smtpd_sender_login_maps =
+  sqlite:${S}meta_directory/senderlogin.cf,
+  ${tmpl_laddgroups_table},
+  ${tmpl_laddusers_table},
+
 smtp_sasl_password_maps = sqlite:${S}meta_directory/relaycredentials.cf,
 sender_dependent_relayhost_maps = sqlite:${S}meta_directory/relaysender_nexthop.cf,
 sender_dependent_default_transport_maps = sqlite:${S}meta_directory/relaysender_transport.cf,
-smtp_sender_dependent_authentication = ${tmpl_smtp_sender_dependent_authentication}
+smtp_sender_dependent_authentication = no
 smtp_tls_policy_maps = sqlite:${S}meta_directory/tlspolicy.cf,
 smtp_sasl_security_options =
 smtp_sasl_auth_enable = yes
@@ -98,9 +102,6 @@ always_bcc = ${tmpl_always_bcc}
 #
 # Restrictions
 #
-smtpd_sender_restrictions =
-  ${tmpl_reject_authenticated_sender_login_mismatch},
-
 smtpd_relay_restrictions =
   permit_mynetworks,
   permit_sasl_authenticated,

@@ -31,6 +31,7 @@ if [ "$(( POSTFIX_DEBUG & 4 ))" -eq 4 ] ; then
 fi
 
 if [ ! -d /var/lib/umail ] ; then
+    echo "[WARNING] Dovecot authentication socket directory not found. SASL auth is disabled!"
     tmpl_sasl_commentout='#'
 fi
 
@@ -88,11 +89,9 @@ tmpl_ldap_port="${POSTFIX_LDAP_PORT}"
 tmpl_ldap_base="${POSTFIX_LDAP_BASE}"
 tmpl_maximal_queue_lifetime="${POSTFIX_MAXIMAL_QUEUE_LIFETIME:-120}"
 if [ -n "${POSTFIX_RESTRICTED_SENDER}" ]; then
-    tmpl_reject_authenticated_sender_login_mismatch='reject_authenticated_sender_login_mismatch'
-    tmpl_smtp_sender_dependent_authentication='yes'
+    tmpl_sender_restrictions="reject_authenticated_sender_login_mismatch"
 else
-    tmpl_reject_authenticated_sender_login_mismatch=''
-    tmpl_smtp_sender_dependent_authentication='no'
+    tmpl_sender_restrictions=""
 fi
 tmpl_always_bcc="${POSTFIX_ALWAYS_BCC}"
 tmpl_default_transport=$(pcdbquery "SELECT transport FROM relayrules WHERE enabled=1 AND rule_type='wildcard' AND rule_subject='*'")
