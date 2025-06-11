@@ -33,11 +33,14 @@ scache    unix  -       -       n       -       1       scache
 postlog   unix-dgram n  -       n       -       1       postlogd
 submission inet n       -       n       -       -       smtpd
 ${tmpl_sasl_commentout}        -o smtpd_sasl_auth_enable=yes
+${tmpl_sasl_commentout}        -o smtpd_sender_restrictions=${tmpl_sender_restrictions}
 submissions inet n      -       n       -       -       smtpd
 ${tmpl_sasl_commentout}        -o smtpd_sasl_auth_enable=yes
+${tmpl_sasl_commentout}        -o smtpd_sender_restrictions=${tmpl_sender_restrictions}
         -o smtpd_tls_wrappermode=yes
 :10587      inet n      -       n       -       -       smtpd
 ${tmpl_sasl_commentout}        -o smtpd_sasl_auth_enable=yes
+${tmpl_sasl_commentout}        -o smtpd_sender_restrictions=${tmpl_sender_restrictions}
         -o smtpd_tls_auth_only=no
 smtps     unix  -       -       n       -       -       smtp ${tmpl_debug_relay}
         -o smtp_tls_security_level=encrypt -o smtp_tls_wrappermode=yes
