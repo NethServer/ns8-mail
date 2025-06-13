@@ -1,7 +1,7 @@
 #!/bin/sh
 
-mto=${1:?}
-mfrom=${2:-"$(id -nu)@$(hostname -f)"}
+mto=${1:?missing mto}
+mfrom=${2:?missing mfrom}
 random=$RANDOM
 
 curl -s -v --upload-file - --crlf \
@@ -11,7 +11,7 @@ curl -s -v --upload-file - --crlf \
 From: <${mfrom}>
 To: <${mto}>
 Subject: Test ${random}
-Message-ID: <$(uuidgen)@$(hostname -f)>
+Message-ID: <$(uuidgen)@${mfrom/#*@/}>
 Date: $(date -R)
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"

@@ -13,7 +13,7 @@ curl -k -s -v --upload-file - --crlf \
 From: <${mfrom}>
 To: <${mto}>
 Subject: Test ${random}
-Message-ID: <$(uuidgen)@$(hostname -f)>
+Message-ID: <$(uuidgen)@${mfrom/#*@/}>
 Date: $(date -R)
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
