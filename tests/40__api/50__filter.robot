@@ -2,8 +2,14 @@
 Resource    ../api.resource
 Resource    ../user_domain.resource
 Library    Collections
+Suite Teardown    Reset Rspamd thresholds
 
-*** Test Cases ***
+*** Keywords ***
+Reset Rspamd thresholds
+    Run task    module/${MID}/set-filter-configuration
+    ...    {"antivirus":{"enabled":true,"clamav_official_sigs":false,"third_party_sigs_rating":"medium"},"antispam":{"enabled":true,"greylist":{"enabled":false},"spam_flag_threshold":6.0,"deny_message_threshold":15.0,"prefix_email_subject":{"enabled":false}}}
+    Check default filter configuration
+
 Check default filter configuration
     ${dpayload} =    Run task    module/${MID}/get-filter-configuration    ""    decode_json=${TRUE}
     Should Be Equal As Numbers   ${dpayload}[antispam][spam_flag_threshold]    6.0
@@ -13,6 +19,10 @@ Check default filter configuration
     Should Be Equal    ${dpayload}[antivirus][clamav_official_sigs]    ${FALSE}
     Should Be Equal    ${dpayload}[antivirus][third_party_sigs_rating]    medium
     Should Be Equal As Integers   ${dpayload}[bypass_rules]    0
+
+*** Test Cases ***
+Check the filter configuration is at default
+    Check default filter configuration
 
 Change filter settings
     Run task    module/${MID}/set-filter-configuration    {"antivirus":{"enabled":false},"antispam":{"enabled":false}}

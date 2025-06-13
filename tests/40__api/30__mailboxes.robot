@@ -32,6 +32,9 @@ Check user mailbox attibute changes were applied
         END
     END
 
+Reset user mailbox forward
+    Run task    module/${MID}/alter-user-mailbox    {"user":"u1","forward":{"destinations":[]}}
+
 Disable user mailbox
     Run task    module/${MID}/set-mailbox-enabled    {"user":"u1","enabled":false}
 

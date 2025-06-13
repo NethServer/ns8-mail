@@ -31,12 +31,21 @@ Disable offending units
     ...    return_stderr=True
     ...    return_rc=True
 
+Upload test helpers
+    Put File    ${CURDIR}/test-msa.sh    /tmp/test-msa.sh
+    Put File    ${CURDIR}/test-mta.sh    /tmp/test-mta.sh
+
+Cleanup test helpers
+    Execute Command    rm -vf /tmp/test-msa.sh /tmp/test-mta.sh
+
 *** Settings ***
 Suite Setup       Run Keywords
                   ...    Connect to the Node
                   ...    Wait until boot completes
                   ...    Save the journal begin timestamp
                   ...    Disable offending units
+                  ...    Upload test helpers
 
 Suite Teardown    Run Keywords
                   ...    Collect the suite journal
+                  ...    Cleanup test helpers
