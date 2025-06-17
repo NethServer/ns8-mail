@@ -162,7 +162,7 @@
         "required_if_copy_inbound_messages": "Required if \"Copy inbound messages\" is enabled",
         "bccaddr_format": "Invalid email format",
         "delete_domain_domain": "Delete domain {domain}",
-        "accept_unknown_recipients_tooltip": "All email messages sent to unknown recipients will be accepted and delivered to the specified destination. This option cannot be enabled if 'Add addresses from user domain' is enabled",
+        "accept_unknown_recipients_tooltip": "All email messages sent to unknown recipients will be accepted and delivered to the specified destination",
         "add_group_addresses_from_user_domain": "Add group addresses from user domain {userDomain}",
         "add_group_addresses_from_user_domain_tooltip": "Create an email address for every group in the user domain",
         "configure_dkim": "Configure DKIM",
