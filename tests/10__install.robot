@@ -14,6 +14,7 @@ Install account providers
     Configure LDAP user domain
 
 Mail module installation
+    [Tags]    module
     ${output}  ${rc} =    Execute Command    add-module ${IMAGE_URL} 1
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0

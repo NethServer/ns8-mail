@@ -85,8 +85,7 @@
                 v-model="acceptUnknownRecipients.enabled"
                 :disabled="
                   loading.addDomain ||
-                  loading.alterDomain ||
-                  addUserAddressesFromUserDomain
+                  loading.alterDomain
                 "
                 :class="[
                   'toggle-without-label',
@@ -331,11 +330,6 @@ export default {
           const el = this.$refs.alterDomainError;
           this.scrollToElement(el);
         });
-      }
-    },
-    addUserAddressesFromUserDomain: function () {
-      if (this.addUserAddressesFromUserDomain) {
-        this.acceptUnknownRecipients.enabled = false;
       }
     },
     "acceptUnknownRecipients.enabled": function () {
