@@ -440,7 +440,7 @@
         "delete": "Delete",
         "cancel": "Cancel",
         "processing": "செயலாக்கம் ...",
-        "disabled": "Disabled",
+        "disabled": "முடக்கப்பட்டது",
         "group_destination": "Group",
         "mail_hostname": "Mail server hostname",
         "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
@@ -449,7 +449,7 @@
         "next": "Next",
         "previous": "Previous",
         "advanced": "Advanced",
-        "enabled": "Enabled",
+        "enabled": "இயக்கப்பட்டது",
         "user_destination": "User"
     },
     "settings_master_users": {
