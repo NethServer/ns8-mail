@@ -1,10 +1,10 @@
 #
-# relaysender -- retrieve the relay host for the given sender
-# Sqlite backend configuration
+# relaysender_transport -- select special smtp_from transport,
+#     if MAIL FROM matches a sender relay rule
 #
 
 dbpath = /srv/pcdb.sqlite
-query = SELECT transport
+query = SELECT 'smtp_from'
   FROM relayrules
   WHERE enabled = 1 AND
   rule_type = 'sender' AND
