@@ -66,6 +66,10 @@ Create mail domains
     Log To Console    Create mail domain inbound.test (with both flags, addusers/groups)
     Run task     module/${MID}/add-domain
     ...            {"domain":"inbound.test","addusers":true,"addgroups":true}
+    Log To Console    Create mail domain noaddflag.test (without any addusers/groups flag)
+    Run task     module/${MID}/add-domain
+    ...            {"domain":"noaddflag.test","addusers":false,"addgroups":false}
+
 
 Destroy mail domains
     Run task     module/${MID}/remove-domain
@@ -74,6 +78,8 @@ Destroy mail domains
     ...            {"domain":"addgroups.test"}
     Run task     module/${MID}/remove-domain
     ...            {"domain":"inbound.test"}
+    Run task     module/${MID}/remove-domain
+    ...            {"domain":"noaddflag.test"}
 
 Create mail aliases
     Log To Console    Address a1@inbound.test -> u1

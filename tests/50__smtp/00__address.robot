@@ -50,6 +50,31 @@ Address not found
     unknown@addgroups.test
     unknown@inbound.test
 
+User and group with the same name, user is expanded
+    [Tags]  bug  bug-6977
+    Send SMTP message to    info@addusers.test
+    Should be delivered via LMTP to  info
+    Should not be delivered via LMTP to    u1
+    Should not be delivered via LMTP to    u2
+
+User and group with the same name, group is expanded
+    [Tags]  bug  bug-6977
+    Send SMTP message to    info@addgroups.test
+    Should be delivered via LMTP to  u1
+    Should be delivered via LMTP to  u2
+    Should not be delivered via LMTP to    info
+
+User and group with the same name, none is expanded
+    [Tags]  bug  bug-6977
+    Should return SMTP unknown user error    info@noaddflag.test
+
+User and group with the same name, both are expanded
+    [Tags]  bug  bug-6977
+    Send SMTP message to    info@inbound.test
+    Should be delivered via LMTP to  u1
+    Should be delivered via LMTP to  u2
+    Should be delivered via LMTP to  info
+
 *** Keywords ***
 Create aliases and domains
     # a1, a2 are defined by the parent suite
