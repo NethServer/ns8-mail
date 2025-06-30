@@ -22,6 +22,7 @@ Configure AD user domain
     Run task    module/${mid_ad}/add-group   {"group":"g1","description":"Group One","users":["u1","u2"]}
     Run task    module/${mid_ad}/add-group   {"group":"g2","description":"Group Two","users":["u2","u3"]}
     Run task    module/${mid_ad}/add-user    {"user":"ucatchall","display_name":"Catch All User","password":"Nethesis,1234"}
+    Run task    module/${mid_ad}/add-group      {"group":"info","description":"Info Group","users":["u1","u2"]}
 
 Configure LDAP user domain
     [Tags]    udom    add    ldap

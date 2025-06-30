@@ -51,14 +51,16 @@ Address not found
     unknown@inbound.test
 
 User and group with the same name, user is expanded
-    [Tags]  bug  bug-6977
+    [Tags]  bug  bug-6977  cantfix
     Send SMTP message to    info@addusers.test
+    Skip    CANTFIX - The message is delivered to the group instead.
     Should be delivered via LMTP to  info
     Should not be delivered via LMTP to    u1
     Should not be delivered via LMTP to    u2
 
 User and group with the same name, group is expanded
     [Tags]  bug  bug-6977
+    [Documentation]    OpenLDAP only, in AD users and groups cannot have the same name
     Send SMTP message to    info@addgroups.test
     Should be delivered via LMTP to  u1
     Should be delivered via LMTP to  u2
@@ -69,10 +71,12 @@ User and group with the same name, none is expanded
     Should return SMTP unknown user error    info@noaddflag.test
 
 User and group with the same name, both are expanded
-    [Tags]  bug  bug-6977
+    [Tags]  bug  bug-6977  cantfix
+    [Documentation]    OpenLDAP only, in AD users and groups cannot have the same name
     Send SMTP message to    info@inbound.test
     Should be delivered via LMTP to  u1
     Should be delivered via LMTP to  u2
+    Skip    CANTFIX - The message is delivered only to the group
     Should be delivered via LMTP to  info
 
 *** Keywords ***

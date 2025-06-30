@@ -40,7 +40,7 @@ S='$' # to escape $ in template
 if [ -n "${POSTFIX_ORIGIN}" ]; then
     tmpl_transport_maps="inline:{ ${POSTFIX_ORIGIN}=lmtp:unix:/var/lib/umail/lmtp }"
     tmpl_virtual_mailbox_domains=${POSTFIX_ORIGIN}
-    tmpl_virtual_mailbox_maps='ldap:$meta_directory/laddusers.cf'
+    tmpl_virtual_mailbox_maps='proxy:ldap:$meta_directory/laddusers-origin.cf'
     tmpl_myorigin=${POSTFIX_ORIGIN}
 else
     tmpl_transport_maps=
@@ -59,29 +59,9 @@ tmpl_reject_internal_myorigin=$(pcdbquery "SELECT 'check_recipient_access inline
 if [ -z "${tmpl_reject_internal_myorigin}" ]; then
     tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}"
 fi
-tmpl_domain_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || '=' || catchall || '}', ', ') || '}' FROM domains WHERE length(catchall) > 0 AND domain != '*'")
-tmpl_addgroup_domains=$(pcdbquery "SELECT group_concat(domain, ', ') FROM domains WHERE addgroups = 1")
-if [ -z "${tmpl_addgroup_domains}" ] || [ -z "${POSTFIX_LDAP_HOST}" ]; then
-    # Turn off addgroups virtual alias lookups
-    tmpl_laddgroups_table=''
-else
-    tmpl_laddgroups_table='ldap:$meta_directory/laddgroups.cf'
-fi
-if [ -z "${POSTFIX_LDAP_HOST}" ]; then
-    # Turn off group expansion in virtual alias lookups
-    tmpl_ldest_table=''
-else
-    tmpl_ldest_table='ldap:$meta_directory/ldest.cf'
-fi
-tmpl_laddusers_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM domains WHERE addusers = 1 AND domain != '${POSTFIX_ORIGIN}'")
-if [ -z "${tmpl_laddusers_domains}" ] || [ -z "${POSTFIX_LDAP_HOST}" ]; then
-    # Turn off addusers virtual alias and mailbox lookups
-    tmpl_laddusers_table=''
-    tmpl_laddusers_domains="${POSTFIX_ORIGIN}"
-else
-    tmpl_laddusers_table='ldap:$meta_directory/laddusers.cf'
-    tmpl_laddusers_domains="${POSTFIX_ORIGIN} ${tmpl_laddusers_domains}"
-fi
+tmpl_domain_catchall_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || '=' || catchall || '@${tmpl_myorigin}}', ', ') || '}' FROM domains WHERE length(catchall) > 0 AND domain != '*'")
+tmpl_laddgroups_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM domains WHERE addgroups = 1")
+tmpl_laddusers_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM domains WHERE addusers = 1")
 tmpl_ldap_bind_dn="${POSTFIX_LDAP_USER}"
 tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
 tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
@@ -105,7 +85,10 @@ envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
 envsubst >/etc/postfix/master.cf <"${TEMPLATES_DIR:?}/master.cf"
 envsubst >/etc/postfix/laddusers.cf <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf"
 envsubst >/etc/postfix/laddgroups.cf <"${TEMPLATES_DIR:?}/laddgroups-${ldap_schema}.cf"
-envsubst >/etc/postfix/ldest.cf <"${TEMPLATES_DIR:?}/ldest-${ldap_schema}.cf"
+envsubst >/etc/postfix/lgroupmembers.cf <"${TEMPLATES_DIR:?}/lgroupmembers-${ldap_schema}.cf"
+envsubst >/etc/postfix/laddgroupmembers.cf <"${TEMPLATES_DIR:?}/laddgroupmembers-${ldap_schema}.cf"
+envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \
+    sed "s/^domain = .*/domain = ${tmpl_myorigin}/" >/etc/postfix/laddusers-origin.cf
 
 if [ -z "${tmpl_sasl_commentout}" ] ; then
     cat /etc/postfix/dovecot-sasl.cf >> /etc/postfix/main.cf

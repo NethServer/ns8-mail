@@ -46,13 +46,12 @@ message_size_limit = 100000000
 #
 virtual_alias_domains = ${tmpl_virtual_alias_domains}
 virtual_alias_maps =
-  sqlite:${S}meta_directory/aliases.cf,
-  sqlite:${S}meta_directory/wildcards.cf,
-  ${tmpl_laddgroups_table},
-  ${tmpl_ldest_table},
-  sqlite:${S}meta_directory/userforwards.cf,
-  ${tmpl_laddusers_table},
-  ${tmpl_domain_map},
+  sqlite:${S}meta_directory/aliases.cf
+  proxy:ldap:${S}meta_directory/laddgroups.cf
+  proxy:ldap:${S}meta_directory/laddusers.cf
+  proxy:ldap:${S}meta_directory/lgroupmembers.cf
+  sqlite:${S}meta_directory/userforwards.cf
+  ${tmpl_domain_catchall_map}
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 virtual_mailbox_maps = ${tmpl_virtual_mailbox_maps}
 relay_domains = ${tmpl_relay_domains}
@@ -82,9 +81,10 @@ address_verify_cache_cleanup_interval = 4h
 default_transport = ${tmpl_default_transport}
 relayhost = ${tmpl_relayhost}
 smtpd_sender_login_maps =
-  sqlite:${S}meta_directory/senderlogin.cf,
-  ${tmpl_laddgroups_table},
-  ${tmpl_laddusers_table},
+  unionmap:{
+    sqlite:${S}meta_directory/senderlogin.cf
+    proxy:ldap:${S}meta_directory/laddgroupmembers.cf
+  }
 
 smtp_sasl_password_maps = sqlite:${S}meta_directory/relaycredentials.cf,
 sender_dependent_relayhost_maps = sqlite:${S}meta_directory/relaysender_nexthop.cf,

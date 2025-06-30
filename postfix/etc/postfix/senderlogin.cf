@@ -12,3 +12,5 @@ query = SELECT dest
   WHERE alocal = '%u'
   AND domain IN ('%d', '*')
   AND '%d' IN (SELECT domain FROM domains)
+  UNION
+  SELECT '%u' WHERE 1

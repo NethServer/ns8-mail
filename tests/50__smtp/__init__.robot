@@ -3,6 +3,7 @@ Library      SSHLibrary
 Resource     ../api.resource
 
 Suite Setup        Run keywords
+                   ...    Switch to OpenLDAP user domain
                    ...    Create mail domains
                    ...    Create mail aliases
                    ...    Detect public IP address
@@ -26,6 +27,10 @@ ${sink_script}    SEPARATOR=\n
 ${PUBLIC_ADDRESS}  127.0.0.1  # overridden by keyword
 
 *** Keywords ***
+Switch to OpenLDAP user domain
+    Run task     module/${MID}/configure-module
+    ...          {"hostname":"mail.domain.test","user_domain":"ldap.dom.test"}
+
 Increase Postfix verbosity
     [Documentation]  Set POSTFIX_DEBUG=5 to write in journal a detailed trace of relay credentials
     Execute Command  runagent -m ${MID} python3 -c 'import agent ; agent.set_env("POSTFIX_DEBUG", "5")'

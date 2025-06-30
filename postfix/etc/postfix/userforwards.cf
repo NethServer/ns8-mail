@@ -1,9 +1,9 @@
 #
-# forwards -- expand user name to their forward addresses
-# Sqlite backend configuration
+# userforwards -- expand user name to their forward addresses
 #
 
 dbpath = /srv/pcdb.sqlite
-query = SELECT dest
-  FROM userforwards
-  WHERE user = '%s'
+query =
+    SELECT dest
+    FROM userforwards
+    WHERE user = '%s'

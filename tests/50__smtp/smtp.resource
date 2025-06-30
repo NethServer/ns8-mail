@@ -24,11 +24,11 @@ Send SMTP message to
     Set Test Variable    ${LAST_CURL_ERROR}     ${err}
     Set Test Variable    ${LAST_QUEUE_ID}    ${EMPTY}
     IF    r'${expect_curl_exitcode}' == '0'
-        Should Be Equal As Integers    ${rc}  0  Unexpected curl exit code ${rc}
+        Should Be Equal As Integers    ${rc}  0  Unexpected curl exit code ${rc}: ${err}
         ${LAST_QUEUE_ID} =    Get Queue ID From Output    ${err}
-        Should Not Be Empty    ${LAST_QUEUE_ID}    Error: queue ID not set
+        Should Not Be Empty    ${LAST_QUEUE_ID}    Error: queue ID not set, ${err}
     ELSE IF     r'${expect_curl_exitcode}' != ''
-        Should Be Equal As Integers    ${rc}  ${expect_curl_exitcode}  Unexpected curl exit code ${rc}
+        Should Be Equal As Integers    ${rc}  ${expect_curl_exitcode}  Unexpected curl exit code ${rc}: ${err}
     END
 
 Get Queue ID From Output

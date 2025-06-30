@@ -1,11 +1,25 @@
 #
 # aliases -- virtual alias map
-# Sqlite backend configuration
+#
+# Expand an address to multiple user/group destinations.
+# Other email addresses are expanded by aliases-other.cf.
 #
 
 dbpath = /srv/pcdb.sqlite
-query = SELECT dest
+query =
+  SELECT dest
   FROM destmap
   WHERE alocal = '%u'
-  AND domain = '%d'
-  AND '%d' IN (SELECT domain FROM domains)
+    AND domain = '%d'
+    AND '%d' IN (SELECT domain FROM domains)
+  UNION SELECT dest
+  FROM destmap
+  WHERE alocal = '%u'
+    AND domain = '*'
+    AND '%d' IN (SELECT domain FROM domains)
+    AND NOT EXISTS (
+      SELECT 1 FROM destmap
+      WHERE alocal = '%u'
+        AND domain = '%d'
+        AND '%d' IN (SELECT domain FROM domains)
+    )

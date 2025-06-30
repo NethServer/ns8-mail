@@ -1,6 +1,6 @@
 #
-# laddusers.cf (rfc2307) -- lookup addresses and mailboxes of user accounts
-# just for POSTFIX_ORIGIN (account provider) and domains with addusers flag
+# laddusers.cf (rfc2307) -- check if user exists
+# just for domains with addusers flag
 #
 
 version = 3
