@@ -310,7 +310,7 @@
                     "type": "string",
                     "title": "Address local part",
                     "minLength": 1,
-                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+                    "pattern": "^[a-zA-Z0-9](?:[a-zA-Z0-9._-]*[a-zA-Z0-9])?$"
                 },
                 "atype": {
                     "type": "string",
