@@ -272,14 +272,15 @@
         "type": "Typ",
         "type_domain": "Pseudonym",
         "show_all": "alle anzeigen",
-        "choose_domain": "Domäne wählen"
+        "choose_domain": "Domäne wählen",
+        "local_pattern": "Invalid address"
     },
     "status": {
         "created": "Erstellt",
         "open_rspamd": "Rspamd öffnen",
         "size": "Größe",
         "name": "Name",
-        "no_images": "Keine Abbilder",
+        "no_images": "keine Abbilder",
         "app_volumes": "App Volumen | App Volumen",
         "services": "Dienst | Dienste",
         "app_images": "App Abbild | App Abbilder",

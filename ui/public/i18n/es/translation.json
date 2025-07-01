@@ -212,7 +212,8 @@
         "destinations_placeholder": "Elige destinos o escribe una dirección de correo electrónico externa",
         "address_already_exists": "La dirección ya existe",
         "addresses_filtered_description": "Mostrando solo direcciones de {domain}",
-        "choose_domain": "Elige un dominio"
+        "choose_domain": "Elige un dominio",
+        "local_pattern": "Invalid address"
     },
     "mailboxes": {
         "col_user": "Usuario",

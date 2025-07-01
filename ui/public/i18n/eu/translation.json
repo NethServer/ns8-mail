@@ -302,7 +302,8 @@
         "type": "Type",
         "type_domain": "Alias",
         "choose_domain": "Choose domain",
-        "show_all": "Show all"
+        "show_all": "Show all",
+        "local_pattern": "Invalid address"
     },
     "filter": {
         "title": "Filter",
