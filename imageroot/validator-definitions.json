@@ -309,7 +309,8 @@
                 "local": {
                     "type": "string",
                     "title": "Address local part",
-                    "minLength": 1
+                    "minLength": 1,
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
                 },
                 "atype": {
                     "type": "string",
