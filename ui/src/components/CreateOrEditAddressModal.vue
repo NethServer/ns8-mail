@@ -362,7 +362,7 @@ export default {
         }
       }
 
-      const alterAddressData = {
+      const createAddressData = {
         local: this.local,
         internal: this.isInternal,
         destinations: destinations,
@@ -372,17 +372,17 @@ export default {
       let domainForNotification = "";
 
       if (this.selectedDomainId == "wildcard") {
-        alterAddressData.atype = "wildcard";
+        createAddressData.atype = "wildcard";
       } else {
-        alterAddressData.atype = "domain";
-        alterAddressData.domain = this.selectedDomainId;
+        createAddressData.atype = "domain";
+        createAddressData.domain = this.selectedDomainId;
         domainForNotification = this.selectedDomainId;
       }
 
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
-          data: alterAddressData,
+          data: createAddressData,
           extra: {
             title: this.$t("addresses.create_address_address", {
               address: `${this.local}@${domainForNotification}`,

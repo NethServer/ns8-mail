@@ -148,7 +148,8 @@
         "type_adduser": "Utente",
         "destinations_placeholder": "Scegliere le destinazioni o digitare un indirizzo e-mail esterno",
         "public": "Pubblico",
-        "no_address": "Nessun indirizzo"
+        "no_address": "Nessun indirizzo",
+        "local_pattern": "Indirizzo non valido"
     },
     "mailboxes": {
         "title": "Caselle postali",

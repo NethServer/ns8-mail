@@ -212,7 +212,8 @@
         "type_domain": "Alias",
         "type_adduser": "User",
         "type_addgroup": "Group",
-        "address_already_exists": "Address already exists"
+        "address_already_exists": "Address already exists",
+        "local_pattern": "Invalid address"
     },
     "mailboxes": {
         "title": "Mailboxes",

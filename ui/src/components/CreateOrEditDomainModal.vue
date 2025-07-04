@@ -510,6 +510,8 @@ export default {
             name: catchallFound.name,
           };
         }
+      } else {
+        alterDomainData.catchall = null;
       }
 
       const res = await to(
@@ -643,8 +645,8 @@ export default {
 
         const destFound = this.allDestinationsForUi.find((dui) => {
           return (
-            dui.value ===
-            `${this.domain.catchall.name}_${this.domain.catchall.dtype}`
+            dui.value.toLowerCase() ===
+            `${this.domain.catchall.name}_${this.domain.catchall.dtype}`.toLowerCase()
           );
         });
 
