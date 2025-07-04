@@ -179,7 +179,8 @@
         "type": "Тип",
         "type_domain": "Псевдонім",
         "show_all": "Показати все",
-        "choose_domain": "Виберіть домен"
+        "choose_domain": "Виберіть домен",
+        "local_pattern": "Invalid address"
     },
     "mailboxes": {
         "search_user_mailbox": "Пошук поштової скриньки користувача",

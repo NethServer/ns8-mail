@@ -212,7 +212,8 @@
         "type": "Type",
         "type_domain": "Alias",
         "show_all": "Show all",
-        "choose_domain": "Choose domain"
+        "choose_domain": "Choose domain",
+        "local_pattern": "Invalid address"
     },
     "mailboxes": {
         "title": "Mailboxes",
