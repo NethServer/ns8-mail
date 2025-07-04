@@ -59,8 +59,6 @@ with sdb:
             vals['addusers'] = 1
             vals['addgroups'] = 1 if dyngroups_is_enabled else 0
 
-        # the unknow recipients action (catchall) is not migratable to NS8 NethServer/dev#7257
-
         cur.execute("INSERT INTO domains (domain, addusers, addgroups, catchall, bccaddr, ddesc) VALUES (:domain, :addusers, :addgroups, :catchall, :bccaddr, :ddesc)", vals)
 
 # Apply new configuration
