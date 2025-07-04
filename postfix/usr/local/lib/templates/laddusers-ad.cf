@@ -1,0 +1,14 @@
+#
+# laddusers.cf (ad) -- check if user exists
+# just for domains with addusers flag
+#
+
+version = 3
+bind_dn = ${tmpl_ldap_bind_dn}
+bind_pw = ${tmpl_ldap_bind_pw}
+server_host = ${tmpl_ldap_host}
+server_port = ${tmpl_ldap_port}
+search_base = ${tmpl_ldap_base}
+query_filter = (&(objectClass=user)(objectCategory=person)(sAMAccountName=%u))
+result_attribute = sAMAccountName
+domain = ${tmpl_laddusers_domains}

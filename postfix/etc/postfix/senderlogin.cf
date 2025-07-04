@@ -1,5 +1,8 @@
 #
-# senderlogin -- valid login names for the given address
+# senderlogin -- search valid login names for the given address in
+#   the destmap table. That table does not contain the full list of
+#   user and group names that must be searched in LDAP.
+#
 # Sqlite backend configuration
 #
 
@@ -10,7 +13,4 @@ query = SELECT dest
   AND domain IN ('%d', '*')
   AND '%d' IN (SELECT domain FROM domains)
   UNION
-  SELECT '%u' AS dest
-  FROM domains
-  WHERE domain = '%d'
-  AND addusers = 1;
+  SELECT '%u' WHERE 1

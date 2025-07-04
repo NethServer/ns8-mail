@@ -281,13 +281,20 @@ Framework](https://robotframework.org/)).
 
 For instance, to speed up testing on a local machine:
 
-1. skip the account provider removal
+1. Skip the account provider and module removal
 
-       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:mail-rspamd --exclude udomANDremove
+       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude remove
 
-2. since then, skip also installation
+2. Continue to use the Mail, Samba and OpenLDAP instances, skipping the
+   installation steps. The `--variable` option is required to find the
+   existing Mail instance.
 
-       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:mail-rspamd --exclude udom
+       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORremove --variable MID:mail1
+
+3. Select a subset of tests and suite with `--include`, `--test`, or
+   `--suite` flags. For example, run only the SMTP test suite:
+
+       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORremove --variable MID:mail1 --suite smtp
 
 ## Migration from nethserver-mail (NS7)
 

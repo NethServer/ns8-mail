@@ -46,13 +46,14 @@ message_size_limit = 100000000
 #
 virtual_alias_domains = ${tmpl_virtual_alias_domains}
 virtual_alias_maps =
-  sqlite:${S}meta_directory/aliases.cf,
-  sqlite:${S}meta_directory/wildcards.cf,
-  ${tmpl_laddgroups_table},
-  ${tmpl_ldest_table},
-  sqlite:${S}meta_directory/userforwards.cf,
-  ${tmpl_domain_map},
+  sqlite:${S}meta_directory/aliases.cf
+  proxy:ldap:${S}meta_directory/laddgroups.cf
+  proxy:ldap:${S}meta_directory/laddusers.cf
+  proxy:ldap:${S}meta_directory/lgroupmembers.cf
+  sqlite:${S}meta_directory/userforwards.cf
+  ${tmpl_domain_catchall_map}
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
+virtual_mailbox_maps = ${tmpl_virtual_mailbox_maps}
 relay_domains = ${tmpl_relay_domains}
 transport_maps = ${tmpl_transport_maps}, sqlite:${S}meta_directory/relaydest.cf,
 recipient_delimiter = +
@@ -79,11 +80,16 @@ address_verify_cache_cleanup_interval = 4h
 #
 default_transport = ${tmpl_default_transport}
 relayhost = ${tmpl_relayhost}
-smtpd_sender_login_maps = sqlite:${S}meta_directory/senderlogin.cf,
+smtpd_sender_login_maps =
+  unionmap:{
+    sqlite:${S}meta_directory/senderlogin.cf
+    proxy:ldap:${S}meta_directory/laddgroupmembers.cf
+  }
+
 smtp_sasl_password_maps = sqlite:${S}meta_directory/relaycredentials.cf,
 sender_dependent_relayhost_maps = sqlite:${S}meta_directory/relaysender_nexthop.cf,
 sender_dependent_default_transport_maps = sqlite:${S}meta_directory/relaysender_transport.cf,
-smtp_sender_dependent_authentication = ${tmpl_smtp_sender_dependent_authentication}
+smtp_sender_dependent_authentication = no
 smtp_tls_policy_maps = sqlite:${S}meta_directory/tlspolicy.cf,
 smtp_sasl_security_options =
 smtp_sasl_auth_enable = yes
@@ -96,9 +102,6 @@ always_bcc = ${tmpl_always_bcc}
 #
 # Restrictions
 #
-smtpd_sender_restrictions =
-  ${tmpl_reject_authenticated_sender_login_mismatch},
-
 smtpd_relay_restrictions =
   permit_mynetworks,
   permit_sasl_authenticated,
@@ -108,7 +111,6 @@ smtpd_relay_restrictions =
 
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
-  ${tmpl_verify_recipient_address},
 
 #
 # TLS configuration

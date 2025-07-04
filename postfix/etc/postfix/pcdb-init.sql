@@ -25,8 +25,7 @@ CREATE TABLE domains (
     addusers INT DEFAULT 0,
     -- if set to 1, the domain accepts additional user addresses like
     -- user@domain. The address is rewritten to user@$myorigin. See
-    -- POSTFIX_ORIGIN in the README. This setting is incompatible with the
-    -- "catchall" one and has higher priority over it.
+    -- POSTFIX_ORIGIN in the README.
     addgroups INT DEFAULT 0,
     -- if set to 1, the domain accepts additional group addresses like
     -- group@domain. The group members list is retrieved from LDAP and
@@ -34,11 +33,10 @@ CREATE TABLE domains (
     -- POSTFIX_ORIGIN in the README.
     catchall TEXT DEFAULT NULL,
     -- fallback rewrite rule for addresses that do not match any record in
-    -- the "destmap" table. It can be a virtual mailbox name. This setting
-    -- has lower priority over the "addusers" one.
+    -- the "destmap" table. It can be a virtual mailbox name.
     bccaddr TEXT DEFAULT NULL,
     -- email address where any message directed to the domain is
-    -- sent in BCC.
+    -- sent in BCC (never implemented).
     ddesc TEXT DEFAULT ""
     -- free text description of the domain
 );

@@ -1,6 +1,6 @@
 #
-# ldest.cf (ad) -- group members expansion straight from LDAP DB
-# Important: this DB matches only group name lookups with no domain suffix
+# lgroupmembers.cf (ad) -- group members expansion straight from LDAP DB
+# just for domains with addgroups flag
 #
 
 version = 3

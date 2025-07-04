@@ -1,5 +1,5 @@
 #
-# laddgroups.cf (ad) -- group address existence check
+# lsenderlogin.cf (rfc2307) -- group members expansion
 # just for domains with addgroups flag
 #
 
@@ -11,4 +11,6 @@ server_port = ${tmpl_ldap_port}
 search_base = ${tmpl_ldap_base}
 query_filter = (&(objectClass=group)(sAMAccountName=%u)(groupType:1.2.840.113556.1.4.803:=2)(!(isCriticalSystemObject=TRUE)))
 result_attribute = sAMAccountName
+special_result_attribute = member
+leaf_result_attribute = sAMAccountName
 domain = ${tmpl_laddgroups_domains}

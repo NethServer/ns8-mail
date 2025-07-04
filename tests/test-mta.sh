@@ -1,17 +1,27 @@
 #!/bin/sh
 
-mto=${1:?}
-mfrom=${2:-"$(id -nu)@$(hostname -f)"}
+#
+# Copyright (C) 2025 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+mto=${1:?missing mto}
+mfrom=${2:?missing mfrom}
 random=$RANDOM
 
-curl -s -v --upload-file - --crlf \
+if [[ ${MAIL_SERVER} != *://* ]] ; then
+    # Fall back value, with smtp port 25
+    MAIL_SERVER="smtp://${MAIL_SERVER:-127.0.0.1}"
+fi
+
+curl -k -s -v --upload-file - --crlf \
     --mail-from "${mfrom}" \
     --mail-rcpt "${mto}" \
-    smtp://${MAIL_SERVER:-127.0.0.1} <<EOF
+    ${MAIL_SERVER:-127.0.0.1}/${EHLO_HOST:-${mfrom/#*@/}} <<EOF
 From: <${mfrom}>
 To: <${mto}>
 Subject: Test ${random}
-Message-ID: <$(uuidgen)@$(hostname -f)>
+Message-ID: <$(uuidgen)@${mfrom/#*@/}>
 Date: $(date -R)
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
