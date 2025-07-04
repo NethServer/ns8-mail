@@ -7,12 +7,12 @@ Test Tags    delivery    public mailbox
 
 *** Test Cases ***
 Public mailbox destination
-    Skip    not implemented
+    Send SMTP message to    pub1@inbound.test
+    Should be delivered via LMTP to  vmail+pub1
 
 *** Keywords ***
 Create public mailbox
-    Skip    not implemented
+    Run task    module/${MID}/add-public-mailbox    {"mailbox":"pub1","acls":[]}
 
 Remove public mailbox
-    Skip    not implemented
-
+    Run task    module/${MID}/remove-public-mailbox    {"mailbox":"pub1"}
