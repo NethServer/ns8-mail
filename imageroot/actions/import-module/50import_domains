@@ -61,9 +61,6 @@ with sdb:
 
         # the unknow recipients action (catchall) is not migratable to NS8 NethServer/dev#7257
 
-        if xdom['props'].get('AlwaysBccStatus') == 'enabled':
-            vals['bccaddr'] = xdom['props'].get('AlwaysBccAddress')
-
         cur.execute("INSERT INTO domains (domain, addusers, addgroups, catchall, bccaddr, ddesc) VALUES (:domain, :addusers, :addgroups, :catchall, :bccaddr, :ddesc)", vals)
 
 # Apply new configuration

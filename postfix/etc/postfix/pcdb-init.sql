@@ -36,7 +36,7 @@ CREATE TABLE domains (
     -- the "destmap" table. It can be a virtual mailbox name.
     bccaddr TEXT DEFAULT NULL,
     -- email address where any message directed to the domain is
-    -- sent in BCC.
+    -- sent in BCC (never implemented).
     ddesc TEXT DEFAULT ""
     -- free text description of the domain
 );

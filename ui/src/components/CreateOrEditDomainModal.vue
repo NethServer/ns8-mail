@@ -83,10 +83,7 @@
                 value="aurValue"
                 :form-item="true"
                 v-model="acceptUnknownRecipients.enabled"
-                :disabled="
-                  loading.addDomain ||
-                  loading.alterDomain
-                "
+                :disabled="loading.addDomain || loading.alterDomain"
                 :class="[
                   'toggle-without-label',
                   'mg-top-sm',
@@ -162,34 +159,6 @@
                 light
                 ref="catchall"
               />
-              <!-- copy inbound messages toggle -->
-              <NsToggle
-                value="cimValue"
-                :form-item="true"
-                v-model="copyInboundMessages.enabled"
-                :disabled="loading.addDomain || loading.alterDomain"
-                :class="[
-                  'toggle-without-label',
-                  { 'mg-bottom-md': copyInboundMessages.enabled },
-                ]"
-                ref="copyInboundMessages"
-              >
-                <template slot="text-left">{{
-                  $t("domains.copy_inbound_messages")
-                }}</template>
-                <template slot="text-right">{{
-                  $t("domains.copy_inbound_messages")
-                }}</template>
-              </NsToggle>
-              <!-- copy inbound messages destination -->
-              <NsTextInput
-                v-if="copyInboundMessages.enabled"
-                v-model.trim="copyInboundMessages.bccaddr"
-                :label="$t('domains.send_to')"
-                :invalid-message="error.bccaddr"
-                :disabled="loading.addDomain || loading.alterDomain"
-                ref="bccaddr"
-              />
             </template>
           </cv-accordion-item>
         </cv-accordion>
@@ -247,10 +216,6 @@ export default {
         enabled: false,
         catchall: "",
       },
-      copyInboundMessages: {
-        enabled: false,
-        bccaddr: "",
-      },
       allDestinations: [],
       allDestinationsForUi: [],
       isAccordionOpen: false,
@@ -265,7 +230,6 @@ export default {
         domain: "",
         description: "",
         catchall: "",
-        bccaddr: "",
         listDestinations: "",
       },
     };
@@ -286,18 +250,13 @@ export default {
           this.addUserAddressesFromUserDomain = this.domain.addusers;
           this.addGroupAddressesFromUserDomain = this.domain.addgroups;
           this.acceptUnknownRecipients.enabled = !!this.domain.catchall;
-          this.copyInboundMessages.enabled = !!this.domain.bccaddr;
-          this.copyInboundMessages.bccaddr = this.domain.bccaddr;
 
           if (this.acceptUnknownRecipients.enabled) {
             this.listDestinations();
           }
 
           // open accordion if any advanced option is set
-          if (
-            this.acceptUnknownRecipients.enabled ||
-            this.copyInboundMessages.enabled
-          ) {
+          if (this.acceptUnknownRecipients.enabled) {
             this.$nextTick(() => {
               this.isAccordionOpen = true;
             });
@@ -373,22 +332,6 @@ export default {
           isValidationOk = false;
         }
       }
-
-      // bccaddr (copy inbound messages)
-
-      if (
-        this.copyInboundMessages.enabled &&
-        !this.copyInboundMessages.bccaddr
-      ) {
-        this.error.bccaddr = this.$t(
-          "domains.required_if_copy_inbound_messages"
-        );
-
-        if (isValidationOk) {
-          this.focusElement("bccaddr");
-          isValidationOk = false;
-        }
-      }
       return isValidationOk;
     },
     createOrEditDomain() {
@@ -438,10 +381,6 @@ export default {
         addusers: this.addUserAddressesFromUserDomain,
         addgroups: this.addGroupAddressesFromUserDomain,
       };
-
-      if (this.copyInboundMessages.enabled) {
-        addDomainData.bccaddr = this.copyInboundMessages.bccaddr;
-      }
 
       if (this.acceptUnknownRecipients.enabled) {
         const catchallFound = this.allDestinations.find(
@@ -558,10 +497,6 @@ export default {
         addgroups: this.addGroupAddressesFromUserDomain,
       };
 
-      if (this.copyInboundMessages.enabled) {
-        alterDomainData.bccaddr = this.copyInboundMessages.bccaddr;
-      }
-
       if (this.acceptUnknownRecipients.enabled) {
         const catchallFound = this.allDestinations.find(
           (catchall) =>
@@ -646,8 +581,6 @@ export default {
       this.addGroupAddressesFromUserDomain = false;
       this.acceptUnknownRecipients.enabled = false;
       this.acceptUnknownRecipients.catchall = "";
-      this.copyInboundMessages.enabled = false;
-      this.copyInboundMessages.bccaddr = "";
     },
     async listDestinations() {
       this.loading.listDestinations = true;
