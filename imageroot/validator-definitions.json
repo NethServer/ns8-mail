@@ -310,7 +310,7 @@
                     "type": "string",
                     "title": "Address local part",
                     "minLength": 1,
-                    "pattern": "^[a-zA-Z0-9](?:[a-zA-Z0-9._-]*[a-zA-Z0-9])?$"
+                    "pattern": "^[^@]+$"
                 },
                 "atype": {
                     "type": "string",
@@ -334,6 +334,26 @@
                     "description": "True, if the address cannot receive mail from external/unknown clients"
                 }
             }
+        },
+        "mail-address-strict": {
+            "description": "Strict validation of mail address local part",
+            "allOf": [
+                {
+                    "$ref": "#/$defs/mail-address-base"
+                },
+                {
+                    "properties": {
+                        "local": {
+                            "type": "string",
+                            "title": "Address local part",
+                            "description": "Strict validation of local part",
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9](?:[a-zA-Z0-9._-]*[a-zA-Z0-9])?$"
+
+                        }
+                    }
+                }
+            ]
         },
         "mail-address-change-request": {
             "title": "Mail address change request",
