@@ -18,7 +18,7 @@
     ],
     "allOf": [
         {
-            "$ref": "http://schema.nethserver.org/mail.json#/$defs/mail-address"
+            "$ref": "http://schema.nethserver.org/mail.json#/$defs/mail-address-strict"
         }
     ]
 }

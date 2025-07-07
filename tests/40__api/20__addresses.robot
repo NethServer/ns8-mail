@@ -19,6 +19,10 @@ Check users and groups addresses are in the address list
 Add a user address alias
     Run task    module/${MID}/add-address    {"atype":"domain","local":"u1-alias","domain":"${test_domain}","destinations":[{"dtype":"user","name":"u1"}]}
 
+Add invalid address
+    Run task    module/${MID}/add-address    {"atype":"domain","local":"u1 alias","domain":"${test_domain}","destinations":[{"dtype":"user","name":"u1"}]}
+    ...    rc_expected=10
+
 Add a group address alias
     Run task    module/${MID}/add-address    {"atype":"domain","local":"g1-alias","domain":"${test_domain}","destinations":[{"dtype":"group","name":"g1"}]}
 
