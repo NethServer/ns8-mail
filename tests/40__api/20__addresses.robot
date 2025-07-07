@@ -21,7 +21,7 @@ Add a user address alias
 
 Add invalid address
     Run task    module/${MID}/add-address    {"atype":"domain","local":"u1 alias","domain":"${test_domain}","destinations":[{"dtype":"user","name":"u1"}]}
-    ...    rc_expected=1
+    ...    rc_expected=10
 
 Add a group address alias
     Run task    module/${MID}/add-address    {"atype":"domain","local":"g1-alias","domain":"${test_domain}","destinations":[{"dtype":"group","name":"g1"}]}
