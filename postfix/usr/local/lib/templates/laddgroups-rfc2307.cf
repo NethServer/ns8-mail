@@ -11,4 +11,4 @@ server_port = ${tmpl_ldap_port}
 search_base = ${tmpl_ldap_base}
 query_filter = (&(objectClass=posixGroup)(cn=%u))
 result_attribute = cn
-domain = ${tmpl_laddgroups_domains}
+domain = ${tmpl_laddgroups_domains} notempty.invalid

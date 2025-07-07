@@ -11,4 +11,4 @@ server_port = ${tmpl_ldap_port}
 search_base = ${tmpl_ldap_base}
 query_filter = (&(objectClass=posixAccount)(objectClass=inetOrgPerson)(uid=%u))
 result_attribute = uid
-domain = ${tmpl_laddusers_domains}
+domain = ${tmpl_laddusers_domains} notempty.invalid
