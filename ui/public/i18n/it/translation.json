@@ -80,7 +80,7 @@
         "no_domain": "Nessun dominio",
         "edit_domain": "Modifica dominio",
         "required_if_accept_unknown_recipients": "Richiesto se è abilitata l'opzione \"Accetta destinatari sconosciuti\"",
-        "accept_unknown_recipients_tooltip": "Tutti i messaggi e-mail inviati a destinatari sconosciuti saranno accettati e consegnati alla destinazione specificata. Questa opzione non può essere attivata se 'Aggiungi indirizzi dal dominio utente' è abilitato",
+        "accept_unknown_recipients_tooltip": "Tutti i messaggi e-mail inviati a destinatari sconosciuti saranno accettati e consegnati alla destinazione specificata.",
         "copy_inbound_messages": "Copiare i messaggi in entrata",
         "bccaddr_format": "Formato e-mail non valido",
         "add_user_addresses_from_user_domain": "Aggiungi gli indirizzi utente dal dominio utente {userDomain}",

@@ -208,7 +208,8 @@
         "type_domain": "Alias",
         "show_all": "Toon alles",
         "choose_domain": "Kies domein",
-        "address_address_is_going_to_be_deleted": "{address} wordt verwijderd..."
+        "address_address_is_going_to_be_deleted": "{address} wordt verwijderd...",
+        "local_pattern": "Invalid address"
     },
     "mailboxes": {
         "no_public_mailbox": "Geen openbare mailbox",

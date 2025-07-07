@@ -415,7 +415,8 @@
         "create_address_address": "Create address {address}",
         "address": "Address",
         "description": "Address description",
-        "title": "Addresses"
+        "title": "Addresses",
+        "local_pattern": "Invalid address"
     },
     "settings_general": {
         "user_domain": "User domain",

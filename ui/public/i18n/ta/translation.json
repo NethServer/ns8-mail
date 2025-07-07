@@ -123,7 +123,8 @@
         "type": "Type",
         "type_domain": "Alias",
         "show_all": "Show all",
-        "choose_domain": "Choose domain"
+        "choose_domain": "Choose domain",
+        "local_pattern": "Invalid address"
     },
     "mailboxes": {
         "title": "Mailboxes",
@@ -440,7 +441,7 @@
         "delete": "Delete",
         "cancel": "Cancel",
         "processing": "செயலாக்கம் ...",
-        "disabled": "Disabled",
+        "disabled": "முடக்கப்பட்டது",
         "group_destination": "Group",
         "mail_hostname": "Mail server hostname",
         "mail_hostname_tooltip": "Enter the MX record configured on your DNS service provider",
@@ -449,7 +450,7 @@
         "next": "Next",
         "previous": "Previous",
         "advanced": "Advanced",
-        "enabled": "Enabled",
+        "enabled": "இயக்கப்பட்டது",
         "user_destination": "User"
     },
     "settings_master_users": {
