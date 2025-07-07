@@ -13,4 +13,4 @@ query_filter = (&(objectClass=group)(sAMAccountName=%u)(groupType:1.2.840.113556
 result_attribute = sAMAccountName
 special_result_attribute = member
 leaf_result_attribute = sAMAccountName
-domain = ${tmpl_laddgroups_domains}
+domain = ${tmpl_laddgroups_domains} notempty.invalid
