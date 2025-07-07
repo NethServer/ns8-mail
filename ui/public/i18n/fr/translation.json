@@ -257,7 +257,8 @@
         "edit_address_address": "Edit address {address}",
         "create_address": "Create address",
         "set_as_internal": "Set as internal",
-        "public": "Public"
+        "public": "Public",
+        "local_pattern": "Invalid address"
     },
     "welcome": {
         "primary_mail_domain": "Primary mail domain",
