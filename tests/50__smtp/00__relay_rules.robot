@@ -27,6 +27,13 @@ Sender domain rule has less priority than address match
     ...                     credentials=u3:Nethesis,1234
     Should be relayed via SMTP  port=10002  smtp_user=${EMPTY}
 
+Sender domain rule provides the correct credentials
+    [Tags]    bug    bug-7551
+    Send SMTP message to    somebody@wildcard.test
+    ...                     from=noreply@addusers.test
+    ...                     credentials=u3:Nethesis,1234
+    Should be relayed via SMTP  port=10002  smtp_user=usr_bug7551
+
 Recipient domain rule has less priority than address match
     Send SMTP message to    someone@rcptrule.test
     ...                     from=u1@inbound.test
@@ -46,5 +53,6 @@ Add relay rules
     Add relay rule    sender      u1@inbound.test      127.0.0.1    10002    usr_u1
     Add relay rule    sender      u3@inbound.test      127.0.0.1    10002    usr_u3
     Add relay rule    recipient   rcptrule.test        127.0.0.1    10003    ${EMPTY}
+    Add relay rule    sender      addusers.test        127.0.0.1    10002    usr_bug7551
     Add relay rule    sender      g1@inbound.test      127.0.0.1    10002    usr_g1
     Add relay rule    recipient   dude@rcptrule.test   127.0.0.1    10004    usr_relay
