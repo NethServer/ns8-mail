@@ -9,11 +9,8 @@ import os
 import json
 import sys
 import subprocess
-import agent
 
 def main():
-    rdb = agent.redis_connect(use_replica=True)
-    module_id = os.environ["MODULE_ID"]
     facts = {}
     facts.update(get_addresses_facts())
     facts.update(get_filter_facts())
