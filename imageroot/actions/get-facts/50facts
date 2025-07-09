@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2025 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import json
+import sys
+import subprocess
+
+def main():
+    facts = {}
+    facts.update(get_addresses_facts())
+    facts.update(get_filter_facts())
+    facts.update(get_bypass_rules_facts())
+    facts.update(get_mailboxes_facts())
+    facts.update(get_public_mailboxes_facts())
+    facts.update(get_domains_facts())
+    facts.update(get_relay_rules_facts())
+    facts.update(get_relay_settings_facts())
+    facts.update(get_always_bcc_facts())
+    facts.update(get_configuration_facts())
+    facts.update(get_mailbox_settings_facts())
+    facts.update(get_master_users_facts())
+    facts.update(get_queue_settings_facts())
+    json.dump(facts, sys.stdout)
+
+def get_addresses_facts():
+    with subprocess.Popen(["../actions/list-addresses/10list_addresses"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_addresses_facts_error": True}
+    oaddresses = odata['addresses']
+    facts = {
+        "addresses_total_count": len(oaddresses),
+        "adduser_domains_count": len(odata['adduser_domains']),
+        "addgroup_domains_count": len(odata['addgroup_domains']),
+    }
+    atype_count_dict = dict()
+    dtype_count_dict = dict()
+    for adx in oaddresses:
+        akey = f'addresses_{adx["atype"]}_count'
+        atype_count_dict.setdefault(akey, 0)
+        atype_count_dict[akey] += 1
+        for ddx in adx.get('destinations', []):
+            dkey = f'destinations_{ddx["dtype"]}_count'
+            dtype_count_dict.setdefault(dkey, 0)
+            dtype_count_dict[dkey] += 1
+    facts.update(atype_count_dict)
+    facts.update(dtype_count_dict)
+    return facts
+
+def get_filter_facts():
+    with subprocess.Popen(["../actions/get-filter-configuration/10get_filter_configuration"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_filter_facts_error": True}
+    try:
+        del odata["antispam"]["rspamd_url"] # remove sensitive information
+        del odata["bypass_rules"] # duplicate
+    except:
+        pass
+    return {"filter": odata}
+
+def get_bypass_rules_facts():
+    with subprocess.Popen(["../actions/list-bypass-rules/10list_bypass_rules"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)["bypass_rules"]
+        except json.JSONDecodeError:
+            return {"get_bypass_rules_facts_error": True}
+    facts = {"bypass_rules_count": len(odata)}
+    for orule in odata:
+        bkey = f'bypass_{orule["direction"]}_{orule["type"]}_count'
+        facts.setdefault(bkey, 0)
+        facts[bkey] += 1
+    return facts
+
+def get_mailboxes_facts():
+    with subprocess.Popen(["../actions/list-user-mailboxes/10list_user_mailboxes"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)["user_mailboxes"]
+        except json.JSONDecodeError:
+            return {"get_mailboxes_facts_error": True}
+
+    disabled_users = os.getenv("DOVECOT_DISABLED_USERS", "")
+
+    facts = {
+        "mailboxes_total_count": len(odata),
+        "mailboxes_custom_spam_retention_count": 0,
+        "mailboxes_custom_quota_count": 0,
+        "mailboxes_forward_total_count": 0,
+        "mailboxes_forward_keepcopy_count": 0,
+        "mailboxes_disabled_count": len(disabled_users.split(",")) if disabled_users else 0,
+    }
+    for mbx in odata:
+        if mbx.get('quota', {}).get('custom'):
+            facts['mailboxes_custom_quota_count'] += 1
+        if mbx.get('spam_retention', {}).get('custom'):
+            facts['mailboxes_custom_spam_retention_count'] += 1
+        if mbx.get('forward'):
+            facts['mailboxes_forward_total_count'] += 1
+            if mbx['forward'].get('keepcopy'):
+                facts['mailboxes_forward_keepcopy_count'] += 1
+            for fwx in mbx['forward']['destinations']:
+                fkey = f'mailboxes_forward_{fwx["dtype"]}_count'
+                facts.setdefault(fkey, 0)
+                facts[fkey] += 1
+    return facts
+
+def get_public_mailboxes_facts():
+    with subprocess.Popen(["../actions/list-public-mailboxes/10list_public_mailboxes"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_public_mailboxes_facts_error": True}
+
+    facts = {
+        "public_mailboxes_total_count": len(odata),
+    }
+    return facts
+
+def get_domains_facts():
+    with subprocess.Popen(["../actions/list-domains/10list_domains"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_domains_facts_error": True}
+
+    facts = {
+        "domains_total_count": len(odata),
+        "domains_description_count": 0,
+    }
+
+    for odomain in odata:
+        if odomain.get("description"):
+            facts["domains_description_count"] += 1
+        if odomain.get("catchall"):
+            ckey = f'domains_catchall_{odomain["catchall"]["dtype"]}_count'
+            facts.setdefault(ckey, 0)
+            facts[ckey] += 1
+
+    return facts
+
+def get_relay_rules_facts():
+    with subprocess.Popen(["../actions/list-relay-rules/10list_relays"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)["rules"]
+        except json.JSONDecodeError:
+            return {"get_relay_rules_facts_error": True}
+
+    facts = {
+        "relay_rules_total_count": len(odata),
+        "relay_rules_tls_count": 0,
+        "relay_rules_has_password_count": 0,
+        "relay_rules_enabled_count": 0,
+    }
+
+    for orule in odata:
+        tkey = f'relay_rules_{orule["rule_type"]}_count'
+        facts.setdefault(tkey, 0)
+        facts[tkey] += 1
+        if orule.get('tls'):
+            facts['relay_rules_tls_count'] += 1
+        if orule.get('has_password'):
+            facts['relay_rules_has_password_count'] += 1
+        if orule.get('enabled'):
+            facts['relay_rules_enabled_count'] += 1
+
+    return facts
+
+def get_relay_settings_facts():
+    with subprocess.Popen(["../actions/get-relay-configuration/10get_relay_settings"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_relay_settings_facts_error": True}
+
+    return {
+        "relay_settings_postfix_restricted_sender_enabled": odata.get("postfix_restricted_sender"),
+        "relay_settings_networks_count": len(odata.get("networks", [])),
+    }
+
+def get_always_bcc_facts():
+    with subprocess.Popen(["../actions/get-always-bcc/20read"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_always_bcc_facts_error": True}
+
+    return {
+        "always_bcc_enabled": bool(odata.get("bcc")),
+    }
+
+def get_configuration_facts():
+    with subprocess.Popen(["../actions/get-configuration/20read"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_configuration_facts_error": True}
+
+    return {
+        "configuration_user_domain_schema": odata.get("user_domain", {}).get("schema"),
+    }
+
+def get_mailbox_settings_facts():
+    with subprocess.Popen(["../actions/get-mailbox-settings/10get_mailbox_settings"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_mailbox_settings_facts_error": True}
+
+    return {
+        "mailbox_settings_spam_prefix_enabled": bool(odata.get("spam_prefix", {}).get("enabled")),
+        "mailbox_settings_sharedseen_enabled": bool(odata.get("sharedseen", {}).get("enabled")),
+        "mailbox_settings_spam_folder_enabled": bool(odata.get("spam_folder", {}).get("enabled")),
+        "mailbox_settings_spam_retention_value": odata.get("spam_retention", {}).get("value"),
+        "mailbox_settings_quota_enabled": bool(odata.get("quota", {}).get("limit")),
+    }
+
+def get_queue_settings_facts():
+    with subprocess.Popen(["../actions/get-queue-settings/10get_queue_settings"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_queue_settings_facts_error": True}
+
+    return {
+        "queue_settings_maximal_queue_lifetime": odata.get("maximal_queue_lifetime"),
+    }
+
+def get_master_users_facts():
+    with subprocess.Popen(["../actions/get-master-users/10get_master_users"], stdout=subprocess.PIPE) as proc:
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_master_users_facts_error": True}
+
+    return {
+        "master_users_count": len(odata.get("master_users", [])),
+    }
+
+
+if __name__ == "__main__":
+    main()
