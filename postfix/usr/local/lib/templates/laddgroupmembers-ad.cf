@@ -1,5 +1,5 @@
 #
-# lsenderlogin.cf (rfc2307) -- group members expansion
+# laddgroupmembers.cf (rfc2307) -- group members expansion
 # just for domains with addgroups flag
 #
 

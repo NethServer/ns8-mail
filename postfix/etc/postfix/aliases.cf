@@ -2,7 +2,9 @@
 # aliases -- virtual alias map
 #
 # Expand an address to multiple user/group destinations.
-# Other email addresses are expanded by aliases-other.cf.
+# Wildcard address expansion has lower priority than
+# exact-domain match, and they are mutually-exclusive
+# (see NOT EXISTS clause).
 #
 
 dbpath = /srv/pcdb.sqlite
