@@ -52,8 +52,11 @@ Address not found
 
 User and group with the same name, user is expanded
     [Tags]  bug  bug-6977  cantfix
+    [Documentation]    Since bug-7552 this behavior is deliberately not implemented for
+    ...                consistency with documentation. A unionmap:{} of laddgroupmembers.cf
+    ...                and laddusers.cf could fix this use case.
     Send SMTP message to    info@addusers.test
-    Skip    CANTFIX - The message is delivered to the group instead.
+    Skip    WANTFIX - The message is delivered to the group instead.
     Should be delivered via LMTP to  info
     Should not be delivered via LMTP to    u1
     Should not be delivered via LMTP to    u2
