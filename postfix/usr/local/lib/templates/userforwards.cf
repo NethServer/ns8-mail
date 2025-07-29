@@ -6,4 +6,5 @@ dbpath = /srv/pcdb.sqlite
 query =
     SELECT dest
     FROM userforwards
-    WHERE user = '%s'
+    WHERE user = '%u'
+domain = ${tmpl_myorigin}
