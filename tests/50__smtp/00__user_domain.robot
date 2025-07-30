@@ -22,6 +22,7 @@ Everything but defined addresses is internal
     Addresses are accessible
     Check different forward settings
     Address overrides user name
+    Address overrides group name
 
 User is public, group and vmail are internal
     [Tags]     robot:continue-on-failure
@@ -33,6 +34,7 @@ User is public, group and vmail are internal
     Addresses are accessible
     Check different forward settings
     Address overrides user name
+    Address overrides group name
 
 Group is public, user and vmail are internal
     [Tags]     robot:continue-on-failure
@@ -44,6 +46,7 @@ Group is public, user and vmail are internal
     Addresses are accessible
     Check different forward settings
     Address overrides user name
+    Address overrides group name
 
 Group and user are public, vmail is internal
     [Tags]     robot:continue-on-failure
@@ -55,6 +58,7 @@ Group and user are public, vmail is internal
     Addresses are accessible
     Check different forward settings
     Address overrides user name
+    Address overrides group name
 
 
 *** Keywords ***
@@ -93,9 +97,38 @@ Remove public mailbox
 
 ###
 
+Address overrides group name
+    [Documentation]    Corner case where the group name corresponds to an address.
+    ...                The address must have precedence and is always accessible.
+    [Setup]        Run task     module/${MID}/add-address
+    ...            {"atype":"domain","local":"g1","domain":"ldap.dom.test","destinations":[{"dtype":"group","name":"g1"}]}
+    [Teardown]     Run task     module/${MID}/remove-address
+    ...            {"atype":"domain","local":"g1","domain":"ldap.dom.test"}
+    [Tags]     robot:continue-on-failure
+    Address overrides group name, destination is equal to group name
+    Address overrides group name, destination is a specific user
+
+Address overrides group name, destination is equal to group name
+    # [Setup] from parent keyword is enough for this test
+    Log    CANTFIX group address \=\= dest. Alias expansion stops when the result equals the queried key.
+    RETURN
+    Send SMTP message to    g1@ldap.dom.test
+    Should be delivered via LMTP to  u1
+    Should be delivered via LMTP to  u2
+
+Address overrides group name, destination is a specific user
+    [Setup]        Run task     module/${MID}/alter-address
+    ...            {"atype":"domain","local":"g1","domain":"ldap.dom.test","destinations":[{"dtype":"user","name":"u3"}]}
+    Send SMTP message to    g1@ldap.dom.test
+    Should be delivered via LMTP to  u3
+    Should not be delivered via LMTP to    u1
+    Should not be delivered via LMTP to    u2
+
+###
+
 Address overrides user name
     [Documentation]    Corner case where the user name corresponds to an address.
-    ...                The address must have precedence.
+    ...                The address must have precedence and is always accessible.
     [Setup]        Run task     module/${MID}/add-address
     ...            {"atype":"domain","local":"u1","domain":"ldap.dom.test","destinations":[{"dtype":"user","name":"u1"}]}
     [Teardown]     Run task     module/${MID}/remove-address
@@ -110,20 +143,20 @@ Address overrides user name
 
 Address overrides user name, destination is equal to user name
     # [Setup] from parent keyword is enough for this test
-    Send SMTP message to    u1@ldap.dom.test    mail_server=127.0.0.1
+    Send SMTP message to    u1@ldap.dom.test
     Should be delivered via LMTP to  u1
 
 Address overrides user name, and has priority over user forward
     [Setup]            Configure forward for user  u1  to=u2  dtype=user
     [Teardown]         Cleanup forward for u1
-    Send SMTP message to    u1@ldap.dom.test    mail_server=127.0.0.1
+    Send SMTP message to    u1@ldap.dom.test
     Should be delivered via LMTP to  u1
     Should not be delivered via LMTP to  u2
 
 Address overrides user name, and has priority over group forward
     [Setup]            Configure forward for user  u1  to=g2  dtype=group
     [Teardown]         Cleanup forward for u1
-    Send SMTP message to    u1@ldap.dom.test    mail_server=127.0.0.1
+    Send SMTP message to    u1@ldap.dom.test
     Should be delivered via LMTP to  u1
     Should not be delivered via LMTP to  u2
     Should not be delivered via LMTP to  u3
@@ -131,13 +164,13 @@ Address overrides user name, and has priority over group forward
 Address overrides user name, destination is another user
     [Setup]        Run task     module/${MID}/alter-address
     ...            {"atype":"domain","local":"u1","domain":"ldap.dom.test","destinations":[{"dtype":"user","name":"u2"}]}
-    Send SMTP message to    u1@ldap.dom.test    mail_server=127.0.0.1
+    Send SMTP message to    u1@ldap.dom.test
     Should be delivered via LMTP to  u2
 
 Address overrides user name, destination is a group
     [Setup]        Run task     module/${MID}/alter-address
     ...            {"atype":"domain","local":"u1","domain":"ldap.dom.test","destinations":[{"dtype":"group","name":"g2"}]}
-    Send SMTP message to    u1@ldap.dom.test    mail_server=127.0.0.1
+    Send SMTP message to    u1@ldap.dom.test
     Should not be delivered via LMTP to    u1
     Should be delivered via LMTP to  u2
     Should be delivered via LMTP to  u3

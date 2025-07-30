@@ -56,16 +56,16 @@ tmpl_virtual_alias_domains=$(pcdbquery "SELECT group_concat(domain) FROM domains
 origin_flags="$(pcdbquery "SELECT addusers + (addgroups * 2) AS origin_flags FROM domains WHERE domain='${POSTFIX_ORIGIN}'")"
 if [ "${origin_flags}" == 1  ]; then
     # addusers flag: reject groups and vmail, accept users and aliases
-    tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}",'check_recipient_access pipemap:{proxy:ldap:$meta_directory/laddgroupmembers.cf,static:{REJECT access denied}}'
+    tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}",'check_recipient_access pipemap:{sqlite:$meta_directory/alias-access-check.cf,proxy:ldap:$meta_directory/laddgroupmembers.cf,static:{REJECT access denied}}'
 elif [ "${origin_flags}" == 2  ]; then
     # addgroups flag: reject users and vmail, accept groups and aliases
-    tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}",'check_recipient_access pipemap:{proxy:ldap:$meta_directory/laddusers-origin.cf,static:{REJECT access denied}}'
+    tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}",'check_recipient_access pipemap:{sqlite:$meta_directory/alias-access-check.cf,proxy:ldap:$meta_directory/laddusers-origin.cf,static:{REJECT access denied}}'
 elif [ "${origin_flags}" == 3  ]; then
     # addusers+addgroups flag: reject vmail only, accept everything else
     tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}"
 elif  [ "${origin_flags}" == 0  ]; then
     # domain has no flags: reject users, groups, and vmail, accept aliases
-    tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}",'check_recipient_access pipemap:{unionmap:{proxy:ldap:$meta_directory/laddusers-origin.cf,proxy:ldap:$meta_directory/laddgroupmembers.cf},static:{REJECT access denied}}'
+    tmpl_reject_internal_myorigin="check_recipient_access inline:{{ vmail@${POSTFIX_ORIGIN} = REJECT access denied }}",'check_recipient_access pipemap:{sqlite:$meta_directory/alias-access-check.cf,unionmap:{proxy:ldap:$meta_directory/laddusers-origin.cf,proxy:ldap:$meta_directory/laddgroupmembers.cf},static:{REJECT access denied}}'
 else
     # reject everything because the domain not defined
     tmpl_reject_internal_myorigin="check_recipient_access inline:{{ ${POSTFIX_ORIGIN} = REJECT access denied }}"
