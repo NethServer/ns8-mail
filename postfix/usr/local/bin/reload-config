@@ -41,10 +41,12 @@ if [ -n "${POSTFIX_ORIGIN}" ]; then
     tmpl_virtual_mailbox_domains=${POSTFIX_ORIGIN}
     tmpl_virtual_mailbox_maps="inline:{{ vmail@${POSTFIX_ORIGIN} = vmail }}, "'proxy:ldap:$meta_directory/laddusers-origin.cf'
     tmpl_myorigin=${POSTFIX_ORIGIN}
+    tmpl_verify_recipient_address="check_recipient_access inline:{{ ${POSTFIX_ORIGIN} = reject_unverified_recipient }}"
 else
     tmpl_virtual_mailbox_domains=
     tmpl_virtual_mailbox_maps=
     tmpl_myorigin='$myhostname'
+    tmpl_verify_recipient_address=
 fi
 
 tmpl_milters="${POSTFIX_MILTERS}"

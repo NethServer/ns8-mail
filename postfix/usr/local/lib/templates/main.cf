@@ -111,6 +111,7 @@ smtpd_relay_restrictions =
 
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
+  ${tmpl_verify_recipient_address},
 
 #
 # TLS configuration
