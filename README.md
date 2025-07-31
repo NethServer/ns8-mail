@@ -289,12 +289,12 @@ For instance, to speed up testing on a local machine:
    installation steps. The `--variable` option is required to find the
    existing Mail instance.
 
-       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORremove --variable MID:mail1
+       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORmodule --variable MID:mail1
 
 3. Select a subset of tests and suite with `--include`, `--test`, or
    `--suite` flags. For example, run only the SMTP test suite:
 
-       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORremove --variable MID:mail1 --suite smtp
+       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORmodule --variable MID:mail1 --suite smtp
 
 ## Migration from nethserver-mail (NS7)
 

@@ -30,10 +30,7 @@ Standard public TCP ports
 - `POSTFIX_TRUSTED_NETWORK`. Added to Postfix [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks)
 - `POSTFIX_HOSTNAME`. Value for Postfix
   [myhostname](https://www.postfix.org/postconf.5.html#myhostname).
-- `POSTFIX_ORIGIN`. User domain name set as mailbox domain, also appended
-  to unqualified user names by the trivial-rewrite process. See Postfix
-  [virtual_mailbox_domains](https://www.postfix.org/postconf.5.html#virtual_mailbox_domains)
-  and [myorigin](https://www.postfix.org/postconf.5.html#myorigin).
+- `POSTFIX_ORIGIN`. Selected user domain -- Not used by Postfix any more. Still used by APIs.
 - `POSTFIX_LDAP_HOST`, eg `127.0.0.1`
 - `POSTFIX_LDAP_PORT`, eg `389`
 - `POSTFIX_LDAP_USER`, bind DN, eg `uid=ldapservice,dc=directory,dc=nh`

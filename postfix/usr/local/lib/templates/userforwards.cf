@@ -7,4 +7,4 @@ query =
     SELECT dest
     FROM userforwards
     WHERE user = '%u'
-domain = ${tmpl_myorigin}
+domain = ${tmpl_vdomain}
