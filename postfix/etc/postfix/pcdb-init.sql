@@ -24,13 +24,11 @@ CREATE TABLE domains (
     -- transport rules.
     addusers INT DEFAULT 0,
     -- if set to 1, the domain accepts additional user addresses like
-    -- user@domain. The address is rewritten to user@$myorigin. See
-    -- POSTFIX_ORIGIN in the README.
+    -- user@domain.
     addgroups INT DEFAULT 0,
     -- if set to 1, the domain accepts additional group addresses like
     -- group@domain. The group members list is retrieved from LDAP and
-    -- the address is rewritten to user1, user2, user3, etc. See
-    -- POSTFIX_ORIGIN in the README.
+    -- the address is rewritten to user1, user2, user3, etc.
     catchall TEXT DEFAULT NULL,
     -- fallback rewrite rule for addresses that do not match any record in
     -- the "destmap" table. It can be a virtual mailbox name.
