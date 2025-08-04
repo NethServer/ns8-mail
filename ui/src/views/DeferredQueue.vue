@@ -153,7 +153,7 @@
               </template>
               <template slot="data">
                 <cv-data-table-row
-                  v-for="(row, rowIndex) in queue"
+                  v-for="(row, rowIndex) in tablePage"
                   :key="`${rowIndex}`"
                   :value="`${rowIndex}`"
                 >
