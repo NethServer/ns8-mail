@@ -45,3 +45,6 @@ ${tmpl_sasl_commentout}        -o smtpd_sender_restrictions=${tmpl_sender_restri
         -o smtpd_tls_auth_only=no
 smtps     unix  -       -       n       -       -       smtp ${tmpl_debug_relay}
         -o smtp_tls_security_level=encrypt -o smtp_tls_wrappermode=yes
+smtps_from unix  -       -       n       -       -      smtp ${tmpl_debug_relay}
+        -o smtp_sender_dependent_authentication=yes
+        -o smtp_tls_security_level=encrypt -o smtp_tls_wrappermode=yes
