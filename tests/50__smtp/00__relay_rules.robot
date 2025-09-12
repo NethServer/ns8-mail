@@ -21,11 +21,19 @@ Sender address rule has medium priority
     ...                     credentials=u3:Nethesis,1234
     Should be relayed via SMTP  port=10002  smtp_user=usr_u3
 
+Sender address rule honors TLS encryption
+    [Tags]    bug    bug-7626
+    Skip  "Not implemented"
+
 Sender domain rule has less priority than address match
     Send SMTP message to    somebody@wildcard.test
     ...                     from=noreply@inbound.test
     ...                     credentials=u3:Nethesis,1234
     Should be relayed via SMTP  port=10002  smtp_user=${EMPTY}
+
+Sender domain rule honors TLS encryption
+    [Tags]    bug    bug-7626
+    Skip  "Not implemented"
 
 Sender domain rule provides the correct credentials
     [Tags]    bug    bug-7551

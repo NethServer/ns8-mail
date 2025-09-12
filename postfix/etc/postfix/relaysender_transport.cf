@@ -1,10 +1,10 @@
 #
-# relaysender_transport -- select special smtp_from transport,
-#     if MAIL FROM matches a sender relay rule
+# relaysender_transport -- select special smtp/smtps_from
+#     transport, if MAIL FROM matches a sender relay rule
 #
 
 dbpath = /srv/pcdb.sqlite
-query = SELECT 'smtp_from'
+query = SELECT transport || '_from'
   FROM relayrules
   WHERE enabled = 1 AND
   rule_type = 'sender' AND
