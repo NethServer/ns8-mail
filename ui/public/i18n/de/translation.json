@@ -67,25 +67,25 @@
         "rtype_custom": "benutzerdefinierter Zugriff",
         "restore_folder_info": "The selected mail folder will be restored to '{restoredFolder}'. If it exceeds the available space in the user's mailbox, the quota setting for that user will be changed to '@:settings_mailboxes.unlimited'.",
         "from_different_cluster": "From a different cluster",
-        "restore": "Restore",
+        "restore": "Wiederherstellen",
         "select_backup_snapshot": "Select backup snapshot",
-        "mailbox_quota_changed": "Mailbox quota changed",
+        "mailbox_quota_changed": "Postfach-Kontingent geändert",
         "from_this_cluster": "From this cluster",
         "restoring_public_mailbox_name": "Restoring public mailbox {name}",
-        "restore_public_mailbox_name": "Restore public mailbox {name}",
+        "restore_public_mailbox_name": "Öffentliches Postfach {name} wiederherstellen",
         "search_folder": "Search folder",
         "from_node_name_of_this_cluster": "From node {name} of this cluster",
         "most_recent": "Most recent",
         "restoring_mail_folder_for_user": "Restoring mail folder for {name}",
-        "no_backup_found": "No backup found",
+        "no_backup_found": "Keine Sicherung gefunden",
         "mailbox_quota_changed_description": "Mailbox quota for {user} has been set to '@:settings_mailboxes.unlimited' due to insufficient space encountered during folder restoration",
-        "select_backup_destination": "Select backup destination",
+        "select_backup_destination": "Sicherungsziel wählen",
         "from_node_name": "From node {name}",
-        "restore_folder": "Restore folder",
+        "restore_folder": "Ordner wiederherstellen",
         "no_snapshot_to_restore": "No snapshots to restore",
-        "restore_folder_for_user_name": "Restore folder for user {name}",
+        "restore_folder_for_user_name": "Ordner für Benutzer {name} wiederherstellen",
         "no_backup_found_description": "Ensure that a backup destination has been configured and that a backup has been performed for {module}",
-        "select_folder_to_restore": "Select folder to restore",
+        "select_folder_to_restore": "Order für die Wiederherstellung wählen",
         "from_node_name_of_different_cluster": "From node {name} of a different cluster",
         "go_to_mailboxes": "Go to Mailboxes"
     },
@@ -235,8 +235,8 @@
         "delete_rule": "Ausnahme löschen",
         "search_rule": "Regel suchen",
         "placeholder_bypass_rule": "z.B. {value}",
-        "delete_filter_rule": "Delete bypass rule",
-        "delete_rule_confirm": "Delete rule {name}?"
+        "delete_filter_rule": "Umgehungs-Regel löschen",
+        "delete_rule_confirm": "Regel {name} löschen?"
     },
     "addresses": {
         "edit_address_address": "Adresse {address} ändern",
@@ -273,7 +273,7 @@
         "type_domain": "Pseudonym",
         "show_all": "alle anzeigen",
         "choose_domain": "Domäne wählen",
-        "local_pattern": "Invalid address"
+        "local_pattern": "Ungültige Adresse"
     },
     "status": {
         "created": "Erstellt",
@@ -347,13 +347,13 @@
         "set-relay-configuration": "Relay-Konfiguration speichern",
         "get-relay-configuration": "Relay-Konfiguration abrufen",
         "set-always-bcc": "generelle Blindkopie aktivieren",
-        "restore-backup-content": "Restore mail folder",
+        "restore-backup-content": "E-Mail-Ordner wiederherstellen",
         "read-backup-snapshots": "Read backup snapshots",
         "seek-snapshot-contents": "Get snapshot folders"
     },
     "welcome": {
         "mail_domain_pattern": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
-        "go_to_domains_and_users": "Zu Domänen und Benutzer wechseln",
+        "go_to_domains_and_users": "Zu Domains und Benutzer wechseln",
         "select_domain_description": "Wählen Sie eine Benutzerdomäne für den Mailserver. Für jeden Benutzer in dieser Domäne wird eine E-Mail-Adresse erstellt",
         "title": "Willkommen bei Mail",
         "primary_mail_domain": "primäre E-Mail-Domäne",
@@ -457,7 +457,7 @@
         "username": "Benutzername",
         "no_relay_rules": "Keine Relay-Regeln",
         "add_rule": "Regel hinzufügen",
-        "col_host": "Hostname",
+        "col_host": "Hostname und Port",
         "rule_subject": "Regel-Betreff",
         "settings": {
             "save": "Speichern",
@@ -499,6 +499,6 @@
         "enabled": "Status",
         "shared_credentials_info_description": "Authentication and TLS settings for Default and Recipient rules are shared and applied collectively to all rules with the same Hostname and port.",
         "shared_credentials_info_title": "Shared host settings",
-        "port_placeholder": "e.g. 25, 587 or 465"
+        "port_placeholder": "z.B. 25, 587 oder 465"
     }
 }

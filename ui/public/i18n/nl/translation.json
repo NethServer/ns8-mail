@@ -154,7 +154,7 @@
         "add_user_addresses_from_user_domain_tooltip": "Creëer een e-mailadres voor elke gebruiker in het gebruiker domein",
         "send_to": "Verzenden naar e-mailadres",
         "delete_domain_confirm": "Verwijder domein {name}?",
-        "accept_unknown_recipients_tooltip": "Alle e-mailberichten die naar onbekende ontvangers worden verzonden, worden geaccepteerd en afgeleverd op de opgegeven bestemming. Deze optie kan niet worden ingeschakeld als 'Adressen toevoegen uit gebruikersdomein' is ingeschakeld",
+        "accept_unknown_recipients_tooltip": "Alle e-mailberichten die naar onbekende ontvangers worden verzonden, worden geaccepteerd en afgeleverd op de opgegeven bestemming.",
         "domain_format": "Moet een geldige, volledig gekwalificeerde domeinnaam zijn",
         "delete_domain": "Domein verwijderen",
         "edit_domain": "Domein bewerken",
@@ -209,7 +209,7 @@
         "show_all": "Toon alles",
         "choose_domain": "Kies domein",
         "address_address_is_going_to_be_deleted": "{address} wordt verwijderd...",
-        "local_pattern": "Invalid address"
+        "local_pattern": "Ongeldig adres"
     },
     "mailboxes": {
         "no_public_mailbox": "Geen openbare mailbox",
@@ -403,7 +403,7 @@
         "unchanged": "Ongewijzigd",
         "col_enabled": "Status",
         "username": "Gebruikersnaam",
-        "disable_rule": "Disable rule",
+        "disable_rule": "Regel uitschakelen",
         "list_relay_rules": "Lijst met relay-regels",
         "add_rule": "Regel toevoegen",
         "port": "Poort",
