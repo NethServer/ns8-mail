@@ -108,7 +108,7 @@ smtpd_relay_restrictions =
   permit_sasl_authenticated,
   reject_unauth_destination,
   check_recipient_access sqlite:${S}meta_directory/internal_access.cf,
-  ${tmpl_reject_internal_myorigin},
+  ${tmpl_reject_internal_domains},
 
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
