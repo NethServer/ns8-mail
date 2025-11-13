@@ -3,6 +3,7 @@ Description=Get TLS certificate from Traefik
 
 [Service]
 Type=oneshot
+SuccessExitStatus=0,3
 EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 SyslogIdentifier=%N
