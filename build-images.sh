@@ -38,6 +38,7 @@ buildah add "${container}" ui/dist /ui
 buildah config --entrypoint=/ \
     --label="org.nethserver.max-per-node=1" \
     --label="org.nethserver.min-core=3.6.0-0" \
+    --label="org.nethserver.volumes=dovecot-data" \
     --label="org.nethserver.images=$(printf "${repobase}/mail-%s:${IMAGETAG:-latest} " \
         dovecot \
         postfix \
