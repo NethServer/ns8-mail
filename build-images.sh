@@ -74,20 +74,8 @@ apk add --no-cache rspamd-client
     mv -v .post-install /usr/local/bin/dovecot-post-install
     rm -rvf "${tmpdir}"
 )
-(
-    apk add --no-cache build-base git autoconf automake libtool dovecot-dev xapian-core-dev  icu-dev
-    mkdir /tmp/build
-    cd /tmp/build
-    git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
-    cd dovecot-fts-flatcurve/
-    ash autogen.sh
-    ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
-    make
-    make install
-    # clean what we installed
-    rm -rf /tmp/build
-    apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
-)
+# Install pre-built dovecot-fts-flatcurve package from Alpine repository
+apk add --no-cache dovecot-fts-flatcurve
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
 sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
