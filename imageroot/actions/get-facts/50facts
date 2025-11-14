@@ -25,6 +25,7 @@ def main():
     facts.update(get_mailbox_settings_facts())
     facts.update(get_master_users_facts())
     facts.update(get_queue_settings_facts())
+    facts.update(get_custom_config_facts())
     json.dump(facts, sys.stdout)
 
 def get_addresses_facts():
@@ -243,6 +244,18 @@ def get_master_users_facts():
         "master_users_count": len(odata.get("master_users", [])),
     }
 
+def get_custom_config_facts():
+    with subprocess.Popen(["podman", "exec", "dovecot", "ash", "-c",
+        """grep -E '^[[:space:]]*[A-Za-z0-9_.-]+([[:space:]]|$)' /etc/dovecot/local.conf.d/*.conf | grep -v '[{}]' | wc -l"""
+        ], stdout=subprocess.PIPE) as proc:
+        # Extract the line count from grep|wc output
+        try:
+            odata = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_custom_config_facts_error": True}
+    return {
+        "dovecot_custom_config_count": odata
+    }
 
 if __name__ == "__main__":
     main()
