@@ -1,7 +1,7 @@
 {
     "common": {
         "required": "Obbligatorio",
-        "processing": "In elaborazione…",
+        "processing": "Elaborazione in corso…",
         "public_destination": "Casella di posta pubblica",
         "external_destination": "Indirizzo e-mail esterno",
         "work_in_progress": "In lavorazione",

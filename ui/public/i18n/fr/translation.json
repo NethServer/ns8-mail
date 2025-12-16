@@ -387,7 +387,8 @@
         "external_destination": "External email address",
         "save_settings": "Save settings",
         "public_destination": "Public mailbox",
-        "required": "Required"
+        "required": "Required",
+        "processing": "Processing…"
     },
     "status": {
         "go_to_filter": "Go to Filter",

@@ -2,7 +2,7 @@
     "common": {
         "required": "Required",
         "work_in_progress": "Work in progress",
-        "processing": "Processing...",
+        "processing": "Processing…",
         "external_destination": "External email address",
         "user_destination": "User",
         "group_destination": "Group",
