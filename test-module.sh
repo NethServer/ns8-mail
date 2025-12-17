@@ -1,17 +1,11 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2024 Nethesis S.r.l.
+# Copyright (C) 2025 Nethesis S.r.l.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-#
-# Hint: access the test logs on HTTP port 8000 with this command:
-#
-#     python -mhttp.server -d tests/outputs/ 8000 &
-#
-
-set -e
+set -e -a
 
 SSH_KEYFILE=${SSH_KEYFILE:-$HOME/.ssh/id_rsa}
 
@@ -20,30 +14,31 @@ IMAGE_URL="${2:?missing IMAGE_URL argument}"
 shift 2
 
 ssh_key="$(< $SSH_KEYFILE)"
+venvroot=/usr/local/venv
 
-cleanup() {
-    set +e
-    podman cp rf-core-runner:/home/pwuser/outputs tests/
-    podman stop rf-core-runner
-    podman rm rf-core-runner
-}
-
-trap cleanup EXIT
 podman run -i \
-    --network=host \
-    --volume=.:/home/pwuser/ns8-module:z \
-    --volume=site-packages:/home/pwuser/.local/lib/python3.12/site-packages:z \
-    --name rf-core-runner ghcr.io/marketsquare/robotframework-browser/rfbrowser-stable:19.1.2 \
-    bash -l -s <<EOF
+    --volume=.:/srv/source:z \
+    --volume=rftest-cache:${venvroot}:z \
+    --replace --name=rftest \
+    --env=ssh_key \
+    --env=venvroot \
+    --env=LEADER_NODE \
+    --env=IMAGE_URL \
+    docker.io/python:3.11-alpine \
+    ash -l -s -- "${@}" <<'EOF'
 set -e
-echo "$ssh_key" > /home/pwuser/ns8-key
-pip install -q -r /home/pwuser/ns8-module/tests/pythonreq.txt
-mkdir ~/outputs
-cd /home/pwuser/ns8-module
-exec robot -v NODE_ADDR:${LEADER_NODE} \
+echo "$ssh_key" > /tmp/idssh
+if [ ! -x ${venvroot}/bin/robot ] ; then
+    python3 -mvenv ${venvroot} --upgrade
+    ${venvroot}/bin/pip3 install -q -r /srv/source/tests/pythonreq.txt
+fi
+cd /srv/source
+mkdir -vp tests/outputs/
+exec ${venvroot}/bin/robot \
+    -v NODE_ADDR:${LEADER_NODE} \
     -v IMAGE_URL:${IMAGE_URL} \
-    -v SSH_KEYFILE:/home/pwuser/ns8-key \
-    --name "$(basename $PWD)" \
+    -v SSH_KEYFILE:/tmp/idssh \
+    --name mail \
     --skiponfailure unstable \
-    -d ~/outputs ${@} /home/pwuser/ns8-module/tests/
+    -d tests/outputs "${@}" tests/
 EOF

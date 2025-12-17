@@ -15,12 +15,40 @@ jobs:
   module:
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == '' }}
     uses: NethServer/ns8-github-actions/.github/workflows/module-info.yml@v1
+
+  chooser:
+    runs-on: ubuntu-latest
+    outputs:
+      node_a: ${{ steps.pick.outputs.node_a }}
+      node_b: ${{ steps.pick.outputs.node_b }}
+    steps:
+      - id: pick
+        run: |
+          if (( $GITHUB_RUN_NUMBER % 2 )); then
+            echo "node_a=rl1" >> "$GITHUB_OUTPUT"
+            echo "node_b=dn1" >> "$GITHUB_OUTPUT"
+          else
+            echo "node_a=dn1" >> "$GITHUB_OUTPUT"
+            echo "node_b=rl1" >> "$GITHUB_OUTPUT"
+          fi
+
   run_tests:
-    needs: module
+    needs: [module, chooser]
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [install, update]
     uses: NethServer/ns8-github-actions/.github/workflows/test-on-digitalocean-infra.yml@v1
     with:
-      args: "ghcr.io/${{needs.module.outputs.owner}}/${{needs.module.outputs.name}}:${{needs.module.outputs.tag}}"
-      repo_ref: ${{needs.module.outputs.sha}}
+      coremodules: ${{ matrix.scenario == 'install' && format('ghcr.io/{0}/{1}:{2}', needs.module.outputs.owner, needs.module.outputs.name, needs.module.outputs.tag) || '' }}
+      leader_nodes: >-
+        ${{
+          matrix.scenario == 'install'
+          && needs.chooser.outputs.node_a
+          || needs.chooser.outputs.node_b
+        }}
+      args: ${{ format('ghcr.io/{0}/{1}:{2} -v SCENARIO:{3}', needs.module.outputs.owner, needs.module.outputs.name, needs.module.outputs.tag, matrix.scenario) }}
+      repo_ref: ${{ needs.module.outputs.sha }}
       debug_shell: ${{ github.event.inputs.debug_shell == 'true' || false }}
     secrets:
       do_token: ${{ secrets.do_token }}

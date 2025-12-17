@@ -6,6 +6,8 @@ Resource    ldap_providers.resource
 *** Variables ***
 ${user_domain_ad}        ad.dom.test
 ${user_domain_ldap}      ldap.dom.test
+${iurl}                  mail
+${SCENARIO}              install
 
 *** Test Cases ***
 Install account providers
@@ -15,7 +17,12 @@ Install account providers
 
 Mail module installation
     [Tags]    module
-    ${output}  ${rc} =    Execute Command    add-module ${IMAGE_URL} 1
+    IF    r'${SCENARIO}' == 'update'
+        Set Local Variable  ${iurl}  mail
+    ELSE
+        Set Local Variable  ${iurl}  ${IMAGE_URL}
+    END
+    ${output}  ${rc} =    Execute Command    add-module ${iurl} 1
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     &{output} =    Evaluate    ${output}

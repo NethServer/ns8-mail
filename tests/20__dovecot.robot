@@ -4,10 +4,20 @@ Resource    user_domain.resource
 Resource    keywords.resource
 Library     SSHLibrary
 
+*** Variables ***
+${SCENARIO}              install
+
 *** Test Cases ***
 Bind to LDAP user domain
     Run task     module/${MID}/configure-module
     ...          {"hostname":"mail.domain.test","user_domain":"ldap.dom.test","mail_domain":"domain.test"}
+
+Check module update
+    Log  Scenario ${SCENARIO} with ${IMAGE_URL}  console=${True}
+    IF    r'${SCENARIO}' == 'update'
+        ${out}  ${rc} =  Execute Command  api-cli run update-module --data '{"force":true,"module_url":"${IMAGE_URL}","instances":["${MID}"]}'  return_rc=${True}
+        Should Be Equal As Integers  ${rc}  0  action update-module ${IMAGE_URL} failed
+    END
 
 TCP ports are open
     [Template]    Retry until TCP port is open
