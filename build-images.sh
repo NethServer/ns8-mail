@@ -56,7 +56,7 @@ images+=("${repobase}/${reponame}")
 # davidep: avoid dovecot 2.3.19-r2 - userdb lookup crashes
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/library/alpine:3.21.3)
+container=$(buildah from docker.io/library/alpine:3.21.5)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 addgroup -g 101 -S vmail
@@ -126,7 +126,7 @@ images+=("${repobase}/${reponame}")
 # Postfix additional image
 #
 reponame="mail-postfix"
-container=$(buildah from docker.io/library/alpine:3.21.3)
+container=$(buildah from docker.io/library/alpine:3.21.5)
 buildah run "${container}" /bin/sh <<EOF
 set -e
 apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login
@@ -150,7 +150,7 @@ images+=("${repobase}/${reponame}")
 # Rspamd additional image
 #
 reponame="mail-rspamd"
-container=$(buildah from docker.io/library/alpine:3.21.3)
+container=$(buildah from docker.io/library/alpine:3.21.5)
 buildah run "${container}" /bin/sh <<EOF
 set -e
 # Software installation order is important to preserve uid and gid allocation:
@@ -178,7 +178,7 @@ images+=("${repobase}/${reponame}")
 # ClamAV additional image
 #
 reponame="mail-clamav"
-container=$(buildah from docker.io/library/alpine:3.21.3)
+container=$(buildah from docker.io/library/alpine:3.21.5)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache ncurses bash curl wget rsync bind-tools socat gpg gpg-agent
