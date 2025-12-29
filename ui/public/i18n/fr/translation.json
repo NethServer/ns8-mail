@@ -258,7 +258,8 @@
         "create_address": "Create address",
         "set_as_internal": "Set as internal",
         "public": "Public",
-        "local_pattern": "Invalid address"
+        "local_pattern": "Invalid address",
+        "address_address_is_going_to_be_deleted": ""
     },
     "welcome": {
         "primary_mail_domain": "Primary mail domain",
