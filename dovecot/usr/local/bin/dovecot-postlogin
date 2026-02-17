@@ -21,7 +21,7 @@ done < /etc/dovecot/ldapconf.sh
 ldap_search () {
     filter="$1"
     attr="$2"
-    ldapsearch -LLL -x -D "${DOVECOT_LDAP_USER}" -w "${DOVECOT_LDAP_PASS}" \
+    ldapsearch -o ldif_wrap=no -LLL -x -D "${DOVECOT_LDAP_USER}" -w "${DOVECOT_LDAP_PASS}" \
         -H "ldap://${DOVECOT_LDAP_HOST}:${DOVECOT_LDAP_PORT}" \
         -b "${DOVECOT_LDAP_BASE}" \
         -s sub "${filter}" "${attr}" | {
