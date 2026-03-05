@@ -31,7 +31,7 @@
         "set-master-users": "Imposta utenti master",
         "list-backup-repositories": "Elenca repository di backup",
         "list-installed-modules": "Elenca moduli installati",
-        "get-defaults": "Visualizza valori predefiniti",
+        "get-defaults": "Ottieni default",
         "alter-address": "Modifica",
         "list-user-mailboxes": "Elenco delle caselle di posta utenti",
         "get-status": "Visualizza stato",
