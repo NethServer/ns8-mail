@@ -21,7 +21,7 @@
         "advanced": "Uitgebreid",
         "enabled": "Ingeschakeld",
         "user_destination": "Gebruiker",
-        "processing": "Verwerken..."
+        "processing": "Verwerken…"
     },
     "status": {
         "open_rspamd": "Open Rspamd",
