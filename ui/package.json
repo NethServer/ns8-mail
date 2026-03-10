@@ -45,6 +45,6 @@
     "vue-template-compiler": "^2.6.11"
   },
   "resolutions": {
-    "@babel/traverse": "7.23.2"
+    "@babel/traverse": "7.23.9"
   }
 }
