@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Fix sieve filters: strip @domain from Shared/ folder paths
+# NS7 format: fileinto "Shared/account@domain/folder"
+# NS8 format: fileinto "Shared/account/folder"
+# Issue #7714
+#
+
+set -e
+
+exec 1>&2
+
+podman run -i \
+    --name=fix_sieve_filters --replace --rm \
+    --network=none \
+    --log-driver=none \
+    --env=DOVECOT_* \
+    --volume=dovecot-data:/var/lib/vmail:z \
+    "${MAIL_DOVECOT_IMAGE:?}" \
+    ash <<'EOF'
+
+# shellcheck shell=ash disable=SC3060,SC3028
+
+# Fix sieve filters: strip @domain from Shared/ folder paths
+find /var/lib/vmail/ -name "*.sieve" -print0 \
+    | xargs -0 --no-run-if-empty \
+      sed -i -E 's|(fileinto\s+"Shared/[^@"]+)@[^/"]*(/?[^"]*")|\1\2|g'
+
+exit 0
+
+EOF
