@@ -26,7 +26,7 @@ podman run -i \
 # shellcheck shell=ash disable=SC3060,SC3028
 
 # Fix sieve filters: strip @domain from Shared/ folder paths
-find /var/lib/vmail/ -name "*.sieve" -print0 \
+find . -name "*.sieve" -print0 \
     | xargs -0 --no-run-if-empty \
       sed -i -E 's|(fileinto\s+"Shared/[^@"]+)@[^/"]*(/?[^"]*")|\1\2|g'
 
