@@ -21,15 +21,19 @@ done < /etc/dovecot/ldapconf.sh
 ldap_search () {
     filter="$1"
     attr="$2"
-    ldapsearch -o ldif_wrap=no -LLL -x -D "${DOVECOT_LDAP_USER}" -w "${DOVECOT_LDAP_PASS}" \
+    ldapsearch -LLL -x -D "${DOVECOT_LDAP_USER}" -w "${DOVECOT_LDAP_PASS}" -o ldif-wrap=no \
         -H "ldap://${DOVECOT_LDAP_HOST}:${DOVECOT_LDAP_PORT}" \
         -b "${DOVECOT_LDAP_BASE}" \
         -s sub "${filter}" "${attr}" | {
             # Transform multi-value LDIF attribute output to a comma separated list
             plen=$((${#attr} + 2))
+            elen=$((${#attr} + 3))
             while read -r line; do
                 if [ "${line:0:${plen}}" = "${attr}: " ]; then
                     result="${result},${line:${plen}}"
+                elif [ "${line:0:${elen}}" = "${attr}:: " ]; then
+                    # ldapsearch results containing special chars are base64 encoded
+                    result="${result},$(echo ${line:${elen}} | base64 -d)"
                 fi
             done
             echo "${result:1}"
