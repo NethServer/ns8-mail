@@ -303,7 +303,8 @@
         "restoring_public_mailbox_name": "Restoring public mailbox {name}",
         "mailbox_quota_changed": "Mailbox quota changed",
         "mailbox_quota_changed_description": "Mailbox quota for {user} has been set to '@:settings_mailboxes.unlimited' due to insufficient space encountered during folder restoration",
-        "go_to_mailboxes": "Go to Mailboxes"
+        "go_to_mailboxes": "Go to Mailboxes",
+        "mailbox_invalid_character": "The mailbox name cannot contain the @ character"
     },
     "filter": {
         "title": "Filter",
