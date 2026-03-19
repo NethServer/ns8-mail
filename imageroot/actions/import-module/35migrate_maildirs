@@ -70,10 +70,9 @@ for entry in *; do
         done
     )
 
-    # Fix IMAP acls: remove the domain suffix, remove ACLs for root, add "delete" flag to "full access"
+    # Fix IMAP acls: remove the domain suffix, remove ACLs for root
     find "${ddest}" -name dovecot-acl -type f -print0 | xargs -r -0 -- sed -i -r \
         -e "s/@${rx_domain_suffix}\b//g" \
-        -e "s/\bakeilprwts\b/akxeilprwts/g" \
         -e "/^user=root / d"
 
     # Fix sieve filters: strip @domain from Shared/ folder paths
