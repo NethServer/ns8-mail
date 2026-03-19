@@ -76,6 +76,12 @@ for entry in *; do
         -e "s/\bakeilprwts\b/akxeilprwts/g" \
         -e "/^user=root / d"
 
+    # Fix sieve filters: strip @domain from Shared/ folder paths
+    # NS7 format: fileinto "Shared/account@domain/folder"
+    # NS8 format: fileinto "Shared/account/folder"
+    find "${ddest}" -maxdepth 2 -name "*.sieve" -type f -print0 | xargs -r -0 -- sed -i -r \
+        "s|(fileinto[[:space:]]+\"Shared/[^@\"]+)@${rx_domain_suffix}(/?[^\"]*\")|\1\2|g"
+
 done
 
 exit 0
