@@ -18,24 +18,26 @@ rights_map = mail.get_rights_map()
 
 try:
 
-    # Drop address records related to this mailbox
     cur = sdb.cursor()
-    cur.execute("""DELETE FROM destmap WHERE alocal = :alocal AND domain = :domain AND dest = :dest""",
-        {'alocal':mbxn, 'domain':"*", 'dest':"vmail+" + mbxn})
-    cur.execute("""DELETE FROM addresses WHERE alocal = :alocal AND domain = :domain"""
-        """ AND (SELECT COUNT(*) FROM destmap AS d WHERE d.alocal = :alocal AND d.domain = :domain) = 0""", 
-        {'alocal':mbxn, 'domain':"*"})
+
+    # Remove all destmap entries pointing to this public mailbox, across all
+    # domains and addresses (e.g. toto@example.com → public mailbox toto).
+    cur.execute("""DELETE FROM destmap WHERE dest=?""", ("vmail+" + mbxn,))
+    # Remove address entries that have no remaining destinations.
+    cur.execute("""DELETE FROM addresses WHERE NOT EXISTS"""
+        """ (SELECT 1 FROM destmap AS d WHERE d.alocal = addresses.alocal AND d.domain = addresses.domain)""")
 
     # Destroy the mailbox and its contents
     mail.doveadm_query("mailboxDelete", {"mailbox": [mbxn], "user": "vmail", "recursive": True})
 
 except mail.DoveadmError as dex:
-    if dex.code != 68:
+    if dex.code == 68:
+        # Mailbox was already gone from Dovecot (e.g., deleted via webmail client).
+        # DB cleanup is still valid – commit it.
+        sdb.commit()
+    else:
+        sdb.rollback()
         raise
-
-    agent.set_status('validation-failed')
-    json.dump([{'field':'mailbox', 'parameter':'mailbox','value': mbxn, 'error':'mailbox_not_found'}], fp=sys.stdout)
-    sys.exit(3)
 
 else:
     sdb.commit()

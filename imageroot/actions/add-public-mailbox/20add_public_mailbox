@@ -20,19 +20,17 @@ try:
 
     cur = sdb.cursor()
 
-    # Detect and remove DB leftovers: address entries that exist in the DB but
-    # have no corresponding Dovecot mailbox (e.g., mailbox deleted via webmail).
+    # Detect and remove DB leftovers: any destmap entries pointing to this public
+    # mailbox that remain after an external deletion (e.g., via webmail client).
     leftover_count = cur.execute(
-        """SELECT COUNT(*) FROM destmap WHERE alocal=? AND domain=? AND dest=?""",
-        (mbxn, "*", "vmail+" + mbxn)).fetchone()[0]
+        """SELECT COUNT(*) FROM destmap WHERE dest=?""",
+        ("vmail+" + mbxn,)).fetchone()[0]
     if leftover_count > 0:
         if not mail.doveadm_query("mailboxList", {"user": "vmail", "mailboxMask": [mbxn]}):
-            # No Dovecot mailbox found – these are leftovers, clean them up.
-            cur.execute("""DELETE FROM destmap WHERE alocal=? AND domain=? AND dest=?""",
-                (mbxn, "*", "vmail+" + mbxn))
-            cur.execute("""DELETE FROM addresses WHERE alocal=? AND domain=?"""
-                """ AND (SELECT COUNT(*) FROM destmap AS d WHERE d.alocal=? AND d.domain=?) = 0""",
-                (mbxn, "*", mbxn, "*"))
+            # No Dovecot mailbox found – clean up all DB leftovers pointing to this mailbox.
+            cur.execute("""DELETE FROM destmap WHERE dest=?""", ("vmail+" + mbxn,))
+            cur.execute("""DELETE FROM addresses WHERE NOT EXISTS"""
+                """ (SELECT 1 FROM destmap AS d WHERE d.alocal = addresses.alocal AND d.domain = addresses.domain)""")
         else:
             # Dovecot mailbox also exists – this is a true address conflict.
             agent.set_status('validation-failed')
