@@ -9,7 +9,6 @@ import json
 import sys
 import agent
 import mail
-from sqlite3 import IntegrityError
 
 request = json.load(sys.stdin)
 sdb = mail.pcdb_connect()
@@ -22,20 +21,21 @@ try:
 
     # Detect and remove DB leftovers: any destmap entries pointing to this public
     # mailbox that remain after an external deletion (e.g., via webmail client).
+    # Webmail clients (Roundcube, SOGo) may unsubscribe from the folder without
+    # truly deleting it from Dovecot, leaving both DB entries and a Dovecot mailbox
+    # behind. In all cases we force-clean both so the admin can recreate it fresh.
     leftover_count = cur.execute(
         """SELECT COUNT(*) FROM destmap WHERE dest=?""",
         ("vmail+" + mbxn,)).fetchone()[0]
     if leftover_count > 0:
-        if not mail.doveadm_query("mailboxList", {"user": "vmail", "mailboxMask": [mbxn]}):
-            # No Dovecot mailbox found – clean up all DB leftovers pointing to this mailbox.
-            cur.execute("""DELETE FROM destmap WHERE dest=?""", ("vmail+" + mbxn,))
-            cur.execute("""DELETE FROM addresses WHERE NOT EXISTS"""
-                """ (SELECT 1 FROM destmap AS d WHERE d.alocal = addresses.alocal AND d.domain = addresses.domain)""")
-        else:
-            # Dovecot mailbox also exists – this is a true address conflict.
-            agent.set_status('validation-failed')
-            json.dump([{'field':'mailbox', 'parameter':'mailbox','value': mbxn, 'error':'address_already_exists'}], fp=sys.stdout)
-            sys.exit(5)
+        cur.execute("""DELETE FROM destmap WHERE dest=?""", ("vmail+" + mbxn,))
+        cur.execute("""DELETE FROM addresses WHERE NOT EXISTS"""
+            """ (SELECT 1 FROM destmap AS d WHERE d.alocal = addresses.alocal AND d.domain = addresses.domain)""")
+        try:
+            mail.doveadm_query("mailboxDelete", {"mailbox": [mbxn], "user": "vmail", "recursive": True})
+        except mail.DoveadmError as dex:
+            if dex.code != 68:
+                raise  # unexpected error
 
     # Create the address object pointing to the new mailbox:
     cur.execute("""INSERT INTO destmap (alocal,domain,dest) VALUES (?,?,?)""", (mbxn, "*", "vmail+" + mbxn,))
@@ -73,13 +73,6 @@ except mail.MailDestinationNotFound as mex:
     agent.set_status('validation-failed')
     json.dump([{'field':'acls', 'parameter':'acls','value': qacl['subject']['name'], 'error':'acl_subject_not_found'}], fp=sys.stdout)
     sys.exit(4)
-
-except IntegrityError as iex:
-    sdb.rollback()
-    # Address exists
-    agent.set_status('validation-failed')
-    json.dump([{'field':'mailbox', 'parameter':'mailbox','value': mbxn, 'error':'address_already_exists'}], fp=sys.stdout)
-    sys.exit(5)
 
 else:
     sdb.commit()
