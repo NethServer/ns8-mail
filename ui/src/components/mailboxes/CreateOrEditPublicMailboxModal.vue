@@ -264,7 +264,7 @@ export default {
           this.focusElement("mailbox");
           isValidationOk = false;
         }
-      } else if (this.mailboxName.includes("@")) {
+      } else if (!this.isEditing && this.mailboxName.includes("@")) {
         this.error.mailbox = this.$t("mailboxes.mailbox_invalid_character");
         if (isValidationOk) {
           this.focusElement("mailbox");

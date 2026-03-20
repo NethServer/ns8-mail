@@ -33,13 +33,6 @@
     "allOf": [
         {
             "$ref": "http://schema.nethserver.org/mail.json#/$defs/public-mailbox"
-        },
-        {
-            "properties": {
-                "mailbox": {
-                    "pattern": "^[^@]+$"
-                }
-            }
         }
     ]
 }
