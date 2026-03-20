@@ -18,8 +18,28 @@ rights_map = mail.get_rights_map()
 
 try:
 
-    # Create the address object pointing to the new mailbox:
     cur = sdb.cursor()
+
+    # Detect and remove DB leftovers: address entries that exist in the DB but
+    # have no corresponding Dovecot mailbox (e.g., mailbox deleted via webmail).
+    leftover_count = cur.execute(
+        """SELECT COUNT(*) FROM destmap WHERE alocal=? AND domain=? AND dest=?""",
+        (mbxn, "*", "vmail+" + mbxn)).fetchone()[0]
+    if leftover_count > 0:
+        if not mail.doveadm_query("mailboxList", {"user": "vmail", "mailboxMask": [mbxn]}):
+            # No Dovecot mailbox found – these are leftovers, clean them up.
+            cur.execute("""DELETE FROM destmap WHERE alocal=? AND domain=? AND dest=?""",
+                (mbxn, "*", "vmail+" + mbxn))
+            cur.execute("""DELETE FROM addresses WHERE alocal=? AND domain=?"""
+                """ AND (SELECT COUNT(*) FROM destmap AS d WHERE d.alocal=? AND d.domain=?) = 0""",
+                (mbxn, "*", mbxn, "*"))
+        else:
+            # Dovecot mailbox also exists – this is a true address conflict.
+            agent.set_status('validation-failed')
+            json.dump([{'field':'mailbox', 'parameter':'mailbox','value': mbxn, 'error':'address_already_exists'}], fp=sys.stdout)
+            sys.exit(5)
+
+    # Create the address object pointing to the new mailbox:
     cur.execute("""INSERT INTO destmap (alocal,domain,dest) VALUES (?,?,?)""", (mbxn, "*", "vmail+" + mbxn,))
     cur.execute("""INSERT INTO addresses (alocal, domain) VALUES (?, ?)""", (mbxn, "*",))
 
