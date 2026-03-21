@@ -16,6 +16,25 @@ sdb = mail.pcdb_connect()
 mbxn = request['mailbox']
 rights_map = mail.get_rights_map()
 
+# Pre-check: detect and clean up orphaned DB entries left by webmail deletions
+cur = sdb.cursor()
+address_exists = cur.execute(
+    "SELECT COUNT(*) FROM addresses WHERE alocal = ? AND domain = ?", (mbxn, "*")
+).fetchone()[0]
+
+if address_exists:
+    if mbxn in mail.get_public_mailboxes():
+        # Address in DB AND mailbox exists in Dovecot → genuine conflict
+        sdb.close()
+        agent.set_status('validation-failed')
+        json.dump([{'field': 'mailbox', 'parameter': 'mailbox', 'value': mbxn, 'error': 'address_already_exists'}], fp=sys.stdout)
+        sys.exit(5)
+    else:
+        # Address in DB but mailbox missing in Dovecot → orphaned leftovers from webmail deletion
+        # Clean up the stale DB entries so creation can proceed
+        cur.execute("DELETE FROM destmap WHERE alocal = ? AND domain = ? AND dest = ?", (mbxn, "*", "vmail+" + mbxn))
+        cur.execute("DELETE FROM addresses WHERE alocal = ? AND domain = ?", (mbxn, "*"))
+
 try:
 
     # Create the address object pointing to the new mailbox:
