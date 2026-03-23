@@ -2,7 +2,7 @@
 # rbl.conf -- Spamhaus DQS
 #
 
-{% if env.DQS_TOKEN -%}
+{% if not (env.DQS_TOKEN == "") -%}
 #
 # Enable DQS
 #
