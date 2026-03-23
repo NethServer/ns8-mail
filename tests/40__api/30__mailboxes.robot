@@ -98,3 +98,32 @@ Remove the public mailbox employees
     ${notexpected} =    Evaluate     json.loads('''{"mailbox": "employees", "acls": []}''')
     List Should Contain Value    ${lmailboxes}    ${expected}
     List Should Not Contain Value    ${lmailboxes}    ${notexpected}
+
+Simulate orphaned DB entries for a public mailbox
+    [Documentation]    Insert stale addresses/destmap rows without the Dovecot mailbox
+    ...    to simulate DB leftovers from a webmail deletion
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent -m ${MID} podman exec -w /srv postfix sqlite3 pcdb.sqlite "INSERT INTO addresses (alocal,domain) VALUES ('orphantest','*')"
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent -m ${MID} podman exec -w /srv postfix sqlite3 pcdb.sqlite "INSERT INTO destmap (alocal,domain,dest) VALUES ('orphantest','*','vmail+orphantest')"
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0
+    ${count} =    Execute Command
+    ...    runagent -m ${MID} podman exec -w /srv postfix sqlite3 pcdb.sqlite "SELECT COUNT(*) FROM addresses WHERE alocal='orphantest' AND domain='*'"
+    Should Be Equal As Integers    ${count}    1
+
+Add public mailbox cleans up orphaned DB entries and succeeds
+    [Documentation]    Verify add-public-mailbox detects the orphaned DB entries,
+    ...    removes them, and creates the mailbox successfully
+    Run task    module/${MID}/add-public-mailbox    {"mailbox":"orphantest", "acls": []}
+    ${lmailboxes} =    Run task    module/${MID}/list-public-mailboxes    ""
+    ${expected} =    Evaluate    json.loads('''{"mailbox": "orphantest", "acls": []}''')
+    List Should Contain Value    ${lmailboxes}    ${expected}
+
+Remove the orphantest public mailbox
+    Run task    module/${MID}/remove-public-mailbox    {"mailbox":"orphantest"}
+    ${lmailboxes} =    Run task    module/${MID}/list-public-mailboxes    ""
+    ${notexpected} =    Evaluate    json.loads('''{"mailbox": "orphantest", "acls": []}''')
+    List Should Not Contain Value    ${lmailboxes}    ${notexpected}
