@@ -19,6 +19,7 @@ ExecStart=/usr/bin/podman run \
     --replace --name=%N \
     --network=host \
     --env=POSTFIX_* \
+    --env=POSTFIX_DQS_TOKEN=${DQS_TOKEN} \
     --env-file=discovery.env \
     --volume=./pcdb:/srv:z \
     --volume=./tls-certs:/etc/ssl/postfix:z \

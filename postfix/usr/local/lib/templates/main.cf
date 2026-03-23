@@ -111,8 +111,14 @@ smtpd_relay_restrictions =
   ${tmpl_reject_internal_domains},
 
 smtpd_recipient_restrictions =
+  ${tmpl_spamhaus_dqs}
   reject_non_fqdn_recipient,
   ${tmpl_verify_recipient_address},
+
+#
+# rbl reply maps
+#
+rbl_reply_maps = ${tmpl_rbl_reply_maps}
 
 #
 # TLS configuration

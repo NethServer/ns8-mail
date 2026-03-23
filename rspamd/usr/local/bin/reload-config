@@ -28,6 +28,8 @@ rspamadm template antivirus.conf.j2 > /etc/rspamd/local.d/antivirus.conf
 rspamadm template greylist.conf.j2 > /etc/rspamd/local.d/greylist.conf
 rspamadm template multimap.conf.j2 > /etc/rspamd/local.d/multimap.conf
 rspamadm template rspamd.conf.local.j2 > /etc/rspamd/rspamd.conf.local
+rspamadm template rbl.conf.j2 > /etc/rspamd/local.d/rbl.conf
+rspamadm template rbl_group.conf.j2 > /etc/rspamd/local.d/rbl_group.conf
 
 envsubst >/etc/unbound/unbound.conf < unbound.conf
 
