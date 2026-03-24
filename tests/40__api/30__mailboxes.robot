@@ -98,3 +98,35 @@ Remove the public mailbox employees
     ${notexpected} =    Evaluate     json.loads('''{"mailbox": "employees", "acls": []}''')
     List Should Contain Value    ${lmailboxes}    ${expected}
     List Should Not Contain Value    ${lmailboxes}    ${notexpected}
+
+Add a public orphantest mailbox
+    Run task    module/${MID}/add-public-mailbox    {"mailbox":"orphantest", "acls": []}
+
+Remove orphantest mailbox via doveadm to simulate IMAP client deletion
+    [Documentation]    Deletes the mailbox directly in Dovecot, bypassing the API,
+    ...    which leaves orphaned entries in the postfix DB (addresses + destmap tables)
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent -m ${MID} podman exec dovecot doveadm mailbox delete -u vmail orphantest
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0
+
+Recreate orphantest mailbox succeeds despite orphaned DB entries
+    [Documentation]    Verify add-public-mailbox does not fail when orphaned DB entries exist
+    ...    from a previous doveadm deletion (INSERT OR IGNORE handles the conflict silently)
+    Run task    module/${MID}/add-public-mailbox    {"mailbox":"orphantest", "acls": []}
+    ${lmailboxes} =    Run task    module/${MID}/list-public-mailboxes    ""
+    ${expected} =    Evaluate    json.loads('''{"mailbox": "orphantest", "acls": []}''')
+    List Should Contain Value    ${lmailboxes}    ${expected}
+
+Check orphantest alias is present after recreation
+    [Documentation]    Verify the address alias is still exposed by list-addresses after recreation
+    ...    even though INSERT OR IGNORE kept the pre-existing orphaned row without re-inserting it
+    ${laddresses} =    Run task    module/${MID}/list-addresses    ""
+    ${expected} =    Evaluate    json.loads('''{"atype": "wildcard", "destinations": [{"dtype": "public", "name": "orphantest"}], "local": "orphantest"}''')
+    List Should Contain Value    ${laddresses}[addresses]    ${expected}
+
+Remove the orphantest public mailbox
+    Run task    module/${MID}/remove-public-mailbox    {"mailbox":"orphantest"}
+    ${lmailboxes} =    Run task    module/${MID}/list-public-mailboxes    ""
+    ${notexpected} =    Evaluate    json.loads('''{"mailbox": "orphantest", "acls": []}''')
+    List Should Not Contain Value    ${lmailboxes}    ${notexpected}

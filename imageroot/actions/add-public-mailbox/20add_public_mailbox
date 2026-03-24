@@ -9,7 +9,6 @@ import json
 import sys
 import agent
 import mail
-from sqlite3 import IntegrityError
 
 request = json.load(sys.stdin)
 sdb = mail.pcdb_connect()
@@ -20,8 +19,8 @@ try:
 
     # Create the address object pointing to the new mailbox:
     cur = sdb.cursor()
-    cur.execute("""INSERT INTO destmap (alocal,domain,dest) VALUES (?,?,?)""", (mbxn, "*", "vmail+" + mbxn,))
-    cur.execute("""INSERT INTO addresses (alocal, domain) VALUES (?, ?)""", (mbxn, "*",))
+    cur.execute("""INSERT OR IGNORE INTO destmap (alocal,domain,dest) VALUES (?,?,?)""", (mbxn, "*", "vmail+" + mbxn,))
+    cur.execute("""INSERT OR IGNORE INTO addresses (alocal, domain) VALUES (?, ?)""", (mbxn, "*",))
 
     mail.doveadm_query("mailboxCreate", {"mailbox": [mbxn], "user": "vmail"})
 
@@ -55,13 +54,6 @@ except mail.MailDestinationNotFound as mex:
     agent.set_status('validation-failed')
     json.dump([{'field':'acls', 'parameter':'acls','value': qacl['subject']['name'], 'error':'acl_subject_not_found'}], fp=sys.stdout)
     sys.exit(4)
-
-except IntegrityError as iex:
-    sdb.rollback()
-    # Address exists
-    agent.set_status('validation-failed')
-    json.dump([{'field':'mailbox', 'parameter':'mailbox','value': mbxn, 'error':'address_already_exists'}], fp=sys.stdout)
-    sys.exit(5)
 
 else:
     sdb.commit()
