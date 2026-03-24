@@ -99,28 +99,31 @@ Remove the public mailbox employees
     List Should Contain Value    ${lmailboxes}    ${expected}
     List Should Not Contain Value    ${lmailboxes}    ${notexpected}
 
-Simulate orphaned DB entries for a public mailbox
-    [Documentation]    Insert stale addresses/destmap rows without the Dovecot mailbox
-    ...    to simulate DB leftovers from a webmail deletion
-    ${out}  ${err}  ${rc} =    Execute Command
-    ...    runagent -m ${MID} podman exec -w /srv postfix sqlite3 pcdb.sqlite "INSERT INTO addresses (alocal,domain) VALUES ('orphantest','*')"
-    ...    return_rc=True    return_stderr=True
-    Should Be Equal As Integers    ${rc}    0
-    ${out}  ${err}  ${rc} =    Execute Command
-    ...    runagent -m ${MID} podman exec -w /srv postfix sqlite3 pcdb.sqlite "INSERT INTO destmap (alocal,domain,dest) VALUES ('orphantest','*','vmail+orphantest')"
-    ...    return_rc=True    return_stderr=True
-    Should Be Equal As Integers    ${rc}    0
-    ${count} =    Execute Command
-    ...    runagent -m ${MID} podman exec -w /srv postfix sqlite3 pcdb.sqlite "SELECT COUNT(*) FROM addresses WHERE alocal='orphantest' AND domain='*'"
-    Should Be Equal As Integers    ${count}    1
+Add a public orphantest mailbox
+    Run task    module/${MID}/add-public-mailbox    {"mailbox":"orphantest", "acls": []}
 
-Add public mailbox cleans up orphaned DB entries and succeeds
-    [Documentation]    Verify add-public-mailbox detects the orphaned DB entries,
-    ...    removes them, and creates the mailbox successfully
+Remove orphantest mailbox via doveadm to simulate IMAP client deletion
+    [Documentation]    Deletes the mailbox directly in Dovecot, bypassing the API,
+    ...    which leaves orphaned entries in the postfix DB (addresses + destmap tables)
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent -m ${MID} podman exec dovecot doveadm mailbox delete -u vmail orphantest
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0
+
+Recreate orphantest mailbox succeeds despite orphaned DB entries
+    [Documentation]    Verify add-public-mailbox does not fail when orphaned DB entries exist
+    ...    from a previous doveadm deletion (INSERT OR IGNORE handles the conflict silently)
     Run task    module/${MID}/add-public-mailbox    {"mailbox":"orphantest", "acls": []}
     ${lmailboxes} =    Run task    module/${MID}/list-public-mailboxes    ""
     ${expected} =    Evaluate    json.loads('''{"mailbox": "orphantest", "acls": []}''')
     List Should Contain Value    ${lmailboxes}    ${expected}
+
+Check orphantest alias is present after recreation
+    [Documentation]    Verify the address alias is still exposed by list-addresses after recreation
+    ...    even though INSERT OR IGNORE kept the pre-existing orphaned row without re-inserting it
+    ${laddresses} =    Run task    module/${MID}/list-addresses    ""
+    ${expected} =    Evaluate    json.loads('''{"atype": "wildcard", "destinations": [{"dtype": "public", "name": "orphantest"}], "local": "orphantest"}''')
+    List Should Contain Value    ${laddresses}[addresses]    ${expected}
 
 Remove the orphantest public mailbox
     Run task    module/${MID}/remove-public-mailbox    {"mailbox":"orphantest"}
