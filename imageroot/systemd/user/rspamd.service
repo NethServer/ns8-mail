@@ -18,7 +18,6 @@ ExecStart=/usr/bin/podman run \
     --replace --name=%N \
     --network=host \
     --env=RSPAMD_* \
-    --env=RSPAMD_dqs_token=${DQS_TOKEN} \
     --env-file=rspamd.env \
     --env-file=discovery.env \
     --volume=rspamd-data:/var/lib/rspamd:Z \

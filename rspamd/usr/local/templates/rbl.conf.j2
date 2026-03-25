@@ -2,14 +2,14 @@
 # rbl.conf -- Spamhaus DQS
 #
 
-{% if not (env.dqs_token == "") -%}
+{% if env.dqs_token -%}
 #
 # Enable DQS
 #
 
 rbls {
     spamhaus {
-        rbl = "{= env.DQS_TOKEN =}.zen.dq.spamhaus.net";
+        rbl = "{= env.dqs_token =}.zen.dq.spamhaus.net";
         from = false;
     }
     spamhaus_from {

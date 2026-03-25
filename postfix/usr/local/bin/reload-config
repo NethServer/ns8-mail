@@ -78,26 +78,6 @@ if [ -z "${tmpl_default_transport}" ] ; then
     tmpl_default_transport=smtp
 fi
 tmpl_relayhost=$(pcdbquery "SELECT FORMAT('[%s]:%s', host, port) FROM relayrules WHERE enabled=1 AND rule_type='wildcard' AND rule_subject='*'")
-if [ -n "${POSTFIX_DQS_TOKEN}" ]; then
-    tmpl_rbl_reply_maps="lmdb:\$config_directory/main.cf.d/dnsbl-reply-map"
-    tmpl_spamhaus_dqs="reject_rbl_client ${POSTFIX_DQS_TOKEN}.zen.dq.spamhaus.net=127.0.0.[2..11],
-  reject_rhsbl_sender ${POSTFIX_DQS_TOKEN}.dbl.dq.spamhaus.net=127.0.1.[2..99],
-  reject_rhsbl_helo ${POSTFIX_DQS_TOKEN}.dbl.dq.spamhaus.net=127.0.1.[2..99],
-  reject_rhsbl_reverse_client ${POSTFIX_DQS_TOKEN}.dbl.dq.spamhaus.net=127.0.1.[2..99],
-  reject_rhsbl_sender ${POSTFIX_DQS_TOKEN}.zrd.dq.spamhaus.net=127.0.2.[2..24],
-  reject_rhsbl_helo ${POSTFIX_DQS_TOKEN}.zrd.dq.spamhaus.net=127.0.2.[2..24],
-  reject_rhsbl_reverse_client ${POSTFIX_DQS_TOKEN}.zrd.dq.spamhaus.net=127.0.2.[2..24],"
-    echo "${POSTFIX_DQS_TOKEN}.zen.dq.spamhaus.net=127.0.0.[2..11]	554 \$rbl_class \$rbl_what blocked using ZEN - see https://www.spamhaus.org/query/ip/\$client_address for details
-${POSTFIX_DQS_TOKEN}.dbl.dq.spamhaus.net=127.0.1.[2..99]	554 \$rbl_class \$rbl_what blocked using DBL - see \$rbl_txt for details
-${POSTFIX_DQS_TOKEN}.zrd.dq.spamhaus.net=127.0.2.[2..24]	554 \$rbl_class \$rbl_what blocked using ZRD - domain too young
-${POSTFIX_DQS_TOKEN}.zen.dq.spamhaus.net			554 \$rbl_class \$rbl_what blocked using ZEN - see https://www.spamhaus.org/query/ip/\$client_address for details
-${POSTFIX_DQS_TOKEN}.dbl.dq.spamhaus.net			554 \$rbl_class \$rbl_what blocked using DBL - see \$rbl_txt for details
-${POSTFIX_DQS_TOKEN}.zrd.dq.spamhaus.net			554 \$rbl_class \$rbl_what blocked using ZRD - domain too young" > /etc/postfix/main.cf.d/dnsbl-reply-map
-    postmap /etc/postfix/main.cf.d/dnsbl-reply-map
-else
-    tmpl_rbl_reply_maps=""
-    tmpl_spamhaus_dqs=""
-fi
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
