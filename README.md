@@ -241,15 +241,15 @@ Spamhaus’ Data Query Service (DQS) is the alternative protocol, implemented wi
 
 To enable the Spamhaus DQS plugin, a [Spamhaus account](https://www.spamhaus.com/data-access/free-data-query-service/) is required to get a DQS token/key.
 
-Edit the module's `state/environment` file by adding the following line:
+Edit the module's `state/rspamd.env` file by adding the following line:
 
-    DQS_TOKEN=<MY_DQS_KEY>
+    RSPAMD_dqs_token=<MY_DQS_KEY>
 
-Restart the Postfix and Rspamd containers:
+Restart the Rspamd container:
 
-    systemctl --user restart postfix rspamd
+    systemctl --user restart rspamd
 
-To disable the plugin, just remove the DQS_TOKEN environment variable from the `state/environment` file and restart the affected services.
+To disable the plugin, just remove the RSPAMD_dqs_token variable from the `state/rspamd.env` file and restart the affected service.
 
 ## Service discovery
 
