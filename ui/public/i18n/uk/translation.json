@@ -270,7 +270,8 @@
         "days": "днів",
         "create_public_mailbox_mailbox": "Створити загальнодоступну поштову скриньку {mailbox}",
         "col_mailbox": "Поштова скринька",
-        "go_to_mailboxes": "Перейдіть до Поштові скриньки"
+        "go_to_mailboxes": "Перейдіть до Поштові скриньки",
+        "mailbox_invalid_character": "The mailbox name cannot contain the @ character"
     },
     "filter": {
         "antivirus": "Антивірус",

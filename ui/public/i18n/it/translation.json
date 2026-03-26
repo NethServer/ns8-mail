@@ -239,7 +239,8 @@
         "no_backup_found_description": "Assicurarsi che sia stata configurata una destinazione di backup e che sia stato eseguito il backup di {module}",
         "select_folder_to_restore": "Selezionare la cartella da ripristinare",
         "from_node_name_of_different_cluster": "Dal nodo {name} di un altro cluster",
-        "go_to_mailboxes": "Vai a Caselle di posta"
+        "go_to_mailboxes": "Vai a Caselle di posta",
+        "mailbox_invalid_character": "Il nome della casella di posta non può contenere il carattere @"
     },
     "settings_mailboxes": {
         "specify_quota": "Specificare la quota",

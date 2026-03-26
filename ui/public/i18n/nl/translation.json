@@ -299,7 +299,8 @@
         "days": "Dagen",
         "create_public_mailbox_mailbox": "Openbare postvak aanmaken {mailbox}",
         "col_mailbox": "Postvak",
-        "go_to_mailboxes": "Ga naar Postbussen"
+        "go_to_mailboxes": "Ga naar Postbussen",
+        "mailbox_invalid_character": "The mailbox name cannot contain the @ character"
     },
     "filter": {
         "third_party_signatures_rating": "Beoordeling van handtekeningen van derden",
