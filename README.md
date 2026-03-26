@@ -233,6 +233,24 @@ For best results, verify successful training by reviewing the Rspamd logs
 or using diagnostic commands. Consult the Rspamd documentation for further
 details.
 
+## Rspamd plugin for Spamhaus DQS
+
+Accessing public Spamhaus DNS Blocklists (DNSBLs) is subject to a [fair-use policy](https://www.spamhaus.org/blocklists/dnsbl-fair-use-policy/) and may not work from certain networks (i.e. [Hetzner](https://www.spamhaus.org/resource-hub/email-security/query-the-legacy-dnsbls-via-hetzner/)).
+
+Spamhaus’ Data Query Service (DQS) is the alternative protocol, implemented with an [Rspamd 3.x plugin](https://github.com/spamhaus/rspamd-dqs?tab=readme-ov-file#installation-instructions), that provides similar functionality with better performance, and requires a registered token.
+
+To enable the Spamhaus DQS plugin, a [Spamhaus account](https://www.spamhaus.com/data-access/free-data-query-service/) is required to get a DQS token/key.
+
+Edit the module's `state/rspamd.env` file by adding the following line:
+
+    RSPAMD_dqs_token=<MY_DQS_KEY>
+
+Restart the Rspamd container:
+
+    systemctl --user restart rspamd
+
+To disable the plugin, just remove the RSPAMD_dqs_token variable from the `state/rspamd.env` file and restart the affected service.
+
 ## Service discovery
 
 Another module can discover IMAP and SUBMISSION endpoints by looking up
