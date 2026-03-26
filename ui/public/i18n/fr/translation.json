@@ -87,7 +87,8 @@
         "mailbox_quota_changed": "Mailbox quota changed",
         "rtype_full": "Full control",
         "search_user_mailbox": "Search user mailbox",
-        "none": "None"
+        "none": "None",
+        "mailbox_invalid_character": "The mailbox name cannot contain the @ character"
     },
     "about": {
         "title": "About"

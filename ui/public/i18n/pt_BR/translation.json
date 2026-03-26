@@ -303,7 +303,8 @@
         "no_backup_found_description": "Ensure that a backup destination has been configured and that a backup has been performed for {module}",
         "select_folder_to_restore": "Select folder to restore",
         "from_node_name_of_different_cluster": "From node {name} of a different cluster",
-        "go_to_mailboxes": "Go to Mailboxes"
+        "go_to_mailboxes": "Go to Mailboxes",
+        "mailbox_invalid_character": "The mailbox name cannot contain the @ character"
     },
     "filter": {
         "enable_antispam": "Enable antispam",

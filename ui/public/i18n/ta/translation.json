@@ -214,7 +214,8 @@
         "days": "Days",
         "create_public_mailbox_mailbox": "Create public mailbox {mailbox}",
         "col_mailbox": "Mailbox",
-        "go_to_mailboxes": "Go to Mailboxes"
+        "go_to_mailboxes": "Go to Mailboxes",
+        "mailbox_invalid_character": "The mailbox name cannot contain the @ character"
     },
     "filter": {
         "antivirus": "Antivirus",
