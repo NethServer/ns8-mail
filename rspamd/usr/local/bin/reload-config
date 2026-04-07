@@ -33,6 +33,8 @@ rspamadm template rbl_group.conf.j2 > /etc/rspamd/local.d/rbl_group.conf
 
 envsubst >/etc/unbound/unbound.conf < unbound.conf
 
+touch /var/lib/rspamd/block_sender_tld.map /var/lib/rspamd/block_sender.map
+
 main_process=$(pgrep 'rspamd: main process' || :)
 if [ -n "${main_process}" ]; then
     kill -HUP "${main_process}"

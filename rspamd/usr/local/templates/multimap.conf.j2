@@ -72,3 +72,40 @@ BYPASS_IP {
     type = "ip";
     map = ["${DBDIR}/bypass_ip.map"];
 }
+
+#
+{% if env.block_score -%}
+# block group of rules -- add score {= env.block_score =}
+{% else -%}
+# block prefilter rules
+{% endif -%}
+#
+BLOCK_SENDER_TLD {
+    {% if env.block_score -%}
+    group = "block";
+    score = {= env.block_score =};
+    {% else -%}
+    prefilter = true;
+    action = "reject";
+    {% endif -%}
+    symbol = "BLOCK_SENDER_TLD";
+    regexp = true;
+    type = "from";
+    filter = 'email:domain:tld';
+    map = ["${DBDIR}/block_sender_tld.map"];
+}
+
+BLOCK_SENDER {
+    {% if env.block_score -%}
+    group = "block";
+    score = {= env.block_score =};
+    {% else -%}
+    prefilter = true;
+    action = "reject";
+    {% endif -%}
+    header = "from";
+    symbol = "BLOCK_SENDER";
+    type = "header";
+    filter = 'email';
+    map = ["${DBDIR}/block_sender.map"];
+}
