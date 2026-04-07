@@ -88,7 +88,6 @@ BLOCK_SENDER_TLD {
     prefilter = true;
     action = "reject";
     {% endif -%}
-    symbol = "BLOCK_SENDER_TLD";
     regexp = true;
     type = "from";
     filter = 'email:domain:tld';
@@ -103,7 +102,6 @@ BLOCK_SENDER_DOMAIN {
     prefilter = true;
     action = "reject";
     {% endif -%}
-    symbol = "BLOCK_SENDER_DOMAIN";
     regexp = true;
     type = "from";
     filter = 'email:domain';
@@ -119,7 +117,6 @@ BLOCK_SENDER {
     action = "reject";
     {% endif -%}
     header = "from";
-    symbol = "BLOCK_SENDER";
     type = "header";
     filter = 'email';
     map = ["${DBDIR}/block_sender.map"];
