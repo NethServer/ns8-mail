@@ -36,9 +36,13 @@ envsubst >/etc/unbound/unbound.conf < unbound.conf
 # Create block_sender*.map files
 cd /var/lib/rspamd
 
-touch block_sender_tld.map block_sender_domain.map block_sender_domain_suffix.map block_sender.map
-chown rspamd:rspamd block_sender_tld.map block_sender_domain.map block_sender_domain_suffix.map block_sender.map
-chmod 600 block_sender_tld.map block_sender_domain.map block_sender_domain_suffix.map block_sender.map
+for f in block_sender_tld.map block_sender_domain.map block_sender_domain_suffix.map block_sender.map
+do
+    if [ ! -f "$f" ];then
+        echo "" > $f
+        chown rspamd:rspamd $f
+    fi
+done
 
 main_process=$(pgrep 'rspamd: main process' || :)
 if [ -n "${main_process}" ]; then
