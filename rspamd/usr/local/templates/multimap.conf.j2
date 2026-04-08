@@ -90,7 +90,8 @@ BLOCK_SENDER_TLD {
     {% endif -%}
     regexp = true;
     type = "from";
-    filter = 'email:domain:tld';
+    filter = "email:domain:tld";
+	message = "Sender TLD rejected";
     map = ["${DBDIR}/block_sender_tld.map"];
 }
 
@@ -103,7 +104,8 @@ BLOCK_SENDER_DOMAIN {
     action = "reject";
     {% endif -%}
     type = "from";
-    filter = 'email:domain';
+    filter = "email:domain";
+	message = "Sender domain rejected";
     map = ["${DBDIR}/block_sender_domain.map"];
 }
 
@@ -117,7 +119,8 @@ BLOCK_SENDER_DOMAIN_SUFFIX {
     {% endif -%}
     regexp = true;
     type = "from";
-    filter = 'email:domain';
+    filter = "email:domain";
+	message = "Sender domain suffix rejected";
     map = ["${DBDIR}/block_sender_domain_suffix.map"];
 }
 
@@ -130,6 +133,7 @@ BLOCK_SENDER {
     action = "reject";
     {% endif -%}
     type = "from";
-    filter = 'email';
+    filter = "email";
+	message = "Sender address rejected";
     map = ["${DBDIR}/block_sender.map"];
 }
