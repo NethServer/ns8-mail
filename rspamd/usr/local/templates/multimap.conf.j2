@@ -129,8 +129,7 @@ BLOCK_SENDER {
     prefilter = true;
     action = "reject";
     {% endif -%}
-    header = "from";
-    type = "header";
+    type = "from";
     filter = 'email';
     map = ["${DBDIR}/block_sender.map"];
 }
