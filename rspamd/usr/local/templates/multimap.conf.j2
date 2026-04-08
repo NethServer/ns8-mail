@@ -102,10 +102,23 @@ BLOCK_SENDER_DOMAIN {
     prefilter = true;
     action = "reject";
     {% endif -%}
-    regexp = true;
     type = "from";
     filter = 'email:domain';
     map = ["${DBDIR}/block_sender_domain.map"];
+}
+
+BLOCK_SENDER_DOMAIN_SUFFIX {
+    {% if env.block_score -%}
+    group = "block";
+    score = {= env.block_score =};
+    {% else -%}
+    prefilter = true;
+    action = "reject";
+    {% endif -%}
+    regexp = true;
+    type = "from";
+    filter = 'email:domain';
+    map = ["${DBDIR}/block_sender_domain_suffix.map"];
 }
 
 BLOCK_SENDER {
