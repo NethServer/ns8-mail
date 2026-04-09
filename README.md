@@ -251,6 +251,14 @@ Restart the Rspamd container:
 
 To disable the plugin, just remove the RSPAMD_dqs_token variable from the `state/rspamd.env` file and restart the affected service.
 
+## Rspamd block rules
+
+Following block rule configuration files are available in the Rspamd UI configuration tab:
+
+- Exact domain: `/var/lib/rspamd/block_sender_domain.map`
+- Domain suffix: `/var/lib/rspamd/block_sender_domain_suffix.map`
+- Sender mail address: `/var/lib/rspamd/block_sender.map`
+
 ## Service discovery
 
 Another module can discover IMAP and SUBMISSION endpoints by looking up

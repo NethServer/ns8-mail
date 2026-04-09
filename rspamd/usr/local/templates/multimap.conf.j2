@@ -72,3 +72,53 @@ BYPASS_IP {
     type = "ip";
     map = ["${DBDIR}/bypass_ip.map"];
 }
+
+#
+{% if env.block_score -%}
+# block group of rules -- add score {= env.block_score =}
+{% else -%}
+# block prefilter rules
+{% endif -%}
+#
+BLOCK_SENDER_DOMAIN {
+    {% if env.block_score -%}
+    group = "block";
+    score = {= env.block_score =};
+    {% else -%}
+    prefilter = true;
+    action = "reject";
+    {% endif -%}
+    type = "from";
+    filter = "email:domain";
+    message = "Sender domain rejected";
+    map = ["${DBDIR}/block_sender_domain.map"];
+}
+
+BLOCK_SENDER_DOMAIN_SUFFIX {
+    {% if env.block_score -%}
+    group = "block";
+    score = {= env.block_score =};
+    {% else -%}
+    prefilter = true;
+    action = "reject";
+    {% endif -%}
+    regexp = true;
+    type = "from";
+    filter = "email:domain";
+    message = "Sender domain suffix rejected";
+    map = ["${DBDIR}/block_sender_domain_suffix.map"];
+}
+
+BLOCK_SENDER {
+    {% if env.block_score -%}
+    group = "block";
+    score = {= env.block_score =};
+    {% else -%}
+    prefilter = true;
+    action = "reject";
+    {% endif -%}
+    type = "from";
+    filter = "email";
+    message = "Sender address rejected";
+    map = ["${DBDIR}/block_sender.map"];
+}

@@ -33,6 +33,17 @@ rspamadm template rbl_group.conf.j2 > /etc/rspamd/local.d/rbl_group.conf
 
 envsubst >/etc/unbound/unbound.conf < unbound.conf
 
+# Create block_sender*.map files
+cd /var/lib/rspamd
+
+for f in block_sender_domain.map block_sender_domain_suffix.map block_sender.map
+do
+    if [ ! -f "$f" ];then
+        echo "" > $f
+        chown rspamd:rspamd $f
+    fi
+done
+
 main_process=$(pgrep 'rspamd: main process' || :)
 if [ -n "${main_process}" ]; then
     kill -HUP "${main_process}"
