@@ -80,21 +80,6 @@ BYPASS_IP {
 # block prefilter rules
 {% endif -%}
 #
-BLOCK_SENDER_TLD {
-    {% if env.block_score -%}
-    group = "block";
-    score = {= env.block_score =};
-    {% else -%}
-    prefilter = true;
-    action = "reject";
-    {% endif -%}
-    regexp = true;
-    type = "from";
-    filter = "email:domain:tld";
-    message = "Sender TLD rejected";
-    map = ["${DBDIR}/block_sender_tld.map"];
-}
-
 BLOCK_SENDER_DOMAIN {
     {% if env.block_score -%}
     group = "block";

@@ -36,7 +36,7 @@ envsubst >/etc/unbound/unbound.conf < unbound.conf
 # Create block_sender*.map files
 cd /var/lib/rspamd
 
-for f in block_sender_tld.map block_sender_domain.map block_sender_domain_suffix.map block_sender.map
+for f in block_sender_domain.map block_sender_domain_suffix.map block_sender.map
 do
     if [ ! -f "$f" ];then
         echo "" > $f

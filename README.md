@@ -255,7 +255,6 @@ To disable the plugin, just remove the RSPAMD_dqs_token variable from the `state
 
 Following block rule configuration files are available in the Rspamd UI configuration tab:
 
-- TLD: `/var/lib/rspamd/block_sender_tld.map`
 - Exact domain: `/var/lib/rspamd/block_sender_domain.map`
 - Domain suffix: `/var/lib/rspamd/block_sender_domain_suffix.map`
 - Sender mail address: `/var/lib/rspamd/block_sender.map`
