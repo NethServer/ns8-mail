@@ -256,8 +256,11 @@ To disable the plugin, just remove the RSPAMD_dqs_token variable from the `state
 Following block rule configuration files are available in the Rspamd UI configuration tab:
 
 - Exact domain: `/var/lib/rspamd/block_sender_domain.map`
+  - Examples: `domain.tld`, `nethserver.org`
 - Domain suffix: `/var/lib/rspamd/block_sender_domain_suffix.map`
+  - Examples: `.domain.tld`, `.org`
 - Sender mail address: `/var/lib/rspamd/block_sender.map`
+  - Examples: `user@domain.tld`, `support@nethserver.org`
 
 ## Service discovery
 
