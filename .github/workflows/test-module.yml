@@ -12,8 +12,8 @@ on:
     types: [completed]
 
 jobs:
-  test:
-    name: "Test"
+  run:
+    name: "Run tests"
     uses: NethServer/ns8-github-actions/.github/workflows/test-module.yml@refactor-testing
     with:
       debug_shell: ${{ github.event.inputs.debug_shell == 'true' }}
