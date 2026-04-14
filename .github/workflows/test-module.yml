@@ -16,6 +16,7 @@ jobs:
     name: "Run tests"
     uses: NethServer/ns8-github-actions/.github/workflows/test-module.yml@refactor-testing
     with:
+      run_ui_tests: on_ui_change
       debug_shell: ${{ github.event.inputs.debug_shell == 'true' }}
     secrets:
       do_token: ${{ secrets.do_token }}
