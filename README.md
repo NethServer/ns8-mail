@@ -305,6 +305,15 @@ Test the module using the `test-module.sh` script:
 Additional arguments are forwarded to the `robot` command (see [Robot
 Framework](https://robotframework.org/)).
 
+### Environment variables
+
+| Variable       | Default | Description |
+| -------------- | ------- | ----------- |
+| `SSH_KEYFILE`  | `~/.ssh/id_ecdsa` | Path to the SSH private key used to connect to the test node. |
+| `RUN_UI_TESTS` | *(unset)* | Set to `true` to run browser/UI tests. When unset or set to any other value the UI suite is skipped. |
+
+### Examples
+
 For instance, to speed up testing on a local machine:
 
 1. Skip the account provider and module removal
@@ -321,6 +330,11 @@ For instance, to speed up testing on a local machine:
    `--suite` flags. For example, run only the SMTP test suite:
 
        SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORmodule --variable MID:mail1 --suite smtp
+
+4. Also run the browser/UI tests, which take screenshots of the application
+   pages and verify the web interface is reachable:
+
+       RUN_UI_TESTS=true SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:latest
 
 ## Migration from nethserver-mail (NS7)
 
