@@ -296,45 +296,9 @@ To uninstall the instance:
 
     remove-module --no-preserve mail1
 
-## Testing
+## Running tests locally
 
-Test the module using the `test-module.sh` script:
-
-    ./test-module.sh <NODE_ADDR> ghcr.io/nethserver/mail:latest
-
-Additional arguments are forwarded to the `robot` command (see [Robot
-Framework](https://robotframework.org/)).
-
-### Environment variables
-
-| Variable       | Default | Description |
-| -------------- | ------- | ----------- |
-| `SSH_KEYFILE`  | `~/.ssh/id_ecdsa` | Path to the SSH private key used to connect to the test node. |
-| `RUN_UI_TESTS` | *(unset)* | Set to `true` to run browser/UI tests. When unset or set to any other value the UI suite is skipped. |
-
-### Examples
-
-For instance, to speed up testing on a local machine:
-
-1. Skip the account provider and module removal
-
-       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude remove
-
-2. Continue to use the Mail, Samba and OpenLDAP instances, skipping the
-   installation steps. The `--variable` option is required to find the
-   existing Mail instance.
-
-       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORmodule --variable MID:mail1
-
-3. Select a subset of tests and suite with `--include`, `--test`, or
-   `--suite` flags. For example, run only the SMTP test suite:
-
-       SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:bug-6977 --exclude udomORmodule --variable MID:mail1 --suite smtp
-
-4. Also run the browser/UI tests, which take screenshots of the application
-   pages and verify the web interface is reachable:
-
-       RUN_UI_TESTS=true SSH_KEYFILE=~/.ssh/id_ecdsa bash test-module.sh 10.5.4.1 ghcr.io/nethserver/mail:latest
+This module uses the NS8 standard testing infrastructure. For instructions on how to run the test suite locally, refer to the [Running tests locally](https://github.com/NethServer/ns8-github-actions/blob/refactor-testing/README.md#running-tests-locally) section of the ns8-github-actions repository.
 
 ## Migration from nethserver-mail (NS7)
 
