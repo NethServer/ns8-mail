@@ -17,7 +17,7 @@ jobs:
     # //// use @v1 instead of @refactor-testing
     uses: NethServer/ns8-github-actions/.github/workflows/test-module.yml@refactor-testing
     with:
-      ui_tests_strategy: on_ui_change
+      ui_tests_strategy: on_renovate_ui_change
       debug_shell: ${{ github.event.inputs.debug_shell == 'true' }}
     secrets:
       do_token: ${{ secrets.do_token }}
