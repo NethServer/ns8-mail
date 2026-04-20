@@ -26,9 +26,9 @@ Take screenshots
     Go To    https://${NODE_ADDR}/cluster-admin/#/apps/${MID}
     Wait For Elements State    iframe >>> h2 >> text="Status"    visible    timeout=10s
     Sleep    5s
-    Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/status.png
+    Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/1._Status.png
     Go To    https://${NODE_ADDR}/cluster-admin/#/apps/${MID}?page=settings
     Wait For Elements State    iframe >>> h2 >> text="Settings"    visible    timeout=10s
     Sleep    5s
-    Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/settings.png
+    Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/2._Settings.png
     Close Browser
