@@ -4,7 +4,7 @@ Library           Browser
 *** Variables ***
 ${ADMIN_USER}    admin
 ${ADMIN_PASSWORD}    Nethesis,1234
-${MODULE_ID}    ${EMPTY}
+${MID}    ${EMPTY}
 
 *** Keywords ***
 
