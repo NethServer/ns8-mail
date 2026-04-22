@@ -29,7 +29,7 @@
         "alter-user-mailbox": "Modifica la casella di posta dell'utente",
         "get-name": "Visualizza nome",
         "set-master-users": "Imposta utenti master",
-        "list-backup-repositories": "Elenca repository di backup",
+        "list-backup-repositories": "Elenca i repository di backup",
         "list-installed-modules": "Elenca moduli installati",
         "get-defaults": "Ottieni default",
         "alter-address": "Modifica",
