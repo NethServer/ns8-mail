@@ -150,14 +150,12 @@ images+=("${repobase}/${reponame}")
 # Rspamd additional image
 #
 reponame="mail-rspamd"
-container=$(buildah from docker.io/library/alpine:3.21.7)
+container=$(buildah from docker.io/library/alpine:edge)
 buildah run "${container}" /bin/sh <<EOF
 set -e
-# Add Alpine edge community repo for rspamd 4.x
-echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
 # Software installation order is important to preserve uid and gid allocation:
 apk add --no-cache redis
-apk add --no-cache rspamd@edge rspamd-controller@edge rspamd-proxy@edge rspamd-fuzzy@edge rspamd-client@edge
+apk add --no-cache rspamd rspamd-controller rspamd-proxy rspamd-fuzzy rspamd-client
 apk add --no-cache unbound
 # for envsubst 
 apk add --no-cache gettext
