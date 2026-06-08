@@ -19,14 +19,12 @@ configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='conf
 })
 agent.assert_exp(configure_retval['exit_code'] == 0, "The configure-module subtask failed!")
 
+spam_folder_env = renv.get("DOVECOT_SPAM_FOLDER", "")
 settings_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='set-mailbox-settings', data={
     "spam_retention": {
         "value": int(renv.get("DOVECOT_SPAM_RETENTION", "15"))
     },
-    "spam_folder": {
-        "enabled": bool(renv.get("DOVECOT_SPAM_FOLDER", "")),
-        "name": renv.get("DOVECOT_SPAM_FOLDER", "Junk")
-    },
+    "spam_folder": {"enabled": True, "name": spam_folder_env} if spam_folder_env else {"enabled": False},
     "spam_prefix": {
         "enabled": bool(renv.get("DOVECOT_SPAM_SUBJECT_PREFIX", "")),
         "prefix": renv.get("DOVECOT_SPAM_SUBJECT_PREFIX", "")
