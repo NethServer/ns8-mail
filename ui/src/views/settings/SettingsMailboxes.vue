@@ -203,6 +203,7 @@
                   <NsTextInput
                     v-show="spamFolder.enabled"
                     v-model.trim="spamFolder.name"
+                    :placeholder="$t('settings_mailboxes.junk_folder_placeholder')"
                     :label="$t('settings_mailboxes.junk_folder_name')"
                     :invalid-message="$t(error.spam_folder)"
                     :disabled="loading.setMailboxSettings"
