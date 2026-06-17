@@ -483,7 +483,8 @@
         "specify_quota": "Quotum opgeven",
         "spam": "Spam",
         "specify_retention": "Geef de retentie op",
-        "move_spam_but_no_folder": "Als 'Spam naar map met ongewenste e-mail verplaatsen' is ingeschakeld, is de naam van de map met ongewenste e-mail vereist"
+        "move_spam_but_no_folder": "Als 'Spam naar map met ongewenste e-mail verplaatsen' is ingeschakeld, is de naam van de map met ongewenste e-mail vereist",
+        "junk_folder_placeholder": "e.g. Junk"
     },
     "settings_general": {
         "user_domain": "Gebruiker domein",
