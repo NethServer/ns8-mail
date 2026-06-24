@@ -349,7 +349,8 @@
         "default_mail_quota": "Cuota de correo por defecto",
         "specify_quota": "Especificar cuota",
         "specify_retention": "Especificar retención",
-        "move_spam_but_no_folder": "Si está habilitado \"Mover spam a la papelera\", se requiere el nombre de la papelera"
+        "move_spam_but_no_folder": "Si está habilitado \"Mover spam a la papelera\", se requiere el nombre de la papelera",
+        "junk_folder_placeholder": "e.g. Junk"
     },
     "filter_bypass_rules": {
         "type_email": "Correo electrónico",
