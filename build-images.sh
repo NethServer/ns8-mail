@@ -28,7 +28,7 @@ else
         --workingdir=/usr/src/ui \
         --env="NODE_OPTIONS=--openssl-legacy-provider" \
         nodebuilder-mail \
-        sh -c "yarn install && yarn build"
+        sh -c "corepack enable && yarn install && yarn build"
 fi
 
 # Add imageroot directory to the container image
