@@ -56,6 +56,12 @@ LDAP Login checks
     IMAP login bad credentials
     AD user credentials are bad with LDAP
 
+Default mailbox folders are created
+    [Documentation]    Sent/Drafts/Junk/Trash must exist and be subscribed at first
+    ...                mailbox access, without any message being sent (issue dev#8104).
+    Wait Until Keyword Succeeds    20 seconds    1 second
+    ...    Default folders exist and are subscribed    u1
+
 Switch to AD user domain
     Run task     module/${MID}/configure-module
     ...          {"hostname":"mail.domain.test","user_domain":"ad.dom.test","mail_domain":"domain.test"}
@@ -67,6 +73,19 @@ Active Directory Login checks
     LDAP user credentials are bad with AD
 
 *** Keywords ***
+Default folders exist and are subscribed
+    [Arguments]    ${user}
+    # Force namespace init so auto=subscribe mailboxes are materialized
+    Execute Command    timeout ${curl_timeout} curl -s -f -u u1:Nethesis,1234 imap://127.0.0.1 || true
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent -m ${MID} podman exec dovecot doveadm mailbox list -s -u ${user}
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0
+    Should Contain    ${out}    Drafts
+    Should Contain    ${out}    Sent
+    Should Contain    ${out}    Junk
+    Should Contain    ${out}    Trash
+
 LDAP user credentials are bad with AD
     [Documentation]    When bad credentials are issued the server replies with
     ...                a few seconds of delay.
