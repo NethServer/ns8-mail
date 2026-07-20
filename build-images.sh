@@ -114,6 +114,8 @@ buildah config \
     --env=DOVECOT_SPAM_FOLDER=Junk \
     --env=DOVECOT_SPAM_SUBJECT_PREFIX= \
     --env=DOVECOT_TRASH_FOLDER=Trash \
+    --env=DOVECOT_SENT_FOLDER=Sent \
+    --env=DOVECOT_DRAFTS_FOLDER=Drafts \
     --env=DOVECOT_MAX_USERIP_CONNECTIONS=20 \
     --env=DOVECOT_DEFAULT_PROCESS_LIMIT=400 \
     --env=LD_PRELOAD=/usr/lib/libmimalloc.so.2 \
