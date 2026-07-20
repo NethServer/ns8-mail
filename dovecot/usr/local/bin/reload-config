@@ -30,6 +30,8 @@ stats_http_port="${DOVECOT_METRICS_PORT:?}"
 tmpl_spam_folder="${DOVECOT_SPAM_FOLDER:-Junk}"
 tmpl_spam_subject_prefix="${DOVECOT_SPAM_SUBJECT_PREFIX:-}"
 tmpl_trash_folder="${DOVECOT_TRASH_FOLDER:?}"
+tmpl_sent_folder="${DOVECOT_SENT_FOLDER:-Sent}"
+tmpl_drafts_folder="${DOVECOT_DRAFTS_FOLDER:-Drafts}"
 flatcurve_enabled="${DOVECOT_FLATCURVE_ENABLED:-yes}"
 tmpl_mail_plugins="acl listescape notify mail_log"
 if [ "$flatcurve_enabled" == "yes" ]; then
