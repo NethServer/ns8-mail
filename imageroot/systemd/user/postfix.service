@@ -5,8 +5,8 @@ Wants=get-certificate.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
-WorkingDirectory=%S/state
+EnvironmentFile=%E/state/environment
+WorkingDirectory=%E/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/postfix.pid %t/postfix.ctr-id
 ExecStartPre=/bin/mkdir -vp pcdb
