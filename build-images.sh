@@ -37,7 +37,7 @@ buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
     --label="org.nethserver.max-per-node=1" \
-    --label="org.nethserver.min-core=3.6.0-0" \
+    --label="org.nethserver.min-core=3.20.1" \
     --label="org.nethserver.volumes=dovecot-data" \
     --label="org.nethserver.images=$(printf "${repobase}/mail-%s:${IMAGETAG:-latest} " \
         dovecot \

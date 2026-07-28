@@ -150,7 +150,9 @@
             :totalFileCountLabel="core.$t('backup.total_file_count')"
             :backupDisabledLabel="core.$t('common.disabled')"
             :showMoreLabel="core.$t('common.show_more')"
-            :multipleUncertainStatusLabel="core.$t('backup.some_backups_failed_or_are_pending')"
+            :multipleUncertainStatusLabel="
+              core.$t('backup.some_backups_failed_or_are_pending')
+            "
             :moduleId="instanceName"
             :moduleUiName="instanceLabel"
             :repositories="backupRepositories"
