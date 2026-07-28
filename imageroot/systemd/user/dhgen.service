@@ -5,5 +5,5 @@ Description=Diffie-Hellman group generator
 Type=oneshot
 ExecStart=runagent generate-dhpem
 ExecStart=-systemctl --user reload postfix.service dovecot.service
-WorkingDirectory=%S/state
+WorkingDirectory=%E/state
 SyslogIdentifier=%N
