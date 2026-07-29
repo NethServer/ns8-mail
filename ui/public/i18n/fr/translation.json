@@ -472,7 +472,8 @@
         "specify_retention": "Specify retention",
         "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required",
         "forever": "Forever",
-        "sharedseen_explanation_tooltips": "If enabled, a message is marked seen (read) by the first user that opens it, with effect for everyone else sharing the same mailbox"
+        "sharedseen_explanation_tooltips": "If enabled, a message is marked seen (read) by the first user that opens it, with effect for everyone else sharing the same mailbox",
+        "junk_folder_placeholder": "e.g. Junk"
     },
     "settings": {
         "mailboxes": "Mailboxes",

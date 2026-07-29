@@ -377,7 +377,8 @@
         "default_mail_quota": "Default mail quota",
         "spam": "Spam",
         "specify_retention": "Specify retention",
-        "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required"
+        "move_spam_but_no_folder": "If \"Move spam to junk folder\" is enabled, junk folder name is required",
+        "junk_folder_placeholder": "e.g. Junk"
     },
     "settings_master_users": {
         "master_users_placeholder": "Choose master users",
