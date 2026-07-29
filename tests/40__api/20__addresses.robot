@@ -16,6 +16,23 @@ Check users and groups addresses are in the address list
     Should Contain    ${laddresses}[addresses]    ${ou1}
     Should Contain    ${laddresses}[addresses]    ${og1}
 
+Check mixed-case AD/LDAP user and group destinations are lower-cased
+    ${ldest} =    Run task    module/${MID}/list-destinations    ""
+    ${user_found} =    Set Variable    ${FALSE}
+    ${group_found} =    Set Variable    ${FALSE}
+    FOR    ${odest}    IN    @{ldest}
+        IF    "${odest}[dtype]" == "user" and "${odest.get('ui_name', '')}" == "Mixed Case User"
+            Should Be Equal    ${odest}[name]    mixedcaseuser
+            ${user_found} =    Set Variable    ${TRUE}
+        END
+        IF    "${odest}[dtype]" == "group" and "${odest.get('ui_name', '')}" == "Mixed Case Group"
+            Should Be Equal    ${odest}[name]    mixedcasegroup
+            ${group_found} =    Set Variable    ${TRUE}
+        END
+    END
+    Should Be True    ${user_found}
+    Should Be True    ${group_found}
+
 Add a user address alias
     Run task    module/${MID}/add-address    {"atype":"domain","local":"u1-alias","domain":"${test_domain}","destinations":[{"dtype":"user","name":"u1"}]}
 
@@ -25,6 +42,29 @@ Add invalid address
 
 Add a group address alias
     Run task    module/${MID}/add-address    {"atype":"domain","local":"g1-alias","domain":"${test_domain}","destinations":[{"dtype":"group","name":"g1"}]}
+
+Add a mixed-case user address alias
+    Run task    module/${MID}/add-address    {"atype":"domain","local":"mixeduser-alias","domain":"${test_domain}","destinations":[{"dtype":"user","name":"MixedCaseUser"}]}
+
+Check the mixed-case user destination matches list-destinations
+    ${laddresses} =    Run task    module/${MID}/list-addresses    ""
+    ${ldest} =    Run task    module/${MID}/list-destinations    ""
+    ${alias_dest_name} =    Set Variable    ${NONE}
+    FOR    ${oaddr}    IN    @{laddresses}[addresses]
+        IF    "${oaddr}[local]" == "mixeduser-alias"
+            FOR    ${odest}    IN    @{oaddr}[destinations]
+                ${alias_dest_name} =    Set Variable    ${odest}[name]
+            END
+        END
+    END
+    Should Be Equal    ${alias_dest_name}    mixedcaseuser
+    ${dest_match_found} =    Set Variable    ${FALSE}
+    FOR    ${odest}    IN    @{ldest}
+        IF    "${odest}[dtype]" == "user" and "${odest}[name]" == "${alias_dest_name}"
+            ${dest_match_found} =    Set Variable    ${TRUE}
+        END
+    END
+    Should Be True    ${dest_match_found}
 
 Add a public mailbox address alias
     Run task    module/${MID}/add-address    {"atype":"domain","local":"mailadm","domain":"${test_domain}","destinations":[{"dtype":"public","name":"vmail+postmaster"}]}
