@@ -11,10 +11,7 @@ Well-known ports
 
 ## Environment variables
 
-- `CLAMAV_CUS_RATING` Value for clamav-unofficial-sigs parameter
-  `default_dbs_rating`. Value must be one of `LOW`, `MEDIUM` (the
-  default), `HIGH`, `DISABLE`. See official documentation for the meaning
-  of those values. The default value is highly recommended.
+None
 
 ## Volumes
 
@@ -30,11 +27,17 @@ Well-known ports
 ## Commands
 
 - `download-sigs` Download signatures with one of the available methods:
-     1. `cus` (clamav-unofficial-sigs)
+     1. `cus`, `cus-low`, `cus-medium`, `cus-high`, `cus-disable`
+        (clamav-unofficial-sigs)
      2. `freshclam` (Freshclam)
 
-  Method name is passed as first command argument. Additional arguments are passed to the downloader executable.
+  Method name is passed as first command argument. Additional arguments
+  are passed to the downloader executable. The `cus-*` variants implicitly
+  invoke `set-cus-rating` before the download starts to adjust the rating
+  configuration.
 
 - `set-cus-rating` This command sets the value of `default_dbs_rating` in
-  the `user.conf` file. Pass the value (e.g. `LOW`) as the first argument
-  to the command.
+  the `user.conf` file. Pass the value (e.g. `LOW`, `MEDIUM`, `HIGH` or
+  `DISABLE`) as the first argument to the command. See the
+  clamav-unofficial-sigs documentation for the meaning of those values;
+  `MEDIUM` is the recommended default.

@@ -5,6 +5,8 @@ After=clamav.service
 
 [Service]
 Type=oneshot
-ExecStart=podman exec clamav download-sigs cus -s
+Environment=CLAMAV_CUS_RATING=MEDIUM
+EnvironmentFile=%E/state/environment
+ExecStart=podman exec clamav download-sigs cus-${CLAMAV_CUS_RATING} -s
 WorkingDirectory=%E/state
 SyslogIdentifier=%N

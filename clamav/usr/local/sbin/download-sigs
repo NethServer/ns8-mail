@@ -20,11 +20,19 @@ if [ "${sig_type}" = "freshclam" ]; then
     exec /usr/bin/freshclam "${@}"
 fi
 
-if [ "${sig_type}" = "cus" ]; then
-    if [ -n "${CLAMAV_CUS_RATING}" ]; then
-        # Apply rating value to user.conf
-        set-cus-rating "${CLAMAV_CUS_RATING}"
-    fi
-    # Start clamav-unofficial-sigs
-    exec su -s /bin/bash - clamav /usr/local/sbin/clamav-unofficial-sigs.sh -- "${@}"
-fi
+sig_type_lc=$(printf '%s' "${sig_type}" | tr 'A-Z' 'a-z')
+
+case "${sig_type_lc}" in
+    cus*)
+        case "${sig_type_lc}" in
+            cus-*)
+                # Change configured rating value in user.conf before starting
+                # the download process. If sig_type has no rating suffix, do
+                # not touch it.
+                set-cus-rating "${sig_type_lc#cus-}"
+                ;;
+        esac
+        # Start clamav-unofficial-sigs
+        exec su -s /bin/bash - clamav /usr/local/sbin/clamav-unofficial-sigs.sh -- "${@}"
+        ;;
+esac

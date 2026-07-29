@@ -8,5 +8,8 @@
 # shellcheck shell=dash
 set -e
 
-sed  "/^default_dbs_rating=/ c \default_dbs_rating=\"${CLAMAV_CUS_RATING:?}\"" \
+rating=${1:?missing rating argument}
+rating=$(printf '%s' "${rating}" | tr 'a-z' 'A-Z')
+
+sed  "/^default_dbs_rating=/ c \default_dbs_rating=\"${rating}\"" \
     /etc/clamav-unofficial-sigs/user.conf
