@@ -11,5 +11,6 @@ set -e
 rating=${1:?missing rating argument}
 rating=$(printf '%s' "${rating}" | tr 'a-z' 'A-Z')
 
-sed  "/^default_dbs_rating=/ c \default_dbs_rating=\"${rating}\"" \
+sed -i "/^default_dbs_rating=/ c \default_dbs_rating=\"${rating}\"" \
+    /etc/clamav-unofficial-sigs/user.conf
     /etc/clamav-unofficial-sigs/user.conf
