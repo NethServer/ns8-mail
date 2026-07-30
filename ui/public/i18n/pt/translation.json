@@ -380,7 +380,8 @@
         "sharedseen": "Shared seen",
         "move_spam_to_junk_folder": "Move spam to junk folder",
         "junk_folder_name": "Junk folder name",
-        "unlimited": "Unlimited"
+        "unlimited": "Unlimited",
+        "junk_folder_placeholder": "e.g. Junk"
     },
     "addresses": {
         "edit_address_address": "Edit address {address}",
