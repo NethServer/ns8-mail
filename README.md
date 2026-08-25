@@ -233,6 +233,51 @@ For best results, verify successful training by reviewing the Rspamd logs
 or using diagnostic commands. Consult the Rspamd documentation for further
 details.
 
+## Reset Rspamd Bayes rule database
+
+Rspamd's Bayes data lives in the `rspamd-redis` Podman volume, accessible
+from a Redis Unix socket.
+
+Assuming `mail1` is the Mail module ID, access the `rspamd` container
+shell with:
+
+    runagent -m mail1 podman exec -ti rspamd ash -l # Enter rspamd shell
+
+From the `rspamd` container shell run these commands:
+
+    # Create a snapshot of current Redis DB:
+    redis-cli -s /run/redis/persistent.sock --rdb \
+        /var/lib/redis/persistent.rdb_bak_$(date +%Y%m%d-%H%M%S)
+    # Remove Redis keys used by Bayes rules:
+    (
+        redis-cli -s "/run/redis/persistent.sock" --scan --pattern 'RS_*' --count 1000
+        redis-cli -s "/run/redis/persistent.sock" --scan --pattern 'BAYES_*' --count 1000
+        redis-cli -s "/run/redis/persistent.sock" --scan --pattern 'learned_*' --count 1000
+        echo RS
+    ) | xargs -r redis-cli -s "/run/redis/persistent.sock" unlink
+    exit # Exit rspamd shell
+
+Check the learn count with Dovecot's `rspamc-wrapper` command:
+
+    runagent -m mail1 podman exec -ti dovecot rspamc-wrapper stat
+
+Refer to previous section for bulk Bayesian filter training instructions.
+
+Example procedure that restores the Redis DB snapshot (optional):
+
+    runagent -m mail1 # Enter mail1 environment
+    systemctl --user stop rspamd
+    pushd "$(podman volume inspect rspamd-redis --format '{{.Mountpoint}}')"
+    ls -l persistent.rdb_bak_* # Find the correct snapshot timestamp
+    chown -v --reference persistent.rdb persistent.rdb_bak_20261020-102030
+    mv -v persistent.rdb_bak_20261020-102030 persistent.rdb
+    popd
+    systemctl --user start rspamd
+    exit # Exit mail1 environment
+
+Use a similar procedure to purge the `rspamd-redis` volume from unused
+snapshots, since the volume is included in the module backup set.
+
 ## Rspamd plugin for Spamhaus DQS
 
 Accessing public Spamhaus DNS Blocklists (DNSBLs) is subject to a [fair-use policy](https://www.spamhaus.org/blocklists/dnsbl-fair-use-policy/) and may not work from certain networks (i.e. [Hetzner](https://www.spamhaus.org/resource-hub/email-security/query-the-legacy-dnsbls-via-hetzner/)).
