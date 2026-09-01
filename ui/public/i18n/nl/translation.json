@@ -300,7 +300,7 @@
         "create_public_mailbox_mailbox": "Openbare postvak aanmaken {mailbox}",
         "col_mailbox": "Postvak",
         "go_to_mailboxes": "Ga naar Postbussen",
-        "mailbox_invalid_character": "The mailbox name cannot contain the @ character"
+        "mailbox_invalid_character": "De naam van het postvak mag het teken @ niet bevatten"
     },
     "filter": {
         "third_party_signatures_rating": "Beoordeling van handtekeningen van derden",
@@ -484,7 +484,7 @@
         "spam": "Spam",
         "specify_retention": "Geef de retentie op",
         "move_spam_but_no_folder": "Als 'Spam naar map met ongewenste e-mail verplaatsen' is ingeschakeld, is de naam van de map met ongewenste e-mail vereist",
-        "junk_folder_placeholder": "e.g. Junk"
+        "junk_folder_placeholder": "e.g. Spam"
     },
     "settings_general": {
         "user_domain": "Gebruiker domein",
