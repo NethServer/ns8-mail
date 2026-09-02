@@ -149,6 +149,8 @@
         "description": "Description",
         "add_user_addresses_from_user_domain": "Add user addresses from user domain {userDomain}",
         "add_user_addresses_from_user_domain_tooltip": "Create an email address for every user in the user domain",
+        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain {userDomain}",
+        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
         "edit_domain": "Edit domain",
         "accept_unknown_recipients": "Accept unknown recipients",
         "copy_inbound_messages": "Copy inbound messages",
