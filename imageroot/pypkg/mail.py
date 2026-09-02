@@ -53,7 +53,7 @@ def get_domains():
     """Return the configured domains"""
     sdb = pcdb_connect(readonly=True)
     domains = {}
-    for row in sdb.execute("""SELECT domain, addusers, addgroups, catchall, bccaddr, ddesc FROM domains"""):
+    for row in sdb.execute("""SELECT domain, addusers, addgroups, addaliases, catchall, bccaddr, ddesc FROM domains"""):
         if row['domain'] == '*':
             continue # Ignore the wildcard domain
 
@@ -66,6 +66,7 @@ def get_domains():
             "domain": row["domain"],
             "addusers": row["addusers"] == 1,
             "addgroups": row["addgroups"] == 1,
+            "addaliases": row["addaliases"] == 1,
             "catchall": catchall,
             "bccaddr": row["bccaddr"],
             "description": row["ddesc"],
