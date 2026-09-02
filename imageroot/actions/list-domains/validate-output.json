@@ -9,6 +9,7 @@
                 "domain": "mydom.test",
                 "description": "Beautiful domain that considers user names as valid mail addresses",
                 "addusers": true,
+                "addaliases": false,
                 "catchall": null,
                 "bccaddr": null
             },
@@ -16,6 +17,7 @@
                 "domain": "empty.example.org",
                 "description": "This domain accepts only addresses defined in the destmap table. Any message sent to it is also copied to bccaddr (mailspy)",
                 "addusers": false,
+                "addaliases": false,
                 "catchall": null,
                 "bccaddr": "archive@mydom.test"
             },
@@ -23,6 +25,7 @@
                 "domain": "blackhole.test",
                 "description": "Domain with catchall enabled. Messages for unknown addresses are delivered to the catchall mailbox",
                 "addusers": false,
+                "addaliases": true,
                 "catchall": {
                     "dtype": "public",
                     "public": "blackhole"

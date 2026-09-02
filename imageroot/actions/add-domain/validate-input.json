@@ -8,6 +8,7 @@
             "domain": "mynewdom.test",
             "addusers": false,
             "addgroups": false,
+            "addaliases": false,
             "catchall": {
                 "dtype": "user",
                 "name": "administrator"
@@ -19,6 +20,7 @@
             "domain": "great.example.com",
             "addusers": true,
             "addgroups": false,
+            "addaliases": false,
             "catchall": null,
             "bccaddr": null,
             "description": "Company main domain with all users"

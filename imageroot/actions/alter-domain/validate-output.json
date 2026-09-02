@@ -7,6 +7,7 @@
         {
             "domain": "mydom.test",
             "addusers": true,
+            "addaliases": false,
             "catchall": {
                 "dtype": "user",
                 "user": "first.user"

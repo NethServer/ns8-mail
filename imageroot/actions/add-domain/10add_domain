@@ -25,13 +25,14 @@ try:
         "domain": request['domain'],
         "addusers": request.get('addusers', False),
         "addgroups": request.get('addgroups', False),
+        "addaliases": request.get('addaliases', False),
         "catchall": catchall,
         "bccaddr": request.get("bccaddr", None),
         "ddesc": request.get("description", ""),
     }
 
     cur = sdb.cursor()
-    cur.execute("""INSERT INTO domains (domain, addusers, addgroups, catchall, bccaddr, ddesc) VALUES (:domain, :addusers, :addgroups, :catchall, :bccaddr, :ddesc)""", values)
+    cur.execute("""INSERT INTO domains (domain, addusers, addgroups, addaliases, catchall, bccaddr, ddesc) VALUES (:domain, :addusers, :addgroups, :addaliases, :catchall, :bccaddr, :ddesc)""", values)
 
 except IntegrityError:
     sdb.rollback()
