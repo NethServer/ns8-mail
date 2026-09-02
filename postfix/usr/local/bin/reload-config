@@ -62,6 +62,7 @@ tmpl_domain_catchall_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || 
 tmpl_laddgroups_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM (SELECT domain FROM domains WHERE addgroups = 1 UNION SELECT '${tmpl_vdomain}' AS domain)")
 tmpl_laddusers_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM (SELECT domain FROM domains WHERE addusers = 1 UNION SELECT '${tmpl_vdomain}' AS domain)")${tmpl_ldomain:+ $tmpl_ldomain}
 tmpl_laddaliases_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM domains WHERE addaliases = 1")
+tmpl_addaliases_attr="${POSTFIX_LDAP_ALIAS_ATTR:-mail}"
 tmpl_ldap_bind_dn="${POSTFIX_LDAP_USER}"
 tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
 tmpl_ldap_host="${POSTFIX_LDAP_HOST}"

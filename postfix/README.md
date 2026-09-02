@@ -38,6 +38,9 @@ Standard public TCP ports
 - `POSTFIX_LDAP_PASS`, bind password
 - `POSTFIX_LDAP_SCHEMA`, eg `rfc2307`
 - `POSTFIX_LDAP_BASE`, eg `dc=directory,dc=nh`
+- `POSTFIX_LDAP_ALIAS_ATTR`. LDAP user attribute queried to expand
+  addresses for domains with the `addaliases` flag set. Default is
+  `mail`.
 - `POSTFIX_MILTERS`, value for Postfix
   [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters),
   default is `inet:127.0.0.1:11332`. Set to empty string to completely
