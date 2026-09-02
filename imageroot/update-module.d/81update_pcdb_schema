@@ -8,6 +8,13 @@
 exec 1>&2
 
 # Apply updates to the pcdb SQLite database schema
-podman exec -i --workdir /srv postfix sqlite3 pcdb.sqlite <<'EOF'
-.read /etc/postfix/pcdb-relayrules.sql
+podman exec -i --workdir /srv postfix ash <<'EOF'
+set -e
+sqlite3 pcdb.sqlite ".read /etc/postfix/pcdb-relayrules.sql"
+
+# ALTER TABLE ADD COLUMN is not idempotent: skip it if the column already exists
+has_addaliases=$(sqlite3 pcdb.sqlite "SELECT COUNT(*) FROM pragma_table_info('domains') WHERE name = 'addaliases';")
+if [ "${has_addaliases}" -eq 0 ]; then
+    sqlite3 pcdb.sqlite "ALTER TABLE domains ADD COLUMN addaliases INT DEFAULT 0;"
+fi
 EOF
