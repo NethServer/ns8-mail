@@ -61,6 +61,7 @@ tmpl_reject_internal_domains='check_recipient_access inline:{'$(printf '{ %s = R
 tmpl_domain_catchall_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || '=' || catchall || '@${tmpl_vdomain}}', ', ') || '}' FROM domains WHERE length(catchall) > 0 AND domain != '*'")
 tmpl_laddgroups_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM (SELECT domain FROM domains WHERE addgroups = 1 UNION SELECT '${tmpl_vdomain}' AS domain)")
 tmpl_laddusers_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM (SELECT domain FROM domains WHERE addusers = 1 UNION SELECT '${tmpl_vdomain}' AS domain)")${tmpl_ldomain:+ $tmpl_ldomain}
+tmpl_laddaliases_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM domains WHERE addaliases = 1")
 tmpl_ldap_bind_dn="${POSTFIX_LDAP_USER}"
 tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
 tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
@@ -85,6 +86,7 @@ envsubst >/etc/postfix/master.cf <"${TEMPLATES_DIR:?}/master.cf"
 envsubst >/etc/postfix/laddusers.cf <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf"
 envsubst >/etc/postfix/userforwards.cf <"${TEMPLATES_DIR:?}/userforwards.cf"
 envsubst >/etc/postfix/laddgroupmembers.cf <"${TEMPLATES_DIR:?}/laddgroupmembers-${ldap_schema}.cf"
+envsubst >/etc/postfix/laddaliases.cf <"${TEMPLATES_DIR:?}/laddaliases-${ldap_schema}.cf"
 envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \
     sed "s/^domain = .*/domain = ${tmpl_vdomain}/ ; /^# just/ d" >/etc/postfix/laddusers-origin.cf
 

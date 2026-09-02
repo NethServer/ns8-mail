@@ -50,6 +50,7 @@ virtual_alias_maps =
   sqlite:${S}meta_directory/userforwards.cf
   proxy:ldap:${S}meta_directory/laddgroupmembers.cf
   proxy:ldap:${S}meta_directory/laddusers.cf
+  proxy:ldap:${S}meta_directory/laddaliases.cf
   ${tmpl_domain_catchall_map}
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 virtual_mailbox_maps = ${tmpl_virtual_mailbox_maps}

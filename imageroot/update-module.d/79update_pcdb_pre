@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+exec 1>&2
+
+# Generic hook for pcdb schema changes that must run *before* the postfix
+# restart in 80restart_services, as opposed to 81update_pcdb_schema, which
+# runs *after* it because it needs a file baked into the new image (see its
+# own comments). Add here any change that only needs plain SQL against the
+# still-running old container -- typically a new column that reload-config
+# in the new image already queries, and which would otherwise crash the
+# container on startup before 81update_pcdb_schema gets a chance to run.
+#
+# Example: the "addaliases" column below.
+podman exec -i --workdir /srv postfix ash <<'EOF'
+set -e
+
+# ALTER TABLE ADD COLUMN is not idempotent: skip it if the column already exists
+has_addaliases=$(sqlite3 pcdb.sqlite "SELECT COUNT(*) FROM pragma_table_info('domains') WHERE name = 'addaliases';")
+if [ "${has_addaliases}" -eq 0 ]; then
+    sqlite3 pcdb.sqlite "ALTER TABLE domains ADD COLUMN addaliases INT DEFAULT 0;"
+fi
+EOF
