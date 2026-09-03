@@ -127,9 +127,43 @@ images+=("${repobase}/${reponame}")
 #
 reponame="mail-postfix"
 container=$(buildah from docker.io/library/alpine:3.21.7)
-buildah run "${container}" /bin/sh <<EOF
+buildah run "${container}" /bin/sh <<'EOF'
 set -e
-apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login
+apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login confuse
+#
+# Build postsrsd from source: Alpine 3.21 only ships 2.0, which has
+# no SIGHUP handler for config reload NethServer/dev#7741. Pin to a
+# recent release that has one. confuse (above) is postsrsd's runtime
+# dependency: install it persistently, since confuse-dev below is
+# removed once the build is done.
+#
+# renovate: datasource=github-tags packageName=roehling/postsrsd
+postsrsd_version=2.4.0
+addgroup -S postsrsd
+adduser -S -D -h /var/lib/postsrsd -s /bin/false -G postsrsd -g postsrsd postsrsd
+apk add --no-cache --virtual .postsrsd-build \
+    autoconf automake build-base cmake confuse-dev git help2man samurai
+(
+    mkdir -p /tmp/build
+    cd /tmp/build
+    git clone --branch "${postsrsd_version}" --depth 1 \
+        https://github.com/roehling/postsrsd.git
+    cd postsrsd
+    mkdir -p /etc/postsrsd
+    cmake -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=ALWAYS \
+        -DCMAKE_INSTALL_PREFIX=/usr/ \
+        -DWITH_SQLITE=OFF \
+        -DGENERATE_SRS_SECRET=OFF \
+        -DPOSTSRSD_CONFIGDIR=/etc/postsrsd/ \
+        -DINSTALL_SYSTEMD_SERVICE=OFF \
+        -DPOSTSRSD_USER=postsrsd
+    cmake --build build
+    cmake --install build
+)
+rm -rf /tmp/build
+apk del .postsrsd-build
 EOF
 buildah add "${container}" postfix/ /
 buildah config \
