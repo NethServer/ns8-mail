@@ -36,6 +36,21 @@ LDAP alias priority is lower than SQLite address alias
     Should not be delivered via LMTP to  u1
     Should not be delivered via LMTP to  u3
 
+LDAP alias priority is lower than wildcard SQLite alias
+    [Documentation]    A wildcard SQLite alias is resolved by the same sqlite:aliases.cf map as an
+    ...                exact-domain one, before proxy:ldap:laddaliases.cf is ever queried, so it
+    ...                also wins over an LDAP mail-attribute alias for the same address
+    [Setup]       Run keywords
+    ...                Add awild wildcard alias to u2
+    ...                AND    Set u1 LDAP mail attribute  awild@inbound.test
+    [Teardown]    Run keywords
+    ...                Set u1 LDAP mail attribute    ldapa1@inbound.test
+    ...                AND    Remove awild wildcard alias
+    Send SMTP message to    awild@inbound.test
+    Should be delivered via LMTP to  u2
+    Should not be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  u3
+
 LDAP alias stops working once mail attribute is cleared
     [Documentation]    A removed mail attribute must not leave a stale alias behind
     [Setup]       Set u1 LDAP mail attribute    ${EMPTY}
@@ -91,6 +106,12 @@ Add aprio alias to u2
 
 Remove aprio alias
     Run Task    module/${MID}/remove-address    {"atype":"domain","local":"aprio","domain":"inbound.test"}
+
+Add awild wildcard alias to u2
+    Run Task    module/${MID}/add-address    {"atype":"wildcard","local":"awild","destinations":[{"dtype":"user","name":"u2"}]}
+
+Remove awild wildcard alias
+    Run Task    module/${MID}/remove-address    {"atype":"wildcard","local":"awild"}
 
 Set ${user} LDAP mail attribute
     [Arguments]    ${mail}
