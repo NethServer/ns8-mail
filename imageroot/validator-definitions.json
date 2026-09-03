@@ -223,6 +223,18 @@
                     "atype": "adduser",
                     "local": "first.user",
                     "description": "First User"
+                },
+                {
+                    "atype": "addalias",
+                    "local": "jane.doe",
+                    "domain": "mydom.test",
+                    "destinations": [
+                        {
+                            "dtype": "user",
+                            "name": "jane.doe",
+                            "ui_name": "Jane Doe"
+                        }
+                    ]
                 }
             ],
             "oneOf": [
@@ -288,6 +300,25 @@
                             "properties": {
                                 "atype": {
                                     "const": "addgroup"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        },
+                        {
+                            "title": "Address derived from users' LDAP mail attribute",
+                            "required": [
+                                "domain",
+                                "destinations"
+                            ],
+                            "properties": {
+                                "atype": {
+                                    "const": "addalias"
                                 }
                             }
                         }

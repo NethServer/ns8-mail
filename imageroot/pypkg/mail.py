@@ -112,20 +112,62 @@ def get_addresses():
         # RFC-mandatory address, cannot be deleted.
         addresses['postmaster@*']['delete_forbidden'] = True
 
-    if sdb.execute("""SELECT COUNT(*) FROM domains WHERE addusers = 1""").fetchone()[0] > 0:
-        # If at least one domain is marked "addusers", append "adduser" addresses
+    addusers_enabled = sdb.execute("""SELECT COUNT(*) FROM domains WHERE addusers = 1""").fetchone()[0] > 0
+    aliases_domains = {row['domain'].lower() for row in sdb.execute("""SELECT domain FROM domains WHERE addaliases = 1""")}
+
+    if addusers_enabled or aliases_domains:
+        # If at least one domain is marked "addusers", append "adduser"
+        # addresses. If at least one domain is marked "addaliases", also
+        # append addresses derived from the LDAP mail attribute of users,
+        # but only for the domains that actually accept them. Both share
+        # the same list_users() call, since it can be slow.
+        internal_users = {row['user'] for row in sdb.execute("""SELECT user FROM userattrs WHERE internal = 1""")}
         ldapclient = _create_ldapclient()
-        for euser in ldapclient.list_users():
-            akey = euser["user"].lower() + '@+'
-            addresses[akey] = {
-                "atype": "adduser",
-                "local": euser["user"].lower(),
-                "description": euser["display_name"],
-            }
-        for ruser in sdb.execute("""SELECT user FROM userattrs WHERE internal = 1""").fetchall():
-            akey = ruser['user'] + '@+'
-            if akey in addresses:
-                addresses[akey]["internal"] = True
+        for euser in ldapclient.list_users(extra_info=True):
+            elogin = euser["user"].lower()
+            is_internal = euser["user"] in internal_users
+
+            if addusers_enabled:
+                akey = elogin + '@+'
+                addresses[akey] = {
+                    "atype": "adduser",
+                    "local": elogin,
+                    "description": euser["display_name"],
+                }
+                if is_internal:
+                    addresses[akey]["internal"] = True
+
+            if aliases_domains:
+                alocal, atsign, adomain = euser["mail"].lower().partition('@')
+                if atsign and adomain in aliases_domains and alocal + '@*' not in addresses:
+                    # A wildcard alias (akey "local@*") is resolved by the
+                    # same sqlite:aliases.cf map, before proxy:ldap:laddaliases.cf
+                    # is ever queried, so it takes priority just like an
+                    # exact-domain one and must be checked separately here:
+                    # it is stored under a different key than "local@domain".
+                    akey = alocal + '@' + adomain
+                    aaddress = addresses.get(akey)
+                    if aaddress is None:
+                        aaddress = addresses[akey] = {
+                            "atype": "addalias",
+                            "local": alocal,
+                            "domain": adomain,
+                            "destinations": [],
+                        }
+                    if aaddress.get("atype") == "addalias":
+                        # Multiple users may share the same mail attribute
+                        # value: Postfix delivers to all of them, so keep
+                        # one address entry with multiple "user"
+                        # destinations, like the sqlite-backed atypes do.
+                        # An explicit address record already at akey (a
+                        # different atype) always takes priority instead.
+                        aaddress["destinations"].append({
+                            "dtype": "user",
+                            "name": elogin,
+                            "ui_name": euser["display_name"],
+                        })
+                        if is_internal:
+                            aaddress["internal"] = True
 
     if sdb.execute("""SELECT COUNT(*) FROM domains WHERE addgroups = 1""").fetchone()[0] > 0:
         ldapclient = _create_ldapclient()
