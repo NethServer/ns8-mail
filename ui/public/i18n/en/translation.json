@@ -214,6 +214,7 @@
         "type_domain": "Alias",
         "type_adduser": "User",
         "type_addgroup": "Group",
+        "type_addalias": "LDAP alias",
         "address_already_exists": "Address already exists",
         "local_pattern": "Invalid address"
     },

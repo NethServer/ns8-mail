@@ -183,6 +183,10 @@
                                 v-else-if="row.atype == 'addgroup'"
                                 :svg="Events16"
                               />
+                              <NsSvg
+                                v-else-if="row.atype == 'addalias'"
+                                :svg="MailAll16"
+                              />
                             </span>
                             <span>{{ row.type }}</span>
                           </span>
@@ -288,7 +292,8 @@
                           <cv-overflow-menu
                             v-if="
                               row.atype !== 'adduser' &&
-                              row.atype !== 'addgroup'
+                              row.atype !== 'addgroup' &&
+                              row.atype !== 'addalias'
                             "
                             flip-menu
                             class="table-overflow-menu"
@@ -315,9 +320,11 @@
                               />
                             </cv-overflow-menu-item>
                           </cv-overflow-menu>
-                          <!-- overflow menu for adduser addresses -->
+                          <!-- overflow menu for adduser/addgroup addresses -->
                           <cv-overflow-menu
-                            v-else
+                            v-else-if="
+                              row.atype === 'adduser' || row.atype === 'addgroup'
+                            "
                             flip-menu
                             class="table-overflow-menu"
                             :data-test-id="row.address + '-menu'"
@@ -338,6 +345,8 @@
                               />
                             </cv-overflow-menu-item>
                           </cv-overflow-menu>
+                          <!-- addalias addresses are read-only: derived from
+                               LDAP, no edit/delete/visibility action applies -->
                         </cv-data-table-cell>
                       </cv-data-table-row>
                     </template>
@@ -873,6 +882,7 @@ export default {
     getFullAddressList(address) {
       switch (address.atype) {
         case "domain":
+        case "addalias":
           return [address.address];
         case "wildcard": {
           if (this.internalDomains.length && this.internalDomains.length <= 2) {
