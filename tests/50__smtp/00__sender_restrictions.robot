@@ -30,6 +30,22 @@ Sender corresponds to user's address with wildcard domain
     ...                   credentials=u1:Nethesis,1234
     Should be relayed via SMTP
 
+Sender corresponds to user's LDAP alias
+    [Documentation]    The LDAP mail attribute alias is a legitimate sender address for its
+    ...                owning user, feat-7545
+    Send SMTP message to  dest@remote.test
+    ...                   from=ldapa1@inbound.test
+    ...                   credentials=u1:Nethesis,1234
+    Should be relayed via SMTP
+
+Sender is an LDAP alias owned by another user
+    [Documentation]    feat-7545
+    Send SMTP message to  dest@remote.test
+    ...                   from=ldapa1@inbound.test
+    ...                   credentials=u3:Nethesis,1234
+    ...                   expect_curl_exitcode=55
+    Should return SMTP error    553 5.7.1 <ldapa1@inbound.test>: Sender address rejected: not owned by user u3
+
 Sender is the name of another user
     Send SMTP message to  dest@remote.test
     ...                   from=u2@inbound.test
