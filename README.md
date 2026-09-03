@@ -117,6 +117,33 @@ by `myselector`,
 3. add a DNS TXT record to `mydomain.example.com`, as described in
    `/var/lib/rspamd/dkim/myselector.txt`
 
+## Disable SRS (Sender Rewriting Scheme)
+
+Since Mail 1.8, forwarded mail's envelope sender is rewritten by
+[postsrsd](https://github.com/roehling/postsrsd), so that it passes the
+destination's SPF check instead of being rejected. See the "Sender
+Rewriting Scheme (SRS)" section in `postfix/README.md` for background,
+and for a concrete case (an archiver fed through `POSTFIX_ALWAYS_BCC`,
+e.g. Piler) where an admin may prefer to turn it off.
+
+To disable it:
+
+1. Edit the module's `state/environment` file and set
+
+       POSTFIX_SRS=0
+
+1. Reload the Postfix container:
+
+       systemctl --user reload postfix
+
+Reloading is enough: it both stops rewriting envelope senders and stops
+the `postsrsd` process itself, right away.
+
+To re-enable SRS, remove the `POSTFIX_SRS` line (or set it back to `1`)
+in `state/environment`, then reload Postfix again:
+
+    systemctl --user reload postfix
+
 ## Configuration override for ClamAV unofficial signatures
 
 Changes to `clamav-unofficial-sigs` configuration are volatile. When the

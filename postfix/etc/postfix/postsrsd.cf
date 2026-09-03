@@ -1,0 +1,8 @@
+
+#
+# Sender Rewriting Scheme (SRS) via postsrsd NethServer/dev#7741
+#
+sender_canonical_maps = socketmap:unix:/var/lib/postsrsd/srs.sock:forward
+sender_canonical_classes = envelope_sender
+recipient_canonical_maps = socketmap:unix:/var/lib/postsrsd/srs.sock:reverse
+recipient_canonical_classes = envelope_recipient, header_recipient

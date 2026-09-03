@@ -25,6 +25,13 @@ if [ $# -eq 0 ]; then
             rm -f key-*.pem cert-*.pem
         )
     fi
+    if [ ! -s /var/spool/postfix/postsrsd/postsrsd.secret ] ; then
+        (
+            mkdir -vp /var/spool/postfix/postsrsd
+            umask 077
+            dd if=/dev/urandom bs=18 count=1 status=none | base64 > /var/spool/postfix/postsrsd/postsrsd.secret
+        )
+    fi
     reload-config
     exec /usr/sbin/postfix start-fg
 else
