@@ -1,5 +1,7 @@
 *** Settings ***
-Documentation    Message for user with forward address is sent with or without copy
+Documentation    Message for user with forward address is sent with or
+...              without copy. External forwards are SRS-rewritten
+...              (NethServer/dev#7741) to pass SPF at the destination.
 Resource    smtp.resource
 Suite Setup     Enable wildcard relay rule
 Suite Teardown  Cleanup relay rules
@@ -34,6 +36,7 @@ Forward to external address
     Send SMTP message to    u3@inbound.test
     Should be relayed via SMTP  10001  usr_relay
     Should not be delivered via LMTP to  u3
+    Envelope sender should be SRS-rewritten    default    example.org
 
 *** Keywords ***
 Configure forward for user
