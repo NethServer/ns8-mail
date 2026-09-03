@@ -4,6 +4,7 @@ Library    Collections
 
 *** Variables ***
 ${test_domain}    api-addresses.test
+${addalias_domain}    api-addalias.test
 
 *** Test Cases ***
 Create domain ${test_domain} with users and groups
@@ -117,3 +118,99 @@ Check the wildcard alias is still present
 
 Remove the wildcard address
     Run task    module/${MID}/remove-address    {"atype":"wildcard","local":"info"}
+
+Create domain ${addalias_domain} with addaliases flag
+    Initialize AD reference
+    Run task    module/${MID}/add-domain    {"domain":"${addalias_domain}","addaliases":true}
+
+Set u3 LDAP mail attribute to test the addalias address
+    Run task    module/${mid_ad}/alter-user    {"user":"u3","mail":"apialias@${addalias_domain}"}
+
+Check the addalias address is in the address list
+    ${oalias} =    Evaluate
+    ...    {"atype":"addalias","local":"apialias","domain":"${addalias_domain}","destinations":[{"dtype":"user","name":"u3","ui_name":"Third User"}]}
+    ${laddresses} =    Run task    module/${MID}/list-addresses    ""
+    Should Contain    ${laddresses}[addresses]    ${oalias}
+    Should Contain    ${laddresses}[addalias_domains]    ${addalias_domain}
+
+Set u1 LDAP mail attribute to the same address as u3
+    Run task    module/${mid_ad}/alter-user    {"user":"u1","mail":"apialias@${addalias_domain}"}
+
+Check the addalias address merges every user sharing the same mail attribute
+    ${laddresses} =    Run task    module/${MID}/list-addresses    ""
+    ${u1_found} =    Set Variable    ${FALSE}
+    ${u3_found} =    Set Variable    ${FALSE}
+    FOR    ${oaddr}    IN    @{laddresses}[addresses]
+        IF    "${oaddr}[atype]" == "addalias" and "${oaddr}[local]" == "apialias"
+            Length Should Be    ${oaddr}[destinations]    2
+            FOR    ${odest}    IN    @{oaddr}[destinations]
+                IF    "${odest}[name]" == "u1"
+                    ${u1_found} =    Set Variable    ${TRUE}
+                END
+                IF    "${odest}[name]" == "u3"
+                    ${u3_found} =    Set Variable    ${TRUE}
+                END
+            END
+        END
+    END
+    Should Be True    ${u1_found}
+    Should Be True    ${u3_found}
+
+Add an exact-domain SQLite alias for the same address
+    Run task    module/${MID}/add-address
+    ...    {"atype":"domain","local":"apialias","domain":"${addalias_domain}","destinations":[{"dtype":"user","name":"u2"}]}
+
+Check the exact-domain alias takes priority over the addalias one
+    ${otarget} =    Evaluate
+    ...    {"atype":"domain","local":"apialias","domain":"${addalias_domain}","destinations":[{"dtype":"user","name":"u2","ui_name":"Second User"}]}
+    ${laddresses} =    Run task    module/${MID}/list-addresses    ""
+    ${found} =    Set Variable    ${FALSE}
+    FOR    ${oaddr}    IN    @{laddresses}[addresses]
+        IF    "${oaddr}[local]" == "apialias" and "${oaddr.get('domain', '')}" == "${addalias_domain}"
+            Dictionaries Should Be Equal    ${oaddr}    ${otarget}
+            ${found} =    Set Variable    ${TRUE}
+        END
+    END
+    Should Be True    ${found}
+
+Remove the exact-domain alias
+    Run task    module/${MID}/remove-address    {"atype":"domain","local":"apialias","domain":"${addalias_domain}"}
+
+Add a wildcard SQLite alias for the same local part
+    Run task    module/${MID}/add-address    {"atype":"wildcard","local":"apialias","destinations":[{"dtype":"user","name":"u2"}]}
+
+Check the wildcard alias takes priority over the addalias one
+    ${laddresses} =    Run task    module/${MID}/list-addresses    ""
+    ${addalias_found} =    Set Variable    ${FALSE}
+    ${wildcard_found} =    Set Variable    ${FALSE}
+    FOR    ${oaddr}    IN    @{laddresses}[addresses]
+        IF    "${oaddr}[local]" == "apialias" and "${oaddr}[atype]" == "addalias"
+            ${addalias_found} =    Set Variable    ${TRUE}
+        END
+        IF    "${oaddr}[local]" == "apialias" and "${oaddr}[atype]" == "wildcard"
+            ${wildcard_found} =    Set Variable    ${TRUE}
+        END
+    END
+    Should Not Be True    ${addalias_found}
+    Should Be True    ${wildcard_found}
+
+Remove the wildcard alias and reset LDAP mail attributes
+    Run task    module/${MID}/remove-address    {"atype":"wildcard","local":"apialias"}
+    Run task    module/${mid_ad}/alter-user    {"user":"u1","mail":"ldapa1@inbound.test"}
+    Run task    module/${mid_ad}/alter-user    {"user":"u3","mail":""}
+
+Remove domain ${addalias_domain}
+    Run task    module/${MID}/remove-domain    {"domain":"${addalias_domain}"}
+
+*** Keywords ***
+Initialize AD reference
+    [Documentation]    This suite runs isolated from tests/ldap_providers.resource, and the AD user
+    ...                domain is the one bound to ${MID} at this point in the test run (see "Switch
+    ...                to AD user domain" in 20__dovecot.robot), so ${mid_ad} must be looked up here
+    ...                via service discovery instead of relying on a cross-suite variable.
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent python3 -c 'import agent ; print(agent.list_service_providers(agent.redis_connect(), "ldap", "tcp", filters={"domain":"ad.dom.test"})[0]["module_id"])'
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0    Failed to look up AD provider module_id: ${err}
+    Should Not Be Empty    ${out}    AD provider module_id not found in service discovery
+    Set Suite Variable    ${mid_ad}    ${out}
