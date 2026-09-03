@@ -10,6 +10,12 @@
                 "company.test",
                 "mydom.test"
             ],
+            "addgroup_domains": [
+                "mydom.test"
+            ],
+            "addalias_domains": [
+                "mydom.test"
+            ],
             "addresses": [
                 {
                     "local": "postmaster",
@@ -56,6 +62,18 @@
                     "atype": "adduser",
                     "local": "first.user",
                     "description": "First User"
+                },
+                {
+                    "atype": "addalias",
+                    "local": "jane.doe",
+                    "domain": "mydom.test",
+                    "destinations": [
+                        {
+                            "dtype": "user",
+                            "name": "jane.doe",
+                            "ui_name": "Jane Doe"
+                        }
+                    ]
                 }
             ]
         }
@@ -64,6 +82,7 @@
     "required": [
         "adduser_domains",
         "addgroup_domains",
+        "addalias_domains",
         "addresses"
     ],
     "properties": {
@@ -78,6 +97,14 @@
         "addgroup_domains": {
             "type": "array",
             "title": "Domains with addgroups flag",
+            "items": {
+                "type": "string",
+                "title": "Domain name"
+            }
+        },
+        "addalias_domains": {
+            "type": "array",
+            "title": "Domains with addaliases flag",
             "items": {
                 "type": "string",
                 "title": "Domain name"
