@@ -68,6 +68,57 @@ After applying a custom configuration, check the services are running properly:
 
     systemctl --user status postfix dovecot
 
+### Custom LDAP alias attribute
+
+Domains with the `addaliases` flag enabled accept, as an additional valid
+address, the value of a per-user LDAP attribute (see the `add-domain`/
+`alter-domain` actions, and the corresponding checkbox in the domain
+configuration UI). By default the standard `mail` attribute is queried.
+
+Some sites already use the `mail` attribute for another purpose -- for
+example it is kept in sync from an external directory (Active Directory
+Connect, an HR system, ...) and holds a value that must not be exposed as
+an additional Postfix alias. In that case, point the `addaliases` lookup
+to a different, unused LDAP attribute instead (e.g. `otherMailbox`, a free
+`extensionAttributeN`, or any custom schema attribute available in your
+directory) so it doesn't collide with the existing usage of `mail`.
+
+LIMITATION: the `list-addresses` API, and therefore the Addresses UI page,
+only reads the standard `mail` attribute. If `POSTFIX_LDAP_ALIAS_ATTR` is
+set to something else, addresses derived from it are still fully handled
+by Postfix, but they are not listed in the UI or in the API output.
+
+If the same address is assigned to more than one user's LDAP attribute,
+Postfix delivers the message to all of them.
+
+An LDAP alias has no "internal" flag, unlike regular addresses: Postfix's
+internal-access check does not consult the LDAP mail attribute at all. If
+one is needed, override the LDAP alias with a standard address alias for
+the same local part and domain, with its "internal" flag enabled -- an
+explicit address (wildcard or not) always takes priority over an
+LDAP-derived one.
+
+To use a different attribute:
+
+1. Set the environment variable:
+
+       runagent -m mail1 python3 -c 'import agent ; agent.set_env("POSTFIX_LDAP_ALIAS_ATTR", "otherMailbox")'
+
+1. Reload the Postfix container:
+
+       runagent -m mail1 systemctl --user reload postfix
+
+1. Enable the `addaliases` flag on the wanted domains, either from the UI
+   or with `alter-domain`:
+
+       api-cli run module/mail1/alter-domain --data '{"domain":"example.com","addaliases":true}'
+
+To revert to the default `mail` attribute, unset the variable and reload
+Postfix again:
+
+    runagent -m mail1 python3 -c 'import agent ; agent.unset_env("POSTFIX_LDAP_ALIAS_ATTR")'
+    runagent -m mail1 systemctl --user reload postfix
+
 ### Rspamd custom configuration
 
 To customize the **Rspamd** configuration and to access advanced Rspamd

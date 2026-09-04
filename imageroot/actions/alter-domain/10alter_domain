@@ -37,6 +37,9 @@ try:
     if 'addgroups' in request:
         cur.execute("""UPDATE domains SET addgroups=? WHERE domain=?""", (request['addgroups'], domain))
 
+    if 'addaliases' in request:
+        cur.execute("""UPDATE domains SET addaliases=? WHERE domain=?""", (request['addaliases'], domain))
+
     if 'bccaddr' in request:
         cur.execute("""UPDATE domains SET bccaddr=? WHERE domain=?""", (request['bccaddr'], domain))
 

@@ -54,6 +54,24 @@
         </NsCheckbox>
         <NsCheckbox
           :label="
+            $t('domains.add_alias_addresses_from_user_domain', {
+              userDomain: userDomain ? userDomain.name : '',
+            })
+          "
+          v-model="addAliasAddressesFromUserDomain"
+          :disabled="loading.addDomain || loading.alterDomain"
+          tooltipAlignment="center"
+          tooltipDirection="right"
+          value="checkAddAliasAddressesFromUserDomain"
+        >
+          <template slot="tooltip">
+            <div>
+              {{ $t("domains.add_alias_addresses_from_user_domain_tooltip") }}
+            </div>
+          </template>
+        </NsCheckbox>
+        <NsCheckbox
+          :label="
             $t('domains.add_group_addresses_from_user_domain', {
               userDomain: userDomain ? userDomain.name : '',
             })
@@ -211,6 +229,7 @@ export default {
       name: "",
       description: "",
       addUserAddressesFromUserDomain: false,
+      addAliasAddressesFromUserDomain: false,
       addGroupAddressesFromUserDomain: false,
       acceptUnknownRecipients: {
         enabled: false,
@@ -248,6 +267,7 @@ export default {
           this.name = this.domain.domain;
           this.description = this.domain.description;
           this.addUserAddressesFromUserDomain = this.domain.addusers;
+          this.addAliasAddressesFromUserDomain = this.domain.addaliases;
           this.addGroupAddressesFromUserDomain = this.domain.addgroups;
           this.acceptUnknownRecipients.enabled = !!this.domain.catchall;
 
@@ -380,6 +400,7 @@ export default {
         description: this.description,
         addusers: this.addUserAddressesFromUserDomain,
         addgroups: this.addGroupAddressesFromUserDomain,
+        addaliases: this.addAliasAddressesFromUserDomain,
       };
 
       if (this.acceptUnknownRecipients.enabled) {
@@ -495,6 +516,7 @@ export default {
         description: this.description,
         addusers: this.addUserAddressesFromUserDomain,
         addgroups: this.addGroupAddressesFromUserDomain,
+        addaliases: this.addAliasAddressesFromUserDomain,
       };
 
       if (this.acceptUnknownRecipients.enabled) {
@@ -580,6 +602,7 @@ export default {
       this.name = "";
       this.description = "";
       this.addUserAddressesFromUserDomain = false;
+      this.addAliasAddressesFromUserDomain = false;
       this.addGroupAddressesFromUserDomain = false;
       this.acceptUnknownRecipients.enabled = false;
       this.acceptUnknownRecipients.catchall = "";
