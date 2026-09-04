@@ -101,3 +101,21 @@ Add relay rule
 
 Cleanup relay rules
     Execute Command    runagent -m ${MID} podman exec -w /srv postfix sqlite3 pcdb.sqlite 'DELETE FROM relayrules;'
+
+Envelope sender should be SRS-rewritten
+    [Tags]    outbound
+    [Documentation]    Check the last queued message's envelope sender was
+    ...                rewritten by postsrsd (NethServer/dev#7741), from
+    ...                ${orig_local}@${orig_domain} to a SRS0=...@... address.
+    [Arguments]    ${orig_local}    ${orig_domain}
+    Sleep    500ms
+    Wait Until Keyword Succeeds    3    1s
+    ...    Check SRS rewritten sender by journal    ${orig_local}    ${orig_domain}
+
+Check SRS rewritten sender by journal
+    [Arguments]    ${orig_local}    ${orig_domain}
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    journalctl -o cat -t postfix/qmgr -S '${LAST_TIMESTAMP}'
+    ...    return_rc=True    return_stderr=True
+    Should Match    ${out}    *${LAST_QUEUE_ID}: from=<SRS0=*=*=${orig_domain}=${orig_local}@*>*
+    ...    postfix/qmgr envelope sender for ${LAST_QUEUE_ID} was not rewritten by SRS: ${out}

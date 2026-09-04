@@ -50,11 +50,18 @@ Standard public TCP ports
 - `POSTFIX_ALWAYS_BCC`. If set to non-empty string, the value must be a
   valid email recipient for Postfix [always_bcc
   option](http://www.postfix.org/postconf.5.html#always_bcc).
+- `POSTFIX_SRS`. Enables the [postsrsd](https://github.com/roehling/postsrsd)
+  Sender Rewriting Scheme (SRS) daemon, used to make forwarded mail pass
+  the destination's SPF check NethServer/dev#7741. Default is enabled
+  (`1`); set to `0` to disable it. It is automatically disabled if no
+  mail domain is configured yet. The SRS rewrite domain is the first
+  configured mail domain.
 
 ## Volumes
 
-- `/var/lib/postfix`. Data tables storage.
-- `/var/spool/postfix`. Postfix persistent mail queue data.
+- `/var/spool/postfix`. Postfix persistent mail queue data. Also stores
+  the persistent postsrsd secret (`postsrsd/postsrsd.secret`), if SRS is
+  enabled.
 - `/etc/ssl/postfix`. Certificate and Diffie-Hellman group for TLS encryption.
 - `/var/lib/umail` Shared directory to communicate with a local Dovecot
   process through Unix-domain sockets. Mount the Dovecot container path
@@ -72,6 +79,46 @@ The command expands Postfix configuration files, according to the values
 of environment variables and template files stored under
 `/usr/local/lib/templates`. If Postfix is running, it sends a reload
 signal.
+
+## Sender Rewriting Scheme (SRS)
+
+Since Mail 1.8, the [postsrsd](https://github.com/roehling/postsrsd) daemon
+is enabled by default (`POSTFIX_SRS=1`) to rewrite the envelope sender of
+forwarded mail (see `userforwards` in [Data tables](#data-tables)), so that
+it passes the destination's SPF check instead of being rejected
+NethServer/dev#7741.
+
+The integration is implemented with Postfix's `sender_canonical_maps`
+(a `socketmap:unix:...` lookup), rather than the postsrsd milter, because
+the Alpine `postsrsd` package is built without milter support and, in this
+module, forwarding is decided later by `virtual_alias_maps`, after any
+milter would have already accepted the message -- a milter cannot tell in
+advance that a given recipient will end up being forwarded.
+
+As a consequence, `sender_canonical_maps` rewrites the envelope sender of
+*any* message received from a sender whose domain is not one of the
+locally hosted mail domains, regardless of whether that particular message
+is actually forwarded anywhere. A concrete example: an inbound message
+from an external sender, also copied via `POSTFIX_ALWAYS_BCC` to an
+archiver (e.g. Piler), is archived with the rewritten `SRS0=...` envelope
+sender/`Return-Path`, not the genuine original one -- even though this
+message was never forwarded. Other, less obvious cases may exist, for
+example Sieve rules that filter on the SMTP envelope sender rather than
+the `From:` header.
+
+This is generally harmless: only the hidden envelope sender/`Return-Path`
+changes, never the visible `From:`/`Subject:`/body of the message. If it
+does matter for a specific deployment (e.g. an archiver's audit trail, or
+envelope-based Sieve filtering), set `POSTFIX_SRS=0` to disable it.
+
+`postsrsd` has no configuration reload capability of its own (no SIGHUP
+handler), so `reload-config` manages its whole lifecycle itself instead
+of relying on the container's entrypoint: it starts `postsrsd` (in its
+own daemon mode, `-D`) once a mail domain is configured, stops it when
+SRS gets disabled, and kills and restarts it whenever the domains list
+it just wrote actually changed. As a consequence, a plain Postfix reload
+(`reload-config`) is enough to turn SRS on or off, or to pick up newly
+added mail domains -- no container restart is needed.
 
 ## Data tables
 

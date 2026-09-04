@@ -12,6 +12,10 @@ set -e
 
 ldap_schema=${POSTFIX_LDAP_SCHEMA:?}
 
+start_postsrsd() {
+    postsrsd -D -C /etc/postsrsd/postsrsd.conf -p /run/postsrsd.pid || :
+}
+
 pcdbquery() {
     sqlite3 -readonly -list /srv/pcdb.sqlite "${@}"
 }
@@ -78,6 +82,17 @@ if [ -z "${tmpl_default_transport}" ] ; then
     tmpl_default_transport=smtp
 fi
 tmpl_relayhost=$(pcdbquery "SELECT FORMAT('[%s]:%s', host, port) FROM relayrules WHERE enabled=1 AND rule_type='wildcard' AND rule_subject='*'")
+
+# postsrsd (SRS) integration NethServer/dev#7741
+tmpl_srs_domain=$(pcdbquery "SELECT domain FROM domains WHERE domain != '*' ORDER BY rowid LIMIT 1")
+srs_enabled=1
+case "${POSTFIX_SRS:-1}" in
+    0|false|no|off) srs_enabled= ;;
+esac
+if [ -n "${srs_enabled}" ] && [ -z "${tmpl_srs_domain}" ] ; then
+    echo "[WARNING] No mail domain configured yet. SRS (postsrsd) is disabled!"
+    srs_enabled=
+fi
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
@@ -90,6 +105,42 @@ envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \
 
 if [ -z "${tmpl_sasl_commentout}" ] ; then
     cat /etc/postfix/dovecot-sasl.cf >> /etc/postfix/main.cf
+fi
+
+# postsrsd (SRS) has no configuration reload capability (no SIGHUP
+# handler) NethServer/dev#7741. This must run before "postfix reload"
+# below, so the sender/recipient canonical maps directives are already
+# part of main.cf by the time Postfix reloads it.
+if [ -n "${srs_enabled}" ] ; then
+    (
+        echo "${tmpl_vdomain}"
+        echo "${tmpl_ldomain}"
+        pcdbquery "SELECT domain FROM domains WHERE domain != '*' ORDER BY domain"
+    ) | sed '/^$/ d' > /etc/postfix/postsrsd.domains.new
+    domains_changed=1
+    if [ -f /etc/postfix/postsrsd.domains ] && \
+        cmp -s /etc/postfix/postsrsd.domains.new /etc/postfix/postsrsd.domains
+    then
+        domains_changed=
+    fi
+    mv /etc/postfix/postsrsd.domains.new /etc/postfix/postsrsd.domains
+    cat /etc/postfix/postsrsd.cf >> /etc/postfix/main.cf
+    envsubst >/etc/postsrsd/postsrsd.conf <"${TEMPLATES_DIR:?}/postsrsd.conf"
+    # Restart only when the domains list actually changed, or
+    # postsrsd is not running yet (e.g. SRS was just enabled). Only
+    # wait for it to exit if it was actually running: a stale pidfile
+    # left behind by a crash could otherwise point at an unrelated,
+    # since-reused PID and hang here forever.
+    if ! pgrep -x postsrsd >/dev/null 2>&1 ; then
+        start_postsrsd
+    elif [ -n "${domains_changed}" ] ; then
+        srs_pid=$(cat /run/postsrsd.pid 2>/dev/null || :)
+        pkill -TERM -x postsrsd >/dev/null 2>&1 || :
+        [ -n "${srs_pid}" ] && while [ -d "/proc/${srs_pid}" ] ; do sleep 0.5 ; done
+        start_postsrsd
+    fi
+elif pgrep -x postsrsd >/dev/null 2>&1 ; then
+    pkill -TERM -x postsrsd >/dev/null 2>&1 || :
 fi
 
 # Append override dir contents to main.cf:

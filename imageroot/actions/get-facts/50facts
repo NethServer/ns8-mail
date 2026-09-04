@@ -20,6 +20,7 @@ def main():
     facts.update(get_domains_facts())
     facts.update(get_relay_rules_facts())
     facts.update(get_relay_settings_facts())
+    facts.update(get_srs_facts())
     facts.update(get_always_bcc_facts())
     facts.update(get_configuration_facts())
     facts.update(get_mailbox_settings_facts())
@@ -184,6 +185,11 @@ def get_relay_settings_facts():
         "relay_settings_postfix_restricted_sender_enabled": odata.get("postfix_restricted_sender"),
         "relay_settings_networks_count": len(odata.get("networks", [])),
     }
+
+def get_srs_facts():
+    # Mirror reload-config's own POSTFIX_SRS parsing (NethServer/dev#7741)
+    srs_enabled = os.environ.get("POSTFIX_SRS", "1") not in ("0", "false", "no", "off")
+    return {"srs_enabled": srs_enabled}
 
 def get_always_bcc_facts():
     with subprocess.Popen(["../actions/get-always-bcc/20read"], stdout=subprocess.PIPE) as proc:

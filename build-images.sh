@@ -129,7 +129,7 @@ reponame="mail-postfix"
 container=$(buildah from docker.io/library/alpine:3.21.7)
 buildah run "${container}" /bin/sh <<EOF
 set -e
-apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login
+apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login postsrsd
 EOF
 buildah add "${container}" postfix/ /
 buildah config \
