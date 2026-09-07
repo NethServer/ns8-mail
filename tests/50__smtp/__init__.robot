@@ -68,9 +68,9 @@ Create mail domains
     Log To Console    Create mail domain addgroups.test
     Run task     module/${MID}/add-domain
     ...            {"domain":"addgroups.test","addusers":false,"addgroups":true}
-    Log To Console    Create mail domain inbound.test (with both flags, addusers/groups)
+    Log To Console    Create mail domain inbound.test (with all flags, addusers/groups/aliases)
     Run task     module/${MID}/add-domain
-    ...            {"domain":"inbound.test","addusers":true,"addgroups":true}
+    ...            {"domain":"inbound.test","addusers":true,"addgroups":true,"addaliases":true}
     Log To Console    Create mail domain noaddflag.test (without any addusers/groups flag)
     Run task     module/${MID}/add-domain
     ...            {"domain":"noaddflag.test","addusers":false,"addgroups":false}

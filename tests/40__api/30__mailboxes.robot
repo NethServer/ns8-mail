@@ -59,10 +59,10 @@ Enable user mailbox
     Run task    module/${MID}/set-mailbox-enabled    {"user":"u1","enabled":true}
 
 Check the user IMAP login succeedes
-    Wait Until Keyword Succeeds    60 seconds    3 seconds    IMAP login good credentials
+    Wait Until Keyword Succeeds    16 seconds    2 seconds    IMAP login good credentials
 
 Check the user SMTP login succeedes
-    Run Keyword    SMTP AUTH submissions good login
+    Wait Until Keyword Succeeds    16 seconds    2 seconds    SMTP AUTH submissions good login
 
 Check the postmaster public mailbox is present
     ${lmailboxes} =   Run task    module/${MID}/list-public-mailboxes    ""

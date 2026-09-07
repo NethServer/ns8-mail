@@ -16,8 +16,8 @@ Configure AD user domain
     ${ad_nbdomain} =    Set Variable    ${response['nbdomain']}
     ${ad_hostname} =    Set Variable    ${response['hostname']}
     Run task    module/${mid_ad}/configure-module    {"realm":"${user_domain_ad}","hostname":"${ad_hostname}","nbdomain":"${ad_nbdomain}","ipaddress":"${ad_ipaddress}","adminuser":"administrator","adminpass":"Nethesis,1234","provision":"new-domain"}
-    Run task    module/${mid_ad}/add-user    {"user":"u1","display_name":"First User","password":"Nethesis,1234"}
-    Run task    module/${mid_ad}/add-user    {"user":"u2","display_name":"Second User","password":"AdPass,1234"}
+    Run task    module/${mid_ad}/add-user    {"user":"u1","display_name":"First User","password":"Nethesis,1234","mail":"ldapa1@inbound.test"}
+    Run task    module/${mid_ad}/add-user    {"user":"u2","display_name":"Second User","password":"AdPass,1234","mail":"ldapa2@noaddflag.test"}
     Run task    module/${mid_ad}/add-user    {"user":"u3","display_name":"Third User","password":"Nethesis,1234"}
     Run task    module/${mid_ad}/add-group   {"group":"g1","description":"Group One","users":["u1","u2"]}
     Run task    module/${mid_ad}/add-group   {"group":"g2","description":"Group Two","users":["u2","u3"]}
@@ -31,8 +31,8 @@ Configure LDAP user domain
     ${response} =     Run task    cluster/add-internal-provider    {"image":"openldap","node":1}
     Set Suite Variable    ${mid_ldap}    ${response['module_id']}
     Run task    module/${mid_ldap}/configure-module    {"domain":"${user_domain_ldap}","admuser":"admin","admpass":"Nethesis,1234","provision":"new-domain"}
-    Run task    module/${mid_ldap}/add-user    {"user":"u1","display_name":"First User","password":"Nethesis,1234"}
-    Run task    module/${mid_ldap}/add-user    {"user":"u2","display_name":"Second User","password":"LdapPass,1234"}
+    Run task    module/${mid_ldap}/add-user    {"user":"u1","display_name":"First User","password":"Nethesis,1234","mail":"ldapa1@inbound.test"}
+    Run task    module/${mid_ldap}/add-user    {"user":"u2","display_name":"Second User","password":"LdapPass,1234","mail":"ldapa2@noaddflag.test"}
     Run task    module/${mid_ldap}/add-user    {"user":"u3","display_name":"Third User","password":"Nethesis,1234"}
     Run task    module/${mid_ldap}/add-group   {"group":"g1","description":"Group One","users":["u1","u2"]}
     Run task    module/${mid_ldap}/add-group   {"group":"g2","description":"Group Two","users":["u2","u3"]}

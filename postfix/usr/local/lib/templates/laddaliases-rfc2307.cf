@@ -1,0 +1,13 @@
+#
+# laddaliases.cf (rfc2307) -- additional alias expansion from LDAP DB
+#
+
+version = 3
+bind_dn = ${tmpl_ldap_bind_dn}
+bind_pw = ${tmpl_ldap_bind_pw}
+server_host = ${tmpl_ldap_host}
+server_port = ${tmpl_ldap_port}
+search_base = ${tmpl_ldap_base}
+query_filter = (&(objectClass=posixAccount)(objectClass=inetOrgPerson)(${tmpl_addaliases_attr}=%s))
+result_attribute = uid
+domain = ${tmpl_laddaliases_domains}

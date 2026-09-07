@@ -15,6 +15,7 @@
         {
             "domain": "great.example.com",
             "addusers": true,
+            "addaliases": true,
             "catchall": null,
             "description": "Company main domain with users"
         }

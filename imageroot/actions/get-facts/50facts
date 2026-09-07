@@ -18,6 +18,7 @@ def main():
     facts.update(get_mailboxes_facts())
     facts.update(get_public_mailboxes_facts())
     facts.update(get_domains_facts())
+    facts.update(get_addaliases_attr_facts())
     facts.update(get_relay_rules_facts())
     facts.update(get_relay_settings_facts())
     facts.update(get_always_bcc_facts())
@@ -39,6 +40,7 @@ def get_addresses_facts():
         "addresses_total_count": len(oaddresses),
         "adduser_domains_count": len(odata['adduser_domains']),
         "addgroup_domains_count": len(odata['addgroup_domains']),
+        "addalias_domains_count": len(odata['addalias_domains']),
     }
     atype_count_dict = dict()
     dtype_count_dict = dict()
@@ -145,6 +147,11 @@ def get_domains_facts():
             facts[ckey] += 1
 
     return facts
+
+def get_addaliases_attr_facts():
+    return {
+        "postfix_ldap_alias_attr": os.getenv("POSTFIX_LDAP_ALIAS_ATTR", "mail"),
+    }
 
 def get_relay_rules_facts():
     with subprocess.Popen(["../actions/list-relay-rules/10list_relays"], stdout=subprocess.PIPE) as proc:

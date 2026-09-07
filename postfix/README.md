@@ -38,6 +38,9 @@ Standard public TCP ports
 - `POSTFIX_LDAP_PASS`, bind password
 - `POSTFIX_LDAP_SCHEMA`, eg `rfc2307`
 - `POSTFIX_LDAP_BASE`, eg `dc=directory,dc=nh`
+- `POSTFIX_LDAP_ALIAS_ATTR`. LDAP user attribute queried to expand
+  addresses for domains with the `addaliases` flag set. Default is
+  `mail`.
 - `POSTFIX_MILTERS`, value for Postfix
   [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters),
   default is `inet:127.0.0.1:11332`. Set to empty string to completely
@@ -45,8 +48,9 @@ Standard public TCP ports
 - `POSTFIX_MAXIMAL_QUEUE_LIFETIME`, value for the maximum amount of hours that a message is allowed to stay in a queue (5 days is assumed if value is empty)
 - `POSTFIX_RESTRICTED_SENDER` Empty or `1`. If set, the SMTP/AUTH user
   name can use a restricted set of sender addresses. The set is given by
-  the union of matching `destmap` records, and address of a domain with
-  the `addusers` flag set.
+  the union of: matching `destmap` records, the user's own login name
+  (`addusers`-style), the name of a group the user belongs to
+  (`addgroups`-style), and the user's LDAP `addaliases` attribute value.
 - `POSTFIX_ALWAYS_BCC`. If set to non-empty string, the value must be a
   valid email recipient for Postfix [always_bcc
   option](http://www.postfix.org/postconf.5.html#always_bcc).

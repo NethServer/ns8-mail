@@ -29,6 +29,9 @@ CREATE TABLE domains (
     -- if set to 1, the domain accepts additional group addresses like
     -- group@domain. The group members list is retrieved from LDAP and
     -- the address is rewritten to user1, user2, user3, etc.
+    addaliases INT DEFAULT 0,
+    -- if set to 1, LDAP mail attribute is used as additional alias
+    -- address source
     catchall TEXT DEFAULT NULL,
     -- fallback rewrite rule for addresses that do not match any record in
     -- the "destmap" table. It can be a virtual mailbox name.

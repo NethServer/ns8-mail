@@ -89,6 +89,7 @@
                     "domain": "dp.nethserver.net",
                     "addusers": true,
                     "addgroups": false,
+                    "addaliases": false,
                     "catchall": null,
                     "bccaddr": null,
                     "description": ""
@@ -97,6 +98,7 @@
                     "domain": "company.test",
                     "addusers": true,
                     "addgroups": false,
+                    "addaliases": false,
                     "catchall": null,
                     "bccaddr": null,
                     "description": "Company domain with addusers flag set"
@@ -105,6 +107,7 @@
                     "domain": "mydom.test",
                     "addusers": true,
                     "addgroups": false,
+                    "addaliases": false,
                     "catchall": {
                         "dtype": "user",
                         "user": "first.user",
@@ -135,6 +138,11 @@
                 "addgroups": {
                     "title": "Addgroups flag",
                     "description": "Accept LDAP group names as valid mail addresses",
+                    "type": "boolean"
+                },
+                "addaliases": {
+                    "title": "Addaliases flag",
+                    "description": "Accept the LDAP mail attribute of a user as an additional valid mail address",
                     "type": "boolean"
                 },
                 "catchall": {
@@ -215,6 +223,18 @@
                     "atype": "adduser",
                     "local": "first.user",
                     "description": "First User"
+                },
+                {
+                    "atype": "addalias",
+                    "local": "jane.doe",
+                    "domain": "mydom.test",
+                    "destinations": [
+                        {
+                            "dtype": "user",
+                            "name": "jane.doe",
+                            "ui_name": "Jane Doe"
+                        }
+                    ]
                 }
             ],
             "oneOf": [
@@ -280,6 +300,25 @@
                             "properties": {
                                 "atype": {
                                     "const": "addgroup"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/mail-address-base"
+                        },
+                        {
+                            "title": "Address derived from users' LDAP mail attribute",
+                            "required": [
+                                "domain",
+                                "destinations"
+                            ],
+                            "properties": {
+                                "atype": {
+                                    "const": "addalias"
                                 }
                             }
                         }
