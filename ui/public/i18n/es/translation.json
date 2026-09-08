@@ -161,7 +161,9 @@
         "domain_format": "Debe ser un nombre de dominio cualificado válido",
         "catchall_mailbox_not_found": "Buzón general no encontrado",
         "mail_domain_already_exists": "El dominio ya existe",
-        "domain_not_found": "Dominio no encontrado"
+        "domain_not_found": "Dominio no encontrado",
+        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
+        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain"
     },
     "welcome": {
         "mail_domain_pattern": "Debe ser un nombre de dominio cualificado válido",
@@ -213,7 +215,8 @@
         "address_already_exists": "La dirección ya existe",
         "addresses_filtered_description": "Mostrando solo direcciones de {domain}",
         "choose_domain": "Elige un dominio",
-        "local_pattern": "Invalid address"
+        "local_pattern": "Invalid address",
+        "type_addalias": "LDAP alias"
     },
     "mailboxes": {
         "col_user": "Usuario",

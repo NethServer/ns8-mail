@@ -176,7 +176,9 @@
         "no_domain": "No domain",
         "configure_dkim": "Configure DKIM",
         "edit_domain": "Edit domain",
-        "create_domain": "Create domain"
+        "create_domain": "Create domain",
+        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
+        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain"
     },
     "mailboxes": {
         "search_user_mailbox": "Search user mailbox",
@@ -418,7 +420,8 @@
         "address": "Address",
         "description": "Address description",
         "title": "Addresses",
-        "local_pattern": "Invalid address"
+        "local_pattern": "Invalid address",
+        "type_addalias": "LDAP alias"
     },
     "settings_general": {
         "user_domain": "User domain",

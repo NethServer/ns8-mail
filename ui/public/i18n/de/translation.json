@@ -178,7 +178,9 @@
         "mail_domain_already_exists": "Domäne existiert bereits",
         "catchall_mailbox_not_found": "Catchall-Postfach nicht gefunden",
         "domain_format": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
-        "domain_not_found": "Domäne nicht gefunden"
+        "domain_not_found": "Domäne nicht gefunden",
+        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
+        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain"
     },
     "error": {
         "403": "Vorgang nicht zulässig",
@@ -275,7 +277,8 @@
         "type_domain": "Pseudonym",
         "show_all": "alle anzeigen",
         "choose_domain": "Domäne wählen",
-        "local_pattern": "Ungültige Adresse"
+        "local_pattern": "Ungültige Adresse",
+        "type_addalias": "LDAP alias"
     },
     "status": {
         "created": "Erstellt",

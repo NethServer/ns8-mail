@@ -83,8 +83,8 @@
         "accept_unknown_recipients_tooltip": "Tutti i messaggi e-mail inviati a destinatari sconosciuti saranno accettati e consegnati alla destinazione specificata.",
         "copy_inbound_messages": "Copiare i messaggi in entrata",
         "bccaddr_format": "Formato e-mail non valido",
-        "add_user_addresses_from_user_domain": "Aggiungi gli indirizzi utente dal dominio utente {userDomain}",
-        "add_group_addresses_from_user_domain": "Aggiungi indirizzi di gruppo dal dominio utente {userDomain}",
+        "add_user_addresses_from_user_domain": "Aggiungi gli indirizzi utente dal dominio utente",
+        "add_group_addresses_from_user_domain": "Aggiungi indirizzi di gruppo dal dominio utente",
         "domain_pattern": "Deve essere un nome di dominio pienamente qualificato valido",
         "add_group_addresses_from_user_domain_tooltip": "Creare un indirizzo e-mail per ogni gruppo del dominio utenti",
         "delete_domain_domain": "Cancellare il dominio {domain}",
@@ -112,7 +112,9 @@
         "mail_domain_already_exists": "Il dominio esiste già",
         "domain_format": "Deve essere un nome di dominio pienamente qualificato valido",
         "catchall_mailbox_not_found": "Mailbox Catchall non trovata",
-        "domain_not_found": "Dominio non trovato"
+        "domain_not_found": "Dominio non trovato",
+        "add_alias_addresses_from_user_domain_tooltip": "Crea un indirizzo email per l'attributo LDAP mail di ogni utente nel dominio utente",
+        "add_alias_addresses_from_user_domain": "Aggiungi indirizzi alias dal dominio utente"
     },
     "addresses": {
         "address_already_exists": "L'indirizzo esiste già",
@@ -149,7 +151,8 @@
         "destinations_placeholder": "Scegliere le destinazioni o digitare un indirizzo e-mail esterno",
         "public": "Pubblico",
         "no_address": "Nessun indirizzo",
-        "local_pattern": "Indirizzo non valido"
+        "local_pattern": "Indirizzo non valido",
+        "type_addalias": "LDAP alias"
     },
     "mailboxes": {
         "title": "Caselle postali",

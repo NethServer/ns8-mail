@@ -172,7 +172,9 @@
         "required_if_accept_unknown_recipients": "Vereist als 'Onbekende ontvangers accepteren' is ingeschakeld",
         "add_group_addresses_from_user_domain_tooltip": "Maak een e-mailadres aan voor elke groep in het gebruikersdomein",
         "delete_domain_explanation": "Alle bijbehorende e-mailadressen worden eveneens verwijderd. Alle e-mailberichten die door dit domein zijn ontvangen en verzonden, blijven echter bewaard.",
-        "dkim_txt_record_description": "Maak de TXT-record die vereist is door DKIM bij uw DNS-serviceprovider {domein} door een van de volgende procedures te kiezen"
+        "dkim_txt_record_description": "Maak de TXT-record die vereist is door DKIM bij uw DNS-serviceprovider {domein} door een van de volgende procedures te kiezen",
+        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
+        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain"
     },
     "addresses": {
         "create_address": "Creëer adres",
@@ -209,7 +211,8 @@
         "show_all": "Toon alles",
         "choose_domain": "Kies domein",
         "address_address_is_going_to_be_deleted": "{address} wordt verwijderd...",
-        "local_pattern": "Ongeldig adres"
+        "local_pattern": "Ongeldig adres",
+        "type_addalias": "LDAP alias"
     },
     "mailboxes": {
         "no_public_mailbox": "Geen openbare mailbox",
@@ -300,7 +303,7 @@
         "create_public_mailbox_mailbox": "Openbare postvak aanmaken {mailbox}",
         "col_mailbox": "Postvak",
         "go_to_mailboxes": "Ga naar Postbussen",
-        "mailbox_invalid_character": "The mailbox name cannot contain the @ character"
+        "mailbox_invalid_character": "De naam van het postvak mag het teken @ niet bevatten"
     },
     "filter": {
         "third_party_signatures_rating": "Beoordeling van handtekeningen van derden",
@@ -484,7 +487,7 @@
         "spam": "Spam",
         "specify_retention": "Geef de retentie op",
         "move_spam_but_no_folder": "Als 'Spam naar map met ongewenste e-mail verplaatsen' is ingeschakeld, is de naam van de map met ongewenste e-mail vereist",
-        "junk_folder_placeholder": "e.g. Junk"
+        "junk_folder_placeholder": "e.g. Spam"
     },
     "settings_general": {
         "user_domain": "Gebruiker domein",
