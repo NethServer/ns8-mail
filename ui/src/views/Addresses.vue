@@ -185,7 +185,7 @@
                               />
                               <NsSvg
                                 v-else-if="row.atype == 'addalias'"
-                                :svg="MailAll16"
+                                :svg="UserRole"
                               />
                             </span>
                             <span>{{ row.type }}</span>
