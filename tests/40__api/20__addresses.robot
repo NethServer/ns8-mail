@@ -160,18 +160,26 @@ Add an exact-domain SQLite alias for the same address
     Run task    module/${MID}/add-address
     ...    {"atype":"domain","local":"apialias","domain":"${addalias_domain}","destinations":[{"dtype":"user","name":"u2"}]}
 
-Check the exact-domain alias takes priority over the addalias one
-    ${otarget} =    Evaluate
+Check the exact-domain alias and the addalias one are both shown
+    ${otarget_domain} =    Evaluate
     ...    {"atype":"domain","local":"apialias","domain":"${addalias_domain}","destinations":[{"dtype":"user","name":"u2","ui_name":"Second User"}]}
+    ${otarget_addalias} =    Evaluate
+    ...    {"atype":"addalias","local":"apialias","domain":"${addalias_domain}","destinations":[{"dtype":"user","name":"u1","ui_name":"First User"},{"dtype":"user","name":"u3","ui_name":"Third User"}]}
     ${laddresses} =    Run task    module/${MID}/list-addresses    ""
-    ${found} =    Set Variable    ${FALSE}
+    ${domain_found} =    Set Variable    ${FALSE}
+    ${addalias_found} =    Set Variable    ${FALSE}
     FOR    ${oaddr}    IN    @{laddresses}[addresses]
-        IF    "${oaddr}[local]" == "apialias" and "${oaddr.get('domain', '')}" == "${addalias_domain}"
-            Dictionaries Should Be Equal    ${oaddr}    ${otarget}
-            ${found} =    Set Variable    ${TRUE}
+        IF    "${oaddr}[local]" == "apialias" and "${oaddr.get('domain', '')}" == "${addalias_domain}" and "${oaddr}[atype]" == "domain"
+            Dictionaries Should Be Equal    ${oaddr}    ${otarget_domain}
+            ${domain_found} =    Set Variable    ${TRUE}
+        END
+        IF    "${oaddr}[local]" == "apialias" and "${oaddr.get('domain', '')}" == "${addalias_domain}" and "${oaddr}[atype]" == "addalias"
+            Dictionaries Should Be Equal    ${oaddr}    ${otarget_addalias}
+            ${addalias_found} =    Set Variable    ${TRUE}
         END
     END
-    Should Be True    ${found}
+    Should Be True    ${domain_found}
+    Should Be True    ${addalias_found}
 
 Remove the exact-domain alias
     Run task    module/${MID}/remove-address    {"atype":"domain","local":"apialias","domain":"${addalias_domain}"}

@@ -143,9 +143,16 @@ def get_addresses():
                     # A wildcard alias (akey "local@*") is resolved by the
                     # same sqlite:aliases.cf map, before proxy:ldap:laddaliases.cf
                     # is ever queried, so it takes priority just like an
-                    # exact-domain one and must be checked separately here:
-                    # it is stored under a different key than "local@domain".
-                    akey = alocal + '@' + adomain
+                    # exact-domain one and must be checked separately here.
+                    #
+                    # Use a synthetic key, distinct from the real
+                    # "local@domain" one, so this entry is always listed
+                    # on its own -- like atype=adduser/addgroup -- even if
+                    # an unrelated sqlite-backed address record already
+                    # exists at "local@domain". This only affects what is
+                    # displayed: real mail delivery still goes through the
+                    # sqlite maps first, as Postfix is actually configured.
+                    akey = alocal + '@' + adomain + '@&'
                     aaddress = addresses.get(akey)
                     if aaddress is None:
                         aaddress = addresses[akey] = {
@@ -154,20 +161,15 @@ def get_addresses():
                             "domain": adomain,
                             "destinations": [],
                         }
-                    if aaddress.get("atype") == "addalias":
-                        # Multiple users may share the same mail attribute
-                        # value: Postfix delivers to all of them, so keep
-                        # one address entry with multiple "user"
-                        # destinations, like the sqlite-backed atypes do.
-                        # An explicit address record already at akey (a
-                        # different atype) always takes priority instead.
-                        aaddress["destinations"].append({
-                            "dtype": "user",
-                            "name": elogin,
-                            "ui_name": euser["display_name"],
-                        })
-                        if is_internal:
-                            aaddress["internal"] = True
+                    # Multiple users may share the same mail attribute
+                    # value: Postfix delivers to all of them, so keep
+                    # one address entry with multiple "user"
+                    # destinations, like the sqlite-backed atypes do.
+                    aaddress["destinations"].append({
+                        "dtype": "user",
+                        "name": elogin,
+                        "ui_name": euser["display_name"],
+                    })
 
     if sdb.execute("""SELECT COUNT(*) FROM domains WHERE addgroups = 1""").fetchone()[0] > 0:
         ldapclient = _create_ldapclient()
