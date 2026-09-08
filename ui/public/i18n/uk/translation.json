@@ -143,7 +143,9 @@
         "name": "Ім'я",
         "add_group_addresses_from_user_domain_tooltip": "Створіть адресу електронної пошти для кожної групи в домені користувача",
         "delete_domain_explanation": "Усі пов’язані електронні адреси також буде видалено. Однак усі повідомлення електронної пошти, отримані та надіслані цим доменом, будуть збережені.",
-        "dkim_txt_record_description": "Створіть запис TXT, необхідний для DKIM, у вашого постачальника послуг DNS {domain}, вибравши одну з наведених нижче процедур"
+        "dkim_txt_record_description": "Створіть запис TXT, необхідний для DKIM, у вашого постачальника послуг DNS {domain}, вибравши одну з наведених нижче процедур",
+        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
+        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain"
     },
     "addresses": {
         "create_address": "Створіть адресу",
@@ -180,7 +182,8 @@
         "type_domain": "Псевдонім",
         "show_all": "Показати все",
         "choose_domain": "Виберіть домен",
-        "local_pattern": "Invalid address"
+        "local_pattern": "Invalid address",
+        "type_addalias": "LDAP alias"
     },
     "mailboxes": {
         "search_user_mailbox": "Пошук поштової скриньки користувача",

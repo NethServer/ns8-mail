@@ -176,7 +176,9 @@
         "required_if_accept_unknown_recipients": "Required if \"Accept unknown recipients\" is enabled",
         "add_group_addresses_from_user_domain_tooltip": "Create an email address for every group in the user domain",
         "delete_domain_explanation": "All associated email addresses will be deleted as well. However, all email messages received and sent by this domain will be preserved.",
-        "dkim_txt_record_description": "Create the TXT record required by DKIM at your <strong>{domain}</strong> DNS service provider by choosing <strong>one of the following procedures</strong>"
+        "dkim_txt_record_description": "Create the TXT record required by DKIM at your <strong>{domain}</strong> DNS service provider by choosing <strong>one of the following procedures</strong>",
+        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
+        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain"
     },
     "mailboxes": {
         "search_user_mailbox": "Search user mailbox",
@@ -304,7 +306,8 @@
         "type_domain": "Alias",
         "choose_domain": "Choose domain",
         "show_all": "Show all",
-        "local_pattern": "Invalid address"
+        "local_pattern": "Invalid address",
+        "type_addalias": "LDAP alias"
     },
     "filter": {
         "title": "Filter",

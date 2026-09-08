@@ -260,7 +260,8 @@
         "set_as_internal": "Set as internal",
         "public": "Public",
         "local_pattern": "Invalid address",
-        "address_address_is_going_to_be_deleted": ""
+        "address_address_is_going_to_be_deleted": "",
+        "type_addalias": "LDAP alias"
     },
     "welcome": {
         "primary_mail_domain": "Primary mail domain",
@@ -313,7 +314,9 @@
         "domain_pattern": "Must be a valid fully qualified domain name",
         "add_group_addresses_from_user_domain": "Add group addresses from user domain {userDomain}",
         "create_domain_domain": "Create domain {domain}",
-        "deliver_to": "Deliver to"
+        "deliver_to": "Deliver to",
+        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
+        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain"
     },
     "action": {
         "flush-postfix-queue": "Flush Postfix queue",
