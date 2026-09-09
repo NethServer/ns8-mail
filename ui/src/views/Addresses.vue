@@ -185,7 +185,7 @@
                               />
                               <NsSvg
                                 v-else-if="row.atype == 'addalias'"
-                                :svg="MailAll16"
+                                :svg="UserRole16"
                               />
                             </span>
                             <span>{{ row.type }}</span>
@@ -383,6 +383,7 @@ import { mapState } from "vuex";
 import _cloneDeep from "lodash/cloneDeep";
 import CreateOrEditAddressModal from "@/components/CreateOrEditAddressModal";
 import Information16 from "@carbon/icons-vue/es/information/16";
+import UserRole16 from "@carbon/icons-vue/es/user--role/16";
 
 export default {
   name: "Addresses",
@@ -399,6 +400,7 @@ export default {
   },
   data() {
     return {
+      UserRole16,
       q: {
         page: "addresses",
         selectedDomainId: "",

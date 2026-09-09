@@ -160,18 +160,33 @@ Add an exact-domain SQLite alias for the same address
     Run task    module/${MID}/add-address
     ...    {"atype":"domain","local":"apialias","domain":"${addalias_domain}","destinations":[{"dtype":"user","name":"u2"}]}
 
-Check the exact-domain alias takes priority over the addalias one
-    ${otarget} =    Evaluate
+Check the exact-domain alias and the addalias one are both shown
+    ${otarget_domain} =    Evaluate
     ...    {"atype":"domain","local":"apialias","domain":"${addalias_domain}","destinations":[{"dtype":"user","name":"u2","ui_name":"Second User"}]}
     ${laddresses} =    Run task    module/${MID}/list-addresses    ""
-    ${found} =    Set Variable    ${FALSE}
+    ${domain_found} =    Set Variable    ${FALSE}
+    ${u1_found} =    Set Variable    ${FALSE}
+    ${u3_found} =    Set Variable    ${FALSE}
     FOR    ${oaddr}    IN    @{laddresses}[addresses]
-        IF    "${oaddr}[local]" == "apialias" and "${oaddr.get('domain', '')}" == "${addalias_domain}"
-            Dictionaries Should Be Equal    ${oaddr}    ${otarget}
-            ${found} =    Set Variable    ${TRUE}
+        IF    "${oaddr}[local]" == "apialias" and "${oaddr.get('domain', '')}" == "${addalias_domain}" and "${oaddr}[atype]" == "domain"
+            Dictionaries Should Be Equal    ${oaddr}    ${otarget_domain}
+            ${domain_found} =    Set Variable    ${TRUE}
+        END
+        IF    "${oaddr}[local]" == "apialias" and "${oaddr.get('domain', '')}" == "${addalias_domain}" and "${oaddr}[atype]" == "addalias"
+            Length Should Be    ${oaddr}[destinations]    2
+            FOR    ${odest}    IN    @{oaddr}[destinations]
+                IF    "${odest}[name]" == "u1"
+                    ${u1_found} =    Set Variable    ${TRUE}
+                END
+                IF    "${odest}[name]" == "u3"
+                    ${u3_found} =    Set Variable    ${TRUE}
+                END
+            END
         END
     END
-    Should Be True    ${found}
+    Should Be True    ${domain_found}
+    Should Be True    ${u1_found}
+    Should Be True    ${u3_found}
 
 Remove the exact-domain alias
     Run task    module/${MID}/remove-address    {"atype":"domain","local":"apialias","domain":"${addalias_domain}"}
