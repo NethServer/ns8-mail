@@ -25,6 +25,7 @@ for evar in [
         "DOVECOT_DISABLED_USERS",
         "POSTFIX_ALWAYS_BCC",
         "POSTFIX_MAXIMAL_QUEUE_LIFETIME",
+        "POSTFIX_SRS",
     ]:
     if evar in original_environment:
         agent.set_env(evar, original_environment[evar])
