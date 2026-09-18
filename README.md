@@ -187,8 +187,9 @@ To disable it:
 
        systemctl --user reload postfix
 
-Reloading is enough: it both stops rewriting envelope senders and stops
-the `postsrsd` process itself, right away.
+Reloading is enough: it stops rewriting envelope senders right away.
+The `postsrsd` process itself keeps running regardless (like the
+Rspamd milter), since nothing in `main.cf` references it anymore.
 
 To re-enable SRS, remove the `POSTFIX_SRS` line (or set it back to `1`)
 in `state/environment`, then reload Postfix again:

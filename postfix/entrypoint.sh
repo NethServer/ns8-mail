@@ -33,6 +33,11 @@ if [ $# -eq 0 ]; then
         )
     fi
     reload-config
+    # postsrsd always runs, like the Rspamd milter, regardless of
+    # whether POSTFIX_SRS wires it into main.cf (NethServer/dev#7741).
+    # It self-daemonizes (-D) and picks up domains-file changes on its
+    # own afterwards, so it only needs to be started once here.
+    postsrsd -D -C /etc/postsrsd/postsrsd.conf -p /run/postsrsd.pid || :
     exec /usr/sbin/postfix start-fg
 else
     exec "${@}"

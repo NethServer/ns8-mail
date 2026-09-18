@@ -93,11 +93,17 @@ it passes the destination's SPF check instead of being rejected
 NethServer/dev#7741.
 
 The integration is implemented with Postfix's `sender_canonical_maps`
-(a `socketmap:unix:...` lookup), rather than the postsrsd milter, because
-the Alpine `postsrsd` package is built without milter support and, in this
-module, forwarding is decided later by `virtual_alias_maps`, after any
-milter would have already accepted the message -- a milter cannot tell in
-advance that a given recipient will end up being forwarded.
+(a `socketmap:unix:...` lookup) and a `check_recipient_access pipemap`
+rule (see `smtpd_recipient_restrictions`), rather than the postsrsd
+milter: in this module, forwarding is decided later by
+`virtual_alias_maps`, after any milter would have already accepted the
+message -- a milter cannot tell in advance that a given recipient will
+end up being forwarded. The `check_recipient_access pipemap` rule
+verifies a returning SRS0 bounce address against postsrsd's own secret
+and accepts it at RCPT TO, before the implicit `reject_unlisted_recipient`
+would otherwise refuse it as an unknown local part -- `cleanup` then
+decodes it back to the real original sender via `recipient_canonical_maps`,
+same as any other canonical rewrite.
 
 As a consequence, `sender_canonical_maps` rewrites the envelope sender of
 *any* message received from a sender whose domain is not one of the
@@ -115,14 +121,18 @@ changes, never the visible `From:`/`Subject:`/body of the message. If it
 does matter for a specific deployment (e.g. an archiver's audit trail, or
 envelope-based Sieve filtering), set `POSTFIX_SRS=0` to disable it.
 
-`postsrsd` has no configuration reload capability of its own (no SIGHUP
-handler), so `reload-config` manages its whole lifecycle itself instead
-of relying on the container's entrypoint: it starts `postsrsd` (in its
-own daemon mode, `-D`) once a mail domain is configured, stops it when
-SRS gets disabled, and kills and restarts it whenever the domains list
-it just wrote actually changed. As a consequence, a plain Postfix reload
-(`reload-config`) is enough to turn SRS on or off, or to pick up newly
-added mail domains -- no container restart is needed.
+`postsrsd` always runs, from the container's `entrypoint.sh`, exactly
+like the Rspamd milter -- regardless of whether `POSTFIX_SRS` actually
+wires it into `main.cf`. Since it does not ship in any current Alpine
+release with a working `SIGHUP` handler, this image builds a recent
+postsrsd release from source instead of using the packaged one, to get
+one. `reload-config` always refreshes its config and domains list and
+sends it `SIGHUP` afterwards, so it deterministically picks up newly
+added mail domains on every reload -- `domains-file-watch` (inotify)
+is deliberately left disabled, to avoid it racing that same reload. As
+a consequence, turning `POSTFIX_SRS` on or off only changes whether
+`main.cf` references `postsrsd` -- no process is ever started,
+stopped, or restarted, and no container restart is needed.
 
 ## Data tables
 
