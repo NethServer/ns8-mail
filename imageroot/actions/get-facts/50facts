@@ -27,6 +27,7 @@ def main():
     facts.update(get_master_users_facts())
     facts.update(get_queue_settings_facts())
     facts.update(get_custom_config_facts())
+    facts.update(get_dqs_token_facts())
     json.dump(facts, sys.stdout)
 
 def get_addresses_facts():
@@ -262,6 +263,11 @@ def get_custom_config_facts():
             return {"get_custom_config_facts_error": True}
     return {
         "dovecot_custom_config_count": odata
+    }
+
+def get_dqs_token_facts():
+    return {
+        "rspamd_dqs_token_enabled": bool(os.getenv("RSPAMD_dqs_token")),
     }
 
 if __name__ == "__main__":
