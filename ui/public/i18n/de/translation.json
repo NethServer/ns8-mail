@@ -143,7 +143,7 @@
         "num_rules_configured_c": "keine aktive Regel | {n} aktive Regel | {n} aktive Regeln"
     },
     "domains": {
-        "add_user_addresses_from_user_domain": "Benutzeradressen aus der Benutzerdomäne {userDomain} hinzufügen",
+        "add_user_addresses_from_user_domain": "Benutzeradressen von Benutzerdomäne hinzufügen {userDomain}",
         "configure_dkim_for_domain": "DKIM für Domäne {domain} konfigurieren",
         "copy_inbound_messages": "eingehende Nachrichten kopieren",
         "delete_domain_domain": "Domäne {domain} löschen",
@@ -179,8 +179,8 @@
         "catchall_mailbox_not_found": "Catchall-Postfach nicht gefunden",
         "domain_format": "Voll-qualifizierter Domänen-Name (FQDN) erforderlich",
         "domain_not_found": "Domäne nicht gefunden",
-        "add_alias_addresses_from_user_domain_tooltip": "Create an email address for the LDAP mail attribute of every user in the user domain",
-        "add_alias_addresses_from_user_domain": "Add alias addresses from user domain"
+        "add_alias_addresses_from_user_domain_tooltip": "Erstelle eine E-Mail-Adresse für das LDAP Mail Attribute jedes Benutzers",
+        "add_alias_addresses_from_user_domain": "Alias-Adressen aus der Benutzerdomäne hinzufügen"
     },
     "error": {
         "403": "Vorgang nicht zulässig",
@@ -212,7 +212,7 @@
         "spam": "Spam",
         "specify_retention": "benutzerdefinierte Aufbewahrung",
         "move_spam_but_no_folder": "Wenn \"Spam in Junk-Ordner verschieben\" aktiviert ist, ist der Name des Junk-Ordners erforderlich",
-        "junk_folder_placeholder": "e.g. Junk"
+        "junk_folder_placeholder": "z.B. Spam"
     },
     "filter_bypass_rules": {
         "no_bypass_rule_description": "Es sind keine Ausnahme-Regeln konfiguriert",
@@ -278,7 +278,7 @@
         "show_all": "alle anzeigen",
         "choose_domain": "Domäne wählen",
         "local_pattern": "Ungültige Adresse",
-        "type_addalias": "LDAP alias"
+        "type_addalias": "LDAP Alias"
     },
     "status": {
         "created": "Erstellt",
