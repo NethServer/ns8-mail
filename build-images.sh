@@ -126,10 +126,41 @@ images+=("${repobase}/${reponame}")
 # Postfix additional image
 #
 reponame="mail-postfix"
-container=$(buildah from docker.io/library/alpine:3.21.7)
-buildah run "${container}" /bin/sh <<EOF
+container=$(buildah from docker.io/library/alpine:3.24.2)
+buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login
+#
+# Build postsrsd from source: Alpine 3.24 only ships 2.0.12, which has
+# no SIGHUP handler for config reload NethServer/dev#7741. Pin to a
+# recent release that has one.
+#
+postsrsd_version=2.4.0
+addgroup -S postsrsd
+adduser -S -D -h /var/lib/postsrsd -s /bin/false -G postsrsd -g postsrsd postsrsd
+apk add --no-cache --virtual .postsrsd-build \
+    autoconf automake build-base cmake confuse-dev git help2man samurai sqlite-dev
+(
+    mkdir -p /tmp/build
+    cd /tmp/build
+    git clone --branch "${postsrsd_version}" --depth 1 \
+        https://github.com/roehling/postsrsd.git
+    cd postsrsd
+    mkdir -p /etc/postsrsd
+    cmake -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=ALWAYS \
+        -DCMAKE_INSTALL_PREFIX=/usr/ \
+        -DWITH_SQLITE=ON \
+        -DGENERATE_SRS_SECRET=OFF \
+        -DPOSTSRSD_CONFIGDIR=/etc/postsrsd/ \
+        -DINSTALL_SYSTEMD_SERVICE=OFF \
+        -DPOSTSRSD_USER=postsrsd
+    cmake --build build
+    cmake --install build
+)
+rm -rf /tmp/build
+apk del .postsrsd-build
 EOF
 buildah add "${container}" postfix/ /
 buildah config \
@@ -150,7 +181,7 @@ images+=("${repobase}/${reponame}")
 # Rspamd additional image
 #
 reponame="mail-rspamd"
-container=$(buildah from docker.io/library/alpine:3.21.7)
+container=$(buildah from docker.io/library/alpine:3.24.2)
 buildah run "${container}" /bin/sh <<EOF
 set -e
 # Software installation order is important to preserve uid and gid allocation:
@@ -178,7 +209,7 @@ images+=("${repobase}/${reponame}")
 # ClamAV additional image
 #
 reponame="mail-clamav"
-container=$(buildah from docker.io/library/alpine:3.21.7)
+container=$(buildah from docker.io/library/alpine:3.24.2)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache ncurses bash curl wget rsync bind-tools socat gpg gpg-agent
