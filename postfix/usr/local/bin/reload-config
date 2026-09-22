@@ -97,6 +97,8 @@ if [ -n "${srs_enabled}" ] && [ -z "${tmpl_srs_domain}" ] ; then
     echo "[WARNING] No mail domain configured yet. SRS (postsrsd) is disabled!"
     srs_enabled=
 fi
+# postsrsd always needs a syntactically valid domain to start correctly:
+: "${tmpl_srs_domain:=${tmpl_vdomain}}"
 tmpl_srs_recipient_check=
 if [ -n "${srs_enabled}" ] ; then
     # Accept a bounce/DSN addressed to a genuine SRS0 address (verified
