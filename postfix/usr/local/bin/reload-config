@@ -126,10 +126,8 @@ fi
 # postsrsd (SRS) always runs, like the Rspamd milter, regardless of
 # whether POSTFIX_SRS wires it into main.cf below (NethServer/dev#7741).
 # Its own config and domains list are always refreshed here; the SIGHUP
-# below (it has had a working handler since 2.1) makes it pick up the
-# change deterministically, so domains-file-watch (inotify) is left
-# off to avoid it racing a concurrent reload. This must run before
-# "postfix reload" below, so the sender/recipient canonical maps
+# below makes it pick up the change deterministically. This must run
+# before "postfix reload" below, so the sender/recipient canonical maps
 # directives are already part of main.cf by the time Postfix reloads it.
 (
     echo "${tmpl_vdomain}"
@@ -166,4 +164,4 @@ if postfix status 2>/dev/null ; then
 fi
 
 # Make postsrsd pick up its refreshed config now.
-pkill -HUP -x postsrsd 2>/dev/null || :
+kill -HUP "$(cat /run/postsrsd.pid 2>/dev/null)" 2>/dev/null || :
