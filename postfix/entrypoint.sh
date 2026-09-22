@@ -46,9 +46,24 @@ if [ $# -eq 0 ]; then
     postfix_pid=$!
 
     trap 'kill -TERM "${postfix_pid}" "${postsrsd_pid}" 2>/dev/null' TERM INT
+    # ash's "wait -n" is unreliable here: it only returns once the
+    # reaped job's raw wait status happens to be 0, so it hangs
+    # forever whenever a child is killed by a signal (as happens on
+    # every graceful shutdown). Trapping CHLD instead makes the
+    # blocking "wait" below return as soon as either child changes
+    # state, POSIX-mandated behavior for a trapped signal, which does
+    # not depend on that broken codepath.
+    trap : CHLD
+    while kill -0 "${postsrsd_pid}" 2>/dev/null && kill -0 "${postfix_pid}" 2>/dev/null; do
+        wait
+    done
 
     status=0
-    wait -n || status=$?
+    if kill -0 "${postfix_pid}" 2>/dev/null; then
+        wait "${postsrsd_pid}" || status=$?
+    else
+        wait "${postfix_pid}" || status=$?
+    fi
 
     kill -TERM "${postfix_pid}" "${postsrsd_pid}" 2>/dev/null || true
     wait 2>/dev/null || true
