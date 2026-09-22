@@ -12,12 +12,15 @@ address verification.
 
 ## TCP ports
 
-Standard public TCP ports
+Standard public TCP ports:
 
-- MTA - Message Transfer Agent (SMTP) 25
-- MSA - Message Submission Agent (SMTP) 587
-- MSA - Message Submission Agent (SMTPS -- SMTP with TLS wrap) 465
-- MSA - Message Submission Agent (SMTP) 10587 - AUTH over TLS not required
+- SMTP relay (with STARTTLS) 25
+- Submissions (implicit TLS) 465
+- Submission (with STARTTLS) 587
+
+Private TCP ports:
+
+- MSA - Message Submission Agent (SMTP) 10587 - clear-text, AUTH over TLS not required
 
 ## Environment variables
 

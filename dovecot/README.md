@@ -7,15 +7,15 @@ a LDAP user domain (both AD and RFC2307 schema are allowed).
 ## TCP ports
 
 
-Standard public TCP ports (STARTTLS is available)
-
-- IMAP 143
-- POP3 110
-
-TLS ports
+Standard public TCP ports with implicit TLS:
 
 - IMAPS 993
 - POP3S 995
+
+Same services, with STARTTLS support:
+
+- IMAP 143
+- POP3 110
 
 Private TCP ports:
 
