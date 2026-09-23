@@ -191,10 +191,13 @@ Reloading is enough: it stops rewriting envelope senders right away.
 The `postsrsd` process itself keeps running regardless (like the
 Rspamd milter), since nothing in `main.cf` references it anymore.
 
-To re-enable SRS, remove the `POSTFIX_SRS` line (or set it back to `1`)
-in `state/environment`, then reload Postfix again:
+To re-enable SRS, set `POSTFIX_SRS` line to `1` in `state/environment`,
+then reload Postfix again:
 
     systemctl --user reload postfix
+
+If you want to completely remove the `POSTFIX_SRS` line, a full postfix
+restart is required instead.
 
 ## Configuration override for ClamAV unofficial signatures
 
