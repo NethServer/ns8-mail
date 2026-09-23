@@ -80,6 +80,34 @@ if [ -z "${tmpl_default_transport}" ] ; then
     tmpl_default_transport=smtp
 fi
 tmpl_relayhost=$(pcdbquery "SELECT FORMAT('[%s]:%s', host, port) FROM relayrules WHERE enabled=1 AND rule_type='wildcard' AND rule_subject='*'")
+
+# postsrsd (SRS) integration NethServer/dev#7741. Prefer the MTA's own
+# domain as the SRS rewrite domain, if it is one of the mail domains;
+# otherwise fall back to the first configured one.
+tmpl_srs_domain=$(pcdbquery "SELECT domain FROM domains
+    WHERE domain != '*'
+    ORDER BY CASE WHEN domain = '${tmpl_myhostname#*.}' THEN 0 ELSE 1 END, rowid
+    LIMIT 1
+")
+srs_enabled=1
+case "${POSTFIX_SRS:-1}" in
+    0|false|no|off) srs_enabled= ;;
+esac
+if [ -n "${srs_enabled}" ] && [ -z "${tmpl_srs_domain}" ] ; then
+    echo "[WARNING] No mail domain configured yet. SRS (postsrsd) is disabled!"
+    srs_enabled=
+fi
+# postsrsd always needs a syntactically valid domain to start correctly:
+: "${tmpl_srs_domain:=${tmpl_vdomain}}"
+tmpl_srs_recipient_check=
+if [ -n "${srs_enabled}" ] ; then
+    # Accept a bounce/DSN addressed to a genuine SRS0 address (verified
+    # by postsrsd itself against its own secret) before the implicit
+    # reject_unlisted_recipient would otherwise refuse it as an unknown
+    # local part. Falls through to reject_unlisted_recipient for any
+    # address postsrsd does not recognize (NethServer/dev#7741).
+    tmpl_srs_recipient_check="check_recipient_access pipemap:{socketmap:unix:/var/lib/postsrsd/srs.sock:reverse, static:OK},"
+fi
 set +a
 
 envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
@@ -93,6 +121,23 @@ envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \
 
 if [ -z "${tmpl_sasl_commentout}" ] ; then
     cat /etc/postfix/dovecot-sasl.cf >> /etc/postfix/main.cf
+fi
+
+# postsrsd (SRS) always runs, like the Rspamd milter, regardless of
+# whether POSTFIX_SRS wires it into main.cf below (NethServer/dev#7741).
+# Its own config and domains list are always refreshed here; the SIGHUP
+# below makes it pick up the change deterministically. This must run
+# before "postfix reload" below, so the sender/recipient canonical maps
+# directives are already part of main.cf by the time Postfix reloads it.
+(
+    echo "${tmpl_vdomain}"
+    echo "${tmpl_ldomain}"
+    pcdbquery "SELECT domain FROM domains WHERE domain != '*' ORDER BY domain"
+) | sed '/^$/ d' > /etc/postfix/postsrsd.domains.new
+mv /etc/postfix/postsrsd.domains.new /etc/postfix/postsrsd.domains
+envsubst >/etc/postsrsd/postsrsd.conf <"${TEMPLATES_DIR:?}/postsrsd.conf"
+if [ -n "${srs_enabled}" ] ; then
+    cat /etc/postfix/postsrsd.cf >> /etc/postfix/main.cf
 fi
 
 # Append override dir contents to main.cf:
@@ -117,3 +162,6 @@ fi
 if postfix status 2>/dev/null ; then
     postfix reload
 fi
+
+# Make postsrsd pick up its refreshed config now.
+kill -HUP "$(cat /run/postsrsd.pid 2>/dev/null)" 2>/dev/null || :
