@@ -83,9 +83,15 @@ tmpl_relayhost=$(pcdbquery "SELECT FORMAT('[%s]:%s', host, port) FROM relayrules
 
 # postsrsd (SRS) integration NethServer/dev#7741. Prefer the MTA's own
 # domain as the SRS rewrite domain, if it is one of the mail domains;
-# otherwise fall back to the first configured one.
+# otherwise fall back to the first configured one. postsrsd crashes on
+# a domain name with characters other than letters, digits, "-" and
+# "." (e.g. "_"), so such names are never picked.
 tmpl_srs_domain=$(pcdbquery "SELECT domain FROM domains
     WHERE domain != '*'
+        AND domain NOT GLOB '*[^A-Za-z0-9.-]*'
+        AND domain NOT GLOB '*..*'
+        AND domain NOT GLOB '.*'
+        AND domain NOT GLOB '*.'
     ORDER BY CASE WHEN domain = '${tmpl_myhostname#*.}' THEN 0 ELSE 1 END, rowid
     LIMIT 1
 ")
@@ -129,11 +135,13 @@ fi
 # below makes it pick up the change deterministically. This must run
 # before "postfix reload" below, so the sender/recipient canonical maps
 # directives are already part of main.cf by the time Postfix reloads it.
+# postsrsd crashes on a domain name with characters other than letters,
+# digits, "-" and "." (e.g. "_"), so only valid names are listed.
 (
     echo "${tmpl_vdomain}"
     echo "${tmpl_ldomain}"
     pcdbquery "SELECT domain FROM domains WHERE domain != '*' ORDER BY domain"
-) | sed '/^$/ d' > /etc/postfix/postsrsd.domains.new
+) | sed -n -E '/^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*$/ p' > /etc/postfix/postsrsd.domains.new
 mv /etc/postfix/postsrsd.domains.new /etc/postfix/postsrsd.domains
 envsubst >/etc/postsrsd/postsrsd.conf <"${TEMPLATES_DIR:?}/postsrsd.conf"
 if [ -n "${srs_enabled}" ] ; then
