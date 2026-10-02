@@ -59,12 +59,16 @@ Private TCP ports:
   option](http://www.postfix.org/postconf.5.html#always_bcc).
 - `POSTFIX_SRS`. Enables the [postsrsd](https://github.com/roehling/postsrsd)
   Sender Rewriting Scheme (SRS) daemon, used to make forwarded mail pass
-  the destination's SPF check NethServer/dev#7741. Default is enabled
-  (`1`); set to `0` to disable it. It is automatically disabled if no
-  mail domain is configured yet. The SRS rewrite domain is the MTA's
-  own domain (`POSTFIX_HOSTNAME` with its leading label stripped), if
-  it is one of the configured mail domains; otherwise it is the first
-  configured mail domain.
+  the destination's SPF check NethServer/dev#7741. `0` always disables
+  it; `2` always enables it; the default, `1`, enables it automatically
+  unless a default relay route (smarthost) is configured, in which case
+  it is disabled -- such deployments typically are not a real
+  public-facing MTA and often use a fake/internal mail domain that the
+  smarthost would reject as `MAIL FROM` once SRS-rewritten. It is also
+  automatically disabled if no mail domain is configured yet. The SRS
+  rewrite domain is the MTA's own domain (`POSTFIX_HOSTNAME` with its
+  leading label stripped), if it is one of the configured mail domains;
+  otherwise it is the first configured mail domain.
 
 ## Volumes
 
@@ -96,7 +100,9 @@ Since Mail 1.9, the [postsrsd](https://github.com/roehling/postsrsd) daemon
 is enabled by default (`POSTFIX_SRS=1`) to rewrite the envelope sender of
 forwarded mail (see `userforwards` in [Data tables](#data-tables)), so that
 it passes the destination's SPF check instead of being rejected
-NethServer/dev#7741.
+NethServer/dev#7741. With the default `POSTFIX_SRS=1`, this is skipped
+automatically when a default relay route (smarthost) is configured --
+see [Environment variables](#environment-variables).
 
 The integration is implemented with Postfix's `sender_canonical_maps`
 (a `socketmap:unix:...` lookup) and a `check_recipient_access pipemap`

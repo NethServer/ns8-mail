@@ -195,9 +195,17 @@ def get_relay_settings_facts():
     }
 
 def get_srs_facts():
-    # Mirror reload-config's own POSTFIX_SRS parsing (NethServer/dev#7741)
-    srs_enabled = os.environ.get("POSTFIX_SRS", "1") not in ("0", "false", "no", "off")
-    return {"srs_enabled": srs_enabled}
+    # Mirror reload-config's own POSTFIX_SRS parsing (NethServer/dev#7741):
+    # 0 always disabled, 2 always enabled, 1 (default) enabled unless a
+    # default relay route (smarthost) is configured.
+    value = os.environ.get("POSTFIX_SRS", "1")
+    if value in ("0", "false", "no", "off"):
+        srs = 0
+    elif value == "2":
+        srs = 2
+    else:
+        srs = 1
+    return {"srs": srs}
 
 def get_always_bcc_facts():
     with subprocess.Popen(["../actions/get-always-bcc/20read"], stdout=subprocess.PIPE) as proc:
