@@ -3,8 +3,12 @@ Documentation    Message for user with forward address is sent with or
 ...              without copy. External forwards are SRS-rewritten
 ...              (NethServer/dev#7741) to pass SPF at the destination.
 Resource    smtp.resource
-Suite Setup     Enable wildcard relay rule
-Suite Teardown  Cleanup relay rules
+Suite Setup     Run keywords
+...             Force SRS enabled
+...             AND    Enable wildcard relay rule
+Suite Teardown  Run keywords
+...             Cleanup relay rules
+...             AND    Reset SRS setting
 Test Tags    userforward    outbound
 
 *** Test Cases ***

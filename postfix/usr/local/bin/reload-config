@@ -97,7 +97,24 @@ tmpl_srs_domain=$(pcdbquery "SELECT domain FROM domains
 ")
 srs_enabled=1
 case "${POSTFIX_SRS:-1}" in
-    0|false|no|off) srs_enabled= ;;
+    0|false|no|off)
+        srs_enabled=
+        ;;
+    2)
+        srs_enabled=1
+        ;;
+    *)
+        # Automatic (default, also covers true/yes/on): a default relay
+        # route (smarthost) usually means this deployment is not a real
+        # public-facing MTA, often with a fake/internal mail domain that
+        # the smarthost would reject as MAIL FROM once SRS-rewritten --
+        # so SRS stays off in that case, unless POSTFIX_SRS=2 forces it
+        # on (NethServer/dev#7741).
+        if [ -n "${tmpl_relayhost}" ] ; then
+            echo "[INFO] Default relay route configured. SRS (postsrsd) is automatically disabled."
+            srs_enabled=
+        fi
+        ;;
 esac
 if [ -n "${srs_enabled}" ] && [ -z "${tmpl_srs_domain}" ] ; then
     echo "[WARNING] No mail domain configured yet. SRS (postsrsd) is disabled!"
