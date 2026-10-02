@@ -102,6 +102,19 @@ Add relay rule
 Cleanup relay rules
     Execute Command    runagent -m ${MID} podman exec -w /srv postfix sqlite3 pcdb.sqlite 'DELETE FROM relayrules;'
 
+Force SRS enabled
+    [Documentation]    Force POSTFIX_SRS=2 so SRS stays active even when a
+    ...                relay rule needed for the test harness itself (e.g.
+    ...                a wildcard rule routing to a local SMTP sink) would
+    ...                otherwise look like a smarthost and automatically
+    ...                disable SRS (NethServer/dev#7741).
+    Execute Command    runagent -m ${MID} python3 -c 'import agent ; agent.set_env("POSTFIX_SRS", "2")'
+    Execute Command    runagent -m ${MID} systemctl --user reload postfix
+
+Reset SRS setting
+    Execute Command    runagent -m ${MID} python3 -c 'import agent ; agent.unset_env("POSTFIX_SRS")'
+    Execute Command    runagent -m ${MID} systemctl --user reload postfix
+
 Envelope sender should be SRS-rewritten
     [Tags]    outbound
     [Documentation]    Check the last queued message's envelope sender was

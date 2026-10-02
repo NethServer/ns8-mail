@@ -6,8 +6,12 @@ Documentation    A bounce/DSN addressed to a genuine SRS0 recipient (its
 ...              looks like an SRS0 recipient, but does not verify, is
 ...              still rejected as unlisted (NethServer/dev#7741).
 Resource    smtp.resource
-Suite Setup        Add relay rule    wildcard    *    127.0.0.1    10001    ${EMPTY}
-Suite Teardown     Cleanup relay rules
+Suite Setup        Run keywords
+...                Force SRS enabled
+...                AND    Add relay rule    wildcard    *    127.0.0.1    10001    ${EMPTY}
+Suite Teardown     Run keywords
+...                Cleanup relay rules
+...                AND    Reset SRS setting
 Test Tags    srs    outbound
 
 *** Test Cases ***
