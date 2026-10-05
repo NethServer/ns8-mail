@@ -68,6 +68,22 @@ tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
 tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
 tmpl_ldap_port="${POSTFIX_LDAP_PORT}"
 tmpl_ldap_base="${POSTFIX_LDAP_BASE}"
+# Reject disabled and hidden users at RCPT time, like Dovecot does at
+# delivery time, to avoid bounces to forged senders (NethServer/dev#8185).
+tmpl_ldap_users_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" -e '{
+    if (schema == "rfc2307") {
+        attr_name = "uid"
+    } else if (schema == "ad") {
+        attr_name = "sAMAccountName"
+    }
+    filter_clause = ""
+    for(idx=1; idx <= NF; ++idx) {
+        filter_clause = filter_clause sprintf("(%s=%s)", attr_name, $idx)
+    }
+    if (filter_clause != "") {
+        print "(!(|" filter_clause "))"
+    }
+}')
 tmpl_maximal_queue_lifetime="${POSTFIX_MAXIMAL_QUEUE_LIFETIME:-120}"
 if [ -n "${POSTFIX_RESTRICTED_SENDER}" ]; then
     tmpl_sender_restrictions="reject_authenticated_sender_login_mismatch"
