@@ -55,9 +55,18 @@ Wildcard alias to a disabled mailbox is rejected
     Should return SMTP recipient rejected error    d5@inbound.test
 
 Catch-all to a disabled mailbox is rejected
-    [Setup]       Set inbound.test catchall to u2
+    [Setup]       Set inbound.test catchall to    u2
     [Teardown]    Reset inbound.test catchall
     Should return SMTP recipient rejected error    nobody8185@inbound.test
+
+Catch-all to an enabled mailbox does not get disabled mailbox mail
+    [Setup]       Set inbound.test catchall to    u1
+    [Teardown]    Reset inbound.test catchall
+    Should return SMTP unknown user error    u2@inbound.test
+    Should return SMTP unknown user error    ldapd2@inbound.test
+    Should return SMTP recipient rejected error    d1@inbound.test
+    Send SMTP message to    nobody8185@inbound.test
+    Should be delivered via LMTP to  u1
 
 Shared LDAP mail with a disabled mailbox
     [Documentation]    The user with an enabled mailbox still receives the message
@@ -108,9 +117,10 @@ Remove aliases to u2
     Run task    module/${MID}/remove-address    {"atype":"domain","local":"d1","domain":"inbound.test"}
     Run task    module/${MID}/remove-address    {"atype":"wildcard","local":"d5"}
 
-Set inbound.test catchall to u2
+Set inbound.test catchall to
+    [Arguments]    ${user}
     Run task     module/${MID}/alter-domain
-    ...            {"domain":"inbound.test","catchall":{"dtype":"user","name":"u2"}}
+    ...            {"domain":"inbound.test","catchall":{"dtype":"user","name":"${user}"}}
 
 Reset inbound.test catchall
     Run task     module/${MID}/alter-domain

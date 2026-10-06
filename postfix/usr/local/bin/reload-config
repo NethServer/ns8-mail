@@ -160,6 +160,11 @@ envsubst >/etc/postfix/userforwards.cf <"${TEMPLATES_DIR:?}/userforwards.cf"
 envsubst >/etc/postfix/aliases.cf <"${TEMPLATES_DIR:?}/aliases.cf"
 envsubst >/etc/postfix/laddgroupmembers.cf <"${TEMPLATES_DIR:?}/laddgroupmembers-${ldap_schema}.cf"
 envsubst >/etc/postfix/laddaliases.cf <"${TEMPLATES_DIR:?}/laddaliases-${ldap_schema}.cf"
+# Same maps without the disabled users filter: an address found here but not
+# in the filtered maps is rejected, instead of falling into the catch-all.
+tmpl_ldap_users_filter_clause='' envsubst >/etc/postfix/laddusers-all.cf <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf"
+tmpl_ldap_users_filter_clause='' envsubst >/etc/postfix/laddaliases-all.cf <"${TEMPLATES_DIR:?}/laddaliases-${ldap_schema}.cf"
+tmpl_disabled_users_sql="''" envsubst >/etc/postfix/aliases-all.cf <"${TEMPLATES_DIR:?}/aliases.cf"
 envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \
     sed "s/^domain = .*/domain = ${tmpl_vdomain}/ ; /^# just/ d" >/etc/postfix/laddusers-origin.cf
 
