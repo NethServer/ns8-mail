@@ -88,6 +88,17 @@ tmpl_ldap_users_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "
         print "(!(|" filter_clause "))"
     }
 }')
+# LDAP group expansion cannot skip members, so copies for disabled
+# mailboxes are dropped instead of bounced (NethServer/dev#8205).
+tmpl_disabled_transport_map=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "vdomain=${tmpl_vdomain}" -e '{
+    map = ""
+    for(idx=1; idx <= NF; ++idx) {
+        map = map sprintf("{ %s@%s = discard: }, ", tolower($idx), vdomain)
+    }
+    if (map != "") {
+        print "inline:{" map "}"
+    }
+}')
 tmpl_maximal_queue_lifetime="${POSTFIX_MAXIMAL_QUEUE_LIFETIME:-120}"
 if [ -n "${POSTFIX_RESTRICTED_SENDER}" ]; then
     tmpl_sender_restrictions="reject_authenticated_sender_login_mismatch"
