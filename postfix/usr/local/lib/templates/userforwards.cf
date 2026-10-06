@@ -7,4 +7,6 @@ query =
     SELECT dest
     FROM userforwards
     WHERE user = '%u'
-domain = ${tmpl_vdomain}
+      AND lower(dest) NOT IN (${tmpl_disabled_users_sql})
+# Public domains too, so a disabled mailbox keeps its forward
+domain = ${tmpl_laddusers_domains}
