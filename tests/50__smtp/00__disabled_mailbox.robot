@@ -29,6 +29,15 @@ Hidden AD accounts are rejected
     Should return SMTP unknown user error    krbtgt@inbound.test
     Should return SMTP unknown user error    ldapservice@inbound.test
 
+Authenticated sender gets an immediate rejection
+    [Documentation]    A local user writing to a disabled mailbox gets the error
+    ...                during the session, not a bounce later
+    Send SMTP message to  u2@inbound.test
+    ...                   from=u1@inbound.test
+    ...                   credentials=u1:Nethesis,1234
+    ...                   expect_curl_exitcode=
+    Should return SMTP error    550 5.1.1 <u2@inbound.test>: Recipient address rejected
+
 Enabled mailbox address is accepted
     Send SMTP message to    u1@inbound.test
     Should be delivered via LMTP to  u1
