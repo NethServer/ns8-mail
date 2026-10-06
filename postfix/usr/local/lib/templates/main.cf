@@ -116,6 +116,8 @@ smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
   ${tmpl_srs_recipient_check}
   ${tmpl_verify_recipient_address},
+  check_recipient_access pipemap:{unionmap:{sqlite:${S}meta_directory/aliases.cf, sqlite:${S}meta_directory/userforwards.cf, proxy:ldap:${S}meta_directory/laddgroupmembers.cf, proxy:ldap:${S}meta_directory/laddusers.cf, proxy:ldap:${S}meta_directory/laddaliases.cf}, static:OK},
+  check_recipient_access pipemap:{unionmap:{sqlite:${S}meta_directory/aliases-all.cf, proxy:ldap:${S}meta_directory/laddusers-all.cf, proxy:ldap:${S}meta_directory/laddaliases-all.cf}, static:{550 5.1.1 User unknown in virtual alias table}},
 
 #
 # TLS configuration
