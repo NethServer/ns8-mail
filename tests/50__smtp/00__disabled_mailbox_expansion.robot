@@ -21,6 +21,15 @@ Group with a disabled member
     Should not be delivered via LMTP to  u2
     Should not send bounce
 
+Group with a disabled member with AD
+    [Documentation]    AD resolves group members by DN, OpenLDAP by user name
+    [Setup]       Switch user domain    ad.dom.test
+    [Teardown]    Switch user domain    ldap.dom.test
+    Send SMTP message to    g1@inbound.test
+    Should be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  u2
+    Should not send bounce
+
 Alias with a disabled destination
     Send SMTP message to    d3@inbound.test
     Should be delivered via LMTP to  u1
@@ -60,6 +69,11 @@ Group whose members are all disabled is dropped silently
     Should not send bounce
 
 *** Keywords ***
+Switch user domain
+    [Arguments]     ${udom}
+    Run task     module/${MID}/configure-module
+    ...          {"hostname":"mail.domain.test","user_domain":"${udom}"}
+
 Create aliases with a disabled destination
     Run task    module/${MID}/add-address    {"atype":"domain","local":"d3","domain":"inbound.test","destinations":[{"dtype":"user","name":"u1"},{"dtype":"user","name":"u2"}]}
     Run task    module/${MID}/add-address    {"atype":"domain","local":"d4","domain":"inbound.test","destinations":[{"dtype":"user","name":"u1"},{"dtype":"user","name":"MixedCaseUser"}]}
