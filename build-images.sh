@@ -138,7 +138,7 @@ apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cy
 # removed once the build is done.
 #
 # renovate: datasource=github-tags packageName=roehling/postsrsd
-postsrsd_version=2.4.0
+postsrsd_version=2.4.1
 addgroup -S postsrsd
 adduser -S -D -h /var/lib/postsrsd -s /bin/false -G postsrsd -g postsrsd postsrsd
 apk add --no-cache --virtual .postsrsd-build \
