@@ -49,6 +49,20 @@ Should return SMTP error
     [Arguments]    ${pattern}
     Should Match    ${LAST_CURL_ERROR}    *${pattern}*    msg=Error from curl doesn't match pattern `${pattern}`: `${LAST_CURL_ERROR}`.
 
+Should return SMTP unknown user error
+    [Arguments]    ${address}
+    Send SMTP message to  ${address}
+    ...                   expect_curl_exitcode=
+    Should return SMTP error    550 5.1.1 <${address}>: Recipient address rejected: User unknown in virtual alias table
+
+Should not send bounce
+    [Documentation]    Check that no non-delivery report was sent back for the last message
+    Sleep    2s
+    ${out} =    Execute Command
+    ...    journalctl -o cat -t postfix/bounce -S '${LAST_TIMESTAMP}'
+    Should Not Contain    ${out}    ${LAST_QUEUE_ID}: sender non-delivery notification
+    ...    a bounce was sent for message ${LAST_QUEUE_ID}
+
 Check SMTP delivery by journal
     [Documentation]    Check if the journal contents since last keyword run
     ...                match the password lookup and delivery patterns.
@@ -150,3 +164,25 @@ Get SRS rewritten sender from journal
     Should Not Be Empty    ${matches}
     ...    postfix/qmgr envelope sender for ${LAST_QUEUE_ID} was not SRS-rewritten: ${out}
     RETURN    ${matches}[0]
+
+Set mailbox ${user} enabled
+    [Arguments]    ${enabled}
+    Run task    module/${MID}/set-mailbox-enabled    {"user":"${user}","enabled":${enabled}}
+
+Initialize LDAP reference
+    [Documentation]    The mail smtp test suites run isolated from tests/ldap_providers.resource,
+    ...                so ${mid_ldap} must be looked up again here via service discovery instead of
+    ...                relying on the suite variable set by "Configure LDAP user domain". This must
+    ...                match the user domain currently bound to ${MID} (see "Switch to OpenLDAP user
+    ...                domain" in 50__smtp/__init__.robot), since Postfix only queries that domain.
+    [Arguments]    ${domain}
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent python3 -c 'import agent ; print(agent.list_service_providers(agent.redis_connect(), "ldap", "tcp", filters={"domain":"${domain}"})[0]["module_id"])'
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0    Failed to look up LDAP provider module_id: ${err}
+    Should Not Be Empty    ${out}    LDAP provider module_id not found in service discovery
+    VAR    ${mid_ldap}    ${out}    scope=SUITES
+
+Set ${user} LDAP mail attribute
+    [Arguments]    ${mail}
+    Run Keyword    Run Task    module/${mid_ldap}/alter-user    {"user":"${user}","mail":"${mail}"}
