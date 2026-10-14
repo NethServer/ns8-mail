@@ -1,0 +1,13 @@
+#
+# postmaster -- route Postfix notices like the postmaster@* address
+#
+
+dbpath = /srv/pcdb.sqlite
+query =
+    SELECT dest
+    FROM destmap
+    WHERE alocal = '%u'
+      AND alocal = 'postmaster'
+      AND domain = '*'
+      AND lower(dest) NOT IN (${tmpl_disabled_users_sql})
+domain = ${tmpl_vdomain}
