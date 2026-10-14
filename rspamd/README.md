@@ -42,6 +42,10 @@ Well-known ports
   email attachments scanned by ClamAV in Rspamd.
   Attachments larger than this value are skipped to optimize performance.
 
+Bypass sender rules match both the SMTP envelope sender (`MAIL FROM`) and
+the MIME `From` header, so newsletters sent through a relay service are
+recognized. Block sender rules match only the SMTP envelope sender.
+
 ## Volumes
 
 - `/etc/rspamd/override.d` Rspamd custom configuration
