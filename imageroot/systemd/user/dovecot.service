@@ -10,6 +10,8 @@ WorkingDirectory=%E/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/dovecot.pid %t/dovecot.ctr-id
 ExecStartPre=runagent discover-services
+# Settings of OIDC token logins, written manually for now
+ExecStartPre=/bin/sh -c 'umask 077; touch oidc.env'
 ExecStart=/usr/bin/podman run \
     --detach \
     --init \
@@ -22,6 +24,7 @@ ExecStart=/usr/bin/podman run \
     --env-file=environment \
     --env-file=discovery.env \
     --env-file=dovecot.env \
+    --env-file=oidc.env \
     --volume=/dev/log:/dev/log \
     --volume=dovecot-data:/var/lib/vmail \
     --volume=./tls-certs:/etc/ssl/dovecot:z \
@@ -42,6 +45,7 @@ ExecReload=runagent /usr/bin/podman exec \
     --env-file=environment \
     --env-file=dovecot.env \
     --env-file=discovery.env \
+    --env-file=oidc.env \
     %N reload-config
 PIDFile=%t/dovecot.pid
 Type=forking

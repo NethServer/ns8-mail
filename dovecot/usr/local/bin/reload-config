@@ -68,7 +68,28 @@ else
 fi
 
 master_users="${DOVECOT_MASTER_USERS}"
+
+# OIDC token logins (NethServer/dev#8080), enabled when the OIDC_*
+# variables are set
+if [ -n "${OIDC_ISSUER}" ] && [ -n "${OIDC_CLIENT_ID}" ] && [ -n "${OIDC_CLIENT_SECRET}" ]; then
+    tmpl_auth_mechanisms="plain login oauthbearer xoauth2"
+    condinclude_oauth2='!include oauth2.conf'
+else
+    tmpl_auth_mechanisms="plain login"
+    condinclude_oauth2=
+fi
 set +a
+
+# Percent-encode a string for the user info part of a URL
+urlencode() {
+    printf '%s' "$1" | awk 'BEGIN { for (i = 1; i < 256; i++) ord[sprintf("%c", i)] = i }
+    {
+        for (i = 1; i <= length($0); i++) {
+            c = substr($0, i, 1)
+            if (c ~ /[A-Za-z0-9._~-]/) printf "%s", c; else printf "%%%02X", ord[c]
+        }
+    }'
+}
 
 echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::" > /etc/dovecot/users
 
@@ -95,6 +116,26 @@ envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"
 envsubst >/etc/dovecot/uquota.conf <"${TEMPLATES_DIR:?}/uquota.conf"
 envsubst >/etc/dovecot/passdb.conf.ext <"${TEMPLATES_DIR:?}/${ldap_schema}-ldap.conf.ext"
 ln -sf /etc/dovecot/passdb.conf.ext /etc/dovecot/userdb.conf.ext
+
+if [ -n "${condinclude_oauth2}" ]; then
+    envsubst >/etc/dovecot/oauth2.conf <"${TEMPLATES_DIR:?}/oauth2.conf"
+    # The introspection request authenticates with the client
+    # credentials, in the URL. The default URL follows the Keycloak path
+    # layout. Do not enable the oauth2 debug: it logs the URL.
+    introspection_url="${OIDC_INTROSPECTION_URL:-${OIDC_ISSUER%/}/protocol/openid-connect/token/introspect}"
+    (
+        umask 077
+        cat >/etc/dovecot/oauth2.conf.ext <<EOF
+introspection_mode = post
+introspection_url = ${introspection_url%%://*}://$(urlencode "${OIDC_CLIENT_ID}"):$(urlencode "${OIDC_CLIENT_SECRET}")@${introspection_url#*://}
+active_attribute = active
+active_value = true
+username_attribute = preferred_username
+EOF
+    )
+else
+    rm -f /etc/dovecot/oauth2.conf /etc/dovecot/oauth2.conf.ext
+fi
 
 if [ -n "${DOVECOT_DEBUG}" ]; then
     (
