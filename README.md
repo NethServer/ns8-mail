@@ -392,8 +392,9 @@ Following block rule configuration files are available in the Rspamd UI configur
 ## Rspamd allow rules
 
 Allow rules are managed by the module UI, in the Filter > Bypass rules
-page. Do not edit the map files by hand: the UI overwrites them. Each rule
-is stored in one of these Rspamd map files:
+page. The module UI saves each rule through the Rspamd API, in one of the
+following map files. The same files are also available in the Rspamd UI
+configuration tab:
 
 - Sender mail address: `/var/lib/rspamd/bypass_sender.map`
   - Examples: `user@domain.tld`, `newsletter@nethserver.org`
