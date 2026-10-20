@@ -18,6 +18,7 @@ BYPASS_SENDER {
     action = "accept";
     {% endif -%}
     type = "from";
+    extract_from = "both";
     filter = "email";
     map = ["${DBDIR}/bypass_sender.map"];
 }
@@ -31,6 +32,7 @@ BYPASS_SENDER_DOMAIN {
     action = "accept";
     {% endif -%}
     type = "from";
+    extract_from = "both";
     filter = "email:domain";
     map = ["${DBDIR}/bypass_sender_domain.map"];
 }
