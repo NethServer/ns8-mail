@@ -4,7 +4,7 @@
 # Expand an address to multiple user/group destinations.
 # Wildcard address expansion has lower priority than
 # exact-domain match, and they are mutually-exclusive
-# (see NOT EXISTS clause).
+# (see NOT EXISTS clause). Disabled mailboxes are skipped.
 #
 
 dbpath = /srv/pcdb.sqlite
@@ -14,11 +14,13 @@ query =
   WHERE alocal = '%u'
     AND domain = '%d'
     AND '%d' IN (SELECT domain FROM domains)
+    AND lower(dest) NOT IN (${tmpl_disabled_users_sql})
   UNION SELECT dest
   FROM destmap
   WHERE alocal = '%u'
     AND domain = '*'
     AND '%d' IN (SELECT domain FROM domains)
+    AND lower(dest) NOT IN (${tmpl_disabled_users_sql})
     AND NOT EXISTS (
       SELECT 1 FROM destmap
       WHERE alocal = '%u'
