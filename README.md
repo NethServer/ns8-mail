@@ -389,6 +389,32 @@ Following block rule configuration files are available in the Rspamd UI configur
 - Sender mail address: `/var/lib/rspamd/block_sender.map`
   - Examples: `user@domain.tld`, `support@nethserver.org`
 
+## Rspamd allow rules
+
+Allow rules are managed by the module UI, in the Filter > Bypass rules
+page. Do not edit the map files by hand: the UI overwrites them. Each rule
+is stored in one of these Rspamd map files:
+
+- Sender mail address: `/var/lib/rspamd/bypass_sender.map`
+  - Examples: `user@domain.tld`, `newsletter@nethserver.org`
+- Sender domain: `/var/lib/rspamd/bypass_sender_domain.map`
+  - Examples: `domain.tld`, `nethserver.org`
+- Recipient mail address: `/var/lib/rspamd/bypass_recipient.map`
+  - Examples: `user@domain.tld`
+- Recipient domain: `/var/lib/rspamd/bypass_recipient_domain.map`
+  - Examples: `domain.tld`
+- Client IP address: `/var/lib/rspamd/bypass_ip.map`
+  - Examples: `192.168.1.10`, `10.0.0.0/8`
+
+Sender rules match both the SMTP envelope sender (`MAIL FROM`) and the
+MIME `From` header. This way, newsletters sent through a relay service
+are recognized. Block rules match only the SMTP envelope sender.
+
+By default, a matching allow rule accepts the message and skips any
+further check, antivirus included. Set `RSPAMD_bypass_score` to a
+negative number to add a ham score instead and keep the other checks
+running. See [rspamd/README.md](rspamd/README.md) for details.
+
 ## Service discovery
 
 Another module can discover IMAP and SUBMISSION endpoints by looking up
