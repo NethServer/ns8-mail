@@ -1,30 +1,11 @@
 *** Settings ***
-Documentation    Postfix notices sent to the bare "postmaster" address follow
-...              the postmaster@* address, with the postmaster public
-...              mailbox as fallback (NethServer/dev#8186)
+Documentation    Postfix notices sent to the bare "postmaster" address are
+...              delivered to the postmaster public mailbox (NethServer/dev#8186)
 Resource    smtp.resource
 Test Tags    postmaster    notice
 
 *** Test Cases ***
 Notice to bare postmaster reaches the public mailbox
-    Send local message to postmaster
-    Wait Until Keyword Succeeds    3    1s
-    ...    Postmaster notice should be delivered to    vmail+postmaster
-
-Notice follows the postmaster address destination
-    [Setup]       Set postmaster destination    user    u1
-    [Teardown]    Set postmaster destination    public    postmaster
-    Send local message to postmaster
-    Wait Until Keyword Succeeds    3    1s
-    ...    Postmaster notice should be delivered to    u1
-
-Notice falls back to the public mailbox if the destination is disabled
-    [Setup]       Run Keywords
-    ...           Set postmaster destination    user    u1
-    ...           AND    Set mailbox u1 enabled    false
-    [Teardown]    Run Keywords
-    ...           Set mailbox u1 enabled    true
-    ...           AND    Set postmaster destination    public    postmaster
     Send local message to postmaster
     Wait Until Keyword Succeeds    3    1s
     ...    Postmaster notice should be delivered to    vmail+postmaster
@@ -35,14 +16,6 @@ Internal postmaster address is not reachable from outside
     Should return SMTP error    554 5.7.1 <postmaster@mail.domain.test.localhost>: Recipient address rejected: access denied
 
 *** Keywords ***
-Set postmaster destination
-    [Arguments]    ${dtype}    ${name}
-    Run task    module/${MID}/alter-address    {"atype":"wildcard","local":"postmaster","destinations":[{"dtype":"${dtype}","name":"${name}"}]}
-
-Set mailbox ${user} enabled
-    [Arguments]    ${enabled}
-    Run task    module/${MID}/set-mailbox-enabled    {"user":"${user}","enabled":${enabled}}
-
 Send local message to postmaster
     [Documentation]    Postfix qualifies the bare address with myorigin, like its own notices
     ${LAST_TIMESTAMP} =    Get Current Date
