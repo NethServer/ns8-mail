@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import os
+import sys
+import mail
+
+request = json.load(sys.stdin) or {}
+
+sdb = mail.pcdb_connect(readonly=True)
+query = """SELECT o.alocal, o.domain, o.owner, group_concat(d.dest) AS dest
+    FROM addressowners o LEFT JOIN destmap d ON d.alocal = o.alocal AND d.domain = o.domain"""
+params = []
+# The cluster admin sees every owner unless it asks for one
+if os.environ.get("AGENT_TASK_USER", "").startswith("module/") or request.get("owner"):
+    query += " WHERE o.owner = ?"
+    params.append(mail.resolve_address_owner(request))
+query += " GROUP BY o.alocal, o.domain, o.owner ORDER BY o.domain, o.alocal"
+
+addresses = [{
+    "local": row['alocal'],
+    "domain": row['domain'],
+    "owner": row['owner'],
+    "destination": row['dest'] or "",
+} for row in sdb.execute(query, params)]
+sdb.close()
+json.dump({"addresses": addresses}, fp=sys.stdout)

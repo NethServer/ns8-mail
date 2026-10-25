@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+#
+# Remove addresses owned by the calling module. Addresses of other owners,
+# and addresses without owner, are never touched.
+#
+
+import json
+import sys
+import mail
+
+request = json.load(sys.stdin)
+owner = mail.resolve_address_owner(request)
+
+query = "SELECT alocal, domain FROM addressowners WHERE owner = ?"
+params = [owner]
+if request.get('domain'):
+    query += " AND domain = ?"
+    params.append(request['domain'].lower())
+locals_filter = [local.lower() for local in request.get('locals', [])]
+
+sdb = mail.pcdb_connect()
+removed = []
+try:
+    cur = sdb.cursor()
+    for row in cur.execute(query, params).fetchall():
+        if 'locals' in request and row['alocal'].lower() not in locals_filter:
+            continue
+        cur.execute("DELETE FROM destmap WHERE alocal = ? AND domain = ?", (row['alocal'], row['domain']))
+        # The ownership row goes away with the address (ON DELETE CASCADE)
+        cur.execute("DELETE FROM addresses WHERE alocal = ? AND domain = ?", (row['alocal'], row['domain']))
+        removed.append({"local": row['alocal'], "domain": row['domain']})
+except Exception:
+    sdb.rollback()
+    sdb.close()
+    raise
+
+sdb.commit()
+sdb.close()
+json.dump({"removed": removed}, fp=sys.stdout)

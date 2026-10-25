@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+#
+# Create addresses on behalf of another module. All the addresses are
+# created, or none. An address the owner already has is left as is.
+#
+
+import json
+import sys
+import agent
+import mail
+from agent.ldapclient import LdapclientEntryNotFound
+
+request = json.load(sys.stdin)
+owner = mail.resolve_address_owner(request)
+domain = request['domain'].lower()
+
+sdb = mail.pcdb_connect()
+
+
+def fail(local, error, exit_code):
+    sdb.rollback()
+    sdb.close()
+    agent.set_status('validation-failed')
+    json.dump([{'field':'addresses', 'parameter':'addresses', 'value': local, 'error': error}], fp=sys.stdout)
+    sys.exit(exit_code)
+
+
+rdomain = sdb.execute("SELECT addusers, addgroups FROM domains WHERE domain = ? AND domain != '*'", (domain,)).fetchone()
+if rdomain is None:
+    sdb.close()
+    agent.set_status('validation-failed')
+    json.dump([{'field':'domain', 'parameter':'domain', 'value': domain, 'error':'mail_domain_not_found'}], fp=sys.stdout)
+    sys.exit(2)
+
+ldapclient = None
+if rdomain['addusers'] or rdomain['addgroups']:
+    ldapclient = mail._create_ldapclient()
+
+
+def ldap_entry_exists(getter, name):
+    try:
+        getter(name)
+    except LdapclientEntryNotFound:
+        return False
+    return True
+
+
+created = []
+try:
+    cur = sdb.cursor()
+    for item in request['addresses']:
+        local = item['local'].lower()
+        dest = item['destination'].lower()
+
+        # A wildcard address, like postmaster, exists in every domain
+        if cur.execute("SELECT 1 FROM addresses WHERE alocal = ? AND domain = '*'", (local,)).fetchone():
+            fail(local, 'address_reserved', 3)
+        # An address takes priority over a user or a group: never hide one
+        if rdomain['addusers'] and ldap_entry_exists(ldapclient.get_user, local):
+            fail(local, 'address_is_user', 3)
+        if rdomain['addgroups'] and ldap_entry_exists(ldapclient.get_group, local):
+            fail(local, 'address_is_group', 3)
+
+        current_owner = cur.execute("SELECT owner FROM addressowners WHERE alocal = ? AND domain = ?", (local, domain)).fetchone()
+        dests = [row['dest'].lower() for row in cur.execute("SELECT dest FROM destmap WHERE alocal = ? AND domain = ?", (local, domain))]
+        exists = cur.execute("SELECT 1 FROM addresses WHERE alocal = ? AND domain = ?", (local, domain)).fetchone()
+
+        if exists:
+            if dests != [dest]:
+                fail(local, 'address_already_exists', 3)
+            if current_owner and current_owner['owner'] != owner:
+                fail(local, 'address_already_exists', 3)
+            if not current_owner:
+                # Take over an address created by hand with the same destination
+                cur.execute("INSERT INTO addressowners (alocal, domain, owner) VALUES (?, ?, ?)", (local, domain, owner))
+                created.append(local)
+            continue
+
+        cur.execute("INSERT INTO destmap (alocal, domain, dest) VALUES (?, ?, ?)", (local, domain, dest))
+        cur.execute("INSERT INTO addresses (alocal, domain, internal, adesc) VALUES (?, ?, 0, ?)",
+                    (local, domain, request.get('description', '')))
+        cur.execute("INSERT INTO addressowners (alocal, domain, owner) VALUES (?, ?, ?)", (local, domain, owner))
+        created.append(local)
+except Exception:
+    sdb.rollback()
+    sdb.close()
+    raise
+
+sdb.commit()
+sdb.close()
+json.dump({"domain": domain, "created": created}, fp=sys.stdout)

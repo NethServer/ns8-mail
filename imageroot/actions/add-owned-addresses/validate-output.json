@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://schema.nethserver.org/mail/add-owned-addresses-output.json",
+    "title": "add-owned-addresses output",
+    "description": "Local parts created or taken over by the owner",
+    "examples": [
+        {
+            "domain": "example.org",
+            "created": [
+                "mylist",
+                "mylist-request"
+            ]
+        }
+    ],
+    "type": "object",
+    "required": [
+        "domain",
+        "created"
+    ],
+    "properties": {
+        "domain": {
+            "type": "string"
+        },
+        "created": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

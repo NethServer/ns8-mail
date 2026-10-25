@@ -248,6 +248,35 @@ Another module can obtain `vmail` credentials by invoking the action
 `reveal-master-credentials`, provided it has been granted the `mailadm`
 role.
 
+## Addresses owned by other modules
+
+A module granted the `mailaddressadm` role can create and remove mail
+addresses for its own use, for example the addresses of a mailing list
+manager. The role allows these actions:
+
+- `add-owned-addresses`: create addresses of one domain, each forwarding
+  to one external destination. All of them are created, or none.
+- `remove-owned-addresses`: remove addresses of the calling module only.
+  Without `locals`, it removes all its addresses.
+- `list-owned-addresses`: list the addresses of the calling module.
+
+The owner of an address is the UUID of the calling module, so the
+ownership survives a restore or a move of that module. It is stored in the
+`addressowners` table. A module cannot create:
+
+- an address that already exists with another destination or another
+  owner;
+- an address with the name of a user or a group, in a domain that adds
+  user or group addresses: the address would hide them;
+- a local part of a wildcard address, like `postmaster`.
+
+An address created by hand with the same single destination is taken over
+by the module. Owned addresses are visible and editable in the UI like any
+other address. Removing one from the UI also removes its ownership.
+
+The cluster admin can call the same actions with the `owner` field set to
+a module UUID.
+
 ## Public mailboxes
 
 Subfolders of Vmail's INBOX are visible to all users under the Public

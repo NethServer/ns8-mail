@@ -592,3 +592,24 @@ def probe_and_validate_smtp_credentials(username, password, host, port, tls):
         # We have issued a timeout, the server is not responding or the URL is wrong
         json.dump([{'field':'host','parameter':'host','value':err,'error':'connection_timeout_error'}],fp=sys.stdout, default=str)
         sys.exit(5)
+
+
+def resolve_address_owner(request):
+    """Return the UUID of the module that owns the addresses of this request.
+
+    A module caller is identified by the task user. The UUID survives
+    restore and move, while the module ID does not. Another caller, like
+    the cluster admin, must name the owner explicitly.
+    """
+    caller = os.environ.get("AGENT_TASK_USER", "")
+    if caller.startswith("module/"):
+        rdb = agent.redis_connect(use_replica=True)
+        owner = rdb.hget(f"{caller}/environment", "MODULE_UUID")
+        agent.assert_exp(owner, f"Cannot find the UUID of {caller}")
+        return owner
+    owner = request.get("owner", "")
+    if not owner:
+        agent.set_status('validation-failed')
+        json.dump([{'field':'owner', 'parameter':'owner', 'value': owner, 'error':'owner_required'}], fp=sys.stdout)
+        sys.exit(2)
+    return owner

@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://schema.nethserver.org/mail/remove-owned-addresses-output.json",
+    "title": "remove-owned-addresses output",
+    "description": "Addresses removed",
+    "examples": [
+        {
+            "removed": [
+                {
+                    "local": "mylist",
+                    "domain": "example.org"
+                }
+            ]
+        }
+    ],
+    "type": "object",
+    "required": [
+        "removed"
+    ],
+    "properties": {
+        "removed": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "local": {
+                        "type": "string"
+                    },
+                    "domain": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

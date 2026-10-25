@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://schema.nethserver.org/mail/remove-owned-addresses-input.json",
+    "title": "remove-owned-addresses input",
+    "description": "Remove addresses owned by the calling module. Without locals, remove all its addresses of the domain, or of every domain.",
+    "examples": [
+        {
+            "domain": "example.org",
+            "locals": [
+                "mylist",
+                "mylist-request"
+            ]
+        },
+        {}
+    ],
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "domain": {
+            "type": "string",
+            "minLength": 1
+        },
+        "locals": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "title": "Address local part",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9](?:[a-zA-Z0-9._+-]*[a-zA-Z0-9])?$"
+            }
+        },
+        "owner": {
+            "type": "string",
+            "title": "Owner module UUID",
+            "description": "Required when the caller is not a module. A module caller always owns its addresses.",
+            "minLength": 1
+        }
+    }
+}

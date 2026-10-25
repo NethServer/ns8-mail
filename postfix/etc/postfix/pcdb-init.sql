@@ -127,3 +127,4 @@ CREATE TABLE mynetworks (
 
 -- READ (INCLUDE) schema updates
 .read /etc/postfix/pcdb-relayrules.sql
+.read /etc/postfix/pcdb-addressowners.sql

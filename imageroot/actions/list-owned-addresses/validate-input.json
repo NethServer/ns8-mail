@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://schema.nethserver.org/mail/list-owned-addresses-input.json",
+    "title": "list-owned-addresses input",
+    "description": "List the addresses of the calling module. The cluster admin lists every owner, or one owner.",
+    "examples": [
+        {},
+        {
+            "owner": "9b4b1e2c-6f3d-4a8e-8f43-2b2a8d0f8c11"
+        }
+    ],
+    "type": [
+        "object",
+        "null"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "owner": {
+            "type": "string",
+            "title": "Owner module UUID",
+            "description": "Required when the caller is not a module. A module caller always owns its addresses.",
+            "minLength": 1
+        }
+    }
+}

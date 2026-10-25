@@ -10,4 +10,5 @@ exec 1>&2
 # Apply updates to the pcdb SQLite database schema
 podman exec -i --workdir /srv postfix sqlite3 pcdb.sqlite <<'EOF'
 .read /etc/postfix/pcdb-relayrules.sql
+.read /etc/postfix/pcdb-addressowners.sql
 EOF

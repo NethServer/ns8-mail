@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://schema.nethserver.org/mail/list-owned-addresses-output.json",
+    "title": "list-owned-addresses output",
+    "description": "Addresses owned by modules",
+    "examples": [
+        {
+            "addresses": [
+                {
+                    "local": "mylist",
+                    "domain": "example.org",
+                    "owner": "9b4b1e2c-6f3d-4a8e-8f43-2b2a8d0f8c11",
+                    "destination": "mylist@sympa1.invalid"
+                }
+            ]
+        }
+    ],
+    "type": "object",
+    "required": [
+        "addresses"
+    ],
+    "properties": {
+        "addresses": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "local",
+                    "domain",
+                    "owner",
+                    "destination"
+                ],
+                "properties": {
+                    "local": {
+                        "type": "string"
+                    },
+                    "domain": {
+                        "type": "string"
+                    },
+                    "owner": {
+                        "type": "string"
+                    },
+                    "destination": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
