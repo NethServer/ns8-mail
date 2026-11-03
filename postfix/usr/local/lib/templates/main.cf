@@ -112,14 +112,11 @@ smtpd_relay_restrictions =
   check_recipient_access sqlite:${S}meta_directory/internal_access.cf,
   ${tmpl_reject_internal_domains},
 
-smtpd_restriction_classes = disabled_mailboxes
-disabled_mailboxes = check_recipient_access texthash:${S}meta_directory/disabled_mailboxes_rcpt
-
 smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
   ${tmpl_srs_recipient_check}
   ${tmpl_verify_recipient_address},
-  ${tmpl_disabled_mailboxes_check},
+  check_recipient_access texthash:${S}meta_directory/disabled_mailboxes_rcpt,
 
 #
 # TLS configuration

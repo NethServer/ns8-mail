@@ -62,9 +62,6 @@ tmpl_domain_catchall_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || 
 tmpl_laddgroups_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM (SELECT domain FROM domains WHERE addgroups = 1 UNION SELECT '${tmpl_vdomain}' AS domain)")
 tmpl_laddusers_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM (SELECT domain FROM domains WHERE addusers = 1 UNION SELECT '${tmpl_vdomain}' AS domain)")${tmpl_ldomain:+ $tmpl_ldomain}
 tmpl_laddaliases_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM domains WHERE addaliases = 1")
-# Domains where a user name is also an address: here a disabled mailbox
-# address is rejected at RCPT time (NethServer/dev#8185).
-tmpl_disabled_mailboxes_check='check_recipient_access inline:{'$(printf '{ %s = disabled_mailboxes }, ' ${tmpl_laddusers_domains})'}'
 tmpl_addaliases_attr="${POSTFIX_LDAP_ALIAS_ATTR:-mail}"
 tmpl_ldap_bind_dn="${POSTFIX_LDAP_USER}"
 tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
@@ -150,7 +147,22 @@ envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \
 # bounce (NethServer/dev#8185, NethServer/dev#8205). Postfix folds lookup
 # keys to lowercase, so the table keys must be lowercase too.
 disabled_users=$(echo "${DOVECOT_DISABLED_USERS}" | tr ',' '\n' | tr '[:upper:]' '[:lower:]')
-echo "${disabled_users}" | sed '/^$/ d ; s/$/@ 550 5.1.1 User unknown/' >/etc/postfix/disabled_mailboxes_rcpt
+# Full user@domain keys, because a domain key would also match its
+# subdomains. An SQL alias with the same name wins, as it does on enabled
+# mailboxes, so address actions reload postfix to keep this table current.
+pcdbquery "SELECT lower(alocal) || '@' || lower(domain) FROM destmap" | \
+    awk -v "users=$(echo "${disabled_users}" | tr '\n' ' ')" -v "domains=${tmpl_laddusers_domains}" '
+    { aliased[$0] = 1 }
+    END {
+        nu = split(users, user, " ")
+        nd = split(tolower(domains), domain, " ")
+        for (i = 1; i <= nu; i++) {
+            if ((user[i] "@*") in aliased) continue
+            for (j = 1; j <= nd; j++) {
+                if (!((user[i] "@" domain[j]) in aliased)) print user[i] "@" domain[j] " 550 5.1.1 User unknown"
+            }
+        }
+    }' >/etc/postfix/disabled_mailboxes_rcpt
 echo "${disabled_users}" | sed "/^$/ d ; s/$/@${tmpl_vdomain} discard:/" >/etc/postfix/disabled_mailboxes
 
 if [ -z "${tmpl_sasl_commentout}" ] ; then
