@@ -1,33 +1,47 @@
 *** Settings ***
-Documentation    An address that leads only to disabled mailboxes is rejected
-...              during the SMTP session, so no bounce goes back to a possibly
-...              forged sender (NethServer/dev#8185)
+Documentation    A disabled mailbox gets no mail. Its address is rejected during
+...              the SMTP session (NethServer/dev#8185). Copies that come through
+...              aliases, groups, forwards and catch-all are dropped without a
+...              bounce (NethServer/dev#8205)
 Resource    smtp.resource
 Suite Setup       Run keywords
 ...                    Initialize LDAP reference    ldap.dom.test
 ...                    AND    Set mailbox u2 enabled    false
+...                    AND    Set mailbox MixedCaseUser enabled    false
 ...                    AND    Set u2 LDAP mail attribute    ldapd2@inbound.test
-...                    AND    Create aliases to u2
+...                    AND    Create aliases with a disabled destination
 Suite Teardown    Run keywords
-...                    Remove aliases to u2
+...                    Remove aliases with a disabled destination
 ...                    AND    Set u2 LDAP mail attribute    ldapa2@noaddflag.test
+...                    AND    Set mailbox MixedCaseUser enabled    true
 ...                    AND    Set mailbox u2 enabled    true
-Test Tags    disabled    mailbox    address
+...                    AND    Delete leftover bounces
+Test Tags    disabled    mailbox
 
 *** Test Cases ***
 Disabled mailbox address is rejected with AD
     [Setup]       Switch user domain    ad.dom.test
     [Teardown]    Switch user domain    ldap.dom.test
-    Should return SMTP unknown user error    u2@inbound.test
+    Should return SMTP disabled mailbox error    u2@inbound.test
 
 Disabled mailbox address is rejected with OpenLDAP
-    Should return SMTP unknown user error    u2@inbound.test
+    Should return SMTP disabled mailbox error    u2@inbound.test
+
+Disabled mailbox address with an extension is rejected
+    Should return SMTP disabled mailbox error    u2+tag@inbound.test
+
+Disabled mailbox address in another case is rejected
+    Should return SMTP disabled mailbox error    U2@Inbound.Test
 
 Hidden AD accounts are rejected
     [Setup]       Switch user domain    ad.dom.test
     [Teardown]    Switch user domain    ldap.dom.test
-    Should return SMTP unknown user error    krbtgt@inbound.test
-    Should return SMTP unknown user error    ldapservice@inbound.test
+    Should return SMTP disabled mailbox error    krbtgt@inbound.test
+    Should return SMTP disabled mailbox error    ldapservice@inbound.test
+
+Disabled mailbox in a domain without user addresses
+    [Documentation]    Postfix rejects it as any other unknown address
+    Should return SMTP unknown user error    u2@noaddflag.test
 
 Authenticated sender gets an immediate rejection
     [Documentation]    A local user writing to a disabled mailbox gets the error
@@ -42,31 +56,62 @@ Enabled mailbox address is accepted
     Send SMTP message to    u1@inbound.test
     Should be delivered via LMTP to  u1
 
-Disabled mailbox address in another case is rejected
-    Should return SMTP unknown user error    U2@Inbound.Test
+Forward of a disabled mailbox does not apply
+    [Documentation]    The address is rejected before the forward is expanded
+    [Setup]       Run task    module/${MID}/alter-user-mailbox    {"user":"u2","forward":{"keepcopy":false,"destinations":[{"dtype":"user","name":"u1"}]}}
+    [Teardown]    Run task    module/${MID}/alter-user-mailbox    {"user":"u2","forward":{"destinations":[]}}
+    Should return SMTP disabled mailbox error    u2@inbound.test
 
-LDAP alias of a disabled mailbox is rejected
-    Should return SMTP unknown user error    ldapd2@inbound.test
-
-Alias to a disabled mailbox is rejected
-    Should return SMTP recipient rejected error    d1@inbound.test
-
-Wildcard alias to a disabled mailbox is rejected
-    Should return SMTP recipient rejected error    d5@inbound.test
-
-Catch-all to a disabled mailbox is rejected
-    [Setup]       Set inbound.test catchall to    u2
-    [Teardown]    Reset inbound.test catchall
-    Should return SMTP recipient rejected error    nobody8185@inbound.test
-
-Catch-all to an enabled mailbox does not get disabled mailbox mail
-    [Setup]       Set inbound.test catchall to    u1
-    [Teardown]    Reset inbound.test catchall
-    Should return SMTP unknown user error    u2@inbound.test
-    Should return SMTP unknown user error    ldapd2@inbound.test
-    Should return SMTP recipient rejected error    d1@inbound.test
-    Send SMTP message to    nobody8185@inbound.test
+Alias with a disabled destination
+    Send SMTP message to    d3@inbound.test
     Should be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  u2
+    Should not send bounce
+
+Disabled destination with a mixed case name
+    Send SMTP message to    d4@inbound.test
+    Should be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  MixedCaseUser
+    Should not send bounce
+
+Group with a disabled member
+    Send SMTP message to    g1@inbound.test
+    Should be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  u2
+    Should not send bounce
+
+Group with a disabled member with AD
+    [Documentation]    AD resolves group members by DN, OpenLDAP by user name
+    [Setup]       Switch user domain    ad.dom.test
+    [Teardown]    Switch user domain    ldap.dom.test
+    Send SMTP message to    g1@inbound.test
+    Should be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  u2
+    Should not send bounce
+
+Alias with a group that has a disabled member
+    [Documentation]    a2@* goes to u1 and g2, g2 has members u2 and u3
+    Send SMTP message to    a2@inbound.test
+    Should be delivered via LMTP to  u1
+    Should be delivered via LMTP to  u3
+    Should not be delivered via LMTP to  u2
+    Should not send bounce
+
+Forward to a group with a disabled member
+    [Setup]       Run task    module/${MID}/alter-user-mailbox    {"user":"u3","forward":{"keepcopy":false,"destinations":[{"dtype":"group","name":"g1"}]}}
+    [Teardown]    Run task    module/${MID}/alter-user-mailbox    {"user":"u3","forward":{"destinations":[]}}
+    Send SMTP message to    u3@inbound.test
+    Should be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  u2
+    Should not send bounce
+
+Forward with copy to a disabled mailbox
+    [Setup]       Run task    module/${MID}/alter-user-mailbox    {"user":"u3","forward":{"keepcopy":true,"destinations":[{"dtype":"user","name":"u2"}]}}
+    [Teardown]    Run task    module/${MID}/alter-user-mailbox    {"user":"u3","forward":{"destinations":[]}}
+    Send SMTP message to    u3@inbound.test
+    Should be delivered via LMTP to  u3
+    Should not be delivered via LMTP to  u2
+    Should not send bounce
 
 Shared LDAP mail with a disabled mailbox
     [Documentation]    The user with an enabled mailbox still receives the message
@@ -81,20 +126,33 @@ Shared LDAP mail with a disabled mailbox
     Should not be delivered via LMTP to  u2
     Should not send bounce
 
-Forward of a disabled mailbox still works
-    [Setup]       Configure u2 forward to u1    keepcopy=false
-    [Teardown]    Cleanup u2 forward
-    Send SMTP message to    u2@inbound.test
+Catch-all to an enabled mailbox does not get disabled mailbox mail
+    [Setup]       Set inbound.test catchall to    u1
+    [Teardown]    Reset inbound.test catchall
+    Should return SMTP disabled mailbox error    u2@inbound.test
+    Send SMTP message to    nobody8185@inbound.test
     Should be delivered via LMTP to  u1
+
+Address that leads only to disabled mailboxes is dropped silently
+    [Documentation]    Known limit: Postfix cannot tell at RCPT time that every
+    ...                destination is disabled, so the message is accepted and dropped
+    [Template]    Should be dropped silently
+    d1@inbound.test
+    d5@inbound.test
+    ldapd2@inbound.test
+
+Group whose members are all disabled is dropped silently
+    [Setup]       Set mailbox u3 enabled    false
+    [Teardown]    Set mailbox u3 enabled    true
+    Send SMTP message to    g2@inbound.test
+    Should not be delivered via LMTP to  u2
+    Should not be delivered via LMTP to  u3
     Should not send bounce
 
-Forward with copy of a disabled mailbox drops the copy
-    [Setup]       Configure u2 forward to u1    keepcopy=true
-    [Teardown]    Cleanup u2 forward
-    Send SMTP message to    u2@inbound.test
-    Should be delivered via LMTP to  u1
-    Should not be delivered via LMTP to  u2
-    Should not send bounce
+Catch-all to a disabled mailbox is dropped silently
+    [Setup]       Set inbound.test catchall to    u2
+    [Teardown]    Reset inbound.test catchall
+    Should be dropped silently    nobody8185@inbound.test
 
 Mailbox enabled again is accepted
     [Documentation]    Postfix is reloaded when the mailbox state changes
@@ -109,13 +167,17 @@ Switch user domain
     Run task     module/${MID}/configure-module
     ...          {"hostname":"mail.domain.test","user_domain":"${udom}"}
 
-Create aliases to u2
+Create aliases with a disabled destination
     Run task    module/${MID}/add-address    {"atype":"domain","local":"d1","domain":"inbound.test","destinations":[{"dtype":"user","name":"u2"}]}
     Run task    module/${MID}/add-address    {"atype":"wildcard","local":"d5","destinations":[{"dtype":"user","name":"u2"}]}
+    Run task    module/${MID}/add-address    {"atype":"domain","local":"d3","domain":"inbound.test","destinations":[{"dtype":"user","name":"u1"},{"dtype":"user","name":"u2"}]}
+    Run task    module/${MID}/add-address    {"atype":"domain","local":"d4","domain":"inbound.test","destinations":[{"dtype":"user","name":"u1"},{"dtype":"user","name":"MixedCaseUser"}]}
 
-Remove aliases to u2
+Remove aliases with a disabled destination
     Run task    module/${MID}/remove-address    {"atype":"domain","local":"d1","domain":"inbound.test"}
     Run task    module/${MID}/remove-address    {"atype":"wildcard","local":"d5"}
+    Run task    module/${MID}/remove-address    {"atype":"domain","local":"d3","domain":"inbound.test"}
+    Run task    module/${MID}/remove-address    {"atype":"domain","local":"d4","domain":"inbound.test"}
 
 Set inbound.test catchall to
     [Arguments]    ${user}
@@ -126,16 +188,18 @@ Reset inbound.test catchall
     Run task     module/${MID}/alter-domain
     ...            {"domain":"inbound.test","catchall":null}
 
-Configure u2 forward to u1
-    [Arguments]    ${keepcopy}
-    Run task    module/${MID}/alter-user-mailbox    {"user":"u2","forward":{"keepcopy":${keepcopy},"destinations":[{"dtype":"user","name":"u1"}]}}
-
-Cleanup u2 forward
-    Run task    module/${MID}/alter-user-mailbox    {"user":"u2","forward":{"destinations":[]}}
-
-Should return SMTP recipient rejected error
-    [Documentation]    The exact reason text depends on the Postfix table that rejects the address
+Should return SMTP disabled mailbox error
     [Arguments]    ${address}
     Send SMTP message to  ${address}
     ...                   expect_curl_exitcode=
-    Should return SMTP error    550 5.1.1 <${address}>: Recipient address rejected
+    Should return SMTP error    550 5.1.1 <${address}>: Recipient address rejected: User unknown
+
+Should be dropped silently
+    [Arguments]    ${address}
+    Send SMTP message to    ${address}
+    Should not be delivered via LMTP to  u2
+    Should not send bounce
+
+Delete leftover bounces
+    [Documentation]    Bounces to the test sender cannot be delivered and would stay in the queue
+    Execute Command    runagent -m ${MID} podman exec postfix postsuper -d ALL deferred
