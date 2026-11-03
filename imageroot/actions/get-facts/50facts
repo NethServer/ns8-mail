@@ -275,8 +275,19 @@ def get_custom_config_facts():
             odata = json.load(proc.stdout)
         except json.JSONDecodeError:
             return {"get_custom_config_facts_error": True}
+    # Count how many times the custom configuration was rejected because
+    # Dovecot could not parse it: snippets rejected together are renamed
+    # to hidden .<name>.<timestamp>.err files with the same timestamp.
+    with subprocess.Popen(["podman", "exec", "dovecot", "ash", "-c",
+        """ls -1A /etc/dovecot/local.conf.d/ | sed -n 's/^\\..*\\.\\([0-9]\\{14\\}\\)\\.err$/\\1/p' | sort -u | wc -l"""
+        ], stdout=subprocess.PIPE) as proc:
+        try:
+            orejected = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_custom_config_facts_error": True}
     return {
-        "dovecot_custom_config_count": odata
+        "dovecot_custom_config_count": odata,
+        "dovecot_custom_config_rejected_count": orejected,
     }
 
 def get_dqs_token_facts():

@@ -1,0 +1,40 @@
+--
+-- uquota.lua -- userdb returning the user custom quota
+--
+-- The custom quota value (MB) is stored by "doveadm dict set uquota"
+-- (see the quota_clone/dict uquota block in dovecot.conf) in a file
+-- like /var/lib/dovecot/dict/uquota/first.user, containing for example
+-- 1200 for about 1.2 GB quota.
+--
+
+local uquota_dir = "/var/lib/dovecot/dict/uquota/"
+
+function auth_userdb_lookup(req)
+  local user = req.user
+  if user == nil or user == "" or string.find(user, "/", 1, true) then
+    return dovecot.auth.USERDB_RESULT_USER_UNKNOWN, ""
+  end
+  local f = io.open(uquota_dir .. user, "r")
+  if f == nil then
+    return dovecot.auth.USERDB_RESULT_USER_UNKNOWN, ""
+  end
+  local mb = tonumber(f:read("*l"))
+  f:close()
+  if mb == nil then
+    return dovecot.auth.USERDB_RESULT_USER_UNKNOWN, ""
+  end
+  return dovecot.auth.USERDB_RESULT_OK, { quota_storage_size = mb .. "M" }
+end
+
+-- This userdb adds a field to users found by other userdbs: it lists no
+-- user. Without this function the whole user iteration fails.
+function auth_userdb_iterate()
+  return {}
+end
+
+function script_init()
+  return 0
+end
+
+function script_deinit()
+end

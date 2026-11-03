@@ -84,7 +84,7 @@ uspamret_reply = []
 try:
     gspam_retention = int(os.getenv("DOVECOT_SPAM_RETENTION", ""))
     uspamret_reply = mail.doveadm_query("dictIter", {
-        "dictUri": "file:/var/lib/dovecot/dict/uspamret.db",
+        "filterName": "dict_server",
         "prefix": "shared/spam_retention/",
     })
 except ValueError:
