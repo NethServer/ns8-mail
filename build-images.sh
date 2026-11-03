@@ -104,12 +104,12 @@ images+=("${repobase}/${reponame}")
 # Postfix additional image
 #
 reponame="mail-postfix"
-container=$(buildah from docker.io/library/alpine:3.21.9)
+container=$(buildah from docker.io/library/alpine:3.24.3)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login confuse
 #
-# Build postsrsd from source: Alpine 3.21 only ships 2.0, which has
+# Build postsrsd from source: Alpine 3.24 only ships 2.0, which has
 # no SIGHUP handler for config reload NethServer/dev#7741. Pin to a
 # recent release that has one. confuse (above) is postsrsd's runtime
 # dependency: install it persistently, since confuse-dev below is
@@ -162,7 +162,7 @@ images+=("${repobase}/${reponame}")
 # Rspamd additional image
 #
 reponame="mail-rspamd"
-container=$(buildah from docker.io/library/alpine:3.21.9)
+container=$(buildah from docker.io/library/alpine:3.24.3)
 buildah run "${container}" /bin/sh <<EOF
 set -e
 # Software installation order is important to preserve uid and gid allocation:
@@ -190,7 +190,7 @@ images+=("${repobase}/${reponame}")
 # ClamAV additional image
 #
 reponame="mail-clamav"
-container=$(buildah from docker.io/library/alpine:3.21.9)
+container=$(buildah from docker.io/library/alpine:3.24.3)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache ncurses bash curl wget rsync bind-tools socat gpg gpg-agent
