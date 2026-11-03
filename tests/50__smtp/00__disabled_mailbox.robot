@@ -154,6 +154,55 @@ Catch-all to a disabled mailbox is dropped silently
     [Teardown]    Reset inbound.test catchall
     Should be dropped silently    nobody8185@inbound.test
 
+Alias named like a disabled mailbox is delivered
+    [Documentation]    As on enabled mailboxes, the alias wins over the user address
+    [Setup]       Add u2 alias to u1    inbound.test
+    [Teardown]    Remove u2 alias    inbound.test
+    Send SMTP message to    u2@inbound.test
+    Should be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  u2
+
+Disabled mailbox address is rejected again after removing the alias
+    [Setup]       Run keywords
+    ...                Add u2 alias to u1    inbound.test
+    ...                AND    Remove u2 alias    inbound.test
+    Should return SMTP disabled mailbox error    u2@inbound.test
+
+Wildcard alias named like a disabled mailbox is delivered
+    [Setup]       Add u2 alias to u1    *
+    [Teardown]    Remove u2 alias    *
+    Send SMTP message to    u2@inbound.test
+    Should be delivered via LMTP to  u1
+    Should not be delivered via LMTP to  u2
+
+Public mailbox named like a disabled mailbox is delivered
+    [Setup]       Run task    module/${MID}/add-public-mailbox    {"mailbox":"u2","acls":[]}
+    [Teardown]    Run task    module/${MID}/remove-public-mailbox    {"mailbox":"u2"}
+    Send SMTP message to    u2@inbound.test
+    Should be delivered via LMTP to  vmail+u2
+
+Disabled mailbox address is rejected again after removing the public mailbox
+    [Setup]       Run keywords
+    ...                Run task    module/${MID}/add-public-mailbox    {"mailbox":"u2","acls":[]}
+    ...                AND    Run task    module/${MID}/remove-public-mailbox    {"mailbox":"u2"}
+    Should return SMTP disabled mailbox error    u2@inbound.test
+
+Subdomain without user addresses is not affected
+    [Documentation]    The disabled mailbox check covers only the exact domains with user addresses
+    [Setup]       Run task    module/${MID}/add-domain
+    ...                {"domain":"sub.inbound.test","addusers":false,"addgroups":false}
+    [Teardown]    Run task    module/${MID}/remove-domain    {"domain":"sub.inbound.test"}
+    Should return SMTP unknown user error    u2@sub.inbound.test
+
+Alias in a subdomain without user addresses is delivered
+    [Setup]       Run keywords
+    ...                Run task    module/${MID}/add-domain
+    ...                    {"domain":"sub.inbound.test","addusers":false,"addgroups":false}
+    ...                AND    Add u2 alias to u1    sub.inbound.test
+    [Teardown]    Run task    module/${MID}/remove-domain    {"domain":"sub.inbound.test"}
+    Send SMTP message to    u2@sub.inbound.test
+    Should be delivered via LMTP to  u1
+
 Mailbox enabled again is accepted
     [Documentation]    Postfix is reloaded when the mailbox state changes
     [Setup]       Set mailbox u2 enabled    true
@@ -162,6 +211,22 @@ Mailbox enabled again is accepted
     Should be delivered via LMTP to  u2
 
 *** Keywords ***
+Add u2 alias to u1
+    [Arguments]    ${domain}
+    IF    '${domain}' == '*'
+        Run task    module/${MID}/add-address    {"atype":"wildcard","local":"u2","destinations":[{"dtype":"user","name":"u1"}]}
+    ELSE
+        Run task    module/${MID}/add-address    {"atype":"domain","local":"u2","domain":"${domain}","destinations":[{"dtype":"user","name":"u1"}]}
+    END
+
+Remove u2 alias
+    [Arguments]    ${domain}
+    IF    '${domain}' == '*'
+        Run task    module/${MID}/remove-address    {"atype":"wildcard","local":"u2"}
+    ELSE
+        Run task    module/${MID}/remove-address    {"atype":"domain","local":"u2","domain":"${domain}"}
+    END
+
 Create aliases with a disabled destination
     Run task    module/${MID}/add-address    {"atype":"domain","local":"d1","domain":"inbound.test","destinations":[{"dtype":"user","name":"u2"}]}
     Run task    module/${MID}/add-address    {"atype":"wildcard","local":"d5","destinations":[{"dtype":"user","name":"u2"}]}
