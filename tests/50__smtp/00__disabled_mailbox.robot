@@ -162,11 +162,6 @@ Mailbox enabled again is accepted
     Should be delivered via LMTP to  u2
 
 *** Keywords ***
-Switch user domain
-    [Arguments]     ${udom}
-    Run task     module/${MID}/configure-module
-    ...          {"hostname":"mail.domain.test","user_domain":"${udom}"}
-
 Create aliases with a disabled destination
     Run task    module/${MID}/add-address    {"atype":"domain","local":"d1","domain":"inbound.test","destinations":[{"dtype":"user","name":"u2"}]}
     Run task    module/${MID}/add-address    {"atype":"wildcard","local":"d5","destinations":[{"dtype":"user","name":"u2"}]}
@@ -193,6 +188,8 @@ Should return SMTP disabled mailbox error
     Send SMTP message to  ${address}
     ...                   expect_curl_exitcode=
     Should return SMTP error    550 5.1.1 <${address}>: Recipient address rejected: User unknown
+    Should Not Contain    ${LAST_CURL_ERROR}    virtual alias table
+    ...    msg=${address} was rejected as unknown, not as a disabled mailbox
 
 Should be dropped silently
     [Arguments]    ${address}

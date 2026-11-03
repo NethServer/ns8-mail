@@ -49,6 +49,11 @@ Should return SMTP error
     [Arguments]    ${pattern}
     Should Match    ${LAST_CURL_ERROR}    *${pattern}*    msg=Error from curl doesn't match pattern `${pattern}`: `${LAST_CURL_ERROR}`.
 
+Switch user domain
+    [Arguments]     ${udom}
+    Run task     module/${MID}/configure-module
+    ...          {"hostname":"mail.domain.test","user_domain":"${udom}"}
+
 Should return SMTP unknown user error
     [Arguments]    ${address}
     Send SMTP message to  ${address}
