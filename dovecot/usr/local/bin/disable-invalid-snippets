@@ -1,0 +1,55 @@
+#!/bin/ash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# shellcheck shell=dash
+
+#
+# If the local.conf.d/*.conf snippets break the Dovecot configuration,
+# reject them all: rename each one to a hidden .<name>.<timestamp>.err
+# file, so that Dovecot can start. The snippets are evaluated as a whole,
+# and all files rejected together share the same timestamp.
+#
+# Snippets written for Dovecot 2.3 use a syntax that Dovecot 2.4 does not
+# accept: they are rejected the first time the 2.4 image starts. The check
+# runs from reload-config, at every container start and configuration
+# reload, but leaves no state behind: once the snippets are rejected, the
+# configuration parses and nothing else is done.
+#
+
+set -e
+
+confdir=/etc/dovecot
+snippetdir=${confdir}/local.conf.d
+
+# Fast path: the whole configuration is valid
+if doveconf -n >/dev/null 2>&1; then
+    exit 0
+fi
+
+# Validation config: the generated configuration without local.conf.d/.
+# Keep it in the same directory, as relative !include paths are resolved
+# against the directory of the configuration file.
+basecf=${confdir}/.validate-base.conf
+trap 'rm -f "${basecf}"' EXIT
+grep -v -F '!include_try local.conf.d/*.conf' ${confdir}/dovecot.conf > "${basecf}"
+
+if ! doveconf -c "${basecf}" -n >/dev/null 2>&1; then
+    # The generated configuration itself is broken: nothing to fix here
+    echo "<3>Invalid Dovecot configuration, not caused by ${snippetdir}:" 1>&2
+    doveconf -c "${basecf}" -n 2>&1 >/dev/null | sed 's/^/<3>/' 1>&2
+    exit 1
+fi
+
+error=$(doveconf -n 2>&1 >/dev/null | grep -v -F ': Warning: ' || :)
+timestamp=$(date +%Y%m%d%H%M%S)
+rejected=
+for snippet in "${snippetdir}"/*.conf; do
+    [ -f "${snippet}" ] || continue
+    mv -f "${snippet}" "${snippetdir}/.${snippet##*/}.${timestamp}.err"
+    rejected="${rejected} ${snippet##*/}"
+done
+echo "<4>Custom configuration rejected: renamed${rejected} in ${snippetdir} to .<name>.${timestamp}.err. Fix them with the Dovecot 2.4 syntax and rename them back. ${error}" 1>&2
