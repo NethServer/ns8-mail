@@ -28,7 +28,7 @@ Write block maps
 Scan message
     [Arguments]    ${envelope_from}    ${header_from}
     ${out}    ${err}    ${rc} =    Execute Command
-    ...    printf '%s\\n' 'From: ${header_from}' 'To: <user@domain.test>' 'Subject: Sender rules test' '' 'Test message' | runagent -m ${MID} podman exec -i rspamd sh -c 'rspamc -h 127.0.0.1:11333 -P "$RSPAMD_adminpw" -F ${envelope_from} -i 192.0.2.10 symbols'
+    ...    printf '%s\\n' 'From: ${header_from}' 'To: <user@domain.test>' 'Subject: Sender rules test' '' 'Test message' | runagent -m ${MID} podman exec -i rspamd sh -c 'rspamc -h 127.0.0.1:11333 --password="$RSPAMD_adminpw" -F ${envelope_from} -i 192.0.2.10 symbols'
     ...    return_rc=True    return_stderr=True
     Should Be Equal As Integers    ${rc}    0    rspamc failed: ${err}
     RETURN    ${out}
