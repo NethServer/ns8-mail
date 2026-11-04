@@ -67,7 +67,8 @@ else
     tmpl_sharedseen=":INDEXPVT=~/Maildir/shared/%%n"
 fi
 
-master_users="${DOVECOT_MASTER_USERS}"
+# LDAP master users, comma separated, or "!*" (no user)
+master_users="${DOVECOT_MASTER_USERS:-!*}"
 set +a
 
 echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::" > /etc/dovecot/users
