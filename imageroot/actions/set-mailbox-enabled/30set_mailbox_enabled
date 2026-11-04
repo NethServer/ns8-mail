@@ -35,3 +35,7 @@ if 'enabled' in request:
 if needs_reload:
     agent.set_env("DOVECOT_DISABLED_USERS", ",".join(disabled_users))
     agent.run_helper("systemctl", "--user", "-T", "reload", "dovecot")
+    # Postfix smtpd processes keep their connection to the Dovecot auth
+    # process started before the reload, which still has the old
+    # configuration: reload Postfix too, so they connect to the new one.
+    agent.run_helper("systemctl", "--user", "-T", "reload", "postfix")
