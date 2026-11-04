@@ -248,6 +248,49 @@ Another module can obtain `vmail` credentials by invoking the action
 `reveal-master-credentials`, provided it has been granted the `mailadm`
 role.
 
+## Single sign-on (OIDC)
+
+Work in progress, see NethServer/dev#8080. Dovecot can accept the
+access tokens of an OpenID Connect provider, like the NS8 idp module,
+with the `XOAUTH2` and `OAUTHBEARER` mechanisms, for IMAP, POP3, Sieve
+and SMTP submission. Webmail applications, like Roundcube, use them to
+log in with the user's SSO token. Password logins keep working.
+
+The provider is not discovered automatically yet: the settings are
+written manually in the `oidc.env` file of the module state directory.
+The Dovecot service reads them at every start and reload.
+
+| Variable | Required | Description |
+|---|---|---|
+| `OIDC_ISSUER` | yes | Issuer URL of the realm, for example `https://sso.example.org/realms/dp.example.org` |
+| `OIDC_CLIENT_ID` | yes | OIDC client ID of Dovecot |
+| `OIDC_CLIENT_SECRET` | yes | OIDC client secret of Dovecot |
+| `OIDC_INTROSPECTION_URL` | no | Token introspection endpoint, default `$OIDC_ISSUER/protocol/openid-connect/token/introspect` (Keycloak) |
+
+Dovecot validates each token with the introspection endpoint, and takes
+the user name from the `preferred_username` claim. The provider accepts
+a token only if the Dovecot client is in its audience: register the
+Dovecot client without redirect URIs, and add its client ID to the
+audience of the applications that send tokens to Dovecot.
+
+For example, with the idp module:
+
+```
+api-cli run module/idp1/register-client --data '{"domain": "dp.example.org", "module_id": "mail1"}'
+runagent -m mail1 sh -c 'umask 077; cat > oidc.env' <<'EOF'
+OIDC_ISSUER=https://sso.example.org/realms/dp.example.org
+OIDC_CLIENT_ID=mail1
+OIDC_CLIENT_SECRET=<client_secret from register-client>
+EOF
+runagent -m mail1 systemctl --user reload dovecot.service
+```
+
+The password backends are skipped for token mechanisms, so a rejected
+token is never retried as an LDAP password. The file is included in the
+module backup. The generated `oauth2.conf.ext` never enables the oauth2
+`debug` option, because it would log the introspection URL, which
+contains the client secret.
+
 ## Public mailboxes
 
 Subfolders of Vmail's INBOX are visible to all users under the Public
