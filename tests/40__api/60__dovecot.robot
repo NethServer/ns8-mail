@@ -41,6 +41,9 @@ Custom user quota is applied by Dovecot
     Run task    module/${MID}/alter-user-mailbox    {"user":"${quser}","quota":{"limit":42}}
     ${out} =    Dovecot    doveadm -f tab quota get -u ${quser}
     Should Match Regexp    ${out}    STORAGE\\t\\d+\\t43008\\t
+    # As in Dovecot 2.3, the last message can exceed the limit by 10%
+    ${out} =    Dovecot    doveadm user -f quota_storage_grace ${quser}
+    Should Be Equal    ${out.strip()}    4300k
 
 Default user quota is applied after the custom quota is removed
     Run task    module/${MID}/alter-user-mailbox    {"user":"${quser}","quota":{"custom":false}}
