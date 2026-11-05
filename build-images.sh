@@ -58,45 +58,23 @@ images+=("${repobase}/${reponame}")
 
 #
 # Dovecot additional image
-# davidep: avoid dovecot 2.3.19-r2 - userdb lookup crashes
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/library/alpine:3.21.9)
+container=$(buildah from docker.io/library/alpine:3.24.3)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
+# Create vmail before installing packages, to keep uid 100 and gid 101
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-pigeonhole-plugin dovecot-pop3d dovecot-lmtpd openldap-clients gettext xapian-core poppler-utils mimalloc2
+apk add --no-cache dovecot dovecot-ldap dovecot-lua dovecot-pigeonhole-plugin \
+    dovecot-pop3d dovecot-lmtpd dovecot-fts-flatcurve icu-data-full \
+    openldap-clients openssl gettext poppler-utils mimalloc2
 apk add --no-cache rspamd-client
-(
-    # Remove the self-signed certificate
-    rm -vf /etc/ssl/dovecot/server.*
-    tmpdir=$(mktemp -d)
-    cd "${tmpdir}"
-    apk fetch --no-cache dovecot
-    tar xfv dovecot-*.apk .post-install
-    # Copy the post-install script to generate a new certificate from entrypoint.sh
-    mv -v .post-install /usr/local/bin/dovecot-post-install
-    rm -rvf "${tmpdir}"
-)
-(
-    apk add --no-cache build-base git autoconf automake libtool dovecot-dev xapian-core-dev  icu-dev
-    mkdir /tmp/build
-    cd /tmp/build
-    git clone https://github.com/slusarz/dovecot-fts-flatcurve.git
-    cd dovecot-fts-flatcurve/
-    ash autogen.sh
-    ./configure --disable-static --with-dovecot=/usr/lib/dovecot/
-    make
-    make install
-    # clean what we installed
-    rm -rf /tmp/build
-    apk del build-base git autoconf automake libtool xapian-core-dev dovecot-dev icu-dev
-)
+# Remove the self-signed certificate: entrypoint.sh creates one if needed
+rm -vf /etc/ssl/dovecot/server.*
 mkdir -p /var/lib/dovecot/dict/uquota
 mkdir -p /var/lib/umail
-sed -i 's/^!/#!/' /etc/dovecot/conf.d/10-auth.conf
 EOF
 buildah add "${container}" dovecot/ /
 buildah config \
@@ -131,12 +109,12 @@ images+=("${repobase}/${reponame}")
 # Postfix additional image
 #
 reponame="mail-postfix"
-container=$(buildah from docker.io/library/alpine:3.21.9)
+container=$(buildah from docker.io/library/alpine:3.24.3)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login confuse
 #
-# Build postsrsd from source: Alpine 3.21 only ships 2.0, which has
+# Build postsrsd from source: Alpine 3.24 only ships 2.0, which has
 # no SIGHUP handler for config reload NethServer/dev#7741. Pin to a
 # recent release that has one. confuse (above) is postsrsd's runtime
 # dependency: install it persistently, since confuse-dev below is
@@ -189,7 +167,7 @@ images+=("${repobase}/${reponame}")
 # Rspamd additional image
 #
 reponame="mail-rspamd"
-container=$(buildah from docker.io/library/alpine:3.21.9)
+container=$(buildah from docker.io/library/alpine:3.24.3)
 buildah run "${container}" /bin/sh <<EOF
 set -e
 # Software installation order is important to preserve uid and gid allocation:
@@ -217,7 +195,7 @@ images+=("${repobase}/${reponame}")
 # ClamAV additional image
 #
 reponame="mail-clamav"
-container=$(buildah from docker.io/library/alpine:3.21.9)
+container=$(buildah from docker.io/library/alpine:3.24.3)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache ncurses bash curl wget rsync bind-tools socat gpg gpg-agent

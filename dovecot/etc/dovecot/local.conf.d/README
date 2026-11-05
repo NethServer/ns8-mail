@@ -1,4 +1,14 @@
 Local configuration override
 ----------------------------
 
-Any *.conf file in this directory is appended to local.conf
+Any *.conf file in this directory is included at the end of dovecot.conf.
+Files must use the Dovecot 2.4 configuration syntax.
+
+The files are evaluated as a whole when the configuration is loaded: if
+they break the Dovecot configuration, all of them are rejected. Each file
+is renamed to a hidden file .<name>.<timestamp>.err (e.g.
+.10-custom.conf.20261103190112.err) and a warning is logged. Files written
+for Dovecot 2.3 are rejected this way after the upgrade to Dovecot 2.4:
+fix them with the 2.4 syntax and rename them back to <name>.
+
+See https://doc.dovecot.org/latest/installation/upgrade/2.3-to-2.4.html

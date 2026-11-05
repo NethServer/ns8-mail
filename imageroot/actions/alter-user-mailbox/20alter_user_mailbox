@@ -30,7 +30,7 @@ try:
             # Unset the custom quota limit
             try:
                 mail.doveadm_query("dictUnset", {
-                    "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
+                    "filterName": "quota_clone",
                     "key":"shared/" + request['user'],
                 })
             except mail.DoveadmError as dex:
@@ -43,7 +43,7 @@ try:
                 raise CustomQuotaOverlapError()
 
             mail.doveadm_query("dictSet", {
-                "dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/",
+                "filterName": "quota_clone",
                 "key":"shared/" + request['user'],
                 "value": limit,
             })
@@ -53,7 +53,7 @@ try:
             # Unset the custom spam retention
             try:
                 mail.doveadm_query("dictUnset", {
-                    "dictUri": "file:/var/lib/dovecot/dict/uspamret.db",
+                    "filterName": "dict_server",
                     "key":"shared/spam_retention/" + request['user'],
                 })
             except mail.DoveadmError as dex:
@@ -63,7 +63,7 @@ try:
             # Set the custom spam retention value in the Dovecot dict DB
             spamret = str(request['spam_retention']['value'])
             mail.doveadm_query("dictSet", {
-                "dictUri": "file:/var/lib/dovecot/dict/uspamret.db",
+                "filterName": "dict_server",
                 "key":"shared/spam_retention/" + request['user'],
                 "value": spamret,
             })

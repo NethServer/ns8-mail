@@ -11,6 +11,13 @@ set -e
 
 ldap_schema="${DOVECOT_LDAP_SCHEMA:?}"
 
+# Print a list of names as Dovecot 2.4 boolean list items
+print_boolean_list() {
+    for item in "$@"; do
+        printf '  %s = yes\n' "${item}"
+    done
+}
+
 # Export variables for templates
 set -a
 S=\$
@@ -31,12 +38,9 @@ tmpl_spam_folder="${DOVECOT_SPAM_FOLDER:-Junk}"
 tmpl_spam_subject_prefix="${DOVECOT_SPAM_SUBJECT_PREFIX:-}"
 tmpl_trash_folder="${DOVECOT_TRASH_FOLDER:?}"
 flatcurve_enabled="${DOVECOT_FLATCURVE_ENABLED:-yes}"
-tmpl_mail_plugins="acl listescape notify mail_log"
-if [ "$flatcurve_enabled" == "yes" ]; then
-  tmpl_mail_plugins="$tmpl_mail_plugins fts fts_flatcurve"
-  tmpl_enabled_flatcurve='fts = flatcurve'
-else
-  tmpl_enabled_flatcurve='# FTS disabled by DOVECOT_FLATCURVE_ENABLED environment variable'
+mail_plugins="acl notify mail_log"
+if [ "$flatcurve_enabled" = "yes" ]; then
+  mail_plugins="$mail_plugins fts fts_flatcurve"
 fi
 tmpl_mail_max_userip_connections="${DOVECOT_MAX_USERIP_CONNECTIONS:-20}"
 tmpl_default_process_limit="${DOVECOT_DEFAULT_PROCESS_LIMIT:-400}"
@@ -47,11 +51,16 @@ flatcurve_substring_search="${DOVECOT_FLATCURVE_SUBSTRING_SEARCH:-no}"
 if [ -n "${DOVECOT_QUOTA_MB}" ]; then
     quota_rule_storage="${DOVECOT_QUOTA_MB}"
     condinclude_local_quota='!include uquota.conf'
-    tmpl_mail_plugins="${tmpl_mail_plugins} quota"
+    mail_plugins="${mail_plugins} quota"
 else
     quota_rule_storage="0"
     condinclude_local_quota=
 fi
+# Dovecot 2.3 let the last message exceed the quota limit by 10%
+# (quota_grace default). Dovecot 2.4 allows a fixed 10M instead: keep 10%.
+quota_storage_grace_kb=$(( quota_rule_storage * 1024 / 10 ))
+# shellcheck disable=SC2086
+tmpl_mail_plugins=$(print_boolean_list ${mail_plugins})
 
 # Spam folder auto subscribe?
 if [ -n "${DOVECOT_SPAM_FOLDER}" ]; then
@@ -62,9 +71,9 @@ fi
 
 # shared seen empty is false, true is non empty
 if [ -n "${DOVECOT_SHAREDSEEN}" ];then
-    tmpl_sharedseen=""
+    tmpl_sharedseen="  # Seen flags of shared mailboxes are shared by all users"
 else
-    tmpl_sharedseen=":INDEXPVT=~/Maildir/shared/%%n"
+    tmpl_sharedseen="  mail_index_private_path = ~/Maildir/shared/%{owner_user | username}"
 fi
 
 # LDAP master users, comma separated, or "!*" (no user)
@@ -92,17 +101,36 @@ if [ -n "${DOVECOT_DISABLED_USERS}" ]; then
 fi
 
 envsubst >/etc/dovecot/ldapconf.sh <"${TEMPLATES_DIR:?}/ldapconf.sh"
-envsubst >/etc/dovecot/local.conf <"${TEMPLATES_DIR:?}/local.conf"
+envsubst >/etc/dovecot/dovecot.conf <"${TEMPLATES_DIR:?}/dovecot.conf"
 envsubst >/etc/dovecot/uquota.conf <"${TEMPLATES_DIR:?}/uquota.conf"
-envsubst >/etc/dovecot/passdb.conf.ext <"${TEMPLATES_DIR:?}/${ldap_schema}-ldap.conf.ext"
-ln -sf /etc/dovecot/passdb.conf.ext /etc/dovecot/userdb.conf.ext
+envsubst >/etc/dovecot/ldap.conf <"${TEMPLATES_DIR:?}/${ldap_schema}-ldap.conf"
+chmod 0640 /etc/dovecot/ldap.conf
+
+(
+    exec >/etc/dovecot/trusted_networks.conf
+    echo "# Special settings for trusted networks"
+    # shellcheck disable=SC3060
+    for network in ${DOVECOT_TRUSTED_NETWORKS//,/ } ; do
+        echo "remote ${network} {"
+        echo "    # Allow clear-text authentication without TLS, like Dovecot 2.3"
+        echo "    auth_allow_cleartext = yes"
+        echo "    mail_max_userip_connections =" $(( ${DOVECOT_MAX_USERIP_CONNECTIONS:-20} * 5 ))
+        echo "}"
+        echo ""
+    done
+)
+
+# Disable local.conf.d/ snippets that Dovecot cannot parse, e.g. written
+# for Dovecot 2.3. It must run before any command reading the
+# configuration, like sievec.
+disable-invalid-snippets
 
 if [ -n "${DOVECOT_DEBUG}" ]; then
     (
         echo '# DOVECOT_DEBUG is enabled'
-        echo 'auth_debug=yes'
-        echo 'mail_debug=yes'
-    ) >> /etc/dovecot/local.conf
+        echo 'auth_debug = yes'
+        echo 'mail_debug = yes'
+    ) >> /etc/dovecot/dovecot.conf
     doveconf -n
 fi
 
@@ -111,18 +139,6 @@ fi
     sievec /etc/dovecot
     # Write the Rspamd privileged token for rspamc-wrapper
     echo -n "${DOVECOT_SPAMT_PASS}" > /etc/dovecot/rspamc.token
-)
-
-(
-    exec >/etc/dovecot/trusted_networks.conf
-    echo "# Special settings for trusted networks"
-    # shellcheck disable=SC3060
-    for network in ${DOVECOT_TRUSTED_NETWORKS//,/ } ; do
-        echo "remote ${network} {"
-        echo "    mail_max_userip_connections =" $(( ${DOVECOT_MAX_USERIP_CONNECTIONS:-20} * 5 ))
-        echo "}"
-        echo ""
-    done
 )
 
 if [ -f /run/dovecot/master.pid ]; then

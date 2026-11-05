@@ -8,3 +8,7 @@
 exec 1>&2
 
 systemctl --user reload dovecot.service
+# Postfix smtpd processes keep their connection to the Dovecot auth
+# process started before the reload, which still has the old
+# configuration: reload Postfix too, so they connect to the new one.
+systemctl --user reload postfix.service
