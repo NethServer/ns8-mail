@@ -56,6 +56,9 @@ else
     quota_rule_storage="0"
     condinclude_local_quota=
 fi
+# Dovecot 2.3 let the last message exceed the quota limit by 10%
+# (quota_grace default). Dovecot 2.4 allows a fixed 10M instead: keep 10%.
+quota_storage_grace_kb=$(( quota_rule_storage * 1024 / 10 ))
 # shellcheck disable=SC2086
 tmpl_mail_plugins=$(print_boolean_list ${mail_plugins})
 

@@ -23,7 +23,11 @@ function auth_userdb_lookup(req)
   if mb == nil then
     return dovecot.auth.USERDB_RESULT_USER_UNKNOWN, ""
   end
-  return dovecot.auth.USERDB_RESULT_OK, { quota_storage_size = mb .. "M" }
+  -- As in Dovecot 2.3, the last message can exceed the limit by 10%
+  return dovecot.auth.USERDB_RESULT_OK, {
+    quota_storage_size = mb .. "M",
+    quota_storage_grace = math.floor(mb * 1024 / 10) .. "k",
+  }
 end
 
 -- This userdb adds a field to users found by other userdbs: it lists no
