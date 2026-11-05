@@ -13,10 +13,15 @@ reponame="mail"
 # Create a new empty container image
 container=$(buildah from scratch)
 
+# Node.js 25+ no longer ships Corepack, install it from npm
+# renovate: datasource=npm packageName=corepack
+corepack_version=0.36.0
+
 # Reuse existing nodebuilder-mail container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-mail; then
     echo "Pulling NodeJS runtime..."
     buildah from --name nodebuilder-mail -v "${PWD}:/usr/src:Z" docker.io/library/node:24.22.2-slim
+    buildah run nodebuilder-mail sh -c "npm install -g corepack@${corepack_version} && corepack enable"
 fi
 
 if [[ -n "${SKIP_UI_BUILD}" ]]; then
@@ -28,7 +33,7 @@ else
         --workingdir=/usr/src/ui \
         --env="NODE_OPTIONS=--openssl-legacy-provider" \
         nodebuilder-mail \
-        sh -c "corepack enable && yarn install && yarn build"
+        sh -c "yarn install && yarn build"
 fi
 
 # Add imageroot directory to the container image
