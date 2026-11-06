@@ -18,8 +18,3 @@ Inbound Delivery Should Work
     Send SMTP message to  g1@inbound.test
     Should be delivered via LMTP to  u1
     Should be delivered via LMTP to  u2
-
-Switch user domain
-    [Arguments]     ${udom}
-    Run task     module/${MID}/configure-module
-    ...          {"hostname":"mail.domain.test","user_domain":"${udom}"}

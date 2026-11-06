@@ -34,4 +34,4 @@ if 'enabled' in request:
 
 if needs_reload:
     agent.set_env("DOVECOT_DISABLED_USERS", ",".join(disabled_users))
-    agent.run_helper("systemctl", "--user", "-T", "reload", "dovecot")
+    agent.run_helper("systemctl", "--user", "-T", "reload", "dovecot", "postfix")
