@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+set -e
+
 exec 1>&2
 
 systemctl --user reload dovecot.service
