@@ -1,8 +1,9 @@
 --
 -- uquota.lua -- userdb returning the user custom quota
 --
--- The custom quota value (MB) is stored by "doveadm dict set uquota"
--- (see the quota_clone/dict uquota block in dovecot.conf) in a file
+-- The custom quota value (MB) is stored by "doveadm dict set quota_clone
+-- shared/<user>" (see the quota_clone/dict uquota block in dovecot.conf)
+-- in a file
 -- like /var/lib/dovecot/dict/uquota/first.user, containing for example
 -- 1200 for about 1.2 GB quota.
 --
