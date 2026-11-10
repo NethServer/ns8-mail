@@ -11,9 +11,12 @@ set -e
 
 if [ $# -eq 0 ]; then
     if [ ! -f /etc/ssl/dovecot/server.key ]; then
-        # resume the apk post-install script to
-        # generate a self-signed certificate
-        dovecot-post-install
+        # Generate a self-signed certificate
+        openssl req -new -x509 -nodes -days 365 \
+            -config /etc/dovecot/dovecot-openssl.cnf \
+            -out /etc/ssl/dovecot/server.pem \
+            -keyout /etc/ssl/dovecot/server.key
+        chmod 0600 /etc/ssl/dovecot/server.key
     fi
     if [ ! -f /etc/ssl/dovecot/dh.pem ]; then
         # copy the default DH number to the persistent volume

@@ -53,4 +53,4 @@ Well-known ports
 - `reload-config` Send an HUP signal to Rspamd
 - `rspamc` invoke with the following arguments to scan a mail message from stdin:
 
-      rspamc -h 127.0.0.1:11333 -P $RSPAMD_adminpw
+      rspamc -h 127.0.0.1:11333 --password="$RSPAMD_adminpw"
