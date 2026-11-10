@@ -58,8 +58,8 @@ __metadata:
   linkType: hard
 
 "@babel/eslint-parser@npm:^7.11.0":
-  version: 7.29.9
-  resolution: "@babel/eslint-parser@npm:7.29.9"
+  version: 7.29.13
+  resolution: "@babel/eslint-parser@npm:7.29.13"
   dependencies:
     "@nicolo-ribaudo/eslint-scope-5-internals": "npm:5.1.1-v1"
     eslint-visitor-keys: "npm:^2.1.0"
@@ -67,20 +67,20 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.11.0
     eslint: ^7.5.0 || ^8.0.0 || ^9.0.0
-  checksum: 10c0/f97d9eb23ad53e9263235e9efe204908494922fb89a4cf623e174d7e62a112c52850990cc19b9ef5043af6e2ca87b1772f998175571ac8cb9967689d6e036bd8
+  checksum: 10c0/b8dc7912871324b47bd2e10eafc877438288cdbe2045f829ed445c1fa75d1f4fcf57ac1042b75c8404af5085482db1aaabe18bb0095332bcb78bf69f29b56da2
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.29.12":
-  version: 7.29.12
-  resolution: "@babel/generator@npm:7.29.12"
+"@babel/generator@npm:^7.29.13":
+  version: 7.29.13
+  resolution: "@babel/generator@npm:7.29.13"
   dependencies:
-    "@babel/parser": "npm:^7.29.12"
+    "@babel/parser": "npm:^7.29.13"
     "@babel/types": "npm:^7.29.11"
     "@jridgewell/gen-mapping": "npm:^0.3.12"
     "@jridgewell/trace-mapping": "npm:^0.3.28"
     jsesc: "npm:^3.0.2"
-  checksum: 10c0/5564fe39db454bc8ef53366692f2240528ca4d831cf51a69a085768023004684b889d9d0bbab1879b3d419719166eaa4299e092cebd73d888f11fb3a812fd571
+  checksum: 10c0/3b6318f59aeaffe9305b1e4a8e3035f6223c808e961459945d896ba3c6f9dccb1e95d477b73d8e00b21d972b389292478dd1a50e8917d1629cd3c52005a64594
   languageName: node
   linkType: hard
 
@@ -341,14 +341,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.29.12":
-  version: 7.29.12
-  resolution: "@babel/parser@npm:7.29.12"
+"@babel/parser@npm:^7.29.13":
+  version: 7.29.13
+  resolution: "@babel/parser@npm:7.29.13"
   dependencies:
     "@babel/types": "npm:^7.29.11"
   bin:
     parser: ./bin/babel-parser.js
-  checksum: 10c0/5be1bda59715d21a060ed5a49c2f6396058f3e5ec14c218df4090eef053e4bf9af2e3bebbf1e862bdc4c2d83b028fcf315dbaffb1a72da432241f57dcfdaa4f4
+  checksum: 10c0/b48742b4501a38552ef1317726345a9c42eaab2c1fb7d884004453e9ef1519ea8a36167d295d966b870c80821eb53fb258baa9b0e43b9f23915edfd6330664bd
   languageName: node
   linkType: hard
 
@@ -1253,18 +1253,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:7.29.12":
-  version: 7.29.12
-  resolution: "@babel/traverse@npm:7.29.12"
+"@babel/traverse@npm:7.29.13":
+  version: 7.29.13
+  resolution: "@babel/traverse@npm:7.29.13"
   dependencies:
     "@babel/code-frame": "npm:^7.29.7"
-    "@babel/generator": "npm:^7.29.12"
+    "@babel/generator": "npm:^7.29.13"
     "@babel/helper-globals": "npm:^7.29.7"
-    "@babel/parser": "npm:^7.29.12"
+    "@babel/parser": "npm:^7.29.13"
     "@babel/template": "npm:^7.29.7"
     "@babel/types": "npm:^7.29.11"
     debug: "npm:^4.3.1"
-  checksum: 10c0/2a33794615df3d528dff9147070288e6af761b47a796ab9f08e6c73a6c223523da7315edeb23d95ccfaecb84ce6ed22795c3b47d505477251acb92110fedc3f4
+  checksum: 10c0/336e43764545bb24e6c5d0d699eaafb7d967f1f3eb561b8333dbb737b673c8c2e026079caa5de77d50e499be8d343a0a8d632d50e13a75b271b1a9ca235e36d0
   languageName: node
   linkType: hard
 
