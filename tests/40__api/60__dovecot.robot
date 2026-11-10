@@ -68,8 +68,10 @@ Mailbox names with dots are escaped on disk like Dovecot 2.3
 
 FTS uses the Danish default language
     ${out} =    Dovecot    doveadm fts tokenize -u ${quser} 'the house og huset'
-    Should Contain    ${out}    the
-    Should Not Contain    ${out}    og\n
+    # One token per line: match whole words at the end of a line, as the
+    # last line has no newline
+    Should Match Regexp    ${out}    (?m)\\bthe$
+    Should Not Match Regexp    ${out}    (?m)\\bog$
 
 FTS finds a delivered message
     ${word} =    Set Variable    zebrafoxtrot${quser}
