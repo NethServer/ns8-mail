@@ -50,6 +50,26 @@ Default user quota is applied after the custom quota is removed
     ${out} =    Dovecot    doveadm -f tab quota get -u ${quser}
     Should Not Contain    ${out}    43008
 
+The vmail user is exempted from the default quota
+    Run task    module/${MID}/set-mailbox-settings    {"quota":{"limit":50}}
+    Wait Until Keyword Succeeds    20 seconds    1 second
+    ...    User quota limit is    ${quser}    51200
+    User quota limit is    vmail    -
+
+The vmail user quota is overridden by the environment
+    Execute Command    runagent -m ${MID} python3 -c 'import agent ; agent.set_env("DOVECOT_VMAIL_QUOTA_MB", "60")'
+    Execute Command    runagent -m ${MID} systemctl --user reload dovecot
+    Wait Until Keyword Succeeds    20 seconds    1 second
+    ...    User quota limit is    vmail    61440
+    User quota limit is    ${quser}    51200
+
+Restore the vmail and default quota
+    Execute Command    runagent -m ${MID} python3 -c 'import agent ; agent.unset_env("DOVECOT_VMAIL_QUOTA_MB")'
+    Run task    module/${MID}/set-mailbox-settings    {"quota":{"limit":0}}
+    Wait Until Keyword Succeeds    20 seconds    1 second
+    ...    User quota limit is    ${quser}    -
+    User quota limit is    vmail    -
+
 Custom spam retention is stored in the uspamret dict
     Run task    module/${MID}/alter-user-mailbox    {"user":"${quser}","spam_retention":{"value":9,"custom":true}}
     ${out} =    Dovecot    doveadm dict get dict_server shared/spam_retention/${quser}
@@ -113,6 +133,12 @@ Dovecot
     ...    return_rc=True    return_stderr=True
     Should Be Equal As Integers    ${rc}    ${rc_expected}    ${command} failed:${\n}${err}
     RETURN    ${out}
+
+User quota limit is
+    [Arguments]    ${user}    ${limit}
+    [Documentation]    Check the STORAGE limit (KB) of the user, "-" for unlimited
+    ${out} =    Dovecot    doveadm -f tab quota get -u ${user}
+    Should Match Regexp    ${out}    STORAGE\\t\\d+\\t${limit}\\t
 
 Set sharedseen
     [Arguments]    ${enabled}

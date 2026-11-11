@@ -257,6 +257,21 @@ command:
 
     podman exec dovecot doveadm acl set -u vmail INBOX authenticated lookup
 
+Public mailboxes are not limited by the default mailbox quota: the
+`vmail` user has no quota. To limit the total size of public mailboxes,
+for example to 10 GB:
+
+1. Set the environment variable, with the value in MB (`0` means
+   unlimited):
+
+       runagent -m mail1 python3 -c 'import agent ; agent.set_env("DOVECOT_VMAIL_QUOTA_MB", "10240")'
+
+1. Reload the Dovecot container:
+
+       runagent -m mail1 systemctl --user reload dovecot
+
+The `vmail` quota is enforced only if the mailbox quota is enabled.
+
 ## Services
 
 1. Dovecot -- `dovecot.service`. See also dovecot/README.md

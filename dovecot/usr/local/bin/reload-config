@@ -80,7 +80,14 @@ fi
 master_users="${DOVECOT_MASTER_USERS:-!*}"
 set +a
 
-echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::" > /etc/dovecot/users
+# The vmail user stores the public folders: its quota does not follow
+# the default user quota. Value "0" means unlimited.
+vmail_userdb_fields=
+if [ -n "${DOVECOT_QUOTA_MB}" ]; then
+    vmail_quota_mb="${DOVECOT_VMAIL_QUOTA_MB:-0}"
+    vmail_userdb_fields="userdb_quota_storage_size=${vmail_quota_mb}M userdb_quota_storage_grace=$(( vmail_quota_mb * 1024 / 10 ))k"
+fi
+echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::${vmail_userdb_fields}" > /etc/dovecot/users
 
 if [ -n "${DOVECOT_DISABLED_USERS}" ]; then
     # Transform the CSV list in a LDAP filter NOT-ORs clause
