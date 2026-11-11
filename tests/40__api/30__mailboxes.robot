@@ -32,6 +32,15 @@ Check user mailbox attibute changes were applied
         END
     END
 
+List user mailboxes with the quota plugin disabled
+    Execute Command    runagent -m ${MID} python3 -c 'import agent ; agent.set_env("DOVECOT_QUOTA_MB", "")'
+    Execute Command    runagent -m ${MID} systemctl --user reload dovecot
+    ${lmailboxes} =    Run task    module/${MID}/list-user-mailboxes    ""
+    FOR  ${ombx}    IN    @{lmailboxes}[user_mailboxes]
+        Dictionary Should Not Contain Key    ${ombx}    quota
+    END
+    [Teardown]    Restore the unlimited default quota
+
 Reset user mailbox forward
     Run task    module/${MID}/alter-user-mailbox    {"user":"u1","forward":{"destinations":[]}}
 
@@ -130,3 +139,8 @@ Remove the orphantest public mailbox
     ${lmailboxes} =    Run task    module/${MID}/list-public-mailboxes    ""
     ${notexpected} =    Evaluate    json.loads('''{"mailbox": "orphantest", "acls": []}''')
     List Should Not Contain Value    ${lmailboxes}    ${notexpected}
+
+*** Keywords ***
+Restore the unlimited default quota
+    Execute Command    runagent -m ${MID} python3 -c 'import agent ; agent.set_env("DOVECOT_QUOTA_MB", "0")'
+    Execute Command    runagent -m ${MID} systemctl --user reload dovecot
