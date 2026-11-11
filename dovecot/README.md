@@ -41,6 +41,9 @@ Private TCP ports:
 - `DOVECOT_QUOTA_MB`, default `0`, which means "unlimited". If greater
   than zero, set default mailbox quota to that value, with value expressed
   in MB. The empty string means quota plugin must be disabled.
+- `DOVECOT_VMAIL_QUOTA_MB`, default `0`, which means "unlimited". Quota
+  of the `vmail` user, which stores the public folders, expressed in MB.
+  The `vmail` user is exempted from `DOVECOT_QUOTA_MB`.
 - `DOVECOT_API_KEY`, value for [`doveadm_api_key`](https://doc.dovecot.org/settings/core/#core_setting-doveadm_api_key)
 - `DOVECOT_API_PORT`, TCP port number for doveadm HTTP API server. Default
   value is `9288`.
