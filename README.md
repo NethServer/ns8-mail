@@ -175,7 +175,8 @@ Since Mail 1.9, forwarded mail's envelope sender is rewritten by
 destination's SPF check instead of being rejected. See the "Sender
 Rewriting Scheme (SRS)" section in `postfix/README.md` for background,
 and for a concrete case (an archiver fed through `POSTFIX_ALWAYS_BCC`,
-e.g. Piler) where an admin may prefer to turn it off.
+e.g. Piler, without an `always-bcc` relay rule) where an admin may
+prefer to turn it off.
 
 To disable it:
 

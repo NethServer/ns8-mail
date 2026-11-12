@@ -122,11 +122,13 @@ As a consequence, `sender_canonical_maps` rewrites the envelope sender of
 locally hosted mail domains, regardless of whether that particular message
 is actually forwarded anywhere. Local mailboxes are not affected:
 `lmtp_generic_maps` reverts the rewrite on LMTP delivery, so Dovecot
-gets the original sender. A concrete example: an inbound message from an
-external sender, also copied via `POSTFIX_ALWAYS_BCC` to an archiver
-(e.g. Piler), is archived with the rewritten `SRS0=...` envelope
-sender/`Return-Path`, not the genuine original one -- even though this
-message was never forwarded.
+gets the original sender. Likewise, a `POSTFIX_ALWAYS_BCC` copy routed
+by an `always-bcc` relay rule (e.g. to a Piler archiver) goes through the
+`smtp_bcc`/`smtps_bcc` service, whose `smtp_generic_maps` reverts it.
+Without such a rule, the copy leaves through the default route and is
+archived with the rewritten `SRS0=...` envelope sender/`Return-Path`, not
+the genuine original one -- even though this message was never
+forwarded.
 
 This is generally harmless: only the hidden envelope sender/`Return-Path`
 changes, never the visible `From:`/`Subject:`/body of the message. If it

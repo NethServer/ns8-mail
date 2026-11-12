@@ -2,9 +2,14 @@
 # relaydest -- retrieve the relay host for the given destination
 # Sqlite backend configuration
 #
+# The always-bcc copy (e.g. Piler archive) goes through the smtp_bcc or
+# smtps_bcc service, which restores the original SRS envelope sender.
+#
 
 dbpath = /srv/pcdb.sqlite
-query = SELECT FORMAT('%%s:[%%s]:%%s', transport, host, port) AS route
+query = SELECT FORMAT('%%s%%s:[%%s]:%%s', transport,
+    CASE WHEN rule_type = 'always-bcc' THEN '_bcc' ELSE '' END,
+    host, port) AS route
   FROM relayrules
   WHERE enabled = 1 AND (
     rule_subject = '%s' AND rule_type IN ('recipient', 'always-bcc')

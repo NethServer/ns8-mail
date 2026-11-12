@@ -133,6 +133,17 @@ Check SRS rewritten sender by journal
     Should Match    ${out}    *${LAST_QUEUE_ID}: from=<SRS0=*=*=${orig_domain}=${orig_local}@*>*
     ...    postfix/qmgr envelope sender for ${LAST_QUEUE_ID} was not rewritten by SRS: ${out}
 
+SMTP envelope sender should be
+    [Tags]    outbound
+    [Documentation]    Check the MAIL FROM sent to the relay on ${rport},
+    ...                as traced by postfix/smtp with POSTFIX_DEBUG=5.
+    [Arguments]    ${rport}    ${sender}
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    journalctl -o cat -t postfix/smtp -S '${LAST_TIMESTAMP}'
+    ...    return_rc=True    return_stderr=True
+    Should Match    ${out}    *> 127.0.0.1[[]127.0.0.1[]]:${rport}: MAIL FROM:<${sender}>*
+    ...    postfix/smtp MAIL FROM:<${sender}> to port ${rport} not found: ${out}
+
 Get SRS rewritten sender
     [Documentation]    Return the SRS0=...@... envelope sender postsrsd
     ...                assigned to the last queued message, as recorded by
