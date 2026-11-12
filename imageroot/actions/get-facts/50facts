@@ -29,6 +29,7 @@ def main():
     facts.update(get_queue_settings_facts())
     facts.update(get_custom_config_facts())
     facts.update(get_process_limit_facts())
+    facts.update(get_postfix_master_custom_facts())
     facts.update(get_dqs_token_facts())
     json.dump(facts, sys.stdout)
 
@@ -305,6 +306,19 @@ def get_process_limit_facts():
     except ValueError:
         pass
     return {"dovecot_default_process_limit": value}
+
+def get_postfix_master_custom_facts():
+    # Count the master.append entries: lines starting with a service name
+    with subprocess.Popen(["podman", "exec", "postfix", "ash", "-c",
+        """cat /etc/postfix/main.cf.d/master.append 2>/dev/null | grep -c -E '^[^#[:space:]]'"""
+        ], stdout=subprocess.PIPE) as proc:
+        try:
+            ocount = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_postfix_master_custom_facts_error": True}
+    return {
+        "postfix_master_custom_count": ocount,
+    }
 
 def get_dqs_token_facts():
     return {

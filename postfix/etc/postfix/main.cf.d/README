@@ -2,3 +2,24 @@ Local configuration override
 ----------------------------
 
 Any *.cf file in this directory is appended to main.cf
+
+master.cf entries
+-----------------
+
+The contents of the master.append file in this directory are appended to
+master.cf, with the master.cf syntax. An entry with the same service
+name and type (the first two fields) as a master.cf entry replaces it:
+Postfix uses the last entry and logs a "duplicate master.cf entry"
+warning. To change an entry, copy it from the output of "postconf -Mf"
+and edit the copy. Example:
+
+    submission inet n       -       n       -       20      smtpd
+        -o smtpd_sasl_auth_enable=yes
+        -o smtpd_sender_restrictions=
+
+A replaced entry is static: if the original entry depends on the module
+configuration (e.g. the smtpd_sender_restrictions option of submission
+services), the replaced entry no longer follows its changes.
+
+The file is not checked: an invalid entry stops Postfix until the file
+is fixed or removed.
