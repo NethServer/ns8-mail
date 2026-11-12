@@ -42,7 +42,27 @@ Forward to external address
     Should not be delivered via LMTP to  u3
     Envelope sender should be SRS-rewritten    default    example.org
 
+Forward to external address with copy
+    [Documentation]    The forward is SRS-rewritten, while the local copy
+    ...                gets the original Return-Path back from the LMTP
+    ...                client lmtp_generic_maps.
+    [Setup]            Configure forward for user  u3  to=forward@wildcard.test  dtype=external  keepcopy=true
+    [Teardown]         Cleanup forward for u3
+    Send SMTP message to    u3@inbound.test
+    Should be relayed via SMTP  10001  usr_relay
+    Should be delivered via LMTP to  u3
+    Envelope sender should be SRS-rewritten    default    example.org
+    Last message should have Return-Path    u3    <default@example.org>
+
 *** Keywords ***
+Last message should have Return-Path
+    [Arguments]    ${user}    ${expected}
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent -m ${MID} podman exec dovecot doveadm fetch -u ${user} hdr.return-path mailbox INBOX uid '*'
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0    doveadm fetch failed: ${err}
+    Should Contain    ${out}    ${expected}
+
 Configure forward for user
     [Arguments]  ${user}    ${to}    ${dtype}=user    ${keepcopy}=false
     Run task    module/${MID}/alter-user-mailbox    {"user":"${user}","forward":{"keepcopy":${keepcopy},"destinations":[{"dtype":"${dtype}","name":"${to}"}]}}

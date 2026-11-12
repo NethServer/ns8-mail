@@ -120,18 +120,18 @@ same as any other canonical rewrite.
 As a consequence, `sender_canonical_maps` rewrites the envelope sender of
 *any* message received from a sender whose domain is not one of the
 locally hosted mail domains, regardless of whether that particular message
-is actually forwarded anywhere. A concrete example: an inbound message
-from an external sender, also copied via `POSTFIX_ALWAYS_BCC` to an
-archiver (e.g. Piler), is archived with the rewritten `SRS0=...` envelope
+is actually forwarded anywhere. Local mailboxes are not affected:
+`lmtp_generic_maps` reverts the rewrite on LMTP delivery, so Dovecot
+gets the original sender. A concrete example: an inbound message from an
+external sender, also copied via `POSTFIX_ALWAYS_BCC` to an archiver
+(e.g. Piler), is archived with the rewritten `SRS0=...` envelope
 sender/`Return-Path`, not the genuine original one -- even though this
-message was never forwarded. Other, less obvious cases may exist, for
-example Sieve rules that filter on the SMTP envelope sender rather than
-the `From:` header.
+message was never forwarded.
 
 This is generally harmless: only the hidden envelope sender/`Return-Path`
 changes, never the visible `From:`/`Subject:`/body of the message. If it
-does matter for a specific deployment (e.g. an archiver's audit trail, or
-envelope-based Sieve filtering), set `POSTFIX_SRS=0` to disable it.
+does matter for a specific deployment (e.g. an archiver's audit trail),
+set `POSTFIX_SRS=0` to disable it.
 
 `postsrsd` always runs, from the container's `entrypoint.sh`, exactly
 like the Rspamd milter -- regardless of whether `POSTFIX_SRS` actually

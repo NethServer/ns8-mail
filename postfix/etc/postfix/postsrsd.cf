@@ -6,3 +6,6 @@ sender_canonical_maps = socketmap:unix:/var/lib/postsrsd/srs.sock:forward
 sender_canonical_classes = envelope_sender
 recipient_canonical_maps = socketmap:unix:/var/lib/postsrsd/srs.sock:reverse
 recipient_canonical_classes = envelope_recipient, header_recipient
+# Mailbox delivery: restore the original envelope sender (Return-Path)
+# in the LMTP client. Non-SRS addresses are not found and unchanged.
+lmtp_generic_maps = socketmap:unix:/var/lib/postsrsd/srs.sock:reverse
