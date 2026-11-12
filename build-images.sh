@@ -112,7 +112,7 @@ reponame="mail-postfix"
 container=$(buildah from docker.io/library/alpine:3.24.3)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
-apk add --no-cache postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login confuse
+apk add --no-cache bash postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login confuse
 #
 # Build postsrsd from source: Alpine 3.24 only ships 2.0, which has
 # no SIGHUP handler for config reload NethServer/dev#7741. Pin to a
