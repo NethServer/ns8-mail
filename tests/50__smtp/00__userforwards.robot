@@ -58,10 +58,14 @@ Forward to external address with copy
 Last message should have Return-Path
     [Arguments]    ${user}    ${expected}
     ${out}  ${err}  ${rc} =    Execute Command
-    ...    runagent -m ${MID} podman exec dovecot doveadm fetch -u ${user} hdr.return-path mailbox INBOX uid '*'
+    ...    runagent -m ${MID} podman exec dovecot doveadm fetch -u ${user} hdr.return-path mailbox INBOX all
     ...    return_rc=True    return_stderr=True
     Should Be Equal As Integers    ${rc}    0    doveadm fetch failed: ${err}
-    Should Contain    ${out}    ${expected}
+    # Messages are listed in UID order: the last one is the newest
+    ${lines} =    Get Lines Containing String    ${out}    hdr.return-path:
+    @{lines} =    Split To Lines    ${lines}
+    Should Not Be Empty    ${lines}    No message found in ${user} INBOX
+    Should Be Equal    ${lines}[-1]    hdr.return-path: ${expected}
 
 Configure forward for user
     [Arguments]  ${user}    ${to}    ${dtype}=user    ${keepcopy}=false
