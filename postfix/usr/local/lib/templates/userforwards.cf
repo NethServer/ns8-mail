@@ -1,10 +1,14 @@
 #
 # userforwards -- expand user name to their forward addresses
 #
+# Public mailbox destinations are quoted, like in aliases.cf
+#
 
 dbpath = /srv/pcdb.sqlite
 query =
-    SELECT dest
+    SELECT CASE WHEN substr(dest, 1, 6) = 'vmail+'
+      THEN '"' || replace(replace(dest, '\', '\\'), '"', '\"') || '"'
+      ELSE dest END
     FROM userforwards
     WHERE user = '%u'
 domain = ${tmpl_vdomain}

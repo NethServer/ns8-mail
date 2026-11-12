@@ -41,6 +41,9 @@ Private TCP ports:
 - `DOVECOT_QUOTA_MB`, default `0`, which means "unlimited". If greater
   than zero, set default mailbox quota to that value, with value expressed
   in MB. The empty string means quota plugin must be disabled.
+- `DOVECOT_VMAIL_QUOTA_MB`, default `0`, which means "unlimited". Quota
+  of the `vmail` user, which stores the public folders, expressed in MB.
+  The `vmail` user is exempted from `DOVECOT_QUOTA_MB`.
 - `DOVECOT_API_KEY`, value for [`doveadm_api_key`](https://doc.dovecot.org/settings/core/#core_setting-doveadm_api_key)
 - `DOVECOT_API_PORT`, TCP port number for doveadm HTTP API server. Default
   value is `9288`.
@@ -128,19 +131,25 @@ Volumes are:
      * `lmtp`, the Message Delivery Agent (MDA) Unix-domain
      * `auth`, Dovecot/Postfix SASL integration
 - `/etc/dovecot/local.conf.d`. Local configuration override volume. Any
-  `.conf` file added to this directory is included into Dovecot
-  configuration after `local.conf` contents.
+  `.conf` file added to this directory is included at the end of the
+  Dovecot configuration. Files must use the Dovecot 2.4 syntax: when the
+  configuration is loaded, the files are evaluated as a whole. If they
+  break it, all of them are renamed to hidden `.<name>.<timestamp>.err`
+  files and a warning is logged.
 
 ## Custom user quota
 
-Custom user quota is stored in a Dovecot Dict, `uquota`. To change user's
-quota send an HTTP API POST request. For instance, this is a `curl`
-command that sets `first.user` quota to `123` MB.
+Custom user quota is stored in a Dovecot Dict, `uquota`, and read by the
+`uquota.lua` userdb. In `dovecot.conf` the dict is defined in the
+`quota_clone` settings block: it is the dict filter name for `doveadm dict`
+and for the HTTP API `filterName` parameter. To change user's quota send an
+HTTP API POST request. For instance, this is a `curl` command that sets
+`first.user` quota to `123` MB.
 
 ```shell
 . ~/.config/state/dovecot.env
 DOVEADM_TOKEN=$(echo -n "${DOVECOT_API_KEY}" | base64)
-curl -d '[["dictSet",{"dictUri":"fs:posix:prefix=/var/lib/dovecot/dict/uquota/","key":"shared/first.user","value":"123"},"0000"]]' \
+curl -d '[["dictSet",{"filterName":"quota_clone","key":"shared/first.user","value":"123"},"0000"]]' \
   -H "Content-Type: application/json" \
   -H "Authorization: X-Dovecot-API ${DOVEADM_TOKEN}" \
   -X POST \
@@ -152,15 +161,15 @@ payload.
 
 ## Custom user spam retention
 
-Custom user spam retention is stored in a Dovecot Dict, `uspamret`. To
-change user's spam retention preference send an HTTP API POST request. For
-instance, this is a `curl` command that sets `first.user` spam retention
-to `21` days.
+Custom user spam retention is stored in a Dovecot Dict, `uspamret`, defined
+in the `dict_server` settings block of `dovecot.conf`. To change user's spam
+retention preference send an HTTP API POST request. For instance, this is a
+`curl` command that sets `first.user` spam retention to `21` days.
 
 ```shell
 . ~/.config/state/dovecot.env
 DOVEADM_TOKEN=$(echo -n "${DOVECOT_API_KEY}" | base64)
-curl -d '[["dictSet",{"dictUri":"file:/var/lib/dovecot/dict/uspamret.db","key":"shared/spam_retention/first.user","value":"21"},"id000"]]' \
+curl -d '[["dictSet",{"filterName":"dict_server","key":"shared/spam_retention/first.user","value":"21"},"id000"]]' \
   -H "Authorization: X-Dovecot-API ${DOVEADM_TOKEN}" \
   -X POST \
   http://127.0.0.1:9288/doveadm/v1

@@ -46,6 +46,7 @@ message_size_limit = 100000000
 #
 virtual_alias_domains = ${tmpl_virtual_alias_domains}
 virtual_alias_maps =
+  inline:{{ postmaster@${tmpl_vdomain} = vmail+postmaster@${tmpl_vdomain} }}
   sqlite:${S}meta_directory/aliases.cf
   sqlite:${S}meta_directory/userforwards.cf
   proxy:ldap:${S}meta_directory/laddgroupmembers.cf

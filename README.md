@@ -257,6 +257,21 @@ command:
 
     podman exec dovecot doveadm acl set -u vmail INBOX authenticated lookup
 
+Public mailboxes are not limited by the default mailbox quota: the
+`vmail` user has no quota. To limit the total size of public mailboxes,
+for example to 10 GB:
+
+1. Set the environment variable, with the value in MB (`0` means
+   unlimited):
+
+       runagent -m mail1 python3 -c 'import agent ; agent.set_env("DOVECOT_VMAIL_QUOTA_MB", "10240")'
+
+1. Reload the Dovecot container:
+
+       runagent -m mail1 systemctl --user reload dovecot
+
+The `vmail` quota is enforced only if the mailbox quota is enabled.
+
 ## Services
 
 1. Dovecot -- `dovecot.service`. See also dovecot/README.md
@@ -388,6 +403,33 @@ Following block rule configuration files are available in the Rspamd UI configur
   - Examples: `.domain.tld`, `.org`
 - Sender mail address: `/var/lib/rspamd/block_sender.map`
   - Examples: `user@domain.tld`, `support@nethserver.org`
+
+## Rspamd allow rules
+
+Allow rules are managed by the module UI, in the Filter > Bypass rules
+page. The module UI saves each rule through the Rspamd API, in one of the
+following map files. The same files are also available in the Rspamd UI
+configuration tab:
+
+- Sender mail address: `/var/lib/rspamd/bypass_sender.map`
+  - Examples: `user@domain.tld`, `newsletter@nethserver.org`
+- Sender domain: `/var/lib/rspamd/bypass_sender_domain.map`
+  - Examples: `domain.tld`, `nethserver.org`
+- Recipient mail address: `/var/lib/rspamd/bypass_recipient.map`
+  - Examples: `user@domain.tld`
+- Recipient domain: `/var/lib/rspamd/bypass_recipient_domain.map`
+  - Examples: `domain.tld`
+- Client IP address: `/var/lib/rspamd/bypass_ip.map`
+  - Examples: `192.168.1.10`, `10.0.0.0/8`
+
+Sender rules match both the SMTP envelope sender (`MAIL FROM`) and the
+MIME `From` header. This way, newsletters sent through a relay service
+are recognized. Block rules match only the SMTP envelope sender.
+
+By default, a matching allow rule accepts the message and skips any
+further check, antivirus included. Set `RSPAMD_bypass_score` to a
+negative number to add a ham score instead and keep the other checks
+running. See [rspamd/README.md](rspamd/README.md) for details.
 
 ## Service discovery
 

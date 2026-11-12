@@ -28,6 +28,7 @@ def main():
     facts.update(get_master_users_facts())
     facts.update(get_queue_settings_facts())
     facts.update(get_custom_config_facts())
+    facts.update(get_process_limit_facts())
     facts.update(get_dqs_token_facts())
     json.dump(facts, sys.stdout)
 
@@ -275,9 +276,35 @@ def get_custom_config_facts():
             odata = json.load(proc.stdout)
         except json.JSONDecodeError:
             return {"get_custom_config_facts_error": True}
+    # Count how many times the custom configuration was rejected because
+    # Dovecot could not parse it: snippets rejected together are renamed
+    # to hidden .<name>.<timestamp>.err files with the same timestamp.
+    with subprocess.Popen(["podman", "exec", "dovecot", "ash", "-c",
+        """ls -1A /etc/dovecot/local.conf.d/ | sed -n 's/^\\..*\\.\\([0-9]\\{14\\}\\)\\.err$/\\1/p' | sort -u | wc -l"""
+        ], stdout=subprocess.PIPE) as proc:
+        try:
+            orejected = json.load(proc.stdout)
+        except json.JSONDecodeError:
+            return {"get_custom_config_facts_error": True}
     return {
-        "dovecot_custom_config_count": odata
+        "dovecot_custom_config_count": odata,
+        "dovecot_custom_config_rejected_count": orejected,
     }
+
+def get_process_limit_facts():
+    # The variable can be overridden in dovecot.env, which is not part of
+    # the action environment: read it from the running container.
+    proc = subprocess.run(["podman", "exec", "dovecot", "printenv", "DOVECOT_DEFAULT_PROCESS_LIMIT"],
+        stdout=subprocess.PIPE, text=True)
+    # printenv exits 1 if the variable is unset
+    if proc.returncode not in (0, 1):
+        return {"get_process_limit_facts_error": True}
+    value = proc.stdout.strip() or "400" # same default of reload-config
+    try:
+        value = int(value)
+    except ValueError:
+        pass
+    return {"dovecot_default_process_limit": value}
 
 def get_dqs_token_facts():
     return {

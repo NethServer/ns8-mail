@@ -384,7 +384,6 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import { mapState } from "vuex";
 import to from "await-to-js";
-import { Power20 } from "@carbon/icons-vue";
 
 export default {
   name: "Relay",
@@ -403,7 +402,6 @@ export default {
       q: {
         page: "relay",
       },
-      Power20,
       hasWildcard: false,
       tablePage: [],
       tableColumns: ["rule_subject", "host", "has_password", "enabled"],

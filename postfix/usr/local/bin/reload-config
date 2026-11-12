@@ -58,7 +58,8 @@ tmpl_debug_peer_list="${POSTFIX_DEBUG_PEERS:-\$mynetworks}"
 tmpl_relay_domains=$(pcdbquery "SELECT group_concat(domain || '=' || transport) FROM domains WHERE transport LIKE '_mtp:%'")
 tmpl_virtual_alias_domains=$(pcdbquery "SELECT group_concat(domain) FROM domains WHERE transport IS NULL AND domain != '*'")${tmpl_ldomain:+,$tmpl_ldomain}
 tmpl_reject_internal_domains='check_recipient_access inline:{'$(printf '{ %s = REJECT access denied }, ' ${tmpl_vdomain} ${tmpl_ldomain} )'}'
-tmpl_domain_catchall_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || '=' || catchall || '@${tmpl_vdomain}}', ', ') || '}' FROM domains WHERE length(catchall) > 0 AND domain != '*'")
+# Public mailbox catch-all destinations are quoted, like in aliases.cf
+tmpl_domain_catchall_map=$(pcdbquery "SELECT 'inline:{' || group_concat('{@' || domain || '=' || CASE WHEN substr(catchall, 1, 6) = 'vmail+' THEN '\"' || replace(replace(catchall, '\\', '\\\\'), '\"', '\\\"') || '\"' ELSE catchall END || '@${tmpl_vdomain}}', ', ') || '}' FROM domains WHERE length(catchall) > 0 AND domain != '*'")
 tmpl_laddgroups_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM (SELECT domain FROM domains WHERE addgroups = 1 UNION SELECT '${tmpl_vdomain}' AS domain)")
 tmpl_laddusers_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM (SELECT domain FROM domains WHERE addusers = 1 UNION SELECT '${tmpl_vdomain}' AS domain)")${tmpl_ldomain:+ $tmpl_ldomain}
 tmpl_laddaliases_domains=$(pcdbquery "SELECT group_concat(domain, ' ') FROM domains WHERE addaliases = 1")

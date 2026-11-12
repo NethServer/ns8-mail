@@ -19,12 +19,13 @@ gquota = os.getenv("DOVECOT_QUOTA_MB", "")
 
 rquotas = []
 try:
-    rquotas = mail.doveadm_query("quotaGet", {"allUsers":True})
+    if gquota != "": # the empty value disables the quota plugin
+        rquotas = mail.doveadm_query("quotaGet", {"allUsers":True})
 except mail.DoveadmError as ex:
     if ex.code == 75:
         print(agent.SD_WARNING + "Quota information is temporarily unavailable. Try again later.", ex, file=sys.stderr)
     else:
-        print(agent.SD_ERROR + "quotaGet error", ex, file=sys.stderr)
+        print(agent.SD_ERR + "quotaGet error", ex, file=sys.stderr)
 except Exception:
     pass
 
@@ -84,7 +85,7 @@ uspamret_reply = []
 try:
     gspam_retention = int(os.getenv("DOVECOT_SPAM_RETENTION", ""))
     uspamret_reply = mail.doveadm_query("dictIter", {
-        "dictUri": "file:/var/lib/dovecot/dict/uspamret.db",
+        "filterName": "dict_server",
         "prefix": "shared/spam_retention/",
     })
 except ValueError:

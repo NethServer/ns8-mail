@@ -8,7 +8,8 @@
 
 token=$(cat /etc/dovecot/rspamc.token)
 
-/usr/bin/rspamc -P "${token}" "${@}"
+# The password is attached to the option: it may start with "-"
+/usr/bin/rspamc --password="${token}" "${@}"
 exit_code=$?
 if [ ${exit_code} -gt 1 ]; then
     # The exit code 1 is silently ignored. Other values are logged.
