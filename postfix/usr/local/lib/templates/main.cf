@@ -57,7 +57,7 @@ virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 virtual_mailbox_maps = ${tmpl_virtual_mailbox_maps}
 virtual_transport = lmtp:unix:/var/lib/umail/lmtp
 relay_domains = ${tmpl_relay_domains}
-transport_maps = sqlite:${S}meta_directory/relaydest.cf
+transport_maps = texthash:${S}meta_directory/disabled_mailboxes, sqlite:${S}meta_directory/relaydest.cf
 recipient_delimiter = +
 
 # Never use local transport, set "mydestination" to empty string:
@@ -117,6 +117,7 @@ smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
   ${tmpl_srs_recipient_check}
   ${tmpl_verify_recipient_address},
+  check_recipient_access texthash:${S}meta_directory/disabled_mailboxes_rcpt,
 
 #
 # TLS configuration
