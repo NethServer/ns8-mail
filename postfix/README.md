@@ -83,7 +83,10 @@ Private TCP ports:
   volume path to disable all Dovecot integrations.
 - `/etc/postfix/main.cf.d`. Local configuration override volume. Any `.cf`
   file added to this directory is always appended to the expanded
-  `main.cf` file.
+  `main.cf` file. The contents of the `master.append` file of the same
+  directory are appended to the expanded `master.cf` file: an entry with
+  the same service name and type as a previous one replaces it, as
+  Postfix uses the last entry. The file is not checked.
 
 ## Commands
 
@@ -91,8 +94,8 @@ Private TCP ports:
 
 The command expands Postfix configuration files, according to the values
 of environment variables and template files stored under
-`/usr/local/lib/templates`. If Postfix is running, it sends a reload
-signal.
+`/usr/local/lib/templates`, then appends `main.cf.d/master.append` to
+`master.cf`. If Postfix is running, it sends a reload signal.
 
 ## Sender Rewriting Scheme (SRS)
 

@@ -166,14 +166,29 @@ if [ -n "${srs_enabled}" ] ; then
     cat /etc/postfix/postsrsd.cf >> /etc/postfix/main.cf
 fi
 
-# Append override dir contents to main.cf:
+# Append override dir contents to main.cf. The empty line after each
+# file keeps its last line apart, if the file does not end with a newline.
 (
     echo ""
     echo "# BEGIN Included directives from /etc/postfix/main.cf.d/*.cf:"
-    find /etc/postfix/main.cf.d -name '*.cf' -exec cat '{}' \;
+    find /etc/postfix/main.cf.d -name '*.cf' -exec sh -c 'for f; do cat "${f}"; echo ""; done' sh '{}' +
     echo "# END Included directives from /etc/postfix/main.cf.d/*.cf:"
     echo ""
 ) >> /etc/postfix/main.cf
+
+# Append main.cf.d/master.append to master.cf. An entry with the same
+# service name and type as a previous one replaces it: Postfix uses the
+# last entry and logs a warning.
+if [ -f /etc/postfix/main.cf.d/master.append ]; then
+    (
+        echo ""
+        echo "# BEGIN Included entries from /etc/postfix/main.cf.d/master.append:"
+        cat /etc/postfix/main.cf.d/master.append
+        # The file may not end with a newline
+        echo ""
+        echo "# END Included entries from /etc/postfix/main.cf.d/master.append:"
+    ) >> /etc/postfix/master.cf
+fi
 
 # Generate the mynetworks.cidr table
 (

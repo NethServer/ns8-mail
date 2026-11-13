@@ -64,6 +64,49 @@ If Postfix is stopped run this one instead:
     podman run --rm -ti -v postfix-custom:/srv:z alpine vi /srv/myoverride.cf
     systemctl --user reload postfix
 
+### Postfix master.cf custom configuration
+
+Postfix services, defined by `master.cf`, are customized with the
+`master.append` file of the same `postfix-custom` volume. Its contents
+are appended to `master.cf`, so it contains entries with the
+`master.cf` syntax. Its name does not end with `.cf`, so it is not
+appended to `main.cf`.
+
+An entry with the same service name and type (the first two fields) as
+an entry of `master.cf` replaces it: Postfix uses the last entry and
+logs a "duplicate master.cf entry" warning at every reload. To change an
+existing service, copy its whole entry and edit the copy:
+
+    # print the current master.cf entries
+    podman exec -ti postfix postconf -Mf
+    # start the editor
+    podman exec -ti postfix vi /etc/postfix/main.cf.d/master.append
+    systemctl --user reload postfix
+
+For example, to limit the number of concurrent `submission` (port 587)
+processes to 20, print the current entry with `postconf -Mf
+submission/inet`, save it in the file and change the `maxproc` field
+(the 7th) from `-` to `20`:
+
+    submission inet n       -       n       -       20      smtpd
+        -o smtpd_sasl_auth_enable=yes
+        -o smtpd_sender_restrictions=
+
+**Warning**: a replaced entry is static. If its original entry depends on
+the module configuration, like the `smtpd_sender_restrictions` option
+above, which follows the restricted sender setting of the UI, the
+replaced entry no longer follows it: update the file after changing such
+settings.
+
+**Warning**: the file is not checked. An invalid entry, or a service
+address that cannot be bound, stops Postfix, and the container restarts
+until the file is fixed or removed. The cause is in the `postfix/master`
+errors of the journal. As Postfix is stopped, edit the file with a
+dedicated container, as shown in the previous section:
+
+    podman run --rm -ti -v postfix-custom:/srv:z alpine vi /srv/master.append
+    systemctl --user restart postfix
+
 After applying a custom configuration, check the services are running properly:
 
     systemctl --user status postfix dovecot
