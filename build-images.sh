@@ -60,7 +60,7 @@ images+=("${repobase}/${reponame}")
 # Dovecot additional image
 #
 reponame="mail-dovecot"
-container=$(buildah from docker.io/library/alpine:3.24.3)
+container=$(buildah from docker.io/library/alpine:3.24.4)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 # Create vmail before installing packages, to keep uid 100 and gid 101
@@ -109,7 +109,7 @@ images+=("${repobase}/${reponame}")
 # Postfix additional image
 #
 reponame="mail-postfix"
-container=$(buildah from docker.io/library/alpine:3.24.3)
+container=$(buildah from docker.io/library/alpine:3.24.4)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache bash postfix gettext sqlite postfix-sqlite postfix-ldap openssl cyrus-sasl-login confuse
@@ -167,7 +167,7 @@ images+=("${repobase}/${reponame}")
 # Rspamd additional image
 #
 reponame="mail-rspamd"
-container=$(buildah from docker.io/library/alpine:3.24.3)
+container=$(buildah from docker.io/library/alpine:3.24.4)
 buildah run "${container}" /bin/sh <<EOF
 set -e
 # Software installation order is important to preserve uid and gid allocation:
@@ -195,7 +195,7 @@ images+=("${repobase}/${reponame}")
 # ClamAV additional image
 #
 reponame="mail-clamav"
-container=$(buildah from docker.io/library/alpine:3.24.3)
+container=$(buildah from docker.io/library/alpine:3.24.4)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache ncurses bash curl wget rsync bind-tools socat gpg gpg-agent
