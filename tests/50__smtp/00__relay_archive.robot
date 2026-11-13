@@ -1,8 +1,14 @@
 *** Settings ***
-Documentation    Piler/Archive scenario based on always_bcc
+Documentation    Piler/Archive scenario based on always_bcc. The archive
+...              copy keeps the original envelope sender, even if SRS
+...              rewrites it (NethServer/dev#7741).
 Resource    smtp.resource
-Suite Setup        Add Piler relay rule
-Suite Teardown     Remove Piler relay rule
+Suite Setup        Run keywords
+...                Force SRS enabled
+...                AND    Add Piler relay rule
+Suite Teardown     Run keywords
+...                Remove Piler relay rule
+...                AND    Reset SRS setting
 Test Tags    alwaysbcc
 
 *** Test Cases ***
@@ -10,6 +16,8 @@ Inbound message archive
     Send SMTP message to    u1@inbound.test
     Should be relayed via SMTP  port=10002
     Should be delivered via LMTP to  u1
+    Envelope sender should be SRS-rewritten    default    example.org
+    SMTP envelope sender should be    10002    default@example.org
 
 Outbound message archive
     Send SMTP message to  someone@wildcard.test
