@@ -13,14 +13,16 @@ ${cfdir}    /etc/postfix/main.cf.d
 
 *** Test Cases ***
 Entries replace and extend master.cf
-    Write custom file    master.append    showq unix n - n - 5 showq\\n127.0.0.1:10026 inet n - n - - smtpd\\n -o syslog_name=postfix/test10026\\n
+    # The file does not end with a newline: the next master.cf line must
+    # not be glued to its last line
+    Write custom file    master.append    showq unix n - n - 5 showq\\n127.0.0.1:10026 inet n - n - - smtpd\\n -o syslog_name=postfix/test10026
     Reload Postfix
     # Both showq entries are listed: Postfix uses the last one
     ${out} =    Postfix    postconf -h -F showq/unix/process_limit
     ${lines} =    Split To Lines    ${out}
     Should Be Equal    ${lines}[-1]    5
-    ${out} =    Postfix    postconf -Mf 127.0.0.1:10026/inet
-    Should Contain    ${out}    syslog_name=postfix/test10026
+    ${out} =    Postfix    postconf -h -P 127.0.0.1:10026/inet/syslog_name
+    Should Be Equal    ${out.strip()}    postfix/test10026
     Retry until TCP port is open    10026
 
 The file is not appended to main.cf
