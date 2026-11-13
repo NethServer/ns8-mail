@@ -69,6 +69,32 @@ tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
 tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
 tmpl_ldap_port="${POSTFIX_LDAP_PORT}"
 tmpl_ldap_base="${POSTFIX_LDAP_BASE}"
+# Disabled mailboxes and hidden users (NethServer/dev#8185). The LDAP
+# clause hides them from the user and mail attribute address maps: mail
+# sent to their addresses is rejected as unknown, or goes to the
+# catch-all, like any other address that is not assigned. Names are
+# escaped for the LDAP filter (RFC 4515) and for Postfix ("%").
+tmpl_ldap_users_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" '
+    BEGIN {
+        attr = (schema == "ad") ? "sAMAccountName" : "uid"
+        esc["\\"] = "\\5c" ; esc["*"] = "\\2a" ; esc["("] = "\\28" ; esc[")"] = "\\29" ; esc["%"] = "%%"
+    }
+    {
+        for (i = 1; i <= NF; i++) {
+            user = tolower($i)
+            if (user == "" || seen[user]++) continue
+            value = ""
+            for (k = 1; k <= length(user); k++) {
+                c = substr(user, k, 1)
+                value = value ((c in esc) ? esc[c] : c)
+            }
+            clause = clause "(" attr "=" value ")"
+        }
+    }
+    END { if (clause != "") print "(!(|" clause "))" }')
+# Same users as a SQL list, never empty to keep "IN ()" valid: their
+# forwards do not apply to copies that come through aliases and groups.
+tmpl_disabled_users_sql="'$(echo "${DOVECOT_DISABLED_USERS}" | tr '[:upper:]' '[:lower:]' | sed "s/'/''/g ; s/%/%%/g ; s/,/','/g")'"
 tmpl_maximal_queue_lifetime="${POSTFIX_MAXIMAL_QUEUE_LIFETIME:-120}"
 if [ -n "${POSTFIX_RESTRICTED_SENDER}" ]; then
     tmpl_sender_restrictions="reject_authenticated_sender_login_mismatch"
@@ -140,29 +166,22 @@ envsubst >/etc/postfix/laddusers.cf <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema
 envsubst >/etc/postfix/userforwards.cf <"${TEMPLATES_DIR:?}/userforwards.cf"
 envsubst >/etc/postfix/laddgroupmembers.cf <"${TEMPLATES_DIR:?}/laddgroupmembers-${ldap_schema}.cf"
 envsubst >/etc/postfix/laddaliases.cf <"${TEMPLATES_DIR:?}/laddaliases-${ldap_schema}.cf"
-envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \
+# The mailbox map keeps disabled mailboxes: their copies must resolve to
+# a known mailbox, to be discarded below instead of bounced.
+tmpl_ldap_users_filter_clause='' envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \
     sed "s/^domain = .*/domain = ${tmpl_vdomain}/ ; /^# just/ d" >/etc/postfix/laddusers-origin.cf
 
-# Disabled mailboxes: reject at RCPT time, discard copies (NethServer/dev#8185, NethServer/dev#8205).
-# Keys are lowercase because Postfix folds lookup keys, and full user@domain
-# because a domain key would also match its subdomains.
-: >/etc/postfix/disabled_mailboxes
-pcdbquery "SELECT lower(alocal) || '@' || lower(domain) FROM destmap" | \
-    awk -v "users=${DOVECOT_DISABLED_USERS}" -v "domains=${tmpl_laddusers_domains}" -v "vdomain=${tmpl_vdomain}" '
-    { aliased[$0] = 1 }
-    END {
-        nu = split(tolower(users), user, ",")
-        nd = split(tolower(domains), domain, " ")
-        for (i = 1; i <= nu; i++) {
-            if (user[i] == "") continue
-            print user[i] "@" vdomain " discard:" >"/etc/postfix/disabled_mailboxes"
-            # An SQL alias with the same name wins, as it does on enabled mailboxes
-            if ((user[i] "@*") in aliased) continue
-            for (j = 1; j <= nd; j++) {
-                if (!((user[i] "@" domain[j]) in aliased)) print user[i] "@" domain[j] " 550 5.1.1 User unknown"
-            }
-        }
-    }' >/etc/postfix/disabled_mailboxes_rcpt
+# Copies to a disabled mailbox that come through aliases, groups and the
+# catch-all are discarded, without a bounce to a possibly forged sender
+# (NethServer/dev#8205). Keys are lowercase because Postfix folds lookup
+# keys, and unique because texthash refuses duplicate keys.
+echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "vdomain=${tmpl_vdomain}" '{
+    for (i = 1; i <= NF; i++) {
+        user = tolower($i)
+        if (user != "" && !seen[user]++) print user "@" tolower(vdomain) " discard:"
+    }
+}' >/etc/postfix/disabled_mailboxes.new
+mv /etc/postfix/disabled_mailboxes.new /etc/postfix/disabled_mailboxes
 
 if [ -z "${tmpl_sasl_commentout}" ] ; then
     cat /etc/postfix/dovecot-sasl.cf >> /etc/postfix/main.cf

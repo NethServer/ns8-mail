@@ -117,7 +117,6 @@ smtpd_recipient_restrictions =
   reject_non_fqdn_recipient,
   ${tmpl_srs_recipient_check}
   ${tmpl_verify_recipient_address},
-  check_recipient_access texthash:${S}meta_directory/disabled_mailboxes_rcpt,
 
 #
 # TLS configuration

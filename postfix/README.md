@@ -44,6 +44,14 @@ Private TCP ports:
 - `POSTFIX_LDAP_ALIAS_ATTR`. LDAP user attribute queried to expand
   addresses for domains with the `addaliases` flag set. Default is
   `mail`.
+- `DOVECOT_DISABLED_USERS`. Comma-separated list of users with a disabled
+  mailbox, including the hidden users of the user domain, shared with
+  the Dovecot container. Postfix leaves them out of the LDAP user and
+  `POSTFIX_LDAP_ALIAS_ATTR` address maps, so their addresses are unknown
+  and can reach the domain catch-all. Their forwards do not apply, and
+  copies that come through aliases, groups and the catch-all are
+  discarded without a bounce by the generated
+  `/etc/postfix/disabled_mailboxes` transport table.
 - `POSTFIX_MILTERS`, value for Postfix
   [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters),
   default is `inet:127.0.0.1:11332`. Set to empty string to completely
