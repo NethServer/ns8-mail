@@ -1,0 +1,1 @@
+{"$schema":"http://json-schema.org/draft-07/schema#","title":"remove-address input","$id":"http://schema.nethserver.org/mail/remove-address-input.json","description":"Remove a mail address","examples":[{"atype":"domain","local":"sales","domain":"mydom.test"}],"allOf":[{"$ref":"http://schema.nethserver.org/mail.json#/$defs/mail-address-change-request"}]}
