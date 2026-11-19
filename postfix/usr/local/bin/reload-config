@@ -124,7 +124,11 @@ fi
 # postsrsd always needs a syntactically valid domain to start correctly:
 : "${tmpl_srs_domain:=${tmpl_vdomain}}"
 tmpl_srs_recipient_check=
+tmpl_srs_generic_maps=
 if [ -n "${srs_enabled}" ] ; then
+    # Restore the original envelope sender of the always_bcc copy
+    # (e.g. Piler archive) in the smtp_bcc/smtps_bcc services.
+    tmpl_srs_generic_maps="socketmap:unix:/var/lib/postsrsd/srs.sock:reverse"
     # Accept a bounce/DSN addressed to a genuine SRS0 address (verified
     # by postsrsd itself against its own secret) before the implicit
     # reject_unlisted_recipient would otherwise refuse it as an unknown

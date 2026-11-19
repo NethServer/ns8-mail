@@ -48,3 +48,8 @@ smtps     unix  -       -       n       -       -       smtp ${tmpl_debug_relay}
 smtps_from unix  -       -       n       -       -      smtp ${tmpl_debug_relay}
         -o smtp_sender_dependent_authentication=yes
         -o smtp_tls_security_level=encrypt -o smtp_tls_wrappermode=yes
+smtp_bcc  unix  -       -       n       -       -       smtp ${tmpl_debug_relay}
+        -o smtp_generic_maps=${tmpl_srs_generic_maps}
+smtps_bcc unix  -       -       n       -       -       smtp ${tmpl_debug_relay}
+        -o smtp_generic_maps=${tmpl_srs_generic_maps}
+        -o smtp_tls_security_level=encrypt -o smtp_tls_wrappermode=yes
