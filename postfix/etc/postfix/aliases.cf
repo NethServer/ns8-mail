@@ -8,11 +8,7 @@
 #
 # Public mailbox destinations ("vmail+" prefix) are returned as quoted
 # strings: the mailbox name can contain spaces and commas, that
-# otherwise separate addresses in the lookup result. The address local
-# part is matched also in its quoted form, as Postfix looks up an
-# address like "public mailbox"@example.org with the quotes. Like the
-# alocal column, the quoted form is compared case-insensitively, as
-# Postfix lowercases the lookup key.
+# otherwise separate addresses in the lookup result.
 #
 
 dbpath = /srv/pcdb.sqlite
@@ -21,19 +17,19 @@ query =
     THEN '"' || replace(replace(dest, '\', '\\'), '"', '\"') || '"'
     ELSE dest END
   FROM destmap
-  WHERE (alocal = '%u' OR '"' || alocal || '"' = '%u' COLLATE NOCASE)
+  WHERE alocal = '%u'
     AND domain = '%d'
     AND '%d' IN (SELECT domain FROM domains)
   UNION SELECT CASE WHEN substr(dest, 1, 6) = 'vmail+'
     THEN '"' || replace(replace(dest, '\', '\\'), '"', '\"') || '"'
     ELSE dest END
   FROM destmap
-  WHERE (alocal = '%u' OR '"' || alocal || '"' = '%u' COLLATE NOCASE)
+  WHERE alocal = '%u'
     AND domain = '*'
     AND '%d' IN (SELECT domain FROM domains)
     AND NOT EXISTS (
       SELECT 1 FROM destmap
-      WHERE (alocal = '%u' OR '"' || alocal || '"' = '%u' COLLATE NOCASE)
+      WHERE alocal = '%u'
         AND domain = '%d'
         AND '%d' IN (SELECT domain FROM domains)
     )

@@ -17,10 +17,6 @@ Address of public mailbox with spaces and comma
     Send SMTP message to    pub2@inbound.test
     Should be delivered via LMTP to  "vmail+${spaced_name}"
 
-Quoted public mailbox name address
-    Send SMTP message to    '"${spaced_name}"@inbound.test'
-    Should be delivered via LMTP to  "vmail+${spaced_name}"
-
 User forward to public mailbox with spaces
     [Setup]    Run task    module/${MID}/alter-user-mailbox    {"user":"u3","forward":{"destinations":[{"dtype":"public","name":"${spaced_name}"}]}}
     [Teardown]    Run task    module/${MID}/alter-user-mailbox    {"user":"u3","forward":{"destinations":[]}}
