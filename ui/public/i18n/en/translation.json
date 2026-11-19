@@ -248,7 +248,7 @@
         "public_mailbox_name": "Public mailbox name",
         "create_mailbox": "Create mailbox",
         "wildcard_address_info_title": "A new wildcard address will be automatically created",
-        "wildcard_address_info_description": "E.g. if you create 'marketing' public mailbox, a wildcard address 'marketing@' will be created.",
+        "wildcard_address_info_description": "E.g. if you create 'marketing' public mailbox, a wildcard address 'marketing@' will be created. No address is created if the name contains spaces or other characters not valid in an address.",
         "members": "Members",
         "acl": "ACL",
         "acl_members_placeholder": "Choose members",

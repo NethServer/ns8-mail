@@ -300,6 +300,11 @@ command:
 
     podman exec dovecot doveadm acl set -u vmail INBOX authenticated lookup
 
+The `add-public-mailbox` action also creates a wildcard address with the
+mailbox name, e.g. `sales@` for the `sales` mailbox, if the name is a
+valid address local part. A name with spaces or other characters not
+valid in an address gets no address: create one with `add-address`.
+
 Public mailboxes are not limited by the default mailbox quota: the
 `vmail` user has no quota. To limit the total size of public mailboxes,
 for example to 10 GB:

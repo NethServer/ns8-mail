@@ -17,6 +17,12 @@ Address of public mailbox with spaces and comma
     Send SMTP message to    pub2@inbound.test
     Should be delivered via LMTP to  "vmail+${spaced_name}"
 
+No wildcard address for a public mailbox name with spaces
+    ${laddresses} =    Run task    module/${MID}/list-addresses    ""
+    ${locals} =    Evaluate    [oaddr['local'] for oaddr in $laddresses['addresses']]
+    Should Contain    ${locals}    pub1
+    Should Not Contain    ${locals}    ${spaced_name}
+
 User forward to public mailbox with spaces
     [Setup]    Run task    module/${MID}/alter-user-mailbox    {"user":"u3","forward":{"destinations":[{"dtype":"public","name":"${spaced_name}"}]}}
     [Teardown]    Run task    module/${MID}/alter-user-mailbox    {"user":"u3","forward":{"destinations":[]}}
