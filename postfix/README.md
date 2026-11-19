@@ -118,7 +118,9 @@ verifies a returning SRS0 bounce address against postsrsd's own secret
 and accepts it at RCPT TO, before the implicit `reject_unlisted_recipient`
 would otherwise refuse it as an unknown local part -- `cleanup` then
 decodes it back to the real original sender via `recipient_canonical_maps`,
-same as any other canonical rewrite.
+same as any other canonical rewrite. Only the envelope recipient is
+decoded: the `To:`/`Cc:` headers keep the SRS0 address, so the DKIM
+signature of the bounce or auto-reply stays valid.
 
 As a consequence, `sender_canonical_maps` rewrites the envelope sender of
 *any* message received from a sender whose domain is not one of the
