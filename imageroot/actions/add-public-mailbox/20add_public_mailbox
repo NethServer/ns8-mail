@@ -21,7 +21,7 @@ try:
     # Create the wildcard address pointing to the new mailbox, if its
     # name is also a valid address local part (see mail-address-strict):
     cur = sdb.cursor()
-    if re.fullmatch(r"[a-zA-Z0-9](?:[a-zA-Z0-9._-]*[a-zA-Z0-9])?", mbxn):
+    if re.fullmatch(r"[a-zA-Z0-9](?:(?:\.?[a-zA-Z0-9_-])*\.?[a-zA-Z0-9])?", mbxn):
         cur.execute("""INSERT OR IGNORE INTO destmap (alocal,domain,dest) VALUES (?,?,?)""", (mbxn, "*", "vmail+" + mbxn,))
         cur.execute("""INSERT OR IGNORE INTO addresses (alocal, domain) VALUES (?, ?)""", (mbxn, "*",))
 

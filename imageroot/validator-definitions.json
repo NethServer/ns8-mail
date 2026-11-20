@@ -387,7 +387,7 @@
                             "title": "Address local part",
                             "description": "Strict validation of local part",
                             "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9](?:[a-zA-Z0-9._-]*[a-zA-Z0-9])?$"
+                            "pattern": "^[a-zA-Z0-9](?:(?:\\.?[a-zA-Z0-9_-])*\\.?[a-zA-Z0-9])?$"
 
                         }
                     }
