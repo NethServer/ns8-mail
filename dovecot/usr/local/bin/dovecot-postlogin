@@ -25,18 +25,17 @@ ldap_search () {
         -H "ldap://${DOVECOT_LDAP_HOST}:${DOVECOT_LDAP_PORT}" \
         -b "${DOVECOT_LDAP_BASE}" \
         -s sub "${filter}" "${attr}" | {
-            # Transform multi-value LDIF attribute output to a comma separated list
+            # Print each value of a multi-value LDIF attribute on its own line
             plen=$((${#attr} + 2))
             elen=$((${#attr} + 3))
             while read -r line; do
                 if [ "${line:0:${plen}}" = "${attr}: " ]; then
-                    result="${result},${line:${plen}}"
+                    printf "%s\n" "${line:${plen}}"
                 elif [ "${line:0:${elen}}" = "${attr}:: " ]; then
                     # ldapsearch results containing special chars are base64 encoded
-                    result="${result},$(echo ${line:${elen}} | base64 -d)"
+                    printf "%s\n" "$(echo "${line:${elen}}" | base64 -d)"
                 fi
             done
-            echo "${result:1}"
         }
 }
 
@@ -51,9 +50,16 @@ if [ -z "${ACL_GROUPS}" ]; then
     fi
 
     USERDB_KEYS="${USERDB_KEYS} ACL_GROUPS"
-    ACL_GROUPS=$(ldap_search "${filter}" ${attr})
-    # Append the same list of groups in lowercase form for case-insensitive match:
-    ACL_GROUPS="${ACL_GROUPS}${ACL_GROUPS:+,}$(printf "%s\n" "${ACL_GROUPS}" | tr '[A-Z]' '[a-z]')"
+    groups=$(ldap_search "${filter}" "${attr}")
+    # Dovecot parses acl_groups as a boolean list: items are separated by
+    # commas or spaces. Double-quote each group name, so names with spaces
+    # are kept whole. Inside quotes, the backslash escapes the next char,
+    # then Dovecot unescapes a backslash pair again: a literal one needs four.
+    # Add the same groups in lowercase form for case-insensitive match.
+    ACL_GROUPS=$(printf "%s\n%s\n" "${groups}" "$(printf "%s\n" "${groups}" | tr '[:upper:]' '[:lower:]')" | \
+        sed -e '/^$/d' -e 's/\\/\\\\\\\\/g' -e 's/"/\\"/g' -e 's/^.*$/"&"/' | \
+        sort -u | tr '\n' ',')
+    ACL_GROUPS="${ACL_GROUPS%,}"
     export USERDB_KEYS ACL_GROUPS
 fi
 
