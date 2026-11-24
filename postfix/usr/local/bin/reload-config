@@ -73,11 +73,13 @@ tmpl_ldap_base="${POSTFIX_LDAP_BASE}"
 # clause hides them from the user and mail attribute address maps: mail
 # sent to their addresses is rejected as unknown, or goes to the
 # catch-all, like any other address that is not assigned. Names are
-# escaped for the LDAP filter (RFC 4515) and for Postfix ("%").
+# escaped for the LDAP filter (RFC 4515), for the config syntax and for
+# Postfix ("%"), like in the Dovecot container.
 tmpl_ldap_users_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" '
     BEGIN {
         attr = (schema == "ad") ? "sAMAccountName" : "uid"
-        esc["\\"] = "\\5c" ; esc["*"] = "\\2a" ; esc["("] = "\\28" ; esc[")"] = "\\29" ; esc["%"] = "%%"
+        esc["\\"] = "\\5c" ; esc["*"] = "\\2a" ; esc["("] = "\\28" ; esc[")"] = "\\29"
+        esc[" "] = "\\20" ; esc["\""] = "\\22" ; esc["#"] = "\\23" ; esc["%"] = "%%"
     }
     {
         for (i = 1; i <= NF; i++) {

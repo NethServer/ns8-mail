@@ -90,21 +90,28 @@ fi
 echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::${vmail_userdb_fields}" > /etc/dovecot/users
 
 if [ -n "${DOVECOT_DISABLED_USERS}" ]; then
-    # Transform the CSV list in a LDAP filter NOT-ORs clause
-    ldap_users_search_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" -e '{
-        if (schema == "rfc2307") {
-            attr_name = "uid"
-        } else if (schema == "ad") {
-            attr_name = "sAMAccountName"
+    # Transform the CSV list in a LDAP filter NOT-ORs clause. Names are
+    # escaped for the LDAP filter (RFC 4515), for the config syntax and
+    # for Dovecot variables ("%"), like in the Postfix container.
+    ldap_users_search_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" '
+        BEGIN {
+            attr = (schema == "ad") ? "sAMAccountName" : "uid"
+            esc["\\"] = "\\5c" ; esc["*"] = "\\2a" ; esc["("] = "\\28" ; esc[")"] = "\\29"
+            esc[" "] = "\\20" ; esc["\""] = "\\22" ; esc["#"] = "\\23" ; esc["%"] = "%%"
         }
-        filter_clause = ""
-        for(idx=1; idx <= NF; ++idx) {
-            filter_clause = filter_clause sprintf("(%s=%s)", attr_name, $idx)
+        {
+            for (i = 1; i <= NF; i++) {
+                user = tolower($i)
+                if (user == "" || seen[user]++) continue
+                value = ""
+                for (k = 1; k <= length(user); k++) {
+                    c = substr(user, k, 1)
+                    value = value ((c in esc) ? esc[c] : c)
+                }
+                clause = clause "(" attr "=" value ")"
+            }
         }
-        if (filter_clause != "") {
-            print "(!(|" filter_clause "))"
-        }
-    }')
+        END { if (clause != "") print "(!(|" clause "))" }')
 fi
 
 envsubst >/etc/dovecot/ldapconf.sh <"${TEMPLATES_DIR:?}/ldapconf.sh"
