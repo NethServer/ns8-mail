@@ -176,13 +176,22 @@ tmpl_ldap_users_filter_clause='' envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_
 # Copies to a disabled mailbox that come through aliases, groups and the
 # catch-all are discarded, without a bounce to a possibly forged sender
 # (NethServer/dev#8205). Keys are lowercase because Postfix folds lookup
-# keys, and unique because texthash refuses duplicate keys.
-echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "vdomain=${tmpl_vdomain}" '{
-    for (i = 1; i <= NF; i++) {
-        user = tolower($i)
-        if (user != "" && !seen[user]++) print user "@" tolower(vdomain) " discard:"
-    }
-}' >/etc/postfix/disabled_mailboxes.new
+# keys, and unique because texthash refuses duplicate keys. A name that
+# is not a plain local part, e.g. with a space, is quoted like Postfix
+# quotes the address for the lookup.
+echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "vdomain=${tmpl_vdomain}" '
+    BEGIN { special = "[^a-z0-9!#$%&\047*+/=?^_`{|}~.-]|^[.]|[.]$|[.][.]" }
+    {
+        for (i = 1; i <= NF; i++) {
+            user = tolower($i)
+            if (user == "" || seen[user]++) continue
+            if (user ~ special) {
+                gsub(/[\\"]/, "\\\\&", user)
+                user = "\"" user "\""
+            }
+            print user "@" tolower(vdomain) " discard:"
+        }
+    }' >/etc/postfix/disabled_mailboxes.new
 mv /etc/postfix/disabled_mailboxes.new /etc/postfix/disabled_mailboxes
 
 if [ -z "${tmpl_sasl_commentout}" ] ; then
