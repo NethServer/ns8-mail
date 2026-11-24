@@ -27,6 +27,7 @@ Send SMTP message to
         Should Be Equal As Integers    ${rc}  0  Unexpected curl exit code ${rc}: ${err}
         ${LAST_QUEUE_ID} =    Get Queue ID From Output    ${err}
         Should Not Be Empty    ${LAST_QUEUE_ID}    Error: queue ID not set, ${err}
+        Set Test Variable    ${LAST_QUEUE_ID}
     ELSE IF     r'${expect_curl_exitcode}' != ''
         Should Be Equal As Integers    ${rc}  ${expect_curl_exitcode}  Unexpected curl exit code ${rc}: ${err}
     END
@@ -61,12 +62,22 @@ Should return SMTP unknown user error
     Should return SMTP error    550 5.1.1 <${address}>: Recipient address rejected: User unknown in virtual alias table
 
 Should not send bounce
-    [Documentation]    Check that no non-delivery report was sent back for the last message
-    Sleep    2s
+    [Documentation]    Check that no non-delivery report was sent back for the last
+    ...                message. A bounce is logged before Postfix removes the message
+    ...                from the queue, so wait for the removal first.
+    Should Not Be Empty    ${LAST_QUEUE_ID}    The last message has no queue ID
+    Wait Until Keyword Succeeds    15    1s
+    ...    Check message removed from queue by journal
     ${out} =    Execute Command
     ...    journalctl -o cat -t postfix/bounce -S '${LAST_TIMESTAMP}'
     Should Not Contain    ${out}    ${LAST_QUEUE_ID}: sender non-delivery notification
     ...    a bounce was sent for message ${LAST_QUEUE_ID}
+
+Check message removed from queue by journal
+    ${out} =    Execute Command
+    ...    journalctl -o cat -t postfix/qmgr -S '${LAST_TIMESTAMP}'
+    Should Contain    ${out}    ${LAST_QUEUE_ID}: removed
+    ...    message ${LAST_QUEUE_ID} is still in the queue
 
 Check SMTP delivery by journal
     [Documentation]    Check if the journal contents since last keyword run
