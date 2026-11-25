@@ -76,6 +76,11 @@
                         "title": "Enabled state",
                         "description": "If a user mailbox is disabled it cannot receive messages, and it cannot be selected as address destination"
                     },
+                    "udesc": {
+                        "type": "string",
+                        "title": "Description",
+                        "description": "Why the mailbox is disabled, if a description was given"
+                    },
                     "quota": {
                         "$ref": "http://schema.nethserver.org/mail.json#/$defs/quota-status"
                     },
