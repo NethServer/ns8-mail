@@ -89,9 +89,11 @@ if [ -n "${DOVECOT_QUOTA_MB}" ]; then
 fi
 echo "vmail:{plain}${DOVECOT_VMAIL_PASS}::::::${vmail_userdb_fields}" > /etc/dovecot/users
 
-if [ -n "${DOVECOT_DISABLED_USERS}" ]; then
-    # Transform the CSV list in a LDAP filter NOT-ORs clause
-    ldap_users_search_filter_clause=$(echo "${DOVECOT_DISABLED_USERS}" | awk -F , -v "schema=${ldap_schema}" -e '{
+if [ -n "${DOVECOT_MASKED_USERS}" ]; then
+    # Transform the CSV list of masked users in a LDAP filter NOT-ORs
+    # clause. Names are inserted as they are: they must need no escaping.
+    # Other disabled mailboxes are denied by the "disabled" passdb.
+    ldap_users_search_filter_clause=$(echo "${DOVECOT_MASKED_USERS}" | awk -F , -v "schema=${ldap_schema}" -e '{
         if (schema == "rfc2307") {
             attr_name = "uid"
         } else if (schema == "ad") {
