@@ -1,0 +1,15 @@
+#
+# disabledmailboxes -- discard the copies for a disabled mailbox
+#
+# A copy reaches a disabled mailbox through an SQL alias, a forward or
+# the catch-all: discard it, instead of letting Dovecot refuse it and
+# Postfix bounce it to a possibly forged sender (NethServer/dev#8205).
+# Postfix looks up a local part with special characters in its quoted
+# form, like "john doe": match it too, like in aliases.cf.
+#
+
+dbpath = /srv/pcdb.sqlite
+query =
+  SELECT 'discard:' FROM disabled_mailboxes
+  WHERE (user = '%u' OR '"' || user || '"' = '%u' COLLATE NOCASE)
+    AND '%d' = lower('${tmpl_vdomain}')

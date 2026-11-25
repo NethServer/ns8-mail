@@ -1,0 +1,26 @@
+#
+# enabledusers -- filter out users with a disabled mailbox or masked
+#
+# Second stage of the pipemap:{} that wraps the LDAP user, group and
+# alias maps: its lookup key is their result, a comma-separated list
+# of user names. It returns the names of the users with an enabled
+# mailbox; if none is left the lookup fails, and the address is unknown
+# like any other address that is not assigned: Postfix rejects it, or
+# delivers it to the domain catch-all (NethServer/dev#8185).
+#
+# Masked users (DOVECOT_MASKED_USERS) are additional disabled
+# mailboxes, e.g. the system accounts of the user domain like krbtgt.
+#
+
+dbpath = /srv/pcdb.sqlite
+query =
+  WITH RECURSIVE split(name, rest) AS (
+    SELECT '', '%s' || ','
+    UNION ALL
+    SELECT trim(substr(rest, 1, instr(rest, ',') - 1)), substr(rest, instr(rest, ',') + 1)
+    FROM split WHERE rest != ''
+  )
+  SELECT name FROM split
+  WHERE name != ''
+    AND lower(name) NOT IN (${tmpl_masked_users_sql})
+    AND name NOT IN (SELECT user FROM disabled_mailboxes)

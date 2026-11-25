@@ -10,6 +10,7 @@
 #
 
 import os
+import re
 import sys
 import json
 import agent
@@ -47,11 +48,20 @@ else:
     # to a remote one: just set the variable value in the environment.
     rspamd_clamav_endpoint = os.getenv('RSPAMD_clamav_endpoint', '')
 
-# Array of LDAP user entries we want to block:
-disabled_users = list(filter(str.strip, os.getenv('DOVECOT_DISABLED_USERS', '').split(','))) + odom['hidden_users']
+# System accounts of the user domain (e.g. krbtgt), hidden by core: they
+# get no mailbox at all, so Dovecot and Postfix mask their LDAP entry.
+# Containers insert the names in LDAP filters and SQL queries as they
+# are: accept only safe names. Users with a disabled mailbox are in the
+# disabled_mailboxes table of pcdb, instead.
+masked_users = []
+for huser in odom['hidden_users']:
+    if re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._$-]*', huser):
+        masked_users.append(huser.lower())
+    else:
+        print(agent.SD_WARNING + f"Ignored hidden user with unexpected name {huser!r}", file=sys.stderr)
 
 with open(tmpfile, "w") as denv:
-    print('DOVECOT_DISABLED_USERS=' + ",".join(disabled_users), file=denv)
+    print('DOVECOT_MASKED_USERS=' + ",".join(dict.fromkeys(masked_users)), file=denv)
     print('DOVECOT_LDAP_HOST=' + odom['host'], file=denv)
     print('DOVECOT_LDAP_DOMAIN=' + udomname, file=denv)
     print('DOVECOT_LDAP_PORT=' + odom['port'], file=denv)
