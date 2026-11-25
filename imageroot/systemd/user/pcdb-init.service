@@ -1,0 +1,27 @@
+#
+# Create the Postfix configuration DB (pcdb) before Postfix and Dovecot
+# start, if it is missing. After a restore, load the backup dump
+# pcdb-dump.sql restored in the state directory.
+#
+
+[Unit]
+Description=Mail configuration DB initialization
+ConditionPathExists=!%E/state/pcdb/pcdb.sqlite
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%E/state/environment
+WorkingDirectory=%E/state
+ExecStartPre=/bin/mkdir -vp pcdb
+# The container sees only the pcdb directory: move the dump into it
+ExecStartPre=/bin/sh -c 'if [ -f pcdb-dump.sql ]; then mv -v pcdb-dump.sql pcdb/ ; fi'
+ExecStart=/usr/bin/podman run \
+    --rm \
+    --replace --name=pcdb-init \
+    --log-driver=none \
+    --volume=./pcdb:/srv:z \
+    ${MAIL_POSTFIX_IMAGE} \
+    pcdb-init
+SyslogIdentifier=%N

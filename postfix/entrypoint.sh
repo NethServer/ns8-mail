@@ -8,12 +8,8 @@
 set -e
 
 if [ $# -eq 0 ]; then
-    if [ ! -f /srv/pcdb.sqlite ]; then
-        (
-            cd /srv
-            sqlite3 pcdb.sqlite '.read /etc/postfix/pcdb-init.sql'
-        )
-    fi
+    # /srv/pcdb.sqlite is created by the pcdb-init command, run by
+    # pcdb-init.service before this container starts.
     if [ ! -s /etc/ssl/postfix/fullchain.pem ]; then
         (
             cd /etc/postfix

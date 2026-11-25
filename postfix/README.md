@@ -94,6 +94,14 @@ Private TCP ports:
 
 ## Commands
 
+### `pcdb-init`
+
+Create the configuration DB `/srv/pcdb.sqlite`, if it is missing. If a
+backup dump `/srv/pcdb-dump.sql` exists, it is loaded and then removed;
+otherwise the DB is created with `pcdb-init.sql`. The module runs it in
+a separate container before Postfix and Dovecot start, so they always
+find the DB, and after a restore they read the restored one.
+
 ### `reload-config`
 
 The command expands Postfix configuration files, according to the values
@@ -165,7 +173,8 @@ Postfix keeps running with SRS quietly broken.
 
 Configuration is stored in the Sqlite database `/srv/pcdb.sqlite`.
 
-The database is initialized by the `pcdb-init.sql` script. Refer to
+The database is initialized by the `pcdb-init.sql` script, run by the
+`pcdb-init` command. Refer to
 its contents for the exact SQL schema. This is a summary of the available tables.
 
 - `domains` List of mail domains handled by Postfix. Changes require a

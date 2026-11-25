@@ -1,7 +1,8 @@
 [Unit]
 Description=Postfix MTA/MSA server
-After=get-certificate.service
+After=get-certificate.service pcdb-init.service
 Wants=get-certificate.service
+Requires=pcdb-init.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -9,7 +10,6 @@ EnvironmentFile=%E/state/environment
 WorkingDirectory=%E/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/postfix.pid %t/postfix.ctr-id
-ExecStartPre=/bin/mkdir -vp pcdb
 ExecStartPre=runagent discover-services
 SuccessExitStatus=143
 ExecStart=/usr/bin/podman run \
