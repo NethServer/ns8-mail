@@ -45,13 +45,14 @@ Reset user mailbox forward
     Run task    module/${MID}/alter-user-mailbox    {"user":"u1","forward":{"destinations":[]}}
 
 Disable user mailbox
-    Run task    module/${MID}/set-mailbox-enabled    {"user":"u1","enabled":false}
+    Run task    module/${MID}/set-mailbox-enabled    {"user":"u1","enabled":false,"udesc":"Test account"}
 
 Check the mailbox is disabled
     ${lmailboxes} =    Run task    module/${MID}/list-user-mailboxes    ""
     FOR  ${ombx}    IN    @{lmailboxes}[user_mailboxes]
         IF    "${ombx}[user]" == "u1"
             Should Be Equal    ${ombx}[enabled]    ${FALSE}
+            Should Be Equal    ${ombx}[udesc]    Test account
         ELSE
             Should Be Equal As Integers    ${ombx}[quota][limit]    0
         END
@@ -64,7 +65,7 @@ Check the user IMAP login fails
     Run Keyword And Expect Error    67 !\= 0    IMAP login good credentials
 
 Enable user mailbox
-    [Documentation]    The API triggers Dovecot reload, subsequent auth request might fail for a while
+    [Documentation]    Dovecot reads the table at each login: no reload is needed
     Run task    module/${MID}/set-mailbox-enabled    {"user":"u1","enabled":true}
 
 Check the user IMAP login succeedes

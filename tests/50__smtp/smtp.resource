@@ -27,6 +27,7 @@ Send SMTP message to
         Should Be Equal As Integers    ${rc}  0  Unexpected curl exit code ${rc}: ${err}
         ${LAST_QUEUE_ID} =    Get Queue ID From Output    ${err}
         Should Not Be Empty    ${LAST_QUEUE_ID}    Error: queue ID not set, ${err}
+        Set Test Variable    ${LAST_QUEUE_ID}
     ELSE IF     r'${expect_curl_exitcode}' != ''
         Should Be Equal As Integers    ${rc}  ${expect_curl_exitcode}  Unexpected curl exit code ${rc}: ${err}
     END
@@ -48,6 +49,35 @@ Should be relayed via SMTP
 Should return SMTP error
     [Arguments]    ${pattern}
     Should Match    ${LAST_CURL_ERROR}    *${pattern}*    msg=Error from curl doesn't match pattern `${pattern}`: `${LAST_CURL_ERROR}`.
+
+Switch user domain
+    [Arguments]     ${udom}
+    Run task     module/${MID}/configure-module
+    ...          {"hostname":"mail.domain.test","user_domain":"${udom}"}
+
+Should return SMTP unknown user error
+    [Arguments]    ${address}
+    Send SMTP message to  ${address}
+    ...                   expect_curl_exitcode=
+    Should return SMTP error    550 5.1.1 <${address}>: Recipient address rejected: User unknown in virtual alias table
+
+Should not send bounce
+    [Documentation]    Check that no non-delivery report was sent back for the last
+    ...                message. A bounce is logged before Postfix removes the message
+    ...                from the queue, so wait for the removal first.
+    Should Not Be Empty    ${LAST_QUEUE_ID}    The last message has no queue ID
+    Wait Until Keyword Succeeds    15    1s
+    ...    Check message removed from queue by journal
+    ${out} =    Execute Command
+    ...    journalctl -o cat -t postfix/bounce -S '${LAST_TIMESTAMP}'
+    Should Not Contain    ${out}    ${LAST_QUEUE_ID}: sender non-delivery notification
+    ...    a bounce was sent for message ${LAST_QUEUE_ID}
+
+Check message removed from queue by journal
+    ${out} =    Execute Command
+    ...    journalctl -o cat -t postfix/qmgr -S '${LAST_TIMESTAMP}'
+    Should Contain    ${out}    ${LAST_QUEUE_ID}: removed
+    ...    message ${LAST_QUEUE_ID} is still in the queue
 
 Check SMTP delivery by journal
     [Documentation]    Check if the journal contents since last keyword run
@@ -150,3 +180,25 @@ Get SRS rewritten sender from journal
     Should Not Be Empty    ${matches}
     ...    postfix/qmgr envelope sender for ${LAST_QUEUE_ID} was not SRS-rewritten: ${out}
     RETURN    ${matches}[0]
+
+Set mailbox ${user} enabled
+    [Arguments]    ${enabled}
+    Run task    module/${MID}/set-mailbox-enabled    {"user":"${user}","enabled":${enabled}}
+
+Initialize LDAP reference
+    [Documentation]    The mail smtp test suites run isolated from tests/ldap_providers.resource,
+    ...                so ${mid_ldap} must be looked up again here via service discovery instead of
+    ...                relying on the suite variable set by "Configure LDAP user domain". This must
+    ...                match the user domain currently bound to ${MID} (see "Switch to OpenLDAP user
+    ...                domain" in 50__smtp/__init__.robot), since Postfix only queries that domain.
+    [Arguments]    ${domain}
+    ${out}  ${err}  ${rc} =    Execute Command
+    ...    runagent python3 -c 'import agent ; print(agent.list_service_providers(agent.redis_connect(), "ldap", "tcp", filters={"domain":"${domain}"})[0]["module_id"])'
+    ...    return_rc=True    return_stderr=True
+    Should Be Equal As Integers    ${rc}    0    Failed to look up LDAP provider module_id: ${err}
+    Should Not Be Empty    ${out}    LDAP provider module_id not found in service discovery
+    VAR    ${mid_ldap}    ${out}    scope=SUITES
+
+Set ${user} LDAP mail attribute
+    [Arguments]    ${mail}
+    Run Keyword    Run Task    module/${mid_ldap}/alter-user    {"user":"${user}","mail":"${mail}"}
