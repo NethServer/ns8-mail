@@ -335,8 +335,26 @@ def abort_with_json_if_not_configured(data, exit_code=0):
         json.dump(data, fp=sys.stdout)
         sys.exit(exit_code)
 
-def get_disabled_users():
-    return list(filter(str.strip, os.getenv('DOVECOT_DISABLED_USERS', '').split(",")))
+def get_disabled_users(sdb=None):
+    """Return the list of users with a disabled mailbox"""
+    return list(get_disabled_mailboxes(sdb).keys())
+
+def get_disabled_mailboxes(sdb=None):
+    """Return a dict of users with a disabled mailbox, with their description"""
+    try:
+        if sdb is None:
+            sdb = pcdb_connect(readonly=True)
+        return {row['user']: row['udesc'] for row in sdb.execute("SELECT user, udesc FROM disabled_mailboxes ORDER BY user")}
+    except sqlite3.OperationalError:
+        return {} # pcdb or its table does not exist yet
+
+def set_mailbox_enabled(sdb, user, enabled, udesc=''):
+    """Enable or disable the mailbox of user. Return True if its state changed"""
+    if enabled:
+        cur = sdb.execute("DELETE FROM disabled_mailboxes WHERE user = ?", (user,))
+    else:
+        cur = sdb.execute("INSERT INTO disabled_mailboxes (user, udesc) VALUES (?, ?) ON CONFLICT (user) DO NOTHING", (user.lower(), udesc))
+    return cur.rowcount > 0
 
 def convert_ns7_quota(squota):
     """Convert a string value representing ns7 mailbox quota to Mail module format"""
