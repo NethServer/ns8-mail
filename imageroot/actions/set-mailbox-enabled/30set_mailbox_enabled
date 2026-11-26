@@ -8,34 +8,11 @@
 import json
 import sys
 import mail
-import agent
-import os
 
 request = json.load(sys.stdin)
-muser = request['user']
 
-needs_reload = False
-disabled_users = set()
-
-if 'enabled' in request:
-    if os.getenv("DOVECOT_DISABLED_USERS"):
-        disabled_users = set(filter(str.strip, os.getenv('DOVECOT_DISABLED_USERS', "").split(",")))
-
-    user_is_enabled = muser not in disabled_users
-
-    if request['enabled'] == False and user_is_enabled:
-        # disable an enabled user
-        disabled_users.add(muser)
-        needs_reload = True
-    elif request['enabled'] == True and not user_is_enabled:
-        # enable a disabled user
-        disabled_users.remove(muser)
-        needs_reload = True
-
-if needs_reload:
-    agent.set_env("DOVECOT_DISABLED_USERS", ",".join(disabled_users))
-    agent.run_helper("systemctl", "--user", "-T", "reload", "dovecot")
-    # Postfix smtpd processes keep their connection to the Dovecot auth
-    # process started before the reload, which still has the old
-    # configuration: reload Postfix too, so they connect to the new one.
-    agent.run_helper("systemctl", "--user", "-T", "reload", "postfix")
+# Postfix and Dovecot read the disabled_mailboxes table at each lookup:
+# the change applies without reloading them.
+sdb = mail.pcdb_connect()
+with sdb:
+    mail.set_mailbox_enabled(sdb, request['user'], request['enabled'], request.get('udesc', ''))

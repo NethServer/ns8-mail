@@ -44,6 +44,10 @@ Private TCP ports:
 - `POSTFIX_LDAP_ALIAS_ATTR`. LDAP user attribute queried to expand
   addresses for domains with the `addaliases` flag set. Default is
   `mail`.
+- `DOVECOT_MASKED_USERS`. Comma-separated list of additional users with
+  a disabled mailbox, whose LDAP entry is masked too (e.g. `krbtgt`).
+  Their addresses are unknown. Names must not need quoting in SQL.
+  Shared with the Dovecot container. Default empty.
 - `POSTFIX_MILTERS`, value for Postfix
   [smtpd_milters](http://www.postfix.org/postconf.5.html#smtpd_milters),
   default is `inet:127.0.0.1:11332`. Set to empty string to completely
@@ -89,6 +93,14 @@ Private TCP ports:
   Postfix uses the last entry. The file is not checked.
 
 ## Commands
+
+### `pcdb-init`
+
+Create the configuration DB `/srv/pcdb.sqlite`, if it is missing. If a
+backup dump `/srv/pcdb-dump.sql` exists, it is loaded and then removed;
+otherwise the DB is created with `pcdb-init.sql`. The module runs it in
+a separate container before Postfix and Dovecot start, so they always
+find the DB, and after a restore they read the restored one.
 
 ### `reload-config`
 
@@ -161,7 +173,8 @@ Postfix keeps running with SRS quietly broken.
 
 Configuration is stored in the Sqlite database `/srv/pcdb.sqlite`.
 
-The database is initialized by the `pcdb-init.sql` script. Refer to
+The database is initialized by the `pcdb-init.sql` script, run by the
+`pcdb-init` command. Refer to
 its contents for the exact SQL schema. This is a summary of the available tables.
 
 - `domains` List of mail domains handled by Postfix. Changes require a
@@ -172,6 +185,16 @@ its contents for the exact SQL schema. This is a summary of the available tables
 - `userattrs` Store the "internal" flag for LDAP users
 - `groupattrs` Store the "internal" flag for LDAP groups
 - `userforwards` Forward address map for LDAP users
+- `disabled_mailboxes` LDAP users with a disabled mailbox, with an
+  optional description (`udesc`). The LDAP user, group and alias maps
+  are wrapped in a `pipemap:{}` with `enabledusers.cf`, which drops
+  these users from their results: their addresses are unknown, and are
+  rejected or go to the domain catch-all; a group whose members are all
+  disabled is unknown too. Copies that reach their mailbox through SQL
+  aliases and the catch-all are discarded by `disabledmailboxes.cf`, in
+  `transport_maps`, without a bounce. Their forwards do not apply. The
+  Dovecot container reads the table too, to deny their login. Changes
+  apply without a reload.
 - `mynetworks` Records are added to Postfix
   [mynetworks](https://www.postfix.org/postconf.5.html#mynetworks) setting
 

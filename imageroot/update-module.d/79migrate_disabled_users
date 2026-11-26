@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Move the disabled mailboxes from the DOVECOT_DISABLED_USERS variable
+# to the disabled_mailboxes table of pcdb. It runs before the restart of
+# 80restart_services, because the containers of the new image version
+# read the table and no longer the variable: create the table here too,
+# like postfix/etc/postfix/pcdb-disabled-mailboxes.sql does.
+
+import os
+import sys
+import agent
+import mail
+
+sys.stdout = sys.stderr
+
+if not os.path.exists('pcdb/pcdb.sqlite'):
+    sys.exit(0) # Postfix never started: the table is created with pcdb
+
+sdb = mail.pcdb_connect()
+with sdb:
+    sdb.execute("""CREATE TABLE IF NOT EXISTS disabled_mailboxes (
+        user TEXT NOT NULL COLLATE NOCASE,
+        udesc TEXT NOT NULL DEFAULT '',
+        PRIMARY KEY (user)
+    )""")
+    for user in filter(None, map(str.strip, os.getenv('DOVECOT_DISABLED_USERS', '').split(','))):
+        mail.set_mailbox_enabled(sdb, user, False, 'Migrated from DOVECOT_DISABLED_USERS')
+sdb.close()
+
+if 'DOVECOT_DISABLED_USERS' in os.environ:
+    agent.unset_env('DOVECOT_DISABLED_USERS')

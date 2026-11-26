@@ -2,6 +2,7 @@
 # userforwards -- expand user name to their forward addresses
 #
 # Public mailbox destinations are quoted, like in aliases.cf
+# A disabled mailbox has no forwards
 #
 
 dbpath = /srv/pcdb.sqlite
@@ -11,4 +12,5 @@ query =
       ELSE dest END
     FROM userforwards
     WHERE user = '%u'
+      AND user NOT IN (SELECT user FROM disabled_mailboxes)
 domain = ${tmpl_vdomain}

@@ -50,8 +50,11 @@ Private TCP ports:
 - `DOVECOT_METRICS_PORT`, TCP port number for OpenMetrics. Default value is `9289`.
 - `DOVECOT_MASTER_USERS`, Comma-separated list of user names that are
   granted impersonate privilege. Default empty.
-- `DOVECOT_DISABLED_USERS`, comma-separated list of user names that have
-  no access at all to the mail services. Default empty.
+- `DOVECOT_MASKED_USERS`, comma-separated list of additional users with
+  a disabled mailbox, whose LDAP entry is masked too: they are filtered
+  out of the LDAP passdb and userdb, so they have no mailbox at all
+  (e.g. `krbtgt`). Names must not need escaping in LDAP filters.
+  Default empty.
 - `DOVECOT_SPAM_RETENTION`, default empty, which means the feature is disabled and spam is never expunged automatically. See also the `spam-expunge` command.
 - `DOVECOT_SPAM_FOLDER`, default `Junk`. Mailbox folder name where spam messages are moved. See also the `spam-expunge` command.
 - `DOVECOT_SPAM_SUBJECT_PREFIX`, default empty. If set, the string is prefixed to the message `Subject:` header.
@@ -136,6 +139,11 @@ Volumes are:
   configuration is loaded, the files are evaluated as a whole. If they
   break it, all of them are renamed to hidden `.<name>.<timestamp>.err`
   files and a warning is logged.
+- `/srv/pcdb` Read-only access to the Postfix configuration DB,
+  `/srv/pcdb/pcdb.sqlite`. Its `disabled_mailboxes` table lists the
+  users with a disabled mailbox: the `disabled` passdb denies their
+  login, while their mailbox is kept and still listed by the userdb.
+  The table is read at each login, so changes do not need a reload.
 
 ## Custom user quota
 

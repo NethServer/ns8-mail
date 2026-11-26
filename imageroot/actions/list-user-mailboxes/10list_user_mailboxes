@@ -31,17 +31,22 @@ except Exception:
 
 mailboxes = {}
 
-for disabled_user in mail.get_disabled_users():
-    mailboxes[disabled_user] = {
-        "user": disabled_user,
-        "enabled": False,
-    }
-
 for ouser in rusers['userList']:
     if ouser == 'vmail':
         continue
     else:
         mailboxes[ouser] = {"user": ouser}
+
+sdb = mail.pcdb_connect(readonly=True)
+
+# Disabled mailboxes are listed by Dovecot too, as their login is denied
+# but their contents are kept. A disabled user may also be missing from
+# LDAP, e.g. removed or not yet imported.
+for duser, udesc in mail.get_disabled_mailboxes(sdb).items():
+    mailboxes.setdefault(duser, {"user": duser})
+    mailboxes[duser]["enabled"] = False
+    if udesc:
+        mailboxes[duser]["udesc"] = udesc
 
 for oquota in rquotas:
     if not oquota['username'] in mailboxes:
@@ -60,8 +65,6 @@ for oquota in rquotas:
         }
         if str(mailboxes[oquota['username']]['quota']['limit']) != gquota:
             mailboxes[oquota['username']]['quota']['custom'] = True
-
-sdb = mail.pcdb_connect(readonly=True)
 
 for rforward in sdb.execute("""SELECT user, dest FROM userforwards WHERE user != dest""").fetchall():
     if not rforward['user'] in mailboxes:

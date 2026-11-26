@@ -67,7 +67,7 @@ set -e
 addgroup -g 101 -S vmail
 adduser -u 100 -G vmail -h /var/lib/vmail -S vmail
 chmod -c 700 /var/lib/vmail
-apk add --no-cache dovecot dovecot-ldap dovecot-lua dovecot-pigeonhole-plugin \
+apk add --no-cache dovecot dovecot-ldap dovecot-lua dovecot-sqlite dovecot-pigeonhole-plugin \
     dovecot-pop3d dovecot-lmtpd dovecot-fts-flatcurve icu-data-full \
     openldap-clients openssl gettext poppler-utils mimalloc2
 apk add --no-cache rspamd-client

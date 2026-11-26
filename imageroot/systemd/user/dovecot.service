@@ -1,7 +1,8 @@
 [Unit]
 Description=Dovecot IMAP, POP3, Sieve server
 Wants=get-certificate.service
-After=get-certificate.service
+After=get-certificate.service pcdb-init.service
+Requires=pcdb-init.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -28,6 +29,7 @@ ExecStart=/usr/bin/podman run \
     --volume=dovecot-dict:/var/lib/dovecot/dict:z \
     --volume=dovecot-lmtp:/var/lib/umail:z \
     --volume=dovecot-custom:/etc/dovecot/local.conf.d:z \
+    --volume=./pcdb:/srv/pcdb:ro,z \
     ${MAIL_DOVECOT_IMAGE}
 
 # Wait until API and monitoring endpoint services are fully started

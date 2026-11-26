@@ -9,6 +9,7 @@ import os
 import json
 import sys
 import subprocess
+import mail
 
 def main():
     facts = {}
@@ -93,7 +94,7 @@ def get_mailboxes_facts():
         except json.JSONDecodeError:
             return {"get_mailboxes_facts_error": True}
 
-    disabled_users = os.getenv("DOVECOT_DISABLED_USERS", "")
+    disabled_users = mail.get_disabled_users()
 
     facts = {
         "mailboxes_total_count": len(odata),
@@ -101,7 +102,7 @@ def get_mailboxes_facts():
         "mailboxes_custom_quota_count": 0,
         "mailboxes_forward_total_count": 0,
         "mailboxes_forward_keepcopy_count": 0,
-        "mailboxes_disabled_count": len(disabled_users.split(",")) if disabled_users else 0,
+        "mailboxes_disabled_count": len(disabled_users),
     }
     for mbx in odata:
         if mbx.get('quota', {}).get('custom'):

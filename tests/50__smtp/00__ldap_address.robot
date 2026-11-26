@@ -87,20 +87,6 @@ LDAP alias delivers to every user sharing the same mail attribute
     Should not be delivered via LMTP to  u2
 
 *** Keywords ***
-Initialize LDAP reference
-    [Documentation]    The mail smtp test suites run isolated from tests/ldap_providers.resource,
-    ...                so ${mid_ldap} must be looked up again here via service discovery instead of
-    ...                relying on the suite variable set by "Configure LDAP user domain". This must
-    ...                match the user domain currently bound to ${MID} (see "Switch to OpenLDAP user
-    ...                domain" in 50__smtp/__init__.robot), since Postfix only queries that domain.
-    [Arguments]    ${domain}
-    ${out}  ${err}  ${rc} =    Execute Command
-    ...    runagent python3 -c 'import agent ; print(agent.list_service_providers(agent.redis_connect(), "ldap", "tcp", filters={"domain":"${domain}"})[0]["module_id"])'
-    ...    return_rc=True    return_stderr=True
-    Should Be Equal As Integers    ${rc}    0    Failed to look up LDAP provider module_id: ${err}
-    Should Not Be Empty    ${out}    LDAP provider module_id not found in service discovery
-    VAR    ${mid_ldap}    ${out}    scope=SUITES
-
 Add aprio alias to u2
     Run Task    module/${MID}/add-address    {"atype":"domain","local":"aprio","domain":"inbound.test","destinations":[{"dtype":"user","name":"u2"}]}
 
@@ -113,16 +99,6 @@ Add awild wildcard alias to u2
 Remove awild wildcard alias
     Run Task    module/${MID}/remove-address    {"atype":"wildcard","local":"awild"}
 
-Set ${user} LDAP mail attribute
-    [Arguments]    ${mail}
-    Run Keyword    Run Task    module/${mid_ldap}/alter-user    {"user":"${user}","mail":"${mail}"}
-
 Reset LDAP mail attributes
     Run Keyword    Run Task    module/${mid_ldap}/alter-user    {"user":"u1","mail":"ldapa1@inbound.test"}
     Run Keyword    Run Task    module/${mid_ldap}/alter-user    {"user":"u2","mail":"ldapa2@noaddflag.test"}
-
-Should return SMTP unknown user error
-    [Arguments]    ${address}
-    Send SMTP message to  ${address}
-    ...                   expect_curl_exitcode=
-    Should return SMTP error    550 5.1.1 <${address}>: Recipient address rejected: User unknown in virtual alias table

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Create the Postfix configuration DB /srv/pcdb.sqlite, if it is missing.
+# Load the backup dump /srv/pcdb-dump.sql if it is present, as after a
+# restore; otherwise create the initial DB with pcdb-init.sql. The DB is
+# written to a temporary file, renamed only on success: a failed load
+# is retried at the next run.
+
+set -e
+
+cd /srv
+
+if [ -f pcdb.sqlite ]; then
+    echo "pcdb.sqlite already exists: nothing to do"
+    exit 0
+fi
+
+rm -f pcdb.sqlite.tmp
+if [ -f pcdb-dump.sql ]; then
+    echo "Loading pcdb-dump.sql into pcdb.sqlite"
+    sqlite3 -batch -bail pcdb.sqlite.tmp <pcdb-dump.sql
+else
+    echo "Initializing pcdb.sqlite with pcdb-init.sql"
+    sqlite3 -batch -bail pcdb.sqlite.tmp '.read /etc/postfix/pcdb-init.sql'
+fi
+mv pcdb.sqlite.tmp pcdb.sqlite
+rm -f pcdb-dump.sql

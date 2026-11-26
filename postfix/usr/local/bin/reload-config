@@ -69,6 +69,9 @@ tmpl_ldap_bind_pw="${POSTFIX_LDAP_PASS}"
 tmpl_ldap_host="${POSTFIX_LDAP_HOST}"
 tmpl_ldap_port="${POSTFIX_LDAP_PORT}"
 tmpl_ldap_base="${POSTFIX_LDAP_BASE}"
+# Masked users as a SQL list, never empty to keep "IN ()" valid. Names
+# are inserted as they are: they must need no quoting.
+tmpl_masked_users_sql="'$(echo "${DOVECOT_MASKED_USERS}" | sed "s/,/','/g")'"
 tmpl_maximal_queue_lifetime="${POSTFIX_MAXIMAL_QUEUE_LIFETIME:-120}"
 if [ -n "${POSTFIX_RESTRICTED_SENDER}" ]; then
     tmpl_sender_restrictions="reject_authenticated_sender_login_mismatch"
@@ -138,6 +141,8 @@ envsubst >/etc/postfix/main.cf <"${TEMPLATES_DIR:?}/main.cf"
 envsubst >/etc/postfix/master.cf <"${TEMPLATES_DIR:?}/master.cf"
 envsubst >/etc/postfix/laddusers.cf <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf"
 envsubst >/etc/postfix/userforwards.cf <"${TEMPLATES_DIR:?}/userforwards.cf"
+envsubst >/etc/postfix/enabledusers.cf <"${TEMPLATES_DIR:?}/enabledusers.cf"
+envsubst >/etc/postfix/disabledmailboxes.cf <"${TEMPLATES_DIR:?}/disabledmailboxes.cf"
 envsubst >/etc/postfix/laddgroupmembers.cf <"${TEMPLATES_DIR:?}/laddgroupmembers-${ldap_schema}.cf"
 envsubst >/etc/postfix/laddaliases.cf <"${TEMPLATES_DIR:?}/laddaliases-${ldap_schema}.cf"
 envsubst <"${TEMPLATES_DIR:?}/laddusers-${ldap_schema}.cf" | \

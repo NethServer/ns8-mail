@@ -49,15 +49,15 @@ virtual_alias_maps =
   inline:{{ postmaster@${tmpl_vdomain} = vmail+postmaster@${tmpl_vdomain} }}
   sqlite:${S}meta_directory/aliases.cf
   sqlite:${S}meta_directory/userforwards.cf
-  proxy:ldap:${S}meta_directory/laddgroupmembers.cf
-  proxy:ldap:${S}meta_directory/laddusers.cf
-  proxy:ldap:${S}meta_directory/laddaliases.cf
+  pipemap:{ proxy:ldap:${S}meta_directory/laddgroupmembers.cf, sqlite:${S}meta_directory/enabledusers.cf }
+  pipemap:{ proxy:ldap:${S}meta_directory/laddusers.cf, sqlite:${S}meta_directory/enabledusers.cf }
+  pipemap:{ proxy:ldap:${S}meta_directory/laddaliases.cf, sqlite:${S}meta_directory/enabledusers.cf }
   ${tmpl_domain_catchall_map}
 virtual_mailbox_domains = ${tmpl_virtual_mailbox_domains}
 virtual_mailbox_maps = ${tmpl_virtual_mailbox_maps}
 virtual_transport = lmtp:unix:/var/lib/umail/lmtp
 relay_domains = ${tmpl_relay_domains}
-transport_maps = sqlite:${S}meta_directory/relaydest.cf
+transport_maps = sqlite:${S}meta_directory/disabledmailboxes.cf, sqlite:${S}meta_directory/relaydest.cf
 recipient_delimiter = +
 
 # Never use local transport, set "mydestination" to empty string:
