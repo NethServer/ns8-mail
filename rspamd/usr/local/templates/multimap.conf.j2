@@ -124,3 +124,14 @@ BLOCK_SENDER {
     message = "Sender address rejected";
     map = ["${DBDIR}/block_sender.map"];
 }
+{% set rl_hourly = (env.RL_HOURLY or 0)|int -%}
+{% if rl_hourly > 0 %}
+# Load the rate limit bulk users list and expose it to the ratelimit
+# selectors as "ratelimit_bulk". The symbol has no score.
+RATELIMIT_BULK_LIST {
+    type = "user";
+    map = { url = "${DBDIR}/ratelimit_bulk.map"; selector_alias = "ratelimit_bulk"; };
+    score = 0.0;
+    description = "User in the rate limit bulk list";
+}
+{% endif -%}

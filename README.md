@@ -479,6 +479,49 @@ further check, antivirus included. Set `RSPAMD_bypass_score` to a
 negative number to add a ham score instead and keep the other checks
 running. See [rspamd/README.md](rspamd/README.md) for details.
 
+## Rspamd rate limit for authenticated users
+
+A stolen password is often used to send large amounts of spam through
+the mail server. The rate limit restricts how many messages each
+authenticated user can send. Mail received from other servers is not
+affected. The feature is disabled by default.
+
+To enable it, edit the module's `state/rspamd.env` file and set the
+maximum number of messages per hour, per user. For example:
+
+    RSPAMD_RL_HOURLY=300
+
+Then apply the change:
+
+    systemctl --user reload rspamd
+
+A user can send a burst of `RSPAMD_RL_HOURLY / 12` messages (5 minutes
+of messages) at once, then `RSPAMD_RL_HOURLY` messages per hour. For
+example, with `RSPAMD_RL_HOURLY=300` a user that sends without pause gets
+25 messages accepted at once, then one every 12 seconds.
+
+Messages over the limit get a temporary error (`451 Sending rate limit
+exceeded, try again later`). Mail servers and applications that send
+through an authenticated account queue the message and retry later, so
+it is delivered with a delay. Mail clients show the error and keep the
+message in the outbox. Messages refused by the limit do not count. A
+message counts once, regardless of the number of recipients.
+
+The following map files list one user name per line. They are available
+also in the Rspamd UI configuration tab, and changes are applied
+automatically within a minute:
+
+- Users never limited: `/var/lib/rspamd/ratelimit_exempt.map`
+- Users that legitimately send more messages (newsletters, scanners,
+  applications): `/var/lib/rspamd/ratelimit_bulk.map`. Their limit is
+  `RSPAMD_RL_BULK_HOURLY` messages per hour, with the same burst formula.
+  If it is not set, the default is 10 times `RSPAMD_RL_HOURLY`.
+
+Rspamd logs each refused message with the user name and the
+`RATELIMIT_EXCEEDED` symbol. To disable the rate
+limit, remove `RSPAMD_RL_HOURLY` from `state/rspamd.env` and reload the
+service.
+
 ## Service discovery
 
 Another module can discover IMAP and SUBMISSION endpoints by looking up

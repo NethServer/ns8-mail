@@ -2,6 +2,7 @@
 # rspamd.conf.local -- override settings
 #
 
+{% set rl_hourly = (env.RL_HOURLY or 0)|int -%}
 {% if env.antispam_checks_enabled == "" -%}
 #
 # Disable SPAM checks, DKIM signing only
@@ -13,7 +14,9 @@ settings {
         priority = "high";
         apply {
             CHECKS_BYPASS = 0.0;
-            symbols_enabled = ["DKIM_SIGNED", "CLAM_VIRUS"];
+            symbols_enabled = ["DKIM_SIGNED", "CLAM_VIRUS"{% if rl_hourly > 0 %},
+                "RATELIMIT_CHECK", "RATELIMIT_UPDATE", "RATELIMIT_BULK_LIST",
+                "RATELIMIT_EXCEEDED"{% endif %}];
         }
         symbols = ["CHECKS_BYPASS"];
     }
