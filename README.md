@@ -507,9 +507,12 @@ it is delivered with a delay. Mail clients show the error and keep the
 message in the outbox. Messages refused by the limit do not count. A
 message counts once, regardless of the number of recipients.
 
-The following map files list one user name per line. They are available
-also in the Rspamd UI configuration tab, and changes are applied
-automatically within a minute:
+The following map files list one user name per line. Changes are
+applied automatically within a minute. When the rate limit is enabled,
+the files are also available in the Rspamd UI configuration tab: to
+fill them before enabling the rate limit, edit them inside the `rspamd`
+container, for example with `podman exec -ti rspamd vi
+/var/lib/rspamd/ratelimit_exempt.map`.
 
 - Users never limited: `/var/lib/rspamd/ratelimit_exempt.map`
 - Users that legitimately send more messages (newsletters, scanners,
