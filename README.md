@@ -452,6 +452,9 @@ Following block rule configuration files are available in the Rspamd UI configur
 - Sender mail address: `/var/lib/rspamd/block_sender.map`
   - Examples: `user@domain.tld`, `support@nethserver.org`
 
+Rspamd refuses to save a completely empty map: to remove all the entries
+of a map, leave a single empty line.
+
 ## Rspamd allow rules
 
 Allow rules are managed by the module UI, in the Filter > Bypass rules
@@ -512,7 +515,8 @@ applied automatically within a minute. When the rate limit is enabled,
 the files are also available in the Rspamd UI configuration tab: to
 fill them before enabling the rate limit, edit them inside the `rspamd`
 container, for example with `podman exec -ti rspamd vi
-/var/lib/rspamd/ratelimit_exempt.map`.
+/var/lib/rspamd/ratelimit_exempt.map`. To empty a list, leave a single
+empty line, as Rspamd refuses to save a completely empty map.
 
 - Users never limited: `/var/lib/rspamd/ratelimit_exempt.map`
 - Users that legitimately send more messages (newsletters, scanners,
