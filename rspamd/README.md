@@ -41,6 +41,13 @@ Well-known ports
 - `RSPAMD_clamavscansize` sets the maximum size (default 2 MB) for
   email attachments scanned by ClamAV in Rspamd.
   Attachments larger than this value are skipped to optimize performance.
+- `RSPAMD_RL_HOURLY` enables the outbound rate limit for authenticated
+  users: maximum number of messages per hour, per user, with a burst of
+  `RSPAMD_RL_HOURLY / 12` messages. If it is not set, empty, `0`, a
+  negative number, or not a number, the rate limit is off.
+- `RSPAMD_RL_BULK_HOURLY` maximum number of messages per hour for users
+  listed in `/var/lib/rspamd/ratelimit_bulk.map`. If it is not a positive
+  number, the default is 10 times `RSPAMD_RL_HOURLY`.
 
 ## Volumes
 

@@ -1,0 +1,45 @@
+#
+# Ratelimit -- https://docs.rspamd.com/modules/ratelimit
+#
+# Outbound limit for authenticated users. Disabled unless
+# RSPAMD_RL_HOURLY is a positive number (messages per hour, per user).
+#
+{% set rl_hourly = (env.RL_HOURLY or 0)|int -%}
+{% if rl_hourly > 0 -%}
+{% set rl_bulk_hourly = (env.RL_BULK_HOURLY or 0)|int -%}
+{% if rl_bulk_hourly <= 0 -%}
+{% set rl_bulk_hourly = rl_hourly * 10 -%}
+{% endif -%}
+
+# Users never limited, one per line
+whitelisted_user = "${DBDIR}/ratelimit_exempt.map";
+
+# Added to messages refused by a limit, for logs and metrics
+info_symbol = "RATELIMIT_EXCEEDED";
+
+# Messages over the limit get a temporary error (451): mail servers and
+# applications queue and retry them, mail clients show the message. The
+# burst allows 5 minutes of messages at once.
+rates {
+    # Authenticated users not listed in ratelimit_bulk.map
+    user = {
+        selector = "user.lower.except_map('ratelimit_bulk')";
+        bucket = {
+            burst = {= ((rl_hourly + 11) / 12)|int =};
+            rate = "{= rl_hourly =} / 1h";
+            skip_recipients = true;
+            message = "Sending rate limit exceeded, try again later";
+        }
+    }
+    # Users listed in ratelimit_bulk.map
+    bulk = {
+        selector = "user.lower.filter_map('ratelimit_bulk')";
+        bucket = {
+            burst = {= ((rl_bulk_hourly + 11) / 12)|int =};
+            rate = "{= rl_bulk_hourly =} / 1h";
+            skip_recipients = true;
+            message = "Sending rate limit exceeded, try again later";
+        }
+    }
+}
+{% endif -%}
